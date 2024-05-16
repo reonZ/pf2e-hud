@@ -1,0 +1,23 @@
+{
+    "name": "pf2e-hud",
+    "scripts": {
+        "build": "esbuild src/main.ts --bundle --keep-names --minify --sourcemap --outdir=scripts",
+        "dev": "esbuild src/main.ts --bundle --keep-names --watch --sourcemap --outdir=scripts"
+    },
+    "author": "Idle",
+    "homepage": "https://github.com/reonZpf2e-hud#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/reonZpf2e-hud.git"
+    },
+    "bugs": {
+        "url": "https://github.com/reonZpf2e-hud/issues"
+    },
+    "devDependencies": {
+        "esbuild": "^0.20.1",
+        "typescript": "5.3.3"
+    },
+    "dependencies": {
+        "pf2e-api": "file:../../../../dev/pf2e-api"
+    }
+}

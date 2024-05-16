@@ -1,0 +1,117 @@
+[id="pf2e-hud.tooltip"] {
+    --outer-border-radius: 4px;
+    --outer-padding: 4px;
+    --outer-box-shadow: 0 0 20px var(--color-shadow-dark);
+    --inner-padding: 0.5em;
+    --color: var(--text-light);
+    --background: url(../../../ui/denim075.png) repeat #00000059;
+
+    z-index: 9999;
+    position: absolute;
+    font-size: var(--font-size);
+    padding: var(--outer-padding);
+    color: var(--color);
+    pointer-events: none;
+
+    .distance,
+    .status,
+    .inner {
+        background: var(--background);
+        border-radius: var(--outer-border-radius);
+        box-shadow: var(--outer-box-shadow);
+        padding: 0.2em var(--inner-padding);
+    }
+
+    .distance,
+    .status {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .distance {
+        gap: 6px;
+        z-index: -1;
+        width: fit-content;
+        margin: auto;
+
+        &:not(:last-child) {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    }
+
+    .status {
+        color: hsl(var(--hue) 75% 40%);
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        min-width: 7em;
+    }
+
+    .inner {
+        --icon-width: 1.3em;
+        --span-width: 1.7em;
+        --inner-gap: 0.6em;
+        --section-gap: 0.1em;
+        --section-width: calc(var(--icon-width) + var(--span-width) + var(--section-gap));
+
+        min-width: 8em;
+        max-width: calc(var(--inner-padding) * 2 + var(--inner-gap) * 2 + var(--section-width) * 3);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.3em var(--inner-gap);
+
+        section {
+            display: flex;
+            align-items: center;
+            column-gap: var(--section-gap);
+
+            i {
+                width: var(--icon-width);
+                text-align: center;
+
+                + span {
+                    text-align: end;
+                }
+            }
+
+            span {
+                width: var(--span-width);
+                color: hsl(var(--hue) 75% 40%);
+            }
+
+            &.double,
+            &:not(.double-last) + .double-last:not(:has(+ .double-last)),
+            &:not(.double-last) + .double-last:last-child {
+                grid-column: span 2;
+            }
+
+            &.triple {
+                grid-column: span 3;
+            }
+
+            &.hint {
+                font-size: 0.9em;
+                line-height: 0.8;
+                text-wrap: wrap;
+                text-align: justify;
+            }
+
+            &.iwr {
+                width: var(--section-width);
+                justify-content: center;
+                column-gap: 0.2em;
+
+                i {
+                    width: unset;
+                    text-align: unset;
+                }
+
+                .disabled {
+                    color: grey;
+                }
+            }
+        }
+    }
+}

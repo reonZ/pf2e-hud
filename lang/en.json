@@ -1,0 +1,81 @@
+{
+    "pf2e-hud": {
+        "settings": {
+            "tooltip": {
+                "title": "Token Tooltip",
+                "status": {
+                    "name": "Health Status",
+                    "hint": "Comma separated strings representing the different divisions of a creature's health state from worst to best. Leave empty to disable.",
+                    "default": "Dead, At Death's Door, Not Feeling Good, Seen Better Days, Barely Hurt, Perfectly Fine"
+                },
+                "enabled": {
+                    "name": "Enabled",
+                    "hint": "A tooltip will be displayed when hovering over tokens on the board.",
+                    "choices": {
+                        "never": "Never",
+                        "small": "Small Version Only",
+                        "owned": "Extended Version for Owned",
+                        "observed": "Extended Version for Observed"
+                    }
+                },
+                "delay": {
+                    "name": "Tooltip Delay",
+                    "hint": "Delay in milliseconds before the tooltip shows up on screen."
+                },
+                "position": {
+                    "name": "Position",
+                    "hint": "Select a preferred side for the tooltip to be displayed, if not possible, the module will try first on the opposite side, otherwise on one of the remaining two.",
+                    "choices": {
+                        "left": "Left",
+                        "right": "Right",
+                        "top": "Top",
+                        "bottom": "Bottom"
+                    }
+                },
+                "scale": {
+                    "name": "Font Size",
+                    "hint": "Tooltip font size."
+                },
+                "showDistance": {
+                    "name": "Display Distance",
+                    "hint": "Will display the distance between the hovered token and one that is inferred automatically.",
+                    "choices": {
+                        "never": "Never",
+                        "idiot": "In Feet",
+                        "smart": "In Meters",
+                        "weird": "In Squares"
+                    }
+                },
+                "drawDistance": {
+                    "name": "Draw Distance",
+                    "hint": "Draw a line of this thickness between the hovered token and the 'distance' target."
+                },
+                "noDead": {
+                    "name": "Dead Actor",
+                    "hint": "What type of tooltip should be displayed when hovering over a dead actor.",
+                    "choices": {
+                        "none": "No Tooltip",
+                        "small": "Small Version Only",
+                        "full": "Extended Version"
+                    }
+                },
+                "modifiers": {
+                    "name": "Show Modifiers",
+                    "hint": "Should modifiers be displayed instead of DCs in the tooltip."
+                }
+            },
+            "token": {
+                "title": "Token HUD",
+                "enabled": {
+                    "name": "Enabled",
+                    "hint": "A HUD will be displayed around the currently selected token.",
+                    "choices": {
+                        "never": "Never",
+                        "owned": "Owned Only",
+                        "observed": "Owned and Observed"
+                    }
+                }
+            }
+        }
+    }
+}

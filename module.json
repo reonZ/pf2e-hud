@@ -1,0 +1,53 @@
+{
+    "id": "pf2e-hud",
+    "title": "PF2e HUD",
+    "author": "Idle",
+    "description": "",
+    "authors": [
+        {
+            "name": "Idle",
+            "discord": "Idle#3251"
+        }
+    ],
+    "esmodules": ["scripts/main.js"],
+    "compatibility": {
+        "minimum": "12.322",
+        "verified": "12.322",
+        "maximum": "12"
+    },
+    "version": "1.0.0",
+    "manifestPlusVersion": "1.2.0",
+    "url": "https://github.com/reonZ/pf2e-hud",
+    "readme": "https://github.com/reonZ/pf2e-hud/blob/master/README.md",
+    "manifest": "https://raw.githubusercontent.com/reonZ/pf2e-hud/master/module.json",
+    "download": "https://github.com/reonZ/pf2e-hud/releases/download/1.0.0/module.zip",
+    "changelog": "https://github.com/reonZ/pf2e-hud/blob/master/CHANGELOG.md",
+    "bugs": "https://github.com/reonZ/pf2e-hud/issues",
+    "styles": ["styles/pf2e-hud.css"],
+    "relationships": {
+        "systems": [
+            {
+                "id": "pf2e",
+                "type": "system",
+                "manifest": "https://raw.githubusercontent.com/foundryvtt/pf2e/master/system.json",
+                "compatibility": {
+                    "minimum": "6.0.0-beta1"
+                }
+            }
+        ],
+        "requires": [
+            {
+                "id": "lib-wrapper",
+                "type": "module",
+                "manifest": "https://raw.githubusercontent.com/ruipin/fvtt-lib-wrapper/master/module.json"
+            }
+        ]
+    },
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "lang/en.json"
+        }
+    ]
+}

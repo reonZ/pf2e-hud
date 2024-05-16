@@ -1,0 +1,7 @@
+.git/
+node_modules/
+releases/
+scripts/
+*.code-workspace
+release.mjs
+ignore.txt
