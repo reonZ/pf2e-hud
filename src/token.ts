@@ -70,6 +70,9 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
                 type: Boolean,
                 default: false,
                 scope: "client",
+                onChange: () => {
+                    this.render();
+                },
             },
             {
                 key: "scale",
@@ -81,18 +84,37 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
                 },
                 default: 14,
                 scope: "client",
+                onChange: () => {
+                    this.render();
+                },
+            },
+            {
+                key: "mode",
+                type: String,
+                choices: ["exploded", "left", "right"],
+                default: "exploded",
+                scope: "client",
+                onChange: () => {
+                    this.render();
+                },
             },
             {
                 key: "modifiers",
                 type: Boolean,
                 default: false,
                 scope: "client",
+                onChange: () => {
+                    this.render();
+                },
             },
             {
                 key: "highestSpeed",
                 type: Boolean,
                 default: false,
                 scope: "client",
+                onChange: () => {
+                    this.render();
+                },
             },
         ];
     }
@@ -264,6 +286,18 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
         this.#mainElement?.remove();
         this.#mainElement = createHTMLFromString(result);
 
+        const mode = this.setting("mode");
+
+        if (mode === "exploded") {
+            this.#mainElement.classList.add("exploded");
+        } else {
+            const wrapper = createHTMLFromString("<div class='joined'></div>");
+            if (mode === "left") wrapper.classList.add("left");
+
+            wrapper.replaceChildren(...this.#mainElement.children);
+            this.#mainElement.appendChild(wrapper);
+        }
+
         content.replaceChildren(this.#mainElement);
         this.#activateListeners(content);
     }
@@ -309,20 +343,16 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
     }
 
     _onSetToken(token: TokenPF2e<ActorPF2e> | null) {
-        if (token) this.render(true);
+        this.render(true);
     }
 
-    setToken(token: TokenPF2e | null) {
-        if (token === null) return super.setToken(token);
+    setToken(token: TokenPF2e | null | false) {
+        if (!token) return super.setToken(token);
 
         const actor = token?.actor;
-        if (!actor?.isOwner || actor.isOfType("loot", "party")) return;
-
-        const actorUUid = actor.uuid;
-        const asRenderedSheet = Object.values(ui.windows).some(
-            (app) => app instanceof ActorSheet && app.actor.uuid === actorUUid
-        );
-        if (asRenderedSheet) return;
+        if (!actor?.isOwner || actor.isOfType("loot", "party") || actor.sheet.rendered) {
+            token = null;
+        }
 
         super.setToken(token as TokenPF2e<ActorType>);
     }
@@ -472,6 +502,7 @@ type SidebarType = keyof typeof SIDEBARS;
 type TokenSettings = BaseTokenHUDSettings & {
     enabled: boolean;
     scaleDimensions: boolean;
+    mode: "exploded" | "left" | "right";
     scale: number;
     highestSpeed: boolean;
 };

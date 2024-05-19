@@ -85,6 +85,15 @@
                     "name": "Font Size",
                     "hint": "Token HUD font size."
                 },
+                "mode": {
+                    "name": "Display Mode",
+                    "hint": "Select the mode of display of the token HUD.",
+                    "choices": {
+                        "exploded": "Exploded",
+                        "left": "Grouped (Left)",
+                        "right": "Grouped (Right)"
+                    }
+                },
                 "modifiers": {
                     "name": "Show Modifiers",
                     "hint": "Should modifiers be displayed instead of DCs in the HUD."

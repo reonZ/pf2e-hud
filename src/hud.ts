@@ -226,11 +226,14 @@ abstract class BaseTokenHUD<
     }
 
     close(options?: ApplicationClosingOptions): Promise<ApplicationV2> {
-        this.setToken(null);
+        this.setToken(false);
         return super.close(options);
     }
 
-    setToken(token: TokenPF2e<TActor> | null) {
+    setToken(token: TokenPF2e<TActor> | null | false) {
+        const skipClose = token === false;
+
+        token ||= null;
         if (token === this.token) return;
 
         delete this.actor?.apps[this.id];
@@ -242,7 +245,8 @@ abstract class BaseTokenHUD<
 
         this.#token = token;
 
-        this._onSetToken(token);
+        if (token) this._onSetToken(token);
+        else if (!skipClose) this.close();
     }
 
     getTokenPosition() {
