@@ -1,4 +1,4 @@
-# FoundryVTT Test Module
+# FoundryVTT PF2e HUD
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K6M2V13)
 

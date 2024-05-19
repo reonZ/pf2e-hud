@@ -6,14 +6,14 @@ import {
     querySelector,
     registerSetting,
 } from "pf2e-api";
-import { TokenHUD } from "./token";
-import { TooltipHUD } from "./tooltip";
-import { PersistentHUD } from "./persistent";
+import { PF2eHudPersistent } from "./persistent";
+import { PF2eHudToken } from "./token";
+import { PF2eHudTooltip } from "./tooltip";
 
 const hudList = {
-    tooltip: new TooltipHUD(),
-    token: new TokenHUD(),
-    persistent: new PersistentHUD(),
+    tooltip: new PF2eHudTooltip(),
+    token: new PF2eHudToken(),
+    persistent: new PF2eHudPersistent(),
 };
 
 MODULE.register("pf2e-hud", "PF2e HUD");
@@ -29,12 +29,6 @@ Hooks.once("setup", () => {
         for (const setting of hud.settings) {
             const key = `${hud.key}.${setting.key}`;
 
-            if (setting.key === "enabled" && typeof setting.onChange !== "function") {
-                setting.onChange = () => {
-                    hud._onEnable(hud.enabled);
-                };
-            }
-
             if (setting.default === undefined) {
                 setting.default = localize(`settings.${key}.default`);
             }
@@ -47,13 +41,9 @@ Hooks.once("setup", () => {
     MODULE.current.api = {
         hud: hudList,
     };
-});
 
-Hooks.once("ready", () => {
     for (const hud of Object.values(hudList)) {
-        if (hud.enabled) {
-            hud.enable(true);
-        }
+        hud.enable();
     }
 });
 

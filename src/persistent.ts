@@ -1,6 +1,6 @@
 import { BaseHUD } from "./hud";
 
-class PersistentHUD extends BaseHUD<PersistentSettings> {
+class PF2eHudPersistent extends BaseHUD<PersistentSettings> {
     #actor: ActorPF2e | null = null;
 
     static DEFAULT_OPTIONS: Partial<ApplicationConfiguration> = {
@@ -64,4 +64,4 @@ class PersistentHUD extends BaseHUD<PersistentSettings> {
 
 type PersistentSettings = {};
 
-export { PersistentHUD };
+export { PF2eHudPersistent };

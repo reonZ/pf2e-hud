@@ -1,6 +1,10 @@
 {
     "pf2e-hud": {
         "settings": {
+            "partyObserved": {
+                "name": "Party as Observed",
+                "hint": "Consider actors belonging to the 'Party' alliance to be observed by players."
+            },
             "tooltip": {
                 "title": "Token Tooltip",
                 "status": {
@@ -10,12 +14,15 @@
                 },
                 "enabled": {
                     "name": "Enabled",
-                    "hint": "A tooltip will be displayed when hovering over tokens on the board.",
+                    "hint": "A tooltip will be displayed when hovering over tokens on the board."
+                },
+                "type": {
+                    "name": "Extended Tooltip",
+                    "hint": "If/when the extended version of the tooltip should be used.",
                     "choices": {
                         "never": "Never",
-                        "small": "Small Version Only",
-                        "owned": "Extended Version for Owned",
-                        "observed": "Extended Version for Observed"
+                        "owned": "Owned Only",
+                        "observed": "Owned and observed"
                     }
                 },
                 "delay": {
@@ -68,12 +75,53 @@
                 "title": "Token HUD",
                 "enabled": {
                     "name": "Enabled",
-                    "hint": "A HUD will be displayed around the currently selected token.",
-                    "choices": {
-                        "never": "Never",
-                        "owned": "Owned Only",
-                        "observed": "Owned and Observed"
-                    }
+                    "hint": "An HUD will be displayed around the currently selected token."
+                },
+                "scaleDimensions": {
+                    "name": "Scale Dimensions",
+                    "hint": "When enabled, the HUD will have its dimensions scaled with the canvas."
+                },
+                "scale": {
+                    "name": "Font Size",
+                    "hint": "Token HUD font size."
+                },
+                "modifiers": {
+                    "name": "Show Modifiers",
+                    "hint": "Should modifiers be displayed instead of DCs in the HUD."
+                },
+                "highestSpeed": {
+                    "name": "Highest Speed",
+                    "hint": "If no speed was manually selected, the highest one will always be shown by default even if the land speed isn't 0."
+                }
+            },
+            "persistent": {
+                "title": "Persistent HUD",
+                "enabled": {
+                    "name": "Enabled",
+                    "hint": "A persistent HUD will be displayed at the bottom of the screen."
+                }
+            }
+        },
+        "hud": {
+            "toggleAdjustment": "Toggle Adjustment",
+            "tempHP": "Temporary Hit Points"
+        },
+        "token": {
+            "sidebars": {
+                "actions": {
+                    "title": "Actions"
+                },
+                "items": {
+                    "title": "Inventory"
+                },
+                "spells": {
+                    "title": "Spellcasting"
+                },
+                "skills": {
+                    "title": "Skills"
+                },
+                "extras": {
+                    "title": "Extras"
                 }
             }
         }

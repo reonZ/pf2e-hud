@@ -1,1 +1,209 @@
-<div>token hud</div>
+<div id="pf2e-hud-token-main">
+    <div class="panel top">
+        {{#if name}}
+        <div class="name">{{name}}</div>
+        {{/if}}
+        {{!-- --}}
+        {{#if health.useStamina}}
+        <div data-section="resolve" data-tooltip="PF2E.ResolvePointsShortLabel">
+            <a data-action="use-resolve">
+                <i class="fa-solid fa-circle-r"></i>
+            </a>
+            <input type="number" name="system.resources.resolve" value="{{resolve.value}}" min="0"
+                max="{{resolve.max}}">
+        </div>
+        <div data-section="stamina" data-tooltip="PF2E.StaminaPointsShortLabel">
+            <span><i class="fa-solid fa-heart-pulse"></i></span>
+            {{> numbers name="system.attributes.hp.sp" entry=health.sp}}
+        </div>
+        {{/if}}
+        {{!-- --}}
+        {{#if hardness includeZero=true}}
+        <div data-section="hardness" data-tooltip="PF2E.HardnessLabel">
+            <span><i class="fa-solid fa-turtle"></i></span>
+            <span>{{hardness}}</span>
+        </div>
+        {{else if (not isArmy)}}
+        <div data-section="temp-hp" data-tooltip="{{i18n.path 'tempHP'}}">
+            <span><i class="fa-solid fa-heart-half-stroke"></i></span>
+            <input type="number" name="system.attributes.hp.temp" value="{{health.temp}}" min="0">
+        </div>
+        {{/if}}
+        <div {{#if isArmy}}class="double" {{/if}} data-section="hp"
+            data-tooltip="PF2E.HitPointsHeader">
+            <span><i class="fa-solid fa-heart"></i></span>
+            {{> numbers name="system.attributes.hp" entry=health}}
+        </div>
+        {{!-- --}}
+        {{#if isCombatant}}
+        {{> armor}}
+        {{#if isCharacter}}
+        <div data-section="shield">
+            <a data-action="raise-shield"
+                data-tooltip="PF2E.Actions.RaiseAShield.SingleActionTitle">
+                {{#if shield.broken}}
+                <i class="fa-regular fa-shield-slash"></i>
+                {{else if shield.raised}}
+                <i class="fa-solid fa-shield"></i>
+                {{else}}
+                <i class="fa-regular fa-shield"></i>
+                {{/if}}
+                <span>({{shield.hardness}})&nbsp;</span>
+            </a>
+            <input type="number" name="system.attributes.shield.hp" value="{{shield.hp.value}}"
+                min="0" max="{{shield.hp.max}}"
+                data-tooltip="PF2E.Actor.Creature.Shield.HitPoints.Value">
+        </div>
+        {{else}}
+        <div data-section="adjustment">
+            <a data-toggle-action="adjustment" data-tooltip="{{i18n.path 'toggleAdjustment'}}">
+                <i class="{{adjustment.icon}}"></i>
+                <span>{{localize adjustment.label}}</span>
+            </a>
+            <a data-action="show-notes" data-tooltip="PF2E.NPC.NotesTab">
+                <i class="fa-duotone fa-clipboard"></i>
+            </a>
+        </div>
+        {{/if}}
+        {{/if}}
+    </div>
+
+
+    <div class="panel left">
+        {{#if isCharacter}}
+        <div data-section="dying" data-tooltip="PF2E.ConditionTypeDying">
+            <a {{#unless dying.value}}class="disabled" {{/unless}} data-action="recovery-check"
+                data-tooltip="PF2E.Check.Specific.Recovery">
+                <i class="fa-solid fa-tombstone"></i>
+            </a>
+            {{> slider name="system.resources.attributes.dying" entry=dying action="dying"}}
+        </div>
+        <div data-section="wounded" data-tooltip="PF2E.ConditionTypeWounded">
+            <span><i class="fa-solid fa-notes-medical"></i></span>
+            {{> slider name="system.resources.attributes.wounded" entry=wounded
+            action="wounded"}}
+        </div>
+        <div></div>
+        {{/if}}
+        {{!-- --}}
+        <div data-section="level" data-tooltip="PF2E.CharacterLevelLabel">
+            <span><i class="fa-solid fa-user-graduate"></i></span>
+            <span>{{level}}</span>
+        </div>
+        {{!-- --}}
+        {{#if isCharacter}}
+        <div data-section="hero-points" data-tooltip="PF2E.HeroPointsLabel">
+            <span>
+                <i class="fa-solid fa-circle-h"></i>
+            </span>
+            {{> slider name="system.resources.heroPoints" entry=heroPoints action="hero"}}
+        </div>
+        {{else if isNPC}}
+        <a data-section="recall-knowledge" data-tooltip="PF2E.RecallKnowledge.Label"
+            data-action="recall-knowledge">
+            <i class="fa-solid fa-book"></i>
+            <span>{{recall}}</span>
+        </a>
+        {{else}}
+        {{> armor}}
+        {{/if}}
+        {{!-- --}}
+        {{#if mainSpeed}}
+        <a data-section="speeds" data-tooltip="{{otherSpeeds}}" {{#unless
+            otherSpeeds}}class="disabled" {{/unless}} data-speed="{{mainSpeed.type}}"
+            data-action="change-speed">
+            <i class="{{mainSpeed.icon}}"></i>
+            <span>{{mainSpeed.total}}</span>
+        </a>
+        {{/if}}
+        {{#if isVehicle}}
+        {{> saves}}
+        {{else if isArmy}}
+        <a data-section="scouting" data-tooltip="PF2E.Kingmaker.Army.Scouting"
+            data-action="scouting">
+            <i class="fa-solid fa-flag"></i>
+            <span>{{scouting}}</span>
+        </a>
+        {{/if}}
+    </div>
+
+    {{#if (or isCombatant isFamiliar)}}
+    <div class="panel right">
+        {{> saves}}
+        {{#each others as |other|}}
+        <a data-section="other-statistic" data-tooltip="{{other.label}}" data-action="roll-other"
+            data-slug="{{other.slug}}">
+            <i class="{{other.icon}}"></i>
+            <span>{{other.value}}</span>
+        </a>
+        {{/each}}
+    </div>
+    {{/if}}
+
+    <div class="panel bottom">
+        {{> info icon="fa-solid fa-language" section="languages" tooltip=""}}
+        {{> info icon="fa-solid fa-signal-stream" section="senses" tooltip=""}}
+        {{> info icon="fa-solid fa-solid fa-ankh" section="immunities" tooltip=""}}
+        {{> info icon="fa-solid fa-heart-crack" section="resistances" tooltip=""}}
+        {{> info icon="fa-solid fa-shield-virus" section="weaknesses" tooltip=""}}
+        {{!-- --}}
+        {{#if isCombatant}}
+        <hr>
+        {{#each sidebars as |sidebar|}}
+        <a data-section="sidebar" data-sidebar="{{sidebar.type}}" data-tooltip="{{sidebar.label}}"
+            {{#if sidebar.disabled}}class="disabled" {{/if}} data-action="open-sidebar"
+            data-sidebar="{{sidebar.type}}">
+            <i class="{{sidebar.icon}}"></i>
+        </a>
+        {{/each}}
+        {{/if}}
+    </div>
+</div>
+
+{{#*inline 'numbers'}}
+<div class="numbers">
+    <input type="number" name="{{name}}" value="{{entry.value}}" min="0" max="{{entry.max}}">
+    <span class="separator">/</span>
+    <span class="max">{{entry.max}}</span>
+</div>
+{{/inline}}
+
+{{#*inline 'slider'}}
+<a class="slider" data-toggle-action="{{action}}">
+    <i class="carret fa-solid fa-angle-left{{#if (eq entry.value 0)}} disabled{{/if}}"></i>
+    <span>{{entry.value}}</span>
+    <i class="carret fa-solid fa-angle-right{{#if (eq entry.value entry.max)}} disabled{{/if}}"></i>
+</a>
+{{/inline}}
+
+{{#*inline "info"}}
+<div class="info" data-section="{{section}}" data-tooltip="{{tooltip}}" class="info">
+    <i class="{{icon}}"></i>
+    {{#if label}}
+    <span>{{label}}</span>
+    {{/if}}
+</div>
+{{/inline}}
+
+{{#*inline "armor"}}
+<div data-section="ac" data-tooltip="PF2E.ArmorClassLabel">
+    <a data-action="take-cover" data-tooltip="PF2E.Actions.TakeCover.Title">
+        {{#if hasCover}}
+        <i class="fa-solid fa-helmet-battle"></i>
+        {{else}}
+        <i class="fa-regular fa-helmet-battle"></i>
+        {{/if}}
+    </a>
+    <span>{{ac}}</span>
+</div>
+{{/inline}}
+
+{{#*inline "saves"}}
+{{#each saves as |save|}}
+<a data-section="save" data-tooltip="{{save.label}}" data-action="roll-save"
+    data-save="{{save.slug}}">
+    <i class="{{save.icon}}"></i>
+    <span>{{save.value}}</span>
+</a>
+{{/each}}
+{{/inline}}

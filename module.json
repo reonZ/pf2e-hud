@@ -1,7 +1,6 @@
 {
     "id": "pf2e-hud",
     "title": "PF2e HUD",
-    "author": "Idle",
     "description": "",
     "authors": [
         {
@@ -11,12 +10,11 @@
     ],
     "esmodules": ["scripts/main.js"],
     "compatibility": {
-        "minimum": "12.322",
-        "verified": "12.322",
+        "minimum": "12.323",
+        "verified": "12.323",
         "maximum": "12"
     },
     "version": "1.0.0",
-    "manifestPlusVersion": "1.2.0",
     "url": "https://github.com/reonZ/pf2e-hud",
     "readme": "https://github.com/reonZ/pf2e-hud/blob/master/README.md",
     "manifest": "https://raw.githubusercontent.com/reonZ/pf2e-hud/master/module.json",
@@ -31,7 +29,7 @@
                 "type": "system",
                 "manifest": "https://raw.githubusercontent.com/foundryvtt/pf2e/master/system.json",
                 "compatibility": {
-                    "minimum": "6.0.0-beta1"
+                    "minimum": "6.0.0-beta2"
                 }
             }
         ],

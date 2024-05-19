@@ -1,10 +1,10 @@
-[id="pf2e-hud.tooltip"] {
+#pf2e-hud-tooltip {
     --outer-border-radius: 4px;
     --outer-padding: 4px;
     --outer-box-shadow: 0 0 20px var(--color-shadow-dark);
     --inner-padding: 0.5em;
     --color: var(--text-light);
-    --background: url(../../../ui/denim075.png) repeat #00000059;
+    --background: url(../../../ui/denim075.png) repeat #4d4d4d;
 
     z-index: 9999;
     position: absolute;
@@ -62,6 +62,29 @@
         justify-content: center;
         gap: 0.3em var(--inner-gap);
 
+        header,
+        hr {
+            flex: 1 0 100%;
+        }
+
+        header {
+            flex: 1 0 100%;
+            text-align: center;
+            font-size: 0.92em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-inline: 0.3em;
+            margin-bottom: -0.2em;
+        }
+
+        hr {
+            margin: 0;
+            padding: 0;
+            border-bottom: 0;
+            border-color: #ffffff4a;
+        }
+
         section {
             display: flex;
             align-items: center;
@@ -79,16 +102,6 @@
             span {
                 width: var(--span-width);
                 color: hsl(var(--hue) 75% 40%);
-            }
-
-            &.double,
-            &:not(.double-last) + .double-last:not(:has(+ .double-last)),
-            &:not(.double-last) + .double-last:last-child {
-                grid-column: span 2;
-            }
-
-            &.triple {
-                grid-column: span 3;
             }
 
             &.hint {

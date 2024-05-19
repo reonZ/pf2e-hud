@@ -7,6 +7,11 @@
 {{#if expended}}
 
 <div class="inner">
+    {{#if name}}
+    <header data-section="name">{{name}}</header>
+    <hr>
+    {{/if}}
+
     {{#if health.useStamina}}
     <section data-section="stamina">
         <i class="fa-solid fa-heart-pulse"></i>
@@ -29,7 +34,7 @@
     </section>
     <section data-section="ac">
         {{#if ac}}
-        <i class="fa-solid fa-shield"></i>
+        <i class="fa-solid fa-helmet-battle"></i>
         <span>{{ac}}</span>
         {{/if}}
     </section>

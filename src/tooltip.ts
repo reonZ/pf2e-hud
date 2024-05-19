@@ -6,72 +6,33 @@ import {
     createWrapper,
     getOnly,
     libWrapper,
-    saveTypes,
 } from "pf2e-api";
-import { BaseTokenHUD, canObserve, getActorHealth } from "./hud";
+import { BaseTokenHUD, type BaseTokenHUDSettings } from "./hud";
 import { hud } from "./main";
-import { signedInteger } from "pf2e-api/src/utils";
+import { TARGET_ICONS } from "./shared";
 
 const DELAY_BUFFER = 50;
-
-const SPEEDS = [
-    { type: "land", icon: "fa-solid fa-shoe-prints" },
-    { type: "burrow", icon: "fa-solid fa-chevrons-down" },
-    { type: "climb", icon: "fa-solid fa-spider" },
-    { type: "fly", icon: "fa-solid fa-feather" },
-    { type: "swim", icon: "fa-solid fa-person-swimming" },
-] as const;
-
-const SPEEDS_ICONS = R.mapToObj(SPEEDS, ({ icon, type }) => [type, icon]);
-
-const SAVES = [
-    { slug: "fortitude", icon: "fa-solid fa-chess-rook", label: "PF2E.SavesFortitude" },
-    { slug: "reflex", icon: "fa-solid fa-person-running", label: "PF2E.SavesReflex" },
-    { slug: "will", icon: "fa-solid fa-brain", label: "PF2E.SavesWill" },
-] as const;
-
-const SAVES_ICONS = R.mapToObj(SAVES, ({ icon, slug }) => [slug, icon]);
-
-const OTHER_STATISTICS = [
-    { slug: "perception", icon: "fa-solid fa-eye", label: "PF2E.PerceptionLabel" },
-    { slug: "stealth", icon: "fa-duotone fa-eye-slash", label: "PF2E.SkillStealth" },
-    { slug: "athletics", icon: "fa-solid fa-hand-fist", label: "PF2E.SkillAthletics" },
-] as const;
-
-const OTHER_SLUGS = OTHER_STATISTICS.map((x) => x.slug);
-const OTHER_ICONS = R.mapToObj(OTHER_STATISTICS, ({ icon, slug }) => [slug, icon]);
-
-const TARGET_ICONS = {
-    token: "fa-duotone fa-square-list",
-    selected: "fa-solid fa-expand",
-    targeted: "fa-solid fa-crosshairs-simple",
-    persistent: "fa-solid fa-image-user",
-    character: "fa-solid fa-user",
-} as const;
 
 const POSITIONS = {
     left: ["left", "right", "top", "bottom"],
     right: ["right", "left", "top", "bottom"],
     top: ["top", "bottom", "left", "right"],
     bottom: ["bottom", "top", "left", "right"],
-} as const;
+};
 
-const SETTING_ENABLED = ["never", "small", "owned", "observed"] as const;
+const SETTING_TYPE = ["never", "owned", "observed"] as const;
 const SETTING_DISTANCE = ["never", "idiot", "smart", "weird"] as const;
 const SETTING_NO_DEAD = ["none", "small", "full"] as const;
 const SETTING_POSITION = R.keys.strict(POSITIONS);
 
-class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
+class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings> {
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
-    #deleteTokenHook = createHook("deleteToken", this.#onDeleteToken.bind(this));
-    #updateTokenHook = createHook("updateToken", this.#onUpdateToken.bind(this));
 
     #renderTimeout = createTimeout(this.render.bind(this), DELAY_BUFFER);
     #closeTimeout = createTimeout(this.close.bind(this), DELAY_BUFFER);
 
     #clickEvent = createGlobalEvent("mousedown", () => this.close());
 
-    #graphics: PIXI.Graphics | null = null;
     #targetToken: TokenPF2e | null = null;
 
     #tokenRefreshWrapper = createWrapper(
@@ -84,7 +45,7 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
     );
 
     static DEFAULT_OPTIONS: Partial<ApplicationConfiguration> = {
-        id: "pf2e-hud.tooltip",
+        id: "pf2e-hud-tooltip",
         position: {
             width: "auto",
             height: "auto",
@@ -100,10 +61,10 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
     }
 
     get enabled(): boolean {
-        const setting = this.setting("enabled");
-        if (setting === "never") return false;
-        if (setting !== "small") return true;
-        return this.setting("showDistance") !== "never" || !!this.healthStatuses;
+        return (
+            this.setting("enabled") &&
+            (this.setting("showDistance") !== "never" || !!this.healthStatuses)
+        );
     }
 
     get targetToken() {
@@ -129,23 +90,14 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
     }
 
     get drawGraphics() {
-        if (!this.#graphics) {
-            this.#graphics = new PIXI.Graphics();
-            canvas.interface.grid.addChild(this.#graphics);
-        }
-        return this.#graphics;
+        return canvas.controls.debug;
     }
 
     get canDrawDistance() {
         const isValidToken = (token: TokenPF2e | null): token is TokenPF2e => {
             return !!token && token.visible && !token.isPreview && !token.isAnimating;
         };
-
-        return (
-            this.setting("drawDistance") > 0 &&
-            isValidToken(this.token) &&
-            isValidToken(this.targetToken)
-        );
+        return isValidToken(this.token) && isValidToken(this.targetToken);
     }
 
     get settings(): SettingOptions[] {
@@ -158,8 +110,15 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
             },
             {
                 key: "enabled",
+                type: Boolean,
+                default: true,
+                scope: "client",
+                onChange: () => this.enable(),
+            },
+            {
+                key: "type",
                 type: String,
-                choices: SETTING_ENABLED,
+                choices: SETTING_TYPE,
                 default: "owned",
                 scope: "client",
             },
@@ -237,8 +196,8 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
 
         const distance = (() => {
             const user = game.user as UserPF2e;
-            const checks: [TargetIcon, TokenPF2e[] | Set<TokenPF2e> | undefined][] = [
-                ["token", R.compact([hud.token.token])],
+            const checks: [TargetIcon, (TokenPF2e | null)[] | Set<TokenPF2e> | undefined][] = [
+                ["selected", [hud.token.token]],
                 ["selected", canvas.tokens.controlled as TokenPF2e[]],
                 ["targeted", user.targets],
                 ["persistent", hud.persistent.actor?.getActiveTokens()],
@@ -268,12 +227,17 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
             };
         })();
 
-        const isCharacter = actor.isOfType("character");
-        const health = getActorHealth(actor);
+        const parentData = await super._prepareContext(options);
+        if (!parentData.health) {
+            return {
+                ...parentData,
+                distance,
+            };
+        }
+
+        const { health, isCharacter, isOwner, isObserver } = parentData;
 
         const status = (() => {
-            if (!health) return;
-
             const statuses = this.healthStatuses;
             if (!statuses) return;
 
@@ -301,79 +265,22 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
 
         if (!health) return data;
 
-        const setting = this.setting("enabled");
-        const expended =
-            (setting === "owned" && actor.isOwner) || (setting === "observed" && canObserve(actor));
-
+        const setting = this.setting("type");
+        const expended = (setting === "owned" && isOwner) || (setting === "observed" && isObserver);
         if (!expended) return data;
 
-        const isNPC = actor.isOfType("npc");
-        const isVehicle = actor.isOfType("vehicle");
-        const isHazard = actor.isOfType("hazard");
-        const isCreature = actor.isOfType("creature");
-        const showModifiers = this.setting("modifiers");
-        const speeds = isCreature
-            ? R.pipe(
-                  [
-                      { type: "land", total: actor.attributes.speed.total },
-                      ...actor.attributes.speed.otherSpeeds,
-                  ] as const,
-                  R.filter(({ total }) => typeof total === "number" && total > 0),
-                  R.map(({ type, total }) => ({ icon: SPEEDS_ICONS[type], total }))
-              )
-            : [];
-
-        const speedNote = isNPC
-            ? actor.attributes.speed.details
-            : isVehicle
-            ? actor.system.details.speed
-            : undefined;
-
-        const getStatistics = (
-            statistics: ReadonlyArray<string>,
-            icons: Record<string, string>
-        ) => {
-            return R.pipe(
-                statistics,
-                R.map((slug) => {
-                    const statistic = actor.getStatistic(slug);
-                    if (!statistic) return;
-
-                    const value = showModifiers ? signedInteger(statistic.mod) : statistic.dc.value;
-                    return {
-                        value,
-                        icon: icons[statistic.slug],
-                    };
-                }),
-                R.compact
-            );
-        };
-
-        const saves = isCreature || isVehicle ? getStatistics(saveTypes, SAVES_ICONS) : [];
-        const others = isCreature ? getStatistics(OTHER_SLUGS, OTHER_ICONS) : [];
-
         return {
-            ...data,
-            ac: actor.attributes.ac?.value,
-            hardness: isVehicle || isHazard ? actor.attributes.hardness : undefined,
-            saves,
-            others,
-            speeds,
-            speedNote,
+            ...parentData,
+            distance,
+            status,
             expended,
-            isHazard,
-            isVehicle,
-            isCreature,
             immunities: !!actor.attributes.immunities.length,
             resistances: !!actor.attributes.resistances.length,
             weaknesses: !!actor.attributes.weaknesses.length,
         };
     }
 
-    async _renderHTML(
-        context: ApplicationRenderContext,
-        options: ApplicationRenderOptions
-    ): Promise<string> {
+    async _renderHTML(context: any, options: ApplicationRenderOptions): Promise<string> {
         return await this.renderTemplate("tooltip", context);
     }
 
@@ -386,6 +293,7 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
     _onRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
         this.cancelClose();
         this.drawDistance();
+        this.#clickEvent.activate();
     }
 
     _updatePosition(position: ApplicationPosition) {
@@ -393,30 +301,23 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
         if (!element) return position;
 
         const token = this.token;
-        if (!token?.actor) {
-            position.left = -1000;
-            position.top = -1000;
-
-            element.style.left = `${-1000}px`;
-            element.style.top = `${-1000}px`;
-
-            return position;
-        }
+        if (!token?.actor) return this.moveOutOfScreen(position);
 
         const scale = token.worldTransform.a;
         const tokenCoords = canvas.clientCoordinatesFromCanvas(token);
         const targetCoords = {
-            x: tokenCoords.x,
-            y: tokenCoords.y,
+            left: tokenCoords.x,
+            top: tokenCoords.y,
             width: token.hitArea.width * scale,
             height: token.hitArea.height * scale,
             get right() {
-                return this.x + this.width;
+                return this.left + this.width;
             },
             get bottom() {
-                return this.y + this.height;
+                return this.top + this.height;
             },
         };
+
         const positions = POSITIONS[this.setting("position")].slice();
         const hudBounds = element.getBoundingClientRect();
         const limitX = window.innerWidth - hudBounds.width;
@@ -429,7 +330,7 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
 
             if (selected === "left") {
                 coords = {
-                    x: targetCoords.x - hudBounds.width,
+                    x: targetCoords.left - hudBounds.width,
                     y: postionFromTargetY(hudBounds, targetCoords),
                 };
                 if (coords.x < 0) coords = undefined;
@@ -442,7 +343,7 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
             } else if (selected === "top") {
                 coords = {
                     x: postionFromTargetX(hudBounds, targetCoords),
-                    y: targetCoords.y - hudBounds.height,
+                    y: targetCoords.top - hudBounds.height,
                 };
                 if (coords.y < 0) coords = undefined;
             } else if (selected === "bottom") {
@@ -465,14 +366,26 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
         return super._updatePosition(position);
     }
 
-    _onEnable(enabled: boolean) {
+    _onEnable() {
+        const enabled = super._onEnable();
+
         this.#hoverTokenHook.toggle(enabled);
-        this.#deleteTokenHook.toggle(enabled);
-        this.#updateTokenHook.toggle(enabled);
+        this.#tokenRefreshWrapper.toggle(enabled && this.setting("drawDistance") > 0);
 
-        this.#clickEvent.toggle(enabled);
+        return enabled;
+    }
 
-        this.#tokenRefreshWrapper.toggle(enabled && this.canDrawDistance);
+    _onSetToken(token: TokenPF2e<ActorPF2e> | null) {
+        this.#targetToken = null;
+        this.renderWithDelay();
+    }
+
+    async render(
+        options?: boolean | ApplicationRenderOptions,
+        _options?: ApplicationRenderOptions
+    ): Promise<ApplicationV2> {
+        if (this.token === hud.token.token) return this;
+        return super.render(options, _options);
     }
 
     renderWithDelay(force?: boolean, options?: ApplicationRenderOptions) {
@@ -500,6 +413,7 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
         this.#targetToken = null;
         this.cancelRender();
         this.clearDistance();
+        this.#clickEvent.disable();
         return super.close(options);
     }
 
@@ -510,15 +424,6 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
     cancelClose() {
         this.clearDistance();
         this.#closeTimeout.cancel();
-    }
-
-    setToken(token: TokenPF2e<ActorPF2e> | null) {
-        if (super.setToken(token)) {
-            this.#targetToken = null;
-            this.renderWithDelay();
-            return true;
-        }
-        return false;
     }
 
     drawDistance() {
@@ -555,18 +460,6 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
         }
     }
 
-    #onUpdateToken(tokenDocument: TokenDocumentPF2e, changed: Partial<TokenDocumentSource>) {
-        if (tokenDocument.object === this.token && ("x" in changed || "y" in changed)) {
-            this.close();
-        }
-    }
-
-    #onDeleteToken(tokenDocument: TokenDocumentPF2e) {
-        if (tokenDocument === this.token?.document) {
-            this.close();
-        }
-    }
-
     #tokenHoverIn(token: TokenPF2e) {
         if (window.document.querySelector(".app:hover")) return;
 
@@ -575,7 +468,8 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
         if (
             !actor ||
             (token.document.disposition === CONST.TOKEN_DISPOSITIONS.SECRET && !actor.isOwner) ||
-            (this.setting("noDead") === "none" && actor.isDead)
+            (this.setting("noDead") === "none" && actor.isDead) ||
+            hud.token.token === token
         )
             return;
 
@@ -600,10 +494,10 @@ class TooltipHUD extends BaseTokenHUD<TooltipSettings> {
 
 function postionFromTargetY(
     bounds: DOMRect,
-    targetCoords: { y: number; height: number },
+    targetCoords: { top: number; height: number },
     margin = 0
 ) {
-    let y = targetCoords.y + targetCoords.height / 2 - bounds.height / 2;
+    let y = targetCoords.top + targetCoords.height / 2 - bounds.height / 2;
 
     if (y + bounds.height > window.innerHeight) {
         y = window.innerHeight - bounds.height - margin;
@@ -618,10 +512,10 @@ function postionFromTargetY(
 
 function postionFromTargetX(
     bounds: DOMRect,
-    targetCoords: { x: number; width: number },
+    targetCoords: { left: number; width: number },
     margin = 0
 ) {
-    let x = targetCoords.x + targetCoords.width / 2 - bounds.width / 2;
+    let x = targetCoords.left + targetCoords.width / 2 - bounds.width / 2;
 
     if (x + bounds.width > window.innerWidth) {
         x = window.innerWidth - bounds.width;
@@ -634,19 +528,20 @@ function postionFromTargetX(
     return x;
 }
 
-type TooltipSettings = {
+type TooltipSettings = BaseTokenHUDSettings & {
     status: string;
-    enabled: (typeof SETTING_ENABLED)[number];
+    enabled: boolean;
+    type: (typeof SETTING_TYPE)[number];
     delay: number;
     position: (typeof SETTING_POSITION)[number];
     scale: number;
     noDead: (typeof SETTING_NO_DEAD)[number];
-    modifiers: boolean;
+
     showDistance: (typeof SETTING_DISTANCE)[number];
     drawDistance: number;
 };
 
 type TargetIcon = keyof typeof TARGET_ICONS;
 
-export { TooltipHUD };
+export { PF2eHudTooltip };
 export type { TooltipSettings };
