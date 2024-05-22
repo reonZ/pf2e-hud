@@ -104,6 +104,10 @@ $bottom-width: 542px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+
+        &.first {
+            width: 7.7em;
+        }
     }
 
     .panel {
@@ -125,6 +129,30 @@ $bottom-width: 542px;
     #hotbar {
         width: $bottom-width;
         margin-left: -2px;
+
+        #macro-list,
+        #hotbar-page-controls {
+            box-shadow: 0 0 10px var(--color-shadow-dark);
+            background: url(../../../ui/denim075.png) repeat;
+            border-radius: 5px;
+        }
+
+        #macro-list {
+            > li {
+                border: 0;
+                background: none;
+                box-shadow: none;
+
+                img {
+                    height: var(--macro-size);
+                    width: calc(var(--macro-size) - 1px);
+                }
+
+                &:not(:last-child) {
+                    border-right: 1px solid var(--color-border-dark);
+                }
+            }
+        }
     }
 }
 
