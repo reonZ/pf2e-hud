@@ -80,7 +80,7 @@ class PF2eHudPersistent extends BaseActorHUD<PersistentSettings, ActorType> {
         return this.setting("modifiers");
     }
 
-    get settings(): SettingOptions<string>[] {
+    get settings(): SettingOptions[] {
         return [
             {
                 key: "enabled",
@@ -174,9 +174,6 @@ class PF2eHudPersistent extends BaseActorHUD<PersistentSettings, ActorType> {
         context: PersistentContext,
         options: PreparedRenderOptions
     ): Promise<RenderedTemplates> {
-        const actor = this.actor;
-        if (!actor) return [];
-
         return Promise.all(
             options.parts.map(async (partName) => {
                 const part = this.#parts[partName];

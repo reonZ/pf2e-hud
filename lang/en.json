@@ -75,7 +75,7 @@
                 "title": "Token HUD",
                 "enabled": {
                     "name": "Enabled (Requires Reload)",
-                    "hint": "An HUD will be displayed around the currently selected token."
+                    "hint": "An HUD will be displayed around the currently selected token. It defaults to the User Character if one exist."
                 },
                 "scaleDimensions": {
                     "name": "Scale Dimensions",
@@ -112,6 +112,13 @@
                 "modifiers": {
                     "name": "Show Modifiers",
                     "hint": "Should modifiers be displayed instead of DCs in the persistent HUD."
+                }
+            },
+            "tracker": {
+                "title": "Combat Tracker",
+                "enabled": {
+                    "name": "Enabled",
+                    "hint": "A combat tracker will show up whenever an owned actor is part of the current encounter."
                 }
             }
         },

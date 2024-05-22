@@ -1,13 +1,12 @@
 <div class="group first">
     <div class="app panel">
-        <div data-section="level" data-tooltip="PF2E.CharacterLevelLabel">
-            <span><i class="fa-solid fa-user-graduate"></i></span>
-            <span>{{level}}</span>
-        </div>
+        {{#if hasActor}}
         {{> (partial 'level')}}
+        {{/if}}
     </div>
     <div class="app panel saves">
         {{> (partial 'statistics') list=saves}}
         {{> (partial 'statistics') list=others}}
     </div>
+    <div></div>
 </div>

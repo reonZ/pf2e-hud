@@ -33,19 +33,12 @@
             {{> (partial 'slider') name="system.resources.attributes.wounded" entry=wounded
             action="wounded"}}
         </div>
-        <div></div>
         {{/if}}
         {{!-- --}}
-        <div data-section="level" data-tooltip="PF2E.CharacterLevelLabel">
-            <span><i class="fa-solid fa-user-graduate"></i></span>
-            <span>{{level}}</span>
-        </div>
-        {{!-- --}}
-        {{#if isCombatant}}
         {{> (partial 'level')}}
-        {{else}}
+        {{#unless isCombatant}}
         {{> (partial 'armor')}}
-        {{/if}}
+        {{/unless}}
         {{!-- --}}
         {{#if mainSpeed}}
         <a data-section="speeds" data-tooltip="{{otherSpeeds}}" {{#unless
