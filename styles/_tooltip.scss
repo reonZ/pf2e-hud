@@ -1,9 +1,7 @@
 #pf2e-hud-tooltip {
-    --outer-border-radius: 4px;
     --outer-padding: 4px;
     --outer-box-shadow: 0 0 20px var(--color-shadow-dark);
     --inner-padding: 0.5em;
-    --color: var(--text-light);
     --background: url(../../../ui/denim075.png) repeat #4d4d4d;
 
     z-index: 9999;
@@ -49,7 +47,6 @@
     }
 
     .inner {
-        --icon-width: 1.3em;
         --span-width: 1.7em;
         --inner-gap: 0.6em;
         --section-gap: 0.1em;

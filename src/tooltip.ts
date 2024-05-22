@@ -7,9 +7,8 @@ import {
     getOnly,
     libWrapper,
 } from "pf2e-api";
-import { BaseTokenHUD, type BaseTokenHUDSettings } from "./hud";
+import { BaseActorContext, BaseTokenContext, BaseTokenHUD, type BaseTokenHUDSettings } from "./hud";
 import { hud } from "./main";
-import { TARGET_ICONS } from "./shared";
 
 const DELAY_BUFFER = 50;
 
@@ -20,12 +19,19 @@ const POSITIONS = {
     bottom: ["bottom", "top", "left", "right"],
 };
 
+const TARGET_ICONS = {
+    selected: "fa-solid fa-expand",
+    targeted: "fa-solid fa-crosshairs-simple",
+    persistent: "fa-solid fa-image-user",
+    character: "fa-solid fa-user",
+};
+
 const SETTING_TYPE = ["never", "owned", "observed"] as const;
 const SETTING_DISTANCE = ["never", "idiot", "smart", "weird"] as const;
 const SETTING_NO_DEAD = ["none", "small", "full"] as const;
 const SETTING_POSITION = R.keys.strict(POSITIONS);
 
-class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings> {
+class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings, ActorPF2e> {
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
 
     #renderTimeout = createTimeout(this.render.bind(this), DELAY_BUFFER);
@@ -52,6 +58,10 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings> {
         },
     };
 
+    get partials() {
+        return [];
+    }
+
     get templates(): ["tooltip"] {
         return ["tooltip"];
     }
@@ -65,6 +75,10 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings> {
             this.setting("enabled") &&
             (this.setting("showDistance") !== "never" || !!this.healthStatuses)
         );
+    }
+
+    get useModifiers() {
+        return this.setting("modifiers");
     }
 
     get targetToken() {
@@ -189,12 +203,28 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings> {
         ];
     }
 
-    async _prepareContext(options: ApplicationRenderOptions) {
+    _onEnable(enabled = this.enabled) {
+        super._onEnable(enabled);
+
+        this.#clickEvent.toggle(enabled);
+        this.#hoverTokenHook.toggle(enabled);
+        this.#tokenRefreshWrapper.toggle(enabled && this.setting("drawDistance") > 0);
+    }
+
+    async _prepareContext(
+        options: ApplicationRenderOptions
+    ): Promise<TooltipContext | TooltipContextBase> {
+        const parentData = await super._prepareContext(options);
+        const baseData: TooltipContextBase = {
+            ...parentData,
+            distance: undefined,
+        };
+
         const token = this.token;
         const actor = token?.actor;
-        if (!actor) return {};
+        if (!actor) return baseData;
 
-        const distance = (() => {
+        baseData.distance = (() => {
             const user = game.user as UserPF2e;
             const checks: [TargetIcon, (TokenPF2e | null)[] | Set<TokenPF2e> | undefined][] = [
                 ["selected", [hud.token.token]],
@@ -227,21 +257,25 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings> {
             };
         })();
 
-        const parentData = await super._prepareContext(options);
-        if (!parentData.health) {
-            return {
-                ...parentData,
-                distance,
-            };
+        if (
+            !("health" in parentData) ||
+            !parentData.health ||
+            hud.persistent.isCurrentActor(actor)
+        ) {
+            return baseData;
         }
 
-        const { health, isCharacter, isOwner, isObserver } = parentData;
+        const setting = this.setting("type");
+        const { isOwner, isObserver } = parentData;
+
+        const expended = (setting === "owned" && isOwner) || (setting === "observed" && isObserver);
+        if (!expended) return baseData;
 
         const status = (() => {
             const statuses = this.healthStatuses;
             if (!statuses) return;
 
-            let { value, max, ratio } = health.total;
+            let { value, max, ratio } = parentData.health.total;
             value = Math.clamp(value, 0, max);
 
             if (value === 0) {
@@ -256,31 +290,23 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings> {
             return statuses.at(pick - 1);
         })();
 
-        const data = {
-            distance,
-            status,
-            isCharacter,
-            health,
-        };
-
-        if (!health) return data;
-
-        const setting = this.setting("type");
-        const expended = (setting === "owned" && isOwner) || (setting === "observed" && isObserver);
-        if (!expended) return data;
-
-        return {
+        const data: TooltipContext = {
             ...parentData,
-            distance,
-            status,
+            distance: baseData.distance,
             expended,
+            status,
             immunities: !!actor.attributes.immunities.length,
             resistances: !!actor.attributes.resistances.length,
             weaknesses: !!actor.attributes.weaknesses.length,
         };
+
+        return data;
     }
 
-    async _renderHTML(context: any, options: ApplicationRenderOptions): Promise<string> {
+    async _renderHTML(
+        context: Partial<TooltipContext>,
+        options: ApplicationRenderOptions
+    ): Promise<string> {
         return await this.renderTemplate("tooltip", context);
     }
 
@@ -293,7 +319,6 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings> {
     _onRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
         this.cancelClose();
         this.drawDistance();
-        this.#clickEvent.activate();
     }
 
     _updatePosition(position: ApplicationPosition) {
@@ -366,15 +391,6 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings> {
         return super._updatePosition(position);
     }
 
-    _onEnable() {
-        const enabled = super._onEnable();
-
-        this.#hoverTokenHook.toggle(enabled);
-        this.#tokenRefreshWrapper.toggle(enabled && this.setting("drawDistance") > 0);
-
-        return enabled;
-    }
-
     _onSetToken(token: TokenPF2e<ActorPF2e> | null) {
         this.#targetToken = null;
         this.renderWithDelay();
@@ -413,7 +429,6 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings> {
         this.#targetToken = null;
         this.cancelRender();
         this.clearDistance();
-        this.#clickEvent.disable();
         return super.close(options);
     }
 
@@ -528,6 +543,19 @@ function postionFromTargetX(
     return x;
 }
 
+type TooltipContextBase = BaseActorContext & {
+    distance: DistanceContext | undefined;
+};
+
+type TooltipContext = BaseTokenContext & {
+    distance: DistanceContext | undefined;
+    status: string | undefined;
+    expended: boolean;
+    immunities: boolean;
+    resistances: boolean;
+    weaknesses: boolean;
+};
+
 type TooltipSettings = BaseTokenHUDSettings & {
     status: string;
     enabled: boolean;
@@ -536,9 +564,14 @@ type TooltipSettings = BaseTokenHUDSettings & {
     position: (typeof SETTING_POSITION)[number];
     scale: number;
     noDead: (typeof SETTING_NO_DEAD)[number];
-
     showDistance: (typeof SETTING_DISTANCE)[number];
     drawDistance: number;
+};
+
+type DistanceContext = {
+    unit: string;
+    icon: string;
+    range: string;
 };
 
 type TargetIcon = keyof typeof TARGET_ICONS;

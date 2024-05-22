@@ -1,1 +1,13 @@
-<div>persistent hud</div>
+<div class="group">
+    <div class="app panel">
+        <div data-section="level" data-tooltip="PF2E.CharacterLevelLabel">
+            <span><i class="fa-solid fa-user-graduate"></i></span>
+            <span>{{level}}</span>
+        </div>
+        {{> (partial 'level')}}
+    </div>
+    <div class="app panel saves">
+        {{> (partial 'statistics') list=saves}}
+        {{> (partial 'statistics') list=others}}
+    </div>
+</div>

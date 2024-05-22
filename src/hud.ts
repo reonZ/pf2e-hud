@@ -1,6 +1,5 @@
-import { R, createHook, getHighestName, getSetting, saveTypes, templatePath } from "pf2e-api";
-import { signedInteger } from "pf2e-api/src/utils";
-import { OTHER_ICONS, OTHER_SLUGS, SAVES_ICONS, SPEEDS_ICONS, canObserve } from "./shared";
+import { createHook, getSetting, signedInteger, templatePath } from "pf2e-api";
+import { BaseActorData, HealthData, getDefaultData, getHealth } from "./shared";
 
 abstract class BaseHUD<TSettings extends Record<string, any>> extends foundry.applications.api
     .ApplicationV2 {
@@ -13,16 +12,43 @@ abstract class BaseHUD<TSettings extends Record<string, any>> extends foundry.ap
         },
     };
 
-    abstract get templates(): string[];
+    abstract get partials(): string[] | ReadonlyArray<string>;
+    abstract get templates(): string[] | ReadonlyArray<string>;
     abstract get key(): string;
     abstract get enabled(): boolean;
-    abstract get actor(): ActorPF2e | null;
     abstract get settings(): SettingOptions[];
 
-    abstract _onEnable(): boolean;
+    abstract _onEnable(enabled?: boolean): void;
 
-    enable = foundry.utils.debounce(() => {
-        this._onEnable?.();
+    async _preFirstRender(
+        context: ApplicationRenderContext,
+        options: ApplicationRenderOptions
+    ): Promise<void> {
+        await super._preFirstRender(context, options);
+
+        const templates: Set<string> = new Set();
+
+        for (const template of this.templates) {
+            const path = templatePath(this.key, template);
+            templates.add(path);
+        }
+
+        for (const partial of this.partials) {
+            const path = templatePath("partials", partial);
+            templates.add(path);
+        }
+
+        await loadTemplates(Array.from(templates));
+    }
+
+    async _prepareContext(options: ApplicationRenderOptions): Promise<BaseContext> {
+        return {
+            partial: (key: string) => templatePath("partials", key),
+        };
+    }
+
+    enable = foundry.utils.debounce((enabled?: boolean) => {
+        this._onEnable?.(enabled);
     }, 1);
 
     close(options: ApplicationClosingOptions = {}): Promise<ApplicationV2> {
@@ -41,28 +67,32 @@ abstract class BaseHUD<TSettings extends Record<string, any>> extends foundry.ap
         const path = templatePath(this.key, template);
         return renderTemplate(path, context);
     }
+}
 
-    async _preFirstRender(
-        context: ApplicationRenderContext,
-        options: ApplicationRenderOptions
-    ): Promise<void> {
-        await super._preFirstRender(context, options);
+abstract class BaseActorHUD<
+    TSettings extends Record<string, any>,
+    TActor extends ActorPF2e = ActorPF2e
+> extends BaseHUD<TSettings> {
+    abstract get actor(): TActor | null;
+    abstract get useModifiers(): boolean;
 
-        const templates: Set<string> = new Set();
+    async _prepareContext(options: ApplicationRenderOptions): Promise<BaseActorContext> {
+        const parentData = await super._prepareContext(options);
+        return {
+            ...parentData,
+            hasActor: !!this.actor,
+        };
+    }
 
-        for (const template of this.templates) {
-            const path = templatePath(this.key, template);
-            templates.add(path);
-        }
-
-        await loadTemplates(Array.from(templates));
+    isCurrentActor(actor: ActorPF2e | null | undefined) {
+        return actor && this.actor?.uuid === actor.uuid;
     }
 }
 
 abstract class BaseTokenHUD<
     TSettings extends BaseTokenHUDSettings,
     TActor extends ActorPF2e = ActorPF2e
-> extends BaseHUD<TSettings> {
+> extends BaseActorHUD<TSettings, TActor> {
     #deleteTokenHook = createHook("deleteToken", this.#onDeleteToken.bind(this));
     #updateTokenHook = createHook("updateToken", this.#onUpdateToken.bind(this));
     #tearDownHook = createHook("tearDownTokenLayer", () => this.close());
@@ -79,138 +109,43 @@ abstract class BaseTokenHUD<
 
     abstract _onSetToken(token: TokenPF2e<TActor> | null): void;
 
-    _onEnable() {
-        const enabled = this.enabled;
-
+    _onEnable(enabled = this.enabled) {
         this.#deleteTokenHook.toggle(enabled);
         this.#updateTokenHook.toggle(enabled);
         this.#tearDownHook.toggle(enabled);
-
-        return enabled;
     }
 
-    async _prepareContext(options: ApplicationRenderOptions) {
-        const token = this.token;
-        const actor = token?.actor;
-        if (!actor) return {};
+    async _prepareContext(
+        options: ApplicationRenderOptions
+    ): Promise<BaseTokenContext | BaseActorContext> {
+        const parentData = await super._prepareContext(options);
 
-        const hp = actor.attributes.hp as CharacterHitPoints;
-        if (!hp?.max) return {};
+        const actor = this.actor;
+        if (!actor) return parentData;
 
-        const isNPC = actor.isOfType("npc");
+        const health = getHealth(actor);
+        if (!health) return parentData;
+
         const isArmy = actor.isOfType("army");
-        const isHazard = actor.isOfType("hazard");
-        const isVehicle = actor.isOfType("vehicle");
-        const isCreature = actor.isOfType("creature");
-        const isCharacter = actor.isOfType("character");
-        const useStamina = isCharacter && game.pf2e.settings.variants.stamina;
-        const currentHP = Math.clamp(hp.value, 0, hp.max);
-        const maxSP = (useStamina && hp.sp?.max) || 0;
-        const currentSP = Math.clamp((useStamina && hp.sp?.value) || 0, 0, maxSP);
-        const currentTotal = currentHP + currentSP;
-        const maxTotal = hp.max + maxSP;
-
-        const calculateRation = (value: number, max: number) => {
-            const ratio = value / max;
-            return {
-                ratio,
-                hue: ratio * ratio * 122 + 3,
-            };
-        };
-
-        const health = {
-            value: currentHP,
-            max: hp.max,
-            ...calculateRation(currentHP, hp.max),
-            temp: hp.temp,
-            sp: {
-                value: currentSP,
-                max: maxSP,
-                ...calculateRation(currentSP, maxSP),
-            },
-            useStamina,
-            total: {
-                value: currentTotal,
-                max: maxTotal,
-                ...calculateRation(currentTotal, maxTotal),
-            },
-        };
-
-        const showModifiers = this.setting("modifiers");
-        const getStatistics = (
-            statistics: ReadonlyArray<string>,
-            icons: Record<string, string>
-        ) => {
-            return R.pipe(
-                statistics,
-                R.map((slug) => {
-                    const statistic = actor.getStatistic(slug);
-                    if (!statistic) return;
-
-                    const value = showModifiers ? signedInteger(statistic.mod) : statistic.dc.value;
-
-                    return {
-                        slug,
-                        value,
-                        label: statistic.label,
-                        icon: icons[statistic.slug],
-                    };
-                }),
-                R.compact
-            );
-        };
-
-        const saves = isCreature || isVehicle ? getStatistics(saveTypes, SAVES_ICONS) : [];
-        const others = isCreature ? getStatistics(OTHER_SLUGS, OTHER_ICONS) : [];
-
-        const speeds = isCreature
-            ? R.pipe(
-                  [actor.attributes.speed, ...actor.attributes.speed.otherSpeeds] as const,
-                  R.filter(
-                      ({ total, type }) =>
-                          type === "land" || (typeof total === "number" && total > 0)
-                  ),
-                  R.map(({ type, total, label }) => ({
-                      icon: SPEEDS_ICONS[type],
-                      total,
-                      label,
-                      type,
-                  }))
-              )
-            : [];
-
-        const speedNote = isNPC
-            ? actor.attributes.speed.details
-            : isVehicle
-            ? actor.system.details.speed
-            : undefined;
-
-        const isOwner = actor.isOwner;
-        const isObserver = canObserve(actor);
+        const defaultData = getDefaultData(actor, this.useModifiers);
+        const token = this.token!;
+        const { isOwner, isObserver } = defaultData;
         const name =
             isOwner || !game.pf2e.settings.tokens.nameVisibility || isObserver
                 ? token.document.name
                 : undefined;
 
-        return {
+        const data: BaseTokenContext = {
+            ...parentData,
+            ...defaultData,
             health,
-            isNPC,
-            isArmy,
-            isHazard,
-            isVehicle,
-            isCreature,
-            isCharacter,
-            saves,
-            others,
-            speeds,
-            speedNote,
             name,
-            isOwner,
-            isObserver,
-            scouting: isArmy ? signedInteger(actor.scouting.mod) : undefined,
             ac: isArmy ? actor.system.ac.value : actor.attributes.ac?.value,
-            hardness: isVehicle || isHazard ? actor.attributes.hardness : undefined,
+            scouting: isArmy ? signedInteger(actor.scouting.mod) : undefined,
+            hardness: actor.isOfType("vehicle", "hazard") ? actor.attributes.hardness : undefined,
         };
+
+        return data;
     }
 
     async render(
@@ -278,6 +213,7 @@ abstract class BaseTokenHUD<
 
     moveOutOfScreen(position: ApplicationPosition) {
         const element = this.element;
+        if (!element) return position;
 
         position.left = -1000;
         position.top = -1000;
@@ -301,9 +237,26 @@ abstract class BaseTokenHUD<
     }
 }
 
+type BaseContext = {
+    partial: (template: string) => string;
+};
+
+type BaseActorContext = BaseContext & {
+    hasActor: boolean;
+};
+
+type BaseTokenContext = BaseActorContext &
+    BaseActorData & {
+        health: HealthData;
+        name: string | undefined;
+        ac: number | undefined;
+        scouting: string | undefined;
+        hardness: number | undefined;
+    };
+
 type BaseTokenHUDSettings = {
     modifiers: boolean;
 };
 
-export { BaseHUD, BaseTokenHUD };
-export type { BaseTokenHUDSettings };
+export { BaseActorHUD, BaseHUD, BaseTokenHUD };
+export type { BaseActorContext, BaseContext, BaseTokenContext, BaseTokenHUDSettings };

@@ -1,20 +1,22 @@
 import {
     R,
-    addListener,
-    addListenerAll,
     createHTMLFromString,
     createHook,
-    elementData,
     getFlag,
     libWrapper,
     localizePath,
     registerWrapper,
-    setFlag,
-    signedInteger,
-    templateLocalize,
 } from "pf2e-api";
-import { BaseTokenHUD, type BaseTokenHUDSettings } from "./hud";
-import { ADJUSTMENTS, ADJUSTMENTS_INDEX, canObserve } from "./shared";
+import { BaseActorContext, BaseTokenContext, BaseTokenHUD, type BaseTokenHUDSettings } from "./hud";
+import { hud } from "./main";
+import {
+    ADJUSTMENTS,
+    SHARED_PARTIALS,
+    addArmorListeners,
+    addSharedListeners,
+    addUpdateActorFromInput,
+    getCoverEffect,
+} from "./shared";
 
 const SIDEBARS = {
     actions: { icon: "fa-solid fa-sword" },
@@ -27,14 +29,16 @@ const SIDEBARS = {
 class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
     #canvasPanHook = createHook("canvasPan", () => this._updatePosition());
 
-    #sidebarName: SidebarType | null = null;
-    #sidebarElement: HTMLElement | null = null;
     #mainElement: HTMLElement | null = null;
     #initialized = false;
 
     static DEFAULT_OPTIONS: Partial<ApplicationConfiguration> = {
         id: "pf2e-hud-token",
     };
+
+    get partials() {
+        return SHARED_PARTIALS;
+    }
 
     get templates(): ["main"] {
         return ["main"];
@@ -48,12 +52,12 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
         return this.setting("enabled");
     }
 
-    get mainElement() {
-        return this.#mainElement;
+    get useModifiers(): boolean {
+        return this.setting("modifiers");
     }
 
-    get sidebarElement() {
-        return this.#sidebarElement;
+    get mainElement() {
+        return this.#mainElement;
     }
 
     get settings(): SettingOptions[] {
@@ -120,10 +124,12 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
     }
 
     _onEnable() {
-        const enabled = this.enabled;
-        if (this.#initialized || !enabled) return enabled;
+        if (this.#initialized) return;
 
-        super._onEnable();
+        const enabled = this.enabled;
+        if (!enabled) return;
+
+        super._onEnable(enabled);
 
         this.#initialized = true;
 
@@ -175,33 +181,20 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
         });
 
         Hooks.on("renderActorSheet", (sheet: ActorSheetPF2e) => {
-            if (sheet.actor.uuid === this.actor?.uuid) this.close();
+            if (this.isCurrentActor(sheet.actor)) this.close();
         });
-
-        return true;
     }
 
-    #clickClose() {
-        const focused = document.activeElement as HTMLElement;
-
-        if (focused?.closest("[id='pf2e-hud.token']")) {
-            focused.blur();
-        } else {
-            this.close();
-        }
-    }
-
-    async _prepareContext(options: ApplicationRenderOptions) {
-        const token = this.token;
-        const actor = token?.actor;
-        if (!actor) return {};
-
+    async _prepareContext(
+        options: ApplicationRenderOptions
+    ): Promise<TokenContext | TokenContextBase> {
         const parentData = await super._prepareContext(options);
-        if (!parentData) return {};
+        if (!("health" in parentData)) return parentData;
 
+        const actor = this.token!.actor!;
         const isNPC = actor.isOfType("npc");
         const isCharacter = actor.isOfType("character");
-        const { speeds } = parentData;
+        const { speeds } = parentData as BaseTokenContext;
 
         const mainSpeed = (() => {
             if (!speeds?.length) return;
@@ -213,9 +206,7 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
             }
 
             const landSpeed = speeds[0];
-            if (!this.setting("highestSpeed")) {
-                return speeds.shift();
-            }
+            if (!this.setting("highestSpeed")) return speeds.shift();
 
             const [_, highestSpeeds] =
                 speeds.length === 1
@@ -227,61 +218,66 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
                           R.sortBy([(x) => Number(x[0]), "desc"]),
                           R.first()
                       )!;
-
-            if (highestSpeeds.includes(landSpeed)) {
-                return speeds.shift();
-            }
+            if (highestSpeeds.includes(landSpeed)) return speeds.shift();
 
             const highestSpeed = highestSpeeds[0];
             const index = speeds.findIndex((speed) => speed === highestSpeed);
+
             return speeds.splice(index, 1)[0];
         })();
 
         const scale = this.setting("scale");
-
         const otherSpeeds = speeds
             ?.map((speed) => `<i class="${speed.icon}"></i> <span>${speed.total}</span>`)
             .join("");
 
-        return {
+        const sidebars = Object.entries(SIDEBARS).map(([type, { icon }]) => ({
+            type,
+            icon,
+            label: localizePath("token.sidebars", type, "title"),
+            disabled: false,
+        }));
+
+        const data: TokenContext = {
             ...parentData,
-            i18n: templateLocalize("hud"),
+            sidebars,
+            mainSpeed,
             level: actor.level,
-            shield: actor.attributes.shield,
-            dying: isCharacter ? actor.attributes.dying : undefined,
-            wounded: isCharacter ? actor.attributes.wounded : undefined,
-            heroPoints: isCharacter ? actor.heroPoints : undefined,
-            adjustment:
-                (isNPC && ADJUSTMENTS[actor.attributes.adjustment ?? "normal"]) || undefined,
-            resolve: isCharacter ? actor.system.resources.resolve : undefined,
-            sidebars: Object.entries(SIDEBARS).map(([type, { icon }]) => ({
-                type,
-                icon,
-                label: localizePath("token.sidebars", type, "title"),
-                disabled: false,
-            })),
             isFamiliar: actor.isOfType("familiar"),
             isCombatant: isCharacter || isNPC,
-            mainSpeed,
+            hasCover: !!getCoverEffect(actor),
+            shield: isCharacter || isNPC ? actor.attributes.shield : undefined,
+            dying: isCharacter ? actor.attributes.dying : undefined,
+            wounded: isCharacter ? actor.attributes.wounded : undefined,
+            resolve: isCharacter ? actor.system.resources.resolve : undefined,
+            adjustment:
+                (isNPC && ADJUSTMENTS[actor.attributes.adjustment ?? "normal"]) || undefined,
             otherSpeeds: otherSpeeds
                 ? `<div class="pf2e-hud-list" style="--font-size: ${scale}px">${otherSpeeds}</div>`
                 : undefined,
-            recall: isNPC ? actor.identificationDCs.standard.dc : undefined,
         };
+
+        return data;
     }
 
     _onRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
         this.#canvasPanHook.activate();
     }
 
-    async _renderHTML(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
+    async _renderHTML(context: Partial<TokenContext>, options: ApplicationRenderOptions) {
         return this.renderTemplate("main", context);
+    }
+
+    _insertElement(element: HTMLElement) {
+        element.dataset.tooltipDirection = "UP";
+        super._insertElement(element);
     }
 
     _replaceHTML(result: string, content: HTMLElement, options: ApplicationRenderOptions) {
         content.dataset.tokenUuid = this.token?.document.uuid;
-        content.dataset.tooltipDirection = "UP";
         content.style.setProperty("--font-size", `${this.setting("scale")}px`);
+
+        const focusName = this.#mainElement?.querySelector<HTMLInputElement>("input:focus")?.name;
 
         this.#mainElement?.remove();
         this.#mainElement = createHTMLFromString(result);
@@ -296,6 +292,12 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
 
             wrapper.replaceChildren(...this.#mainElement.children);
             this.#mainElement.appendChild(wrapper);
+        }
+
+        if (focusName) {
+            this.#mainElement
+                .querySelector<HTMLInputElement>(`input[name="${focusName}"]`)
+                ?.focus();
         }
 
         content.replaceChildren(this.#mainElement);
@@ -350,7 +352,12 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
         if (!token) return super.setToken(token);
 
         const actor = token?.actor;
-        if (!actor?.isOwner || actor.isOfType("loot", "party") || actor.sheet.rendered) {
+        if (
+            !actor?.isOwner ||
+            actor.isOfType("loot", "party") ||
+            actor.sheet.rendered ||
+            hud.persistent.isCurrentActor(actor)
+        ) {
             token = null;
         }
 
@@ -362,65 +369,13 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
         return super.close(options);
     }
 
-    #onActionListener(event: MouseEvent, el: HTMLElement) {
-        const actor = this.actor;
-        if (!actor) return;
+    #clickClose() {
+        const focused = document.activeElement as HTMLElement;
 
-        const action = elementData<{ action: ActionEvent }>(el).action;
-
-        switch (action) {
-            case "change-speed": {
-                const selected = elementData<{ speed: MovementType }>(el).speed;
-                const speeds: MovementType[] = [
-                    "land",
-                    ...(actor as CreaturePF2e).attributes.speed.otherSpeeds.map(
-                        (speed) => speed.type
-                    ),
-                ];
-                const speedIndex = speeds.indexOf(selected);
-                const newSpeed = speeds[(speedIndex + 1) % speeds.length];
-                setFlag(actor, "speed", newSpeed);
-                break;
-            }
-        }
-    }
-
-    #onToggleListener(event: MouseEvent, el: HTMLElement) {
-        const actor = this.actor;
-        if (!actor) return;
-
-        const action = elementData<{ toggleAction: ToggleEvent }>(el).toggleAction;
-        const direction = event.type === "click" ? +1 : -1;
-
-        switch (action) {
-            case "adjustment": {
-                const npc = actor as NPCPF2e;
-                const currentAdjustment = npc.attributes.adjustment ?? null;
-                const currentIndex = ADJUSTMENTS_INDEX.indexOf(currentAdjustment);
-                const adjustment = ADJUSTMENTS_INDEX[Math.clamp(currentIndex + direction, 0, 2)];
-                if (adjustment !== currentAdjustment) {
-                    npc.applyAdjustment(adjustment);
-                }
-                break;
-            }
-            case "hero": {
-                const { max, value } = (actor as CharacterPF2e).heroPoints;
-                const newValue = Math.clamp(value + direction, 0, max);
-                if (newValue !== value) {
-                    actor.update({ "system.resources.heroPoints.value": newValue });
-                }
-                break;
-            }
-            case "dying":
-            case "wounded": {
-                const max = (actor as CharacterPF2e).system.attributes[action].max;
-                if (direction === 1) {
-                    actor.increaseCondition(action, { max });
-                } else {
-                    actor.decreaseCondition(action);
-                }
-                break;
-            }
+        if (focused?.closest("[id='pf2e-hud.token']")) {
+            focused.blur();
+        } else {
+            this.close();
         }
     }
 
@@ -429,59 +384,41 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
         const mainElement = this.mainElement;
         if (!actor || !mainElement) return;
 
-        addListenerAll(
-            mainElement,
-            "[data-action]:not(.disabled)",
-            this.#onActionListener.bind(this)
-        );
-
-        addListenerAll(
-            mainElement,
-            "[data-toggle-action]:not(.disabled)",
-            "click",
-            this.#onToggleListener.bind(this)
-        );
-
-        addListenerAll(
-            mainElement,
-            "[data-toggle-action]:not(.disabled)",
-            "contextmenu",
-            this.#onToggleListener.bind(this)
-        );
-
-        addListenerAll(html, "input[type='number']", "keyup", (event, el) => {
-            if (event.key === "Enter") {
-                el.blur();
-            }
-        });
-
-        addListenerAll(html, "input[type='number']", "change", (event, el: HTMLInputElement) => {
-            let path = el.name;
-            let value = Math.max(el.valueAsNumber, 0);
-
-            const cursor = foundry.utils.getProperty(actor, path);
-            if (cursor === undefined || Number.isNaN(value)) return;
-
-            if (
-                R.isObjectType<{ value: number; max: number } | null>(cursor) &&
-                "value" in cursor &&
-                "max" in cursor
-            ) {
-                path += ".value";
-                value = Math.min(el.valueAsNumber, cursor.max);
-            }
-
-            if (path === "system.attributes.shield.hp.value") {
-                const heldShield = actor.isOfType("creature") ? actor.heldShield : undefined;
-                if (heldShield) {
-                    heldShield.update({ "system.hp.value": value });
-                }
-            } else {
-                actor.update({ [path]: value });
-            }
-        });
+        addUpdateActorFromInput(mainElement, actor);
+        addSharedListeners(mainElement, actor);
+        addArmorListeners(mainElement, actor, this.token);
     }
 }
+
+type TokenContextBase = BaseActorContext;
+
+type TokenContext = BaseTokenContext & {
+    mainSpeed:
+        | {
+              icon: string;
+              total: number;
+              label: string;
+              type: "land" | "burrow" | "climb" | "fly" | "swim";
+          }
+        | undefined;
+    otherSpeeds: string | undefined;
+    level: number;
+    dying: ValueAndMax | undefined;
+    wounded: ValueAndMax | undefined;
+    adjustment: (typeof ADJUSTMENTS)[keyof typeof ADJUSTMENTS] | undefined;
+    resolve: ValueAndMax | undefined;
+    isFamiliar: boolean;
+    isCombatant: boolean;
+    hasCover: boolean;
+    shield: HeldShieldData | undefined;
+    sidebars: {
+        type: string;
+        icon: string;
+        label: `${string}.${string}`;
+        disabled: boolean;
+    }[];
+    partial: (key: string) => string;
+};
 
 type ActionEvent =
     | "use-resolve"
@@ -490,12 +427,11 @@ type ActionEvent =
     | "show-notes"
     | "recovery-chec"
     | "recall-knowledge"
-    | "roll-save"
-    | "roll-other"
+    | "roll-statistic"
     | "open-sidebar"
     | "change-speed";
 
-type ToggleEvent = "hero" | "wounded" | "dying" | "adjustment";
+type SliderEvent = "hero" | "wounded" | "dying" | "adjustment";
 
 type SidebarType = keyof typeof SIDEBARS;
 

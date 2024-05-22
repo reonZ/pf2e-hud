@@ -1,0 +1,11 @@
+{{#each list as |statistic|}}
+<a data-section="{{statistic.slug}}" data-tooltip="{{statistic.label}}" data-action="roll-statistic"
+    data-statistic="{{statistic.slug}}">
+    <i class="{{statistic.icon}}"></i>
+    {{#if statistic.value}}
+    <span>{{statistic.value}}</span>
+    {{else}}
+    <span>{{statistic.dc}} / {{statistic.mod}}</span>
+    {{/if}}
+</a>
+{{/each}}

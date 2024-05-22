@@ -19,11 +19,11 @@ const hudList = {
 MODULE.register("pf2e-hud", "PF2e HUD");
 
 Hooks.once("setup", () => {
-    registerSetting({
-        key: "partyObserved",
-        type: Boolean,
-        default: false,
-    });
+    // registerSetting({
+    //     key: "partyObserved",
+    //     type: Boolean,
+    //     default: false,
+    // });
 
     for (const hud of Object.values(hudList)) {
         for (const setting of hud.settings) {

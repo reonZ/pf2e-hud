@@ -1,0 +1,15 @@
+{{#if isCharacter}}
+<div data-section="hero-points" data-tooltip="PF2E.HeroPointsLabel">
+    <span>
+        <i class="fa-solid fa-circle-h"></i>
+    </span>
+    {{> (partial 'slider') name="system.resources.heroPoints" entry=heroPoints
+    action="hero"}}
+</div>
+{{else if isNPC}}
+<a data-section="recall-knowledge" data-tooltip="PF2E.RecallKnowledge.Label"
+    data-action="recall-knowledge">
+    <i class="fa-solid fa-book"></i>
+    <span>{{recall}}</span>
+</a>
+{{/if}}

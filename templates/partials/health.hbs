@@ -1,0 +1,11 @@
+{{#unless (or noTemp double)}}
+<div data-section="temp-hp" data-tooltip="pf2e-hud.hud.tempHP">
+    <span><i class="fa-solid fa-heart-half-stroke"></i></span>
+    <input class="small" type="number" name="system.attributes.hp.temp" value="{{health.temp}}"
+        min="0">
+</div>
+{{/unless}}
+<div {{#if double}}class="double" {{/if}} data-section="hp" data-tooltip="PF2E.HitPointsHeader">
+    <span><i class="fa-solid fa-heart"></i></span>
+    {{> (partial 'numbers') name="system.attributes.hp" entry=health}}
+</div>

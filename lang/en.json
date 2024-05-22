@@ -74,7 +74,7 @@
             "token": {
                 "title": "Token HUD",
                 "enabled": {
-                    "name": "Enabled",
+                    "name": "Enabled (Requires Reload)",
                     "hint": "An HUD will be displayed around the currently selected token."
                 },
                 "scaleDimensions": {
@@ -96,7 +96,7 @@
                 },
                 "modifiers": {
                     "name": "Show Modifiers",
-                    "hint": "Should modifiers be displayed instead of DCs in the HUD."
+                    "hint": "Should modifiers be displayed instead of DCs in the token HUD."
                 },
                 "highestSpeed": {
                     "name": "Highest Speed",
@@ -108,6 +108,10 @@
                 "enabled": {
                     "name": "Enabled",
                     "hint": "A persistent HUD will be displayed at the bottom of the screen."
+                },
+                "modifiers": {
+                    "name": "Show Modifiers",
+                    "hint": "Should modifiers be displayed instead of DCs in the persistent HUD."
                 }
             }
         },
@@ -132,6 +136,18 @@
                 "extras": {
                     "title": "Extras"
                 }
+            }
+        },
+        "persistent": {
+            "error": {
+                "selectOne": "Select a single token to set as your persistent actor."
+            },
+            "menu": {
+                "openSheet": "Open Sheet",
+                "fromToken": "Set selected token as persistent actor"
+            },
+            "portrait": {
+                "selectActor": "Select this actor as persistent"
             }
         }
     }

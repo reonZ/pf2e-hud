@@ -1,0 +1,20 @@
+<div id="pf2e-hud-persistent-menu" class="app" data-tooltip-direction="RIGHT">
+    <a data-action="toggle-users" data-tooltip="PLAYERS.Title">
+        <i class="fa-solid fa-users"></i>
+    </a>
+    <a data-action="select-actor" data-tooltip="{{i18n.path 'fromToken'}}">
+        <i class="fa-solid fa-user-vneck"></i>
+    </a>
+    {{#if hasActor}}
+    <a data-action="open-sheet" data-tooltip="{{i18n.path 'openSheet'}}">
+        <i class="fa-solid fa-file"></i>
+    </a>
+    {{/if}}
+    <a data-action="open-macros" data-tooltip="MACRO.Directory">
+        <i class="fa-solid fa-folder"></i>
+    </a>
+    <a data-action="toggle-hotbar-lock"
+        data-tooltip="MACRO.{{ifThen hotbarLocked 'Unlock' 'Lock'}}Bar">
+        <i class="fa-solid fa-lock{{#unless hotbarLocked}}-open{{/unless}}"></i>
+    </a>
+</div>
