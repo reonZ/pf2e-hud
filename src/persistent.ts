@@ -236,7 +236,14 @@ class PF2eHudPersistent extends BaseActorHUD<PersistentSettings, ActorType> {
         options?: ApplicationClosingOptions & { forced?: boolean }
     ): Promise<ApplicationV2> {
         if (!options?.forced) return this;
+
         this.setActor(false);
+
+        for (const key in this.#elements) {
+            this.#elements[key as PartName | "left"]?.remove();
+            this.#elements[key as PartName | "left"] = null;
+        }
+
         return super.close(options);
     }
 
