@@ -1,7 +1,7 @@
-import { createHook, getSetting, signedInteger, templatePath } from "pf2e-api";
+import { createHook, getSetting, setSetting, signedInteger, templatePath } from "pf2e-api";
 import { BaseActorData, HealthData, getDefaultData, getHealth } from "./shared";
 
-abstract class BaseHUD<TSettings extends Record<string, any>> extends foundry.applications.api
+abstract class PF2eHudBase<TSettings extends Record<string, any>> extends foundry.applications.api
     .ApplicationV2 {
     static DEFAULT_OPTIONS: Partial<ApplicationConfiguration> = {
         window: {
@@ -12,11 +12,18 @@ abstract class BaseHUD<TSettings extends Record<string, any>> extends foundry.ap
         },
     };
 
-    abstract get partials(): string[] | ReadonlyArray<string>;
     abstract get templates(): string[] | ReadonlyArray<string>;
     abstract get key(): string;
     abstract get enabled(): boolean;
     abstract get settings(): SettingOptions[];
+
+    get partials(): string[] | ReadonlyArray<string> {
+        return [];
+    }
+
+    get keybinds(): KeybindingActionConfig[] {
+        return [];
+    }
 
     abstract _onEnable(enabled?: boolean): void;
 
@@ -60,6 +67,10 @@ abstract class BaseHUD<TSettings extends Record<string, any>> extends foundry.ap
         return getSetting(`${this.key}.${key}`);
     }
 
+    setSetting<K extends keyof TSettings & string>(key: K, value: TSettings[K]) {
+        return setSetting(`${this.key}.${key}`, value);
+    }
+
     renderTemplate(
         template: (typeof this)["templates"][number],
         context: ApplicationRenderContext
@@ -69,10 +80,10 @@ abstract class BaseHUD<TSettings extends Record<string, any>> extends foundry.ap
     }
 }
 
-abstract class BaseActorHUD<
+abstract class PF2eHudBaseActor<
     TSettings extends Record<string, any>,
     TActor extends ActorPF2e = ActorPF2e
-> extends BaseHUD<TSettings> {
+> extends PF2eHudBase<TSettings> {
     abstract get actor(): TActor | null;
     abstract get useModifiers(): boolean;
 
@@ -89,10 +100,10 @@ abstract class BaseActorHUD<
     }
 }
 
-abstract class BaseTokenHUD<
+abstract class PF2eHudBaseToken<
     TSettings extends BaseTokenHUDSettings,
     TActor extends ActorPF2e = ActorPF2e
-> extends BaseActorHUD<TSettings, TActor> {
+> extends PF2eHudBaseActor<TSettings, TActor> {
     #deleteTokenHook = createHook("deleteToken", this.#onDeleteToken.bind(this));
     #updateTokenHook = createHook("updateToken", this.#onUpdateToken.bind(this));
     #tearDownHook = createHook("tearDownTokenLayer", () => this.close());
@@ -258,5 +269,5 @@ type BaseTokenHUDSettings = {
     modifiers: boolean;
 };
 
-export { BaseActorHUD, BaseHUD, BaseTokenHUD };
+export { PF2eHudBase, PF2eHudBaseActor, PF2eHudBaseToken };
 export type { BaseActorContext, BaseContext, BaseTokenContext, BaseTokenHUDSettings };

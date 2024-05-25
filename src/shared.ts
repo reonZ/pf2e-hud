@@ -70,7 +70,6 @@ const ALLIANCES_ICONS = {
 function canObserve(actor: ActorPF2e | null | undefined) {
     if (!actor) return false;
     return actor.testUserPermission(game.user, "OBSERVER");
-    // ||(getSetting("partyObserved") && actor.system.details.alliance === "party")
 }
 
 function getAlliance(actor: ActorPF2e): {
@@ -377,7 +376,7 @@ type BaseActorData = {
     isCharacter: boolean;
     isOwner: boolean;
     isObserver: boolean;
-    speedNote?: string;
+    speedNote: string | undefined;
     saves: StatisticData[];
     others: StatisticData[];
     recall: number | undefined;

@@ -1,17 +1,7 @@
 $bottom-width: 542px;
 
 [id^="pf2e-hud-persistent"] {
-    --panel-gap: 5px;
     --hud-height: 8em;
-
-    &.app,
-    .app {
-        box-shadow: 0 0 10px var(--color-shadow-dark);
-        border: 1px solid var(--color-border-dark);
-        pointer-events: all;
-        margin: 0;
-        padding: 0.2em 0.3em;
-    }
 }
 
 #pf2e-hud-persistent-left {
@@ -20,7 +10,7 @@ $bottom-width: 542px;
     gap: var(--panel-gap);
     width: var(--players-width);
     height: calc(var(--hotbar-height) + var(--hud-height));
-    margin: 0 var(--panel-gap) 10px 15px;
+    margin: 0 var(--panel-gap) var(--interface-margin) 15px;
     padding: 0;
     z-index: calc(var(--z-index-app) - 1);
 }

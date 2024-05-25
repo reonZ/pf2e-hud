@@ -5,9 +5,16 @@ import {
     createTimeout,
     createWrapper,
     getOnly,
+    isHoldingModifierKeys,
     libWrapper,
+    localize,
 } from "pf2e-api";
-import { BaseActorContext, BaseTokenContext, BaseTokenHUD, type BaseTokenHUDSettings } from "./hud";
+import {
+    BaseActorContext,
+    BaseTokenContext,
+    PF2eHudBaseToken,
+    type BaseTokenHUDSettings,
+} from "./hud";
 import { hud } from "./main";
 
 const DELAY_BUFFER = 50;
@@ -26,12 +33,33 @@ const TARGET_ICONS = {
     character: "fa-solid fa-user",
 };
 
+const DISTANCES: Record<
+    Exclude<DistanceType, "never">,
+    { multiplier: number; unit: string; decimals: number }
+> = {
+    idiot: {
+        multiplier: 1,
+        decimals: 0,
+        unit: "feet",
+    },
+    smart: {
+        multiplier: 0.3048,
+        decimals: 2,
+        unit: "meter",
+    },
+    weird: {
+        multiplier: 0.2,
+        decimals: 0,
+        unit: "square",
+    },
+};
+
 const SETTING_TYPE = ["never", "owned", "observed"] as const;
 const SETTING_DISTANCE = ["never", "idiot", "smart", "weird"] as const;
 const SETTING_NO_DEAD = ["none", "small", "full"] as const;
 const SETTING_POSITION = R.keys.strict(POSITIONS);
 
-class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings, ActorPF2e> {
+class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
 
     #renderTimeout = createTimeout(this.render.bind(this), DELAY_BUFFER);
@@ -40,6 +68,7 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings, ActorPF2e> {
     #clickEvent = createGlobalEvent("mousedown", () => this.close());
 
     #targetToken: TokenPF2e | null = null;
+    #graphics: PIXI.Graphics | null = null;
 
     #tokenRefreshWrapper = createWrapper(
         "CONFIG.Token.objectClass.prototype._refreshVisibility",
@@ -57,10 +86,6 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings, ActorPF2e> {
             height: "auto",
         },
     };
-
-    get partials() {
-        return [];
-    }
 
     get templates(): ["tooltip"] {
         return ["tooltip"];
@@ -95,16 +120,23 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings, ActorPF2e> {
     }
 
     get distanceDetails() {
-        const setting = this.setting("showDistance").split(",");
+        const setting = this.setting("showDistance");
+        if (setting === "never") return;
+
+        const { decimals, multiplier, unit } = DISTANCES[setting];
         return {
-            multiplier: Number(setting[0]?.trim()) || 1,
-            unit: setting[1]?.trim() || "ft.",
-            decimals: Number(setting[2]?.trim()) || 0,
+            decimals,
+            multiplier,
+            unit: localize("tooltip.distance", unit),
         };
     }
 
-    get drawGraphics() {
-        return canvas.controls.debug;
+    get graphics() {
+        if (!this.#graphics) {
+            this.#graphics = new PIXI.Graphics();
+            canvas.interface.grid.addChild(this.#graphics);
+        }
+        return this.#graphics;
     }
 
     get canDrawDistance() {
@@ -225,6 +257,9 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings, ActorPF2e> {
         if (!actor) return baseData;
 
         baseData.distance = (() => {
+            const distanceData = this.distanceDetails;
+            if (!distanceData) return;
+
             const user = game.user as UserPF2e;
             const checks: [TargetIcon, (TokenPF2e | null)[] | Set<TokenPF2e> | undefined][] = [
                 ["selected", [hud.token.token]],
@@ -248,7 +283,7 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings, ActorPF2e> {
 
             if (!this.#targetToken) return;
 
-            const { multiplier, unit, decimals } = this.distanceDetails;
+            const { multiplier, unit, decimals } = distanceData;
 
             return {
                 unit,
@@ -323,7 +358,7 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings, ActorPF2e> {
 
     _updatePosition(position: ApplicationPosition) {
         const element = this.element;
-        if (!element) return position;
+        if (!element || !canvas.ready) return position;
 
         const token = this.token;
         if (!token?.actor) return this.moveOutOfScreen(position);
@@ -446,7 +481,7 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings, ActorPF2e> {
 
         const origin = this.token!;
         const target = this.targetToken!;
-        const graphics = this.drawGraphics;
+        const graphics = this.graphics;
         const originCenter = origin.center;
         const targetCenter = target.center;
         const lineColor = game.user.color;
@@ -464,11 +499,12 @@ class PF2eHudTooltip extends BaseTokenHUD<TooltipSettings, ActorPF2e> {
     }
 
     clearDistance() {
-        this.drawGraphics.clear();
+        this.#graphics?.destroy({ children: true });
+        this.#graphics = null;
     }
 
     #onHoverToken(token: TokenPF2e, hovered: boolean) {
-        if (hovered) {
+        if (hovered && !isHoldingModifierKeys(["Shift", "Control"])) {
             this.#tokenHoverIn(token);
         } else {
             this.#tokenHoverOut(token);
@@ -556,6 +592,8 @@ type TooltipContext = BaseTokenContext & {
     weaknesses: boolean;
 };
 
+type DistanceType = (typeof SETTING_DISTANCE)[number];
+
 type TooltipSettings = BaseTokenHUDSettings & {
     status: string;
     enabled: boolean;
@@ -564,7 +602,7 @@ type TooltipSettings = BaseTokenHUDSettings & {
     position: (typeof SETTING_POSITION)[number];
     scale: number;
     noDead: (typeof SETTING_NO_DEAD)[number];
-    showDistance: (typeof SETTING_DISTANCE)[number];
+    showDistance: DistanceType;
     drawDistance: number;
 };
 

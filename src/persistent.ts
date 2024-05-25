@@ -8,7 +8,7 @@ import {
     subLocalize,
     templateLocalize,
 } from "pf2e-api";
-import { BaseActorContext, BaseActorHUD } from "./hud";
+import { BaseActorContext, PF2eHudBaseActor } from "./hud";
 import { hud } from "./main";
 import {
     ADJUSTMENTS,
@@ -25,7 +25,7 @@ import {
 
 const localize = subLocalize("persistent");
 
-class PF2eHudPersistent extends BaseActorHUD<PersistentSettings, ActorType> {
+class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> {
     #renderActorSheetHook = createHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
     #renderHotbarHook = createHook("renderHotbar", this.#onRenderHotbar.bind(this));
 
@@ -187,13 +187,6 @@ class PF2eHudPersistent extends BaseActorHUD<PersistentSettings, ActorType> {
         );
     }
 
-    _insertElement(element: HTMLElement) {
-        element.dataset.tooltipDirection = "UP";
-        const existing = document.getElementById(element.id);
-        if (existing) existing.replaceWith(element);
-        else document.getElementById("ui-bottom")?.prepend(element);
-    }
-
     _replaceHTML(
         templates: RenderedTemplates,
         content: HTMLElement,
@@ -227,6 +220,13 @@ class PF2eHudPersistent extends BaseActorHUD<PersistentSettings, ActorType> {
             this.#elements[name] = element;
             this.#parts[name].activateListeners(element);
         }
+    }
+
+    _insertElement(element: HTMLElement) {
+        element.dataset.tooltipDirection = "UP";
+        const existing = document.getElementById(element.id);
+        if (existing) existing.replaceWith(element);
+        else document.getElementById("ui-bottom")?.prepend(element);
     }
 
     async close(

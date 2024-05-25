@@ -12,7 +12,7 @@
 
 #pf2e-hud-token-main {
     position: absolute;
-    container: anchor / size;
+    container: pf2e-hud-token-main / size;
 
     .panel {
         &.top {
@@ -91,7 +91,7 @@
             padding: 0.4em;
         }
 
-        @container anchor (min-height:  5.4em) {
+        @container pf2e-hud-token-main (min-height:  5.4em) {
             &.right,
             &.left {
                 bottom: auto;
@@ -100,7 +100,7 @@
             }
         }
 
-        @container anchor (min-height: 8.8em) {
+        @container pf2e-hud-token-main (min-height: 8.8em) {
             &.right,
             &.left {
                 grid-template-rows: none;
@@ -108,7 +108,7 @@
             }
         }
 
-        @container anchor (min-width: 7.4em) {
+        @container pf2e-hud-token-main (min-width: 7.4em) {
             &.top:has(.double) {
                 left: 50%;
                 transform: translateX(-50%);
@@ -121,7 +121,7 @@
             transform: translateX(-50%);
         }
 
-        @container anchor (min-height: 4.6em) {
+        @container pf2e-hud-token-main (min-height: 4.6em) {
             &.bottom,
             &.top {
                 right: auto;
@@ -174,20 +174,6 @@
                 margin-bottom: var(--panel-spacer-gap);
                 padding-bottom: var(--panel-spacer-gap);
             }
-        }
-    }
-}
-
-#tooltip {
-    .pf2e-hud-list {
-        display: grid;
-        grid-template-columns: 1.4em 2em;
-        align-items: center;
-        row-gap: 0.3em;
-        font-size: var(--font-size);
-
-        span {
-            text-align: end;
         }
     }
 }

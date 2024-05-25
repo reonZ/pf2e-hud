@@ -1,3 +1,5 @@
+$panel-gap: 5px;
+
 [id^="pf2e-hud"] {
     --outer-border-radius: 4px;
     --input-width: 2.4em;
@@ -6,21 +8,28 @@
     --input-background: rgb(255 255 255 / 16%);
     --icon-width: 1.4em;
     --color: var(--color-text-light-highlight);
-    --color-disabled: grey;
+    --color-disabled: var(--color-text-dark-5);
     --inline-gap: 0.2em;
     --hr-color: #ffffff4a;
-    --hr-margin: 0.1em;
+    --hr-margin: 0.2em;
     --section-gap: 0.1em 0.4em;
-    --highlight-color: #00f6ff;
-    --text-shadown: 0 0 8px var(--highlight-color);
+    --panel-gap: #{$panel-gap};
+    --panel-padding-block: 0.2em;
+    --panel-padding-inline: 0.3em;
+    --interface-margin: var(--panel-gap);
+
+    &.app,
+    .app {
+        box-shadow: 0 0 10px var(--color-shadow-dark);
+        border: 1px solid var(--color-border-dark);
+        pointer-events: all;
+        margin: 0;
+        padding: var(--panel-padding-block) var(--panel-padding-inline);
+    }
 
     input,
     select {
         color: var(--color);
-
-        &:focus {
-            box-shadow: 0 0 5px var(--highlight-color);
-        }
     }
 
     input[type="number"] {
@@ -44,10 +53,6 @@
     }
 
     a {
-        &:hover {
-            text-shadow: var(--text-shadown);
-        }
-
         &.disabled {
             pointer-events: none;
         }
@@ -122,8 +127,32 @@
             }
         }
 
-        .info {
+        &.info {
             cursor: help;
+        }
+    }
+}
+
+#interface:has([id^="pf2e-hud"]) {
+    --panel-gap: #{$panel-gap};
+}
+
+#pf2e-hud-persistent + div {
+    #hotbar {
+        margin-bottom: $panel-gap;
+    }
+}
+
+#tooltip {
+    .pf2e-hud-list {
+        display: grid;
+        grid-template-columns: 1.4em 2em;
+        align-items: center;
+        row-gap: 0.3em;
+        font-size: var(--font-size);
+
+        span {
+            text-align: end;
         }
     }
 }
@@ -131,3 +160,4 @@
 @import "./persistent";
 @import "./token";
 @import "./tooltip";
+@import "./tracker";

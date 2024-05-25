@@ -4,28 +4,28 @@ import {
     htmlElement,
     localize,
     querySelector,
+    registerKeybind,
     registerSetting,
 } from "pf2e-api";
 import { PF2eHudPersistent } from "./persistent";
 import { PF2eHudToken } from "./token";
 import { PF2eHudTooltip } from "./tooltip";
+import { PF2eHudTracker } from "./tracker";
 
 const hudList = {
     tooltip: new PF2eHudTooltip(),
     token: new PF2eHudToken(),
     persistent: new PF2eHudPersistent(),
+    tracker: new PF2eHudTracker(),
 };
 
 MODULE.register("pf2e-hud", "PF2e HUD");
 
 Hooks.once("setup", () => {
-    // registerSetting({
-    //     key: "partyObserved",
-    //     type: Boolean,
-    //     default: false,
-    // });
+    const isGM = game.user.isGM;
+    const huds = Object.values(hudList);
 
-    for (const hud of Object.values(hudList)) {
+    for (const hud of huds) {
         for (const setting of hud.settings) {
             const key = `${hud.key}.${setting.key}`;
 
@@ -36,13 +36,18 @@ Hooks.once("setup", () => {
             setting.key = key;
             registerSetting(setting);
         }
+
+        for (const keybind of hud.keybinds) {
+            keybind.name = `${hud.key}.${keybind.name}`;
+            registerKeybind(keybind.name, keybind);
+        }
     }
 
     MODULE.current.api = {
         hud: hudList,
     };
 
-    for (const hud of Object.values(hudList)) {
+    for (const hud of huds) {
         hud.enable();
     }
 });

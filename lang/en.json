@@ -1,10 +1,14 @@
 {
     "pf2e-hud": {
+        "keybindings": {
+            "tracker": {
+                "toggle": {
+                    "name": "Toggle Combat Tracker",
+                    "hint": "Will display a different set of icons to interact with the combatants in the tracker."
+                }
+            }
+        },
         "settings": {
-            "partyObserved": {
-                "name": "Party as Observed",
-                "hint": "Consider actors belonging to the 'Party' alliance to be observed by players."
-            },
             "tooltip": {
                 "title": "Token Tooltip",
                 "status": {
@@ -116,15 +120,34 @@
             },
             "tracker": {
                 "title": "Combat Tracker",
+                "started": {
+                    "name": "Only When Started",
+                    "hint": "The tracker will only show up for players if the combat has actually started (on top of needing a combatant participating)."
+                },
                 "enabled": {
                     "name": "Enabled",
                     "hint": "A combat tracker will show up whenever an owned actor is part of the current encounter."
+                },
+                "scale": {
+                    "name": "Font Size",
+                    "hint": "Combat Tracker font size."
+                },
+                "textureScaling": {
+                    "name": "Texture Scaling",
+                    "hint": "Inverts scale the combatant's image based on the token texture scaling."
                 }
             }
         },
         "hud": {
             "toggleAdjustment": "Toggle Adjustment",
             "tempHP": "Temporary Hit Points"
+        },
+        "tooltip": {
+            "distance": {
+                "feet": "ft.",
+                "meter": "m",
+                "square": "sq."
+            }
         },
         "token": {
             "sidebars": {
@@ -155,6 +178,14 @@
             },
             "portrait": {
                 "selectActor": "Select this actor as persistent"
+            }
+        },
+        "tracker": {
+            "expand": "Expand Tracker",
+            "collapse": "Collapse Tracker",
+            "fake": {
+                "nothing": "Encounter Not Started",
+                "secret": "Something Secret is Happening"
             }
         }
     }

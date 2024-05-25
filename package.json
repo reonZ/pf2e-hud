@@ -14,10 +14,12 @@
         "url": "https://github.com/reonZpf2e-hud/issues"
     },
     "devDependencies": {
+        "@types/sortablejs": "^1.15.8",
         "esbuild": "^0.20.1",
         "typescript": "5.3.3"
     },
     "dependencies": {
-        "pf2e-api": "file:../../../../dev/pf2e-api"
+        "pf2e-api": "file:../../../../dev/pf2e-api",
+        "sortablejs": "^1.15.2"
     }
 }

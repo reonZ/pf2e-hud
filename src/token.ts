@@ -7,7 +7,12 @@ import {
     localizePath,
     registerWrapper,
 } from "pf2e-api";
-import { BaseActorContext, BaseTokenContext, BaseTokenHUD, type BaseTokenHUDSettings } from "./hud";
+import {
+    BaseActorContext,
+    BaseTokenContext,
+    PF2eHudBaseToken,
+    type BaseTokenHUDSettings,
+} from "./hud";
 import { hud } from "./main";
 import {
     ADJUSTMENTS,
@@ -26,7 +31,7 @@ const SIDEBARS = {
     extras: { icon: "fa-solid fa-cubes" },
 };
 
-class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
+class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
     #canvasPanHook = createHook("canvasPan", () => this._updatePosition());
 
     #mainElement: HTMLElement | null = null;
@@ -140,10 +145,10 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
             function (
                 this: TokenPF2e,
                 wrapped: libWrapper.RegisterCallback,
-                event: PIXI.FederatedEvent
+                event: PIXI.FederatedMouseEvent
             ) {
                 wrapped(event);
-                if (game.activeTool !== "select") return;
+                if (event.shiftKey || event.ctrlKey || game.activeTool !== "select") return;
                 if (this === context.token) context.#clickClose();
                 else context.setToken(this);
             },
@@ -168,7 +173,7 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
             function (
                 this: Canvas,
                 wrapped: libWrapper.RegisterCallback,
-                event: PIXI.FederatedEvent
+                event: PIXI.FederatedMouseEvent
             ) {
                 wrapped(event);
                 context.#clickClose();
@@ -260,17 +265,9 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
         return data;
     }
 
-    _onRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
-        this.#canvasPanHook.activate();
-    }
-
     async _renderHTML(context: Partial<TokenContext>, options: ApplicationRenderOptions) {
+        if (!context.health) return "";
         return this.renderTemplate("main", context);
-    }
-
-    _insertElement(element: HTMLElement) {
-        element.dataset.tooltipDirection = "UP";
-        super._insertElement(element);
     }
 
     _replaceHTML(result: string, content: HTMLElement, options: ApplicationRenderOptions) {
@@ -302,6 +299,15 @@ class PF2eHudToken extends BaseTokenHUD<TokenSettings, ActorType> {
 
         content.replaceChildren(this.#mainElement);
         this.#activateListeners(content);
+    }
+
+    _insertElement(element: HTMLElement) {
+        element.dataset.tooltipDirection = "UP";
+        super._insertElement(element);
+    }
+
+    _onRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
+        this.#canvasPanHook.activate();
     }
 
     _updatePosition(position: ApplicationPosition = {} as ApplicationPosition) {
@@ -419,21 +425,6 @@ type TokenContext = BaseTokenContext & {
     }[];
     partial: (key: string) => string;
 };
-
-type ActionEvent =
-    | "use-resolve"
-    | "take-cover"
-    | "raise-shield"
-    | "show-notes"
-    | "recovery-chec"
-    | "recall-knowledge"
-    | "roll-statistic"
-    | "open-sidebar"
-    | "change-speed";
-
-type SliderEvent = "hero" | "wounded" | "dying" | "adjustment";
-
-type SidebarType = keyof typeof SIDEBARS;
 
 type TokenSettings = BaseTokenHUDSettings & {
     enabled: boolean;

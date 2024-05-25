@@ -1,0 +1,401 @@
+$threat-trivial: aqua;
+$threat-low: lime;
+$threat-moderate: yellow;
+$threat-severe: orange;
+$threat-extreme: red;
+
+#pf2e-hud-tracker {
+    --border-top: 1px solid rgba(255, 255, 255, 0.06);
+    --border-bottom: 1px solid rgb(0 0 0 / 30%);
+
+    position: absolute;
+    right: 0;
+    bottom: var(--interface-margin);
+    width: 17em;
+    max-height: 66%;
+    padding: 0;
+    text-shadow: 1px 1px 4px var(--color-shadow-dark);
+    display: flex;
+    flex-direction: column;
+
+    a.disabled {
+        color: var(--color-disabled);
+    }
+
+    header,
+    footer {
+        position: relative;
+        display: grid;
+        align-items: center;
+        justify-items: center;
+        gap: 0.3em;
+        padding: 0.3em;
+    }
+
+    header {
+        grid-template-columns: repeat(2, auto) 1fr repeat(2, auto);
+
+        .title {
+            grid-column: 3;
+        }
+    }
+
+    .combatants {
+        overflow: hidden auto;
+        display: flex;
+        flex-direction: column;
+        border-top: 2px groove black;
+        border-bottom: 2px groove black;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        @supports (-moz-appearance: none) {
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+        }
+
+        .combatant,
+        .fake {
+            display: flex;
+            align-items: center;
+            gap: 0.2em;
+            height: var(--combatant-height);
+            padding-inline: var(--panel-padding-inline);
+        }
+
+        .fake {
+            justify-content: center;
+
+            &:first-of-type {
+                border-bottom: var(--border-bottom);
+            }
+
+            &:last-of-type {
+                border-top: var(--border-top);
+            }
+        }
+
+        .combatant {
+            border-top: var(--border-top);
+            border-bottom: var(--border-bottom);
+
+            .avatar {
+                position: relative;
+                height: calc(100% - 0.1em);
+                aspect-ratio: 1 / 1;
+                overflow: hidden;
+                display: flex;
+
+                img {
+                    position: absolute;
+                    border: none;
+                    pointer-events: none;
+                    transform: scale(var(--scaleX), var(--scaleY));
+                }
+
+                .alt {
+                    display: flex;
+                    font-size: 1.8em;
+                    align-items: center;
+                }
+            }
+
+            .details {
+                flex: 1;
+                display: grid;
+                grid-template-rows: repeat(2, 1fr);
+                align-items: center;
+                z-index: 1;
+
+                .name {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .controls {
+                    [data-control] {
+                        flex: 0 0 20px;
+                        height: 20px;
+                        float: left;
+
+                        &:not(.active) {
+                            color: var(--color-disabled);
+                        }
+                    }
+                }
+            }
+
+            .extras {
+                width: 3em;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                z-index: 1;
+
+                .health {
+                    display: flex;
+                    gap: 0.2em;
+                }
+
+                .sp,
+                .hp,
+                .initiative {
+                    display: flex;
+                    gap: 0.1em;
+                    align-items: center;
+
+                    span {
+                        width: 1.6em;
+                        text-align: end;
+                        color: hsl(var(--hue) 75% 40%);
+                    }
+                }
+
+                .roll {
+                    display: block;
+                    background-size: 32px;
+                    width: 100%;
+                    aspect-ratio: 1 / 1;
+                    margin-right: -0.2em;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-image: url(../../../icons/svg/d20.svg);
+                }
+
+                a.roll {
+                    &:hover {
+                        background-image: url(../../../icons/svg/d20-highlight.svg);
+                    }
+                }
+
+                span.roll {
+                    opacity: 0.2;
+                }
+            }
+
+            &.ghost {
+                visibility: hidden;
+            }
+
+            &.not-visible {
+                display: none;
+            }
+
+            &.hidden {
+                .avatar img,
+                .details .name,
+                .extras {
+                    opacity: 0.4;
+                }
+            }
+
+            &.defeated {
+                .details .name {
+                    color: #b32019;
+                }
+            }
+
+            &.active {
+                background: rgba(var(--disposition-color), 0.1);
+                border-color: rgb(var(--disposition-color));
+            }
+
+            &.hovered:not(:hover),
+            &.drag {
+                background: rgba(var(--disposition-color), 0.3);
+            }
+        }
+    }
+
+    footer {
+        grid-template-columns: repeat(3, min-content) 1fr repeat(3, min-content);
+
+        .title {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .metrics {
+            font-size: 0.9em;
+            grid-column: -3;
+
+            .threat {
+                text-shadow: 1px 1px 4px var(--color-shadow-dark);
+
+                &.trivial {
+                    color: $threat-trivial;
+                }
+
+                &.low {
+                    color: $threat-low;
+                }
+
+                &.moderate {
+                    color: $threat-moderate;
+                }
+
+                &.severe {
+                    color: $threat-severe;
+                }
+
+                &.extreme {
+                    color: $threat-extreme;
+                }
+            }
+        }
+
+        .settings,
+        .end-turn {
+            grid-column: -2;
+        }
+
+        .expand {
+            grid-column: -1;
+        }
+    }
+
+    &:not(:has(header)) {
+        padding-top: 2px;
+
+        .combatants {
+            border-top: none;
+        }
+    }
+
+    &.collapsed {
+        .combatants {
+            min-height: calc(var(--combatant-height) * 2);
+        }
+
+        .combatant:not(.active):not(.can-roll):not(.next) {
+            display: none;
+        }
+
+        &:has(.combatant.can-roll) {
+            .fake {
+                display: none;
+            }
+        }
+    }
+
+    &:not(.collapsed) {
+        .fake {
+            display: none;
+        }
+    }
+
+    &:not(.toggle-menu) {
+        .combatant {
+            .avatar .alt,
+            .controls.alt {
+                display: none;
+            }
+        }
+    }
+
+    &.toggle-menu {
+        .combatant {
+            .avatar img,
+            .controls:not(.alt) {
+                display: none;
+            }
+        }
+    }
+}
+
+#interface:has(#pf2e-hud-tracker) {
+    --combatant-height: 3.2em;
+
+    #sidebar {
+        box-shadow: 0 0 10px var(--color-shadow-dark);
+    }
+
+    #navigation {
+        max-width: calc(100% - 3 * 48px);
+    }
+
+    #effects-panel {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        gap: 0px 4px;
+        direction: rtl;
+        max-height: calc(100% - var(--combatant-height) * 2 - 4em);
+
+        .effect-item {
+            direction: ltr;
+            position: relative;
+
+            .effect-info {
+                background-color: #000;
+                z-index: 1;
+                position: absolute;
+                right: 100%;
+                width: max-content;
+                margin-right: 0;
+            }
+        }
+    }
+}
+
+#interface:has(#pf2e-hud-tracker.tall) {
+    #effects-panel {
+        hr {
+            width: 44px;
+            margin-block: 5px;
+        }
+
+        .effect-item {
+            height: 48px;
+
+            .icon {
+                height: 44px;
+                width: 44px;
+            }
+        }
+    }
+}
+
+#tooltip {
+    .pf2e-hud-metrics {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        gap: 0.2em;
+
+        .threat {
+            &.trivial {
+                color: $threat-trivial;
+            }
+
+            &.low {
+                color: $threat-low;
+            }
+
+            &.moderate {
+                color: $threat-moderate;
+            }
+
+            &.severe {
+                color: $threat-severe;
+            }
+
+            &.extreme {
+                color: $threat-extreme;
+            }
+        }
+
+        .small {
+            align-self: end;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+    }
+}
