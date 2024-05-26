@@ -33,15 +33,18 @@
     {{/unless}}
 
     {{#each turns as |combatant|}}
-    <li class="combatant {{combatant.css}}" data-combatant-id="{{id}}"
+    <li class="combatant {{combatant.css}}" data-combatant-id="{{combatant.id}}"
         data-initiative="{{combatant.initiative}}" style="--disposition-color: {{color}}">
+
         <div class="avatar">
             <img src="{{combatant.texture.src}}"
                 style="--scaleX: {{combatant.texture.scaleX}}; --scaleY: {{combatant.texture.scaleY}};">
             <div class="alt">
                 <i class="fa-solid fa-arrow-right-to-bracket"></i>
             </div>
+            <div class="targets"></div>
         </div>
+
 
         <div class="details">
             <div class="name">{{combatant.name}}</div>
@@ -52,13 +55,6 @@
                     data-control="toggleHidden" data-tooltip="COMBAT.ToggleVis">
                     <i class="fa-eye-slash fa-solid fa-fw"></i>
                 </a>
-                {{#if combatant.toggleName}}
-                <a class="combatant-control{{#if combatant.toggleName.active}} active{{/if}}"
-                    data-control="toggleNameVisibility"
-                    data-tooltip="{{combatant.toggleName.tooltip}}">
-                    <i class="fa-solid fa-signature fa-fw"></i>
-                </a>
-                {{/if}}
                 <a class="combatant-control{{#if combatant.defeated}} active{{/if}}"
                     data-control="toggleDefeated" data-tooltip="COMBAT.ToggleDead">
                     <i class="fa-skull fa-solid fa-fw"></i>
@@ -73,6 +69,13 @@
                 <a class="combatant-control" data-control="pingCombatant"
                     data-tooltip="COMBAT.PingCombatant">
                     <i class="fa-solid fa-fw fa-signal-stream"></i>
+                </a>
+                {{/if}}
+                {{#if combatant.toggleName}}
+                <a class="combatant-control{{#if combatant.toggleName.active}} active{{/if}}"
+                    data-control="toggleNameVisibility"
+                    data-tooltip="{{combatant.toggleName.tooltip}}">
+                    <i class="fa-solid fa-signature fa-fw"></i>
                 </a>
                 {{/if}}
                 {{#unless @root.isGM}}

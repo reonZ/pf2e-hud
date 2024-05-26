@@ -212,53 +212,6 @@ function getDefaultData(actor: ActorPF2e, useModifier?: boolean): BaseActorData 
     };
 }
 
-function getAdvancedData(
-    actor: ActorPF2e,
-    { speeds }: BaseActorData,
-    { scale, useHighestSpeed }: { scale: number; useHighestSpeed: boolean }
-): AdvancedActorData {
-    const mainSpeed = (() => {
-        if (!speeds?.length) return;
-
-        const selectedSpeed = getFlag<MovementType>(actor, "speed");
-        if (selectedSpeed) {
-            const index = speeds.findIndex((speed) => speed.type === selectedSpeed);
-            if (index !== -1) return speeds.splice(index, 1)[0];
-        }
-
-        const landSpeed = speeds[0];
-        if (!useHighestSpeed) return speeds.shift();
-
-        const [_, highestSpeeds] =
-            speeds.length === 1
-                ? ["", speeds]
-                : R.pipe(
-                      speeds,
-                      R.groupBy((x) => x.total),
-                      R.toPairs.strict,
-                      R.sortBy([(x) => Number(x[0]), "desc"]),
-                      R.first()
-                  )!;
-        if (highestSpeeds.includes(landSpeed)) return speeds.shift();
-
-        const highestSpeed = highestSpeeds[0];
-        const index = speeds.findIndex((speed) => speed === highestSpeed);
-
-        return speeds.splice(index, 1)[0];
-    })();
-
-    const otherSpeeds = speeds
-        ?.map((speed) => `<i class="${speed.icon}"></i> <span>${speed.total}</span>`)
-        .join("");
-
-    return {
-        mainSpeed,
-        otherSpeeds: otherSpeeds
-            ? `<div class="pf2e-hud-iconed-list" style="--font-size: ${scale}px">${otherSpeeds}</div>`
-            : undefined,
-    };
-}
-
 function getAdvancedHealthData(actor: ActorPF2e): AdvancedHealthData {
     const isNPC = actor.isOfType("npc");
     const isCharacter = actor.isOfType("character");
@@ -404,8 +357,61 @@ function getCoverEffect(actor: ActorPF2e) {
     return actor?.itemTypes.effect.find((effect) => effect.flags.core?.sourceId === COVER_UUID);
 }
 
+function getAdvancedData(
+    actor: ActorPF2e,
+    { speeds }: BaseActorData,
+    { fontSize, useHighestSpeed }: { fontSize: number; useHighestSpeed: boolean }
+): AdvancedActorData {
+    const isCharacter = actor.isOfType("character");
+
+    const mainSpeed = (() => {
+        if (!speeds?.length) return;
+
+        const selectedSpeed = getFlag<MovementType>(actor, "speed");
+        if (selectedSpeed) {
+            const index = speeds.findIndex((speed) => speed.type === selectedSpeed);
+            if (index !== -1) return speeds.splice(index, 1)[0];
+        }
+
+        const landSpeed = speeds[0];
+        if (!useHighestSpeed) return speeds.shift();
+
+        const [_, highestSpeeds] =
+            speeds.length === 1
+                ? ["", speeds]
+                : R.pipe(
+                      speeds,
+                      R.groupBy((x) => x.total),
+                      R.toPairs.strict,
+                      R.sortBy([(x) => Number(x[0]), "desc"]),
+                      R.first()
+                  )!;
+        if (highestSpeeds.includes(landSpeed)) return speeds.shift();
+
+        const highestSpeed = highestSpeeds[0];
+        const index = speeds.findIndex((speed) => speed === highestSpeed);
+
+        return speeds.splice(index, 1)[0];
+    })();
+
+    const otherSpeeds = speeds
+        ?.map((speed) => `<i class="${speed.icon}"></i> <span>${speed.total}</span>`)
+        .join("");
+
+    return {
+        dying: isCharacter ? actor.attributes.dying : undefined,
+        wounded: isCharacter ? actor.attributes.wounded : undefined,
+        mainSpeed,
+        otherSpeeds: otherSpeeds
+            ? `<div class="pf2e-hud-iconed-list" style="--font-size: ${fontSize}px">${otherSpeeds}</div>`
+            : undefined,
+    };
+}
+
 type AdvancedActorData = {
     otherSpeeds: string | undefined;
+    dying: ValueAndMax | undefined;
+    wounded: ValueAndMax | undefined;
     mainSpeed?: {
         icon: string;
         total: number;

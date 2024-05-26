@@ -14,10 +14,9 @@ import Sortable, { type SortableEvent } from "sortablejs";
 import { BaseContext, PF2eHudBase } from "./hud";
 import { HealthData, canObserve, getHealth } from "./shared";
 
-const SETTING_TEXTURE_SCALING = ["never", "scale", "truncate"] as const;
-
 class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
+    #targetTokenHook = createHook("targetToken", this.#refreshTargetDisplay.bind(this));
     #renderEffectsHook = createHook("renderEffectsPanel", this.#onRenderEffectsPanel.bind(this));
     #combatTrackerHook = createHook("renderCombatTracker", this.#onRenderCombatTracker.bind(this));
 
@@ -94,7 +93,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
                 },
             },
             {
-                key: "scale",
+                key: "fontSize",
                 type: Number,
                 range: {
                     min: 10,
@@ -110,7 +109,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
             {
                 key: "textureScaling",
                 type: Boolean,
-                default: false,
+                default: true,
                 scope: "client",
                 onChange: () => {
                     this.render();
@@ -130,18 +129,26 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
     }
 
     _onEnable(enabled: boolean = this.enabled): void {
-        this.#combatTrackerHook.toggle(enabled);
         this.#hoverTokenHook.toggle(enabled);
+        this.#targetTokenHook.toggle(enabled);
+        this.#combatTrackerHook.toggle(enabled);
         this.#renderEffectsHook.toggle(enabled);
 
         if (enabled && this.combat) this.render(true);
         else if (!enabled) this.close();
+
+        if (!canvas.ready) {
+            Hooks.once("canvasReady", () => this.#refreshTargetDisplay());
+        }
     }
 
     _configureRenderOptions(options: RenderOptions) {
         super._configureRenderOptions(options);
+
+        options.fontSize = this.setting("fontSize");
         options.expanded = this.setting("expanded");
         options.collapsed = options.expanded === "false";
+        options.textureScaling = this.setting("textureScaling");
     }
 
     async _prepareContext(options: RenderOptions): Promise<TrackerContext | BaseContext> {
@@ -151,7 +158,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
         const combatant = combat.combatant;
         const turns: TrackerTurn[] = [];
         const canPing = game.user.hasPermission("PING_CANVAS");
-        const useTextureScaling = this.setting("textureScaling");
+        const useTextureScaling = options.textureScaling;
         const tokenSetsNameVisibility = game.pf2e.settings.tokens.nameVisibility;
 
         let canRoll = false;
@@ -175,7 +182,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
             };
 
             const toggleName = (() => {
-                if (!tokenSetsNameVisibility || actor?.alliance === "party") return;
+                if (!isGM || !tokenSetsNameVisibility || actor?.alliance === "party") return;
                 const isActive = combatant.playersCanSeeName;
                 return {
                     active: isActive,
@@ -283,13 +290,15 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
     _replaceHTML(result: string, content: HTMLElement, options: RenderOptions): void {
         content.innerHTML = result;
 
-        content.style.setProperty(`--font-size`, `${this.setting("scale")}px`);
+        content.style.setProperty(`--font-size`, `${options.fontSize}px`);
         content.classList.toggle("collapsed", options.collapsed);
+        content.classList.toggle("textureScaling", options.textureScaling);
         content.classList.toggle("tall", content.offsetHeight > window.innerHeight / 2);
 
         this.#combatantsElement = content.querySelector(".combatants")!;
         this.#combatantElement = this.#combatantsElement.querySelector(".combatant.active");
 
+        this.#refreshTargetDisplay();
         this.#activateListeners(content);
     }
 
@@ -360,7 +369,9 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
 
         addListenerAll(html, ".combatant-control", (event) => {
             event.preventDefault();
-            tracker._onCombatantControl(event);
+            // @ts-ignore
+            const jEvent = jQuery.Event(event);
+            tracker._onCombatantControl(jEvent);
         });
 
         addListenerAll(html, ".combatant", "mouseenter", (event) => {
@@ -400,6 +411,47 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
                 onEnd: (event) => this.#onSortableEnd(event),
                 onUpdate: (event) => this.#onSortableUpdate(event),
             });
+        }
+    }
+
+    #refreshTargetDisplay(_user?: UserPF2e, token?: TokenPF2e): void {
+        const combat = this.combat;
+        const combatantsElement = this.combatantsElement;
+        const tokenCombatant = token?.combatant;
+        if (
+            !combatantsElement ||
+            !combat ||
+            !canvas.ready ||
+            (tokenCombatant && tokenCombatant.encounter !== combat)
+        )
+            return;
+
+        const user = game.user as UserPF2e;
+        const targetsIds = user.targets.ids;
+        const combatants = token?.combatant ? [token.combatant] : combat.turns;
+
+        for (const combatant of combatants) {
+            const token = combatant.token;
+            const combatantElement = combatantsElement.querySelector(
+                `[data-combatant-id="${combatant.id}"]`
+            );
+            if (!combatantElement) continue;
+
+            const selfTargetIcon = combatantElement.querySelector(
+                "[data-control='toggleTarget']"
+            ) as HTMLElement;
+            selfTargetIcon.classList.toggle("active", targetsIds.includes(token.id));
+
+            const targetsElement = combatantElement.querySelector(
+                ".avatar .targets"
+            ) as HTMLElement;
+            const targets = R.pipe(
+                token.object?.targeted.toObject() ?? [],
+                R.filter((u) => u !== user),
+                R.map((u) => `<div class="target" style="--user-color: ${u.color};"></div>`)
+            );
+
+            targetsElement.innerHTML = targets.join("");
         }
     }
 
@@ -536,7 +588,12 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
     }
 }
 
-type RenderOptions = ApplicationRenderOptions & { collapsed: boolean; expanded: ExpandedSetting };
+type RenderOptions = ApplicationRenderOptions & {
+    collapsed: boolean;
+    expanded: ExpandedSetting;
+    fontSize: number;
+    textureScaling: boolean;
+};
 
 type CombatantDataset = { combatantId: string };
 type CombatantControlDataset = {
@@ -588,7 +645,7 @@ type ExpandedSetting = `true` | "false" | `${number}`;
 type TrackerSettings = {
     started: boolean;
     enabled: boolean;
-    scale: number;
+    fontSize: number;
     textureScaling: boolean;
     expanded: ExpandedSetting;
 };

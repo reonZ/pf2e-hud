@@ -17,6 +17,7 @@ $threat-extreme: red;
     text-shadow: 1px 1px 4px var(--color-shadow-dark);
     display: flex;
     flex-direction: column;
+    font-size: var(--font-size);
 
     a.disabled {
         color: var(--color-disabled);
@@ -33,7 +34,12 @@ $threat-extreme: red;
     }
 
     header {
+        border-bottom: 2px groove black;
         grid-template-columns: repeat(2, auto) 1fr repeat(2, auto);
+
+        @supports (-moz-appearance: none) {
+            border-bottom: 1px solid black;
+        }
 
         .title {
             grid-column: 3;
@@ -44,16 +50,9 @@ $threat-extreme: red;
         overflow: hidden auto;
         display: flex;
         flex-direction: column;
-        border-top: 2px groove black;
-        border-bottom: 2px groove black;
         margin: 0;
         padding: 0;
         list-style: none;
-
-        @supports (-moz-appearance: none) {
-            border-top: 1px solid black;
-            border-bottom: 1px solid black;
-        }
 
         .combatant,
         .fake {
@@ -84,7 +83,6 @@ $threat-extreme: red;
                 position: relative;
                 height: calc(100% - 0.1em);
                 aspect-ratio: 1 / 1;
-                overflow: hidden;
                 display: flex;
 
                 img {
@@ -98,6 +96,21 @@ $threat-extreme: red;
                     display: flex;
                     font-size: 1.8em;
                     align-items: center;
+                }
+
+                .targets {
+                    position: absolute;
+                    display: flex;
+                    justify-content: center;
+                    gap: 1px;
+
+                    .target {
+                        height: 0.58em;
+                        aspect-ratio: 1 / 1;
+                        border-radius: 50%;
+                        border: 1px solid var(--color-border-dark-2);
+                        background-color: var(--user-color);
+                    }
                 }
             }
 
@@ -204,13 +217,18 @@ $threat-extreme: red;
 
             &.hovered:not(:hover),
             &.drag {
-                background: rgba(var(--disposition-color), 0.3);
+                background: rgba(var(--disposition-color), 0.2);
             }
         }
     }
 
     footer {
+        border-top: 2px groove black;
         grid-template-columns: repeat(3, min-content) 1fr repeat(3, min-content);
+
+        @supports (-moz-appearance: none) {
+            border-top: 1px solid black;
+        }
 
         .title {
             position: absolute;
@@ -257,6 +275,13 @@ $threat-extreme: red;
 
         .expand {
             grid-column: -1;
+        }
+    }
+
+    &.textureScaling {
+        .combatants {
+            margin: -3em 0 -2em -3em;
+            padding: 3em 0 2em 3em;
         }
     }
 

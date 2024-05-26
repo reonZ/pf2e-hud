@@ -84,7 +84,7 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
                 },
             },
             {
-                key: "scale",
+                key: "fontSize",
                 type: Number,
                 range: {
                     min: 10,
@@ -190,18 +190,23 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
         });
     }
 
-    async _prepareContext(
-        options: ApplicationRenderOptions
-    ): Promise<TokenContext | TokenContextBase> {
+    _configureRenderOptions(options: RenderOptions) {
+        super._configureRenderOptions(options);
+        options.fontSize = this.setting("fontSize");
+    }
+
+    async _prepareContext(options: RenderOptions): Promise<TokenContext | TokenContextBase> {
         const parentData = await super._prepareContext(options);
         if (!("health" in parentData)) return parentData;
 
         const actor = this.token!.actor!;
         const isNPC = actor.isOfType("npc");
-        const scale = this.setting("scale");
         const isCharacter = actor.isOfType("character");
         const useHighestSpeed = this.setting("highestSpeed");
-        const advancedData = getAdvancedData(actor, parentData, { scale, useHighestSpeed });
+        const advancedData = getAdvancedData(actor, parentData, {
+            fontSize: options.fontSize,
+            useHighestSpeed,
+        });
 
         const sidebars = Object.entries(SIDEBARS).map(([type, { icon }]) => ({
             type,
@@ -218,21 +223,19 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
             level: actor.level,
             isFamiliar: actor.isOfType("familiar"),
             isCombatant: isCharacter || isNPC,
-            dying: isCharacter ? actor.attributes.dying : undefined,
-            wounded: isCharacter ? actor.attributes.wounded : undefined,
         };
 
         return data;
     }
 
-    async _renderHTML(context: Partial<TokenContext>, options: ApplicationRenderOptions) {
+    async _renderHTML(context: Partial<TokenContext>, options: RenderOptions) {
         if (!context.health) return "";
         return this.renderTemplate("main", context);
     }
 
-    _replaceHTML(result: string, content: HTMLElement, options: ApplicationRenderOptions) {
+    _replaceHTML(result: string, content: HTMLElement, options: RenderOptions) {
         content.dataset.tokenUuid = this.token?.document.uuid;
-        content.style.setProperty("--font-size", `${this.setting("scale")}px`);
+        content.style.setProperty("--font-size", `${options.fontSize}px`);
 
         const focusName = this.#mainElement?.querySelector<HTMLInputElement>("input:focus")?.name;
 
@@ -356,14 +359,16 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
     }
 }
 
+type RenderOptions = ApplicationRenderOptions & {
+    fontSize: number;
+};
+
 type TokenContextBase = BaseActorContext;
 
 type TokenContext = BaseTokenContext &
     AdvancedActorData &
     AdvancedHealthData & {
         level: number;
-        dying: ValueAndMax | undefined;
-        wounded: ValueAndMax | undefined;
         isFamiliar: boolean;
         isCombatant: boolean;
         sidebars: {
@@ -378,7 +383,7 @@ type TokenSettings = BaseTokenHUDSettings & {
     enabled: boolean;
     scaleDimensions: boolean;
     mode: "exploded" | "left" | "right";
-    scale: number;
+    fontSize: number;
     highestSpeed: boolean;
 };
 

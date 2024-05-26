@@ -179,6 +179,7 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
     _configureRenderOptions(options: RenderOptions) {
         super._configureRenderOptions(options);
 
+        // options.fontSize = this.setting("fontSize");
         options.hasSavedActor = !!this.setting("selected");
 
         const allowedParts = this.templates;
@@ -437,7 +438,10 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         if (!actor) return context;
 
         const baseData = getDefaultData(actor, this.useModifiers);
-        const advancedData = getAdvancedData(actor, baseData, { scale: 1, useHighestSpeed: true });
+        const advancedData = getAdvancedData(actor, baseData, {
+            fontSize: 1,
+            useHighestSpeed: true,
+        });
 
         return {
             ...context,
@@ -500,6 +504,7 @@ type PartName = "menu" | "main" | "portrait";
 
 type RenderOptions = ApplicationRenderOptions<PartName> & {
     hasSavedActor: boolean;
+    fontSize: number;
 };
 
 type PreparedRenderOptions = Omit<RenderOptions, "parts"> & { parts: PartName[] };

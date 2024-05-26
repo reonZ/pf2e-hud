@@ -187,7 +187,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
                 scope: "client",
             },
             {
-                key: "scale",
+                key: "fontSize",
                 type: Number,
                 range: {
                     min: 10,
@@ -243,9 +243,12 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
         this.#tokenRefreshWrapper.toggle(enabled && this.setting("drawDistance") > 0);
     }
 
-    async _prepareContext(
-        options: ApplicationRenderOptions
-    ): Promise<TooltipContext | TooltipContextBase> {
+    _configureRenderOptions(options: RenderOptions) {
+        super._configureRenderOptions(options);
+        options.fontSize = this.setting("fontSize");
+    }
+
+    async _prepareContext(options: RenderOptions): Promise<TooltipContext | TooltipContextBase> {
         const parentData = await super._prepareContext(options);
         const baseData: TooltipContextBase = {
             ...parentData,
@@ -345,9 +348,9 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
         return await this.renderTemplate("tooltip", context);
     }
 
-    _replaceHTML(result: string, content: HTMLElement, options: ApplicationRenderOptions) {
+    _replaceHTML(result: string, content: HTMLElement, options: RenderOptions) {
         content.dataset.tokenUuid = this.token?.document.uuid;
-        content.style.setProperty("--font-size", `${this.setting("scale")}px`);
+        content.style.setProperty("--font-size", `${options.fontSize}px`);
         content.innerHTML = result;
     }
 
@@ -579,6 +582,10 @@ function postionFromTargetX(
     return x;
 }
 
+type RenderOptions = ApplicationRenderOptions & {
+    fontSize: number;
+};
+
 type TooltipContextBase = BaseActorContext & {
     distance: DistanceContext | undefined;
 };
@@ -600,7 +607,7 @@ type TooltipSettings = BaseTokenHUDSettings & {
     type: (typeof SETTING_TYPE)[number];
     delay: number;
     position: (typeof SETTING_POSITION)[number];
-    scale: number;
+    fontSize: number;
     noDead: (typeof SETTING_NO_DEAD)[number];
     showDistance: DistanceType;
     drawDistance: number;
