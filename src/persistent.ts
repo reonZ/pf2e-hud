@@ -13,7 +13,7 @@ import {
 import { BaseActorContext, PF2eHudBaseActor } from "./hud";
 import { hud } from "./main";
 import {
-    ADJUSTMENTS,
+    AdvancedHealthData,
     BaseActorData,
     HealthData,
     SHARED_PARTIALS,
@@ -21,7 +21,7 @@ import {
     addSharedListeners,
     addUpdateActorFromInput,
     getAdvancedData,
-    getCoverEffect,
+    getAdvancedHealthData,
     getDefaultData,
     getHealth,
 } from "./shared";
@@ -179,8 +179,9 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
     _configureRenderOptions(options: RenderOptions) {
         super._configureRenderOptions(options);
 
-        const allowedParts = this.templates;
+        options.hasSavedActor = !!this.setting("selected");
 
+        const allowedParts = this.templates;
         if (!options.parts) options.parts = allowedParts;
         else options.parts?.filter((part) => allowedParts.includes(part));
     }
@@ -205,7 +206,7 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         return Promise.all(
             options.parts.map(async (partName) => {
                 const part = this.#parts[partName];
-                const partContext = part.prepareContext(context);
+                const partContext = part.prepareContext(context, options);
                 const template = await this.renderTemplate(partName, {
                     i18n: templateLocalize(`persistent.${partName}`),
                     ...partContext,
@@ -339,16 +340,14 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         this.render({ parts: ["menu"] });
     }
 
-    #prepareMenuContext(context: PersistentContext): MenuContext {
-        const actor = this.actor;
-
+    #prepareMenuContext(context: PersistentContext, options: PreparedRenderOptions): MenuContext {
         const setTooltipParts = [["setActor", "leftClick"]];
-        if (actor) setTooltipParts.push(["unsetActor", "rightClick"]);
+        if (options.hasSavedActor) setTooltipParts.push(["unsetActor", "rightClick"]);
 
         const setTooltip = setTooltipParts
             .map(([key, click]) => {
                 let msg = localize("persistent.menu", key);
-                if (actor) msg = `${localize(click)} ${msg}`;
+                if (options.hasSavedActor) msg = `${localize(click)} ${msg}`;
                 return `<div>${msg}</div>`;
             })
             .join("");
@@ -404,24 +403,19 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         this.setActor(token.actor, { token });
     }
 
-    #preparePortraitContext(context: PersistentContext): PortraitContext | PersistentContext {
+    #preparePortraitContext(
+        context: PersistentContext,
+        options: PreparedRenderOptions
+    ): PortraitContext | PersistentContext {
         const actor = this.actor;
         if (!actor) return context;
 
-        const isNPC = actor.isOfType("npc");
-        const isCharacter = actor.isOfType("character");
-
         const data: PortraitContext = {
             ...context,
+            ...getAdvancedHealthData(actor),
             avatar: actor.img,
             name: actor.name,
             health: getHealth(actor)!,
-            hasCover: !!getCoverEffect(actor),
-            ac: actor.attributes.ac.value,
-            resolve: isCharacter ? actor.system.resources.resolve : undefined,
-            shield: actor.attributes.shield,
-            adjustment:
-                (isNPC && ADJUSTMENTS[actor.attributes.adjustment ?? "normal"]) || undefined,
         };
 
         return data;
@@ -435,7 +429,10 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         addArmorListeners(html, actor);
     }
 
-    #prepareMainContext(context: PersistentContext): MainContext | PersistentContext {
+    #prepareMainContext(
+        context: PersistentContext,
+        options: PreparedRenderOptions
+    ): MainContext | PersistentContext {
         const actor = this.actor;
         if (!actor) return context;
 
@@ -464,7 +461,10 @@ function isValidActor(actor: Actor | null): actor is CharacterPF2e | NPCPF2e {
 type ActionEvent = "raise-shield" | "take-cover";
 
 type Part<TContext extends PersistentContext> = {
-    prepareContext: (context: PersistentContext) => TContext | PersistentContext;
+    prepareContext: (
+        context: PersistentContext,
+        options: PreparedRenderOptions
+    ) => TContext | PersistentContext;
     activateListeners: (html: HTMLElement) => void;
 };
 
@@ -479,16 +479,12 @@ type MenuContext = PersistentContext & {
     setActorTooltip: string;
 };
 
-type PortraitContext = PersistentContext & {
-    ac: number;
-    avatar: string;
-    name: string;
-    health: HealthData;
-    resolve: ValueAndMax | undefined;
-    adjustment: (typeof ADJUSTMENTS)[keyof typeof ADJUSTMENTS] | undefined;
-    shield: HeldShieldData | undefined;
-    hasCover: boolean;
-};
+type PortraitContext = PersistentContext &
+    AdvancedHealthData & {
+        avatar: string;
+        name: string;
+        health: HealthData;
+    };
 
 type MainContext = PersistentContext &
     BaseActorData & {
@@ -502,7 +498,9 @@ type PersistentContext = BaseActorContext & {
 
 type PartName = "menu" | "main" | "portrait";
 
-type RenderOptions = ApplicationRenderOptions<PartName>;
+type RenderOptions = ApplicationRenderOptions<PartName> & {
+    hasSavedActor: boolean;
+};
 
 type PreparedRenderOptions = Omit<RenderOptions, "parts"> & { parts: PartName[] };
 

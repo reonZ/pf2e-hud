@@ -156,7 +156,6 @@ abstract class PF2eHudBaseToken<
             ...defaultData,
             health,
             name,
-            ac: isArmy ? actor.system.ac.value : actor.attributes.ac?.value,
             scouting: isArmy ? signedInteger(actor.scouting.mod) : undefined,
             hardness: actor.isOfType("vehicle", "hazard") ? actor.attributes.hardness : undefined,
         };
@@ -265,7 +264,6 @@ type BaseTokenContext = BaseActorContext &
     BaseActorData & {
         health: HealthData;
         name: string | undefined;
-        ac: number | undefined;
         scouting: string | undefined;
         hardness: number | undefined;
     };

@@ -194,7 +194,7 @@ function getDefaultData(actor: ActorPF2e, useModifier?: boolean): BaseActorData 
         ? actor.system.details.speed
         : undefined;
 
-    const data: BaseActorData = {
+    return {
         isOwner,
         isObserver,
         isNPC,
@@ -210,19 +210,7 @@ function getDefaultData(actor: ActorPF2e, useModifier?: boolean): BaseActorData 
         recall: isNPC ? actor.identificationDCs.standard.dc : undefined,
         heroPoints: isCharacter ? actor.heroPoints : undefined,
     };
-
-    return data;
 }
-
-type AdvancedActorData = {
-    otherSpeeds: string | undefined;
-    mainSpeed?: {
-        icon: string;
-        total: number;
-        label: string;
-        type: "land" | "burrow" | "climb" | "fly" | "swim";
-    };
-};
 
 function getAdvancedData(
     actor: ActorPF2e,
@@ -263,14 +251,25 @@ function getAdvancedData(
         ?.map((speed) => `<i class="${speed.icon}"></i> <span>${speed.total}</span>`)
         .join("");
 
-    const data: AdvancedActorData = {
+    return {
         mainSpeed,
         otherSpeeds: otherSpeeds
             ? `<div class="pf2e-hud-iconed-list" style="--font-size: ${scale}px">${otherSpeeds}</div>`
             : undefined,
     };
+}
 
-    return data;
+function getAdvancedHealthData(actor: ActorPF2e): AdvancedHealthData {
+    const isNPC = actor.isOfType("npc");
+    const isCharacter = actor.isOfType("character");
+
+    return {
+        hasCover: !!getCoverEffect(actor),
+        ac: actor.isOfType("army") ? actor.system.ac.value : actor.attributes.ac?.value,
+        resolve: isCharacter ? actor.system.resources.resolve : undefined,
+        shield: isCharacter || isNPC ? actor.attributes.shield : undefined,
+        adjustment: (isNPC && ADJUSTMENTS[actor.attributes.adjustment ?? "normal"]) || undefined,
+    };
 }
 
 function addUpdateActorFromInput(parent: HTMLElement, actor: ActorPF2e) {
@@ -405,6 +404,23 @@ function getCoverEffect(actor: ActorPF2e) {
     return actor?.itemTypes.effect.find((effect) => effect.flags.core?.sourceId === COVER_UUID);
 }
 
+type AdvancedActorData = {
+    otherSpeeds: string | undefined;
+    mainSpeed?: {
+        icon: string;
+        total: number;
+        label: string;
+        type: "land" | "burrow" | "climb" | "fly" | "swim";
+    };
+};
+type AdvancedHealthData = {
+    ac: number | undefined;
+    hasCover: boolean;
+    resolve: ValueAndMax | undefined;
+    adjustment: (typeof ADJUSTMENTS)[keyof typeof ADJUSTMENTS] | undefined;
+    shield: HeldShieldData | undefined;
+};
+
 type ActionEvent =
     | "use-resolve"
     | "show-notes"
@@ -486,9 +502,10 @@ export {
     addUpdateActorFromInput,
     canObserve,
     getAdvancedData,
+    getAdvancedHealthData,
     getAlliance,
     getCoverEffect,
     getDefaultData,
     getHealth,
 };
-export type { AdvancedActorData, BaseActorData, HealthData };
+export type { AdvancedActorData, AdvancedHealthData, BaseActorData, HealthData };

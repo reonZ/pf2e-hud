@@ -13,14 +13,14 @@ import {
 } from "./hud";
 import { hud } from "./main";
 import {
-    ADJUSTMENTS,
     AdvancedActorData,
+    AdvancedHealthData,
     SHARED_PARTIALS,
     addArmorListeners,
     addSharedListeners,
     addUpdateActorFromInput,
     getAdvancedData,
-    getCoverEffect,
+    getAdvancedHealthData,
 } from "./shared";
 
 const SIDEBARS = {
@@ -213,17 +213,13 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
         const data: TokenContext = {
             ...parentData,
             ...advancedData,
+            ...getAdvancedHealthData(actor),
             sidebars,
             level: actor.level,
             isFamiliar: actor.isOfType("familiar"),
             isCombatant: isCharacter || isNPC,
-            hasCover: !!getCoverEffect(actor),
-            shield: isCharacter || isNPC ? actor.attributes.shield : undefined,
             dying: isCharacter ? actor.attributes.dying : undefined,
             wounded: isCharacter ? actor.attributes.wounded : undefined,
-            resolve: isCharacter ? actor.system.resources.resolve : undefined,
-            adjustment:
-                (isNPC && ADJUSTMENTS[actor.attributes.adjustment ?? "normal"]) || undefined,
         };
 
         return data;
@@ -363,16 +359,13 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
 type TokenContextBase = BaseActorContext;
 
 type TokenContext = BaseTokenContext &
-    AdvancedActorData & {
+    AdvancedActorData &
+    AdvancedHealthData & {
         level: number;
         dying: ValueAndMax | undefined;
         wounded: ValueAndMax | undefined;
-        adjustment: (typeof ADJUSTMENTS)[keyof typeof ADJUSTMENTS] | undefined;
-        resolve: ValueAndMax | undefined;
         isFamiliar: boolean;
         isCombatant: boolean;
-        hasCover: boolean;
-        shield: HeldShieldData | undefined;
         sidebars: {
             type: string;
             icon: string;
