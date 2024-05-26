@@ -1,6 +1,12 @@
 {
     "pf2e-hud": {
         "keybindings": {
+            "persistent": {
+                "setActor": {
+                    "name": "Set Token as Persistent",
+                    "hint": "Set the selected token as persistent actor."
+                }
+            },
             "tracker": {
                 "toggle": {
                     "name": "Toggle Combat Tracker",
@@ -174,8 +180,8 @@
             },
             "menu": {
                 "openSheet": "Open Sheet",
-                "setActor": "[Left Click] Set selected token as persistent actor",
-                "unsetActor": "[Right Click] Uset persistent actor"
+                "setActor": "Set selected token as persistent actor",
+                "unsetActor": "Uset persistent actor"
             },
             "portrait": {
                 "selectActor": "Set this actor as persistent"
@@ -188,6 +194,8 @@
                 "nothing": "Encounter Not Started",
                 "secret": "Something Secret is Happening"
             }
-        }
+        },
+        "leftClick": "[Left Click]",
+        "rightClick": "[Right Click]"
     }
 }

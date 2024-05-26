@@ -6,8 +6,9 @@ import {
     elementData,
     htmlElement,
     isInstanceOf,
-    subLocalize,
+    localize,
     templateLocalize,
+    warn,
 } from "pf2e-api";
 import { BaseActorContext, PF2eHudBaseActor } from "./hud";
 import { hud } from "./main";
@@ -23,8 +24,6 @@ import {
     getDefaultData,
     getHealth,
 } from "./shared";
-
-const localize = subLocalize("persistent");
 
 class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> {
     #renderActorSheetHook = createHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
@@ -81,6 +80,15 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
 
     get useModifiers() {
         return this.setting("modifiers");
+    }
+
+    get keybinds(): KeybindingActionConfig[] {
+        return [
+            {
+                name: "setActor",
+                onUp: () => this.#setSelectedToken(),
+            },
+        ];
     }
 
     get settings(): SettingOptions[] {
@@ -168,18 +176,10 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         const actor = this.actor;
         const parentData = await super._prepareContext(options);
 
-        const setTooltip = ["setActor"];
-        if (actor) setTooltip.push("unsetActor");
-
-        const setActorTooltip = `<div class="pf2e-hud-left">
-            ${setTooltip.map((x) => `<div>${localize("menu", x)}</div>`).join("")}
-        </div>`;
-
         const data: PersistentContext = {
             ...parentData,
             isNPC: !!actor?.isOfType("npc"),
             isCharacter: !!actor?.isOfType("character"),
-            setActorTooltip,
         };
 
         return data;
@@ -304,7 +304,7 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         if (!titleElement) return;
 
         const existing = titleElement.querySelector(".document-id-link.persistent");
-        const tooltip = localize("portrait.selectActor");
+        const tooltip = localize("persistent.portrait.selectActor");
         const btn = createHTMLFromString(
             `<a class="document-id-link persistent" data-tooltip="${tooltip}" data-tooltip-direction="UP">
                 <i class='fa-solid fa-user-vneck'></i>
@@ -322,8 +322,22 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
     }
 
     #prepareMenuContext(context: PersistentContext): MenuContext {
+        const actor = this.actor;
+
+        const setTooltipParts = [["setActor", "leftClick"]];
+        if (actor) setTooltipParts.push(["unsetActor", "rightClick"]);
+
+        const setTooltip = setTooltipParts
+            .map(([key, click]) => {
+                let msg = localize("persistent.menu", key);
+                if (actor) msg = `${localize(click)} ${msg}`;
+                return `<div>${msg}</div>`;
+            })
+            .join("");
+
         return {
             ...context,
+            setActorTooltip: `<div class="pf2e-hud-left">${setTooltip}</div>`,
             hotbarLocked: ui.hotbar.locked,
         };
     }
@@ -356,16 +370,20 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
                     break;
                 }
                 case "select-actor": {
-                    const tokens = canvas.tokens.controlled;
-                    const token = tokens[0];
-                    if (tokens.length !== 1 || !isValidActor(token.actor)) {
-                        return localize.warn("error.selectOne");
-                    }
-                    this.setActor(token.actor, token);
+                    this.#setSelectedToken();
                     break;
                 }
             }
         });
+    }
+
+    #setSelectedToken() {
+        const tokens = canvas.tokens.controlled;
+        const token = tokens[0];
+        if (tokens.length !== 1 || !isValidActor(token.actor)) {
+            return warn("persistent.error.selectOne");
+        }
+        this.setActor(token.actor, token);
     }
 
     #preparePortraitContext(context: PersistentContext): PortraitContext | PersistentContext {
@@ -439,6 +457,7 @@ type Parts = {
 
 type MenuContext = PersistentContext & {
     hotbarLocked: boolean;
+    setActorTooltip: string;
 };
 
 type PortraitContext = PersistentContext & {
@@ -460,7 +479,6 @@ type MainContext = PersistentContext &
 type PersistentContext = BaseActorContext & {
     isCharacter: boolean;
     isNPC: boolean;
-    setActorTooltip: string;
 };
 
 type PartName = "menu" | "main" | "portrait";
