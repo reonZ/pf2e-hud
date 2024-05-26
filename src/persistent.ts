@@ -29,6 +29,8 @@ const localize = subLocalize("persistent");
 class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> {
     #renderActorSheetHook = createHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
     #renderHotbarHook = createHook("renderHotbar", this.#onRenderHotbar.bind(this));
+    #deleteTokenHook = createHook("deleteToken", this.#onDeleteActor.bind(this));
+    #deleteActorHook = createHook("deleteActor", this.#onDeleteActor.bind(this));
 
     #actor: ActorType | null = null;
 
@@ -134,6 +136,8 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
     _onEnable(enabled: boolean = this.enabled) {
         this.#renderHotbarHook.toggle(enabled);
         this.#renderActorSheetHook.toggle(enabled);
+        this.#deleteTokenHook.toggle(enabled);
+        this.#deleteActorHook.toggle(enabled);
 
         if (enabled) {
             const selected = this.setting("selected");
@@ -280,6 +284,13 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         this.setSetting("selected", actor?.uuid ?? "");
 
         if (!skipRender) this.render(true);
+    }
+
+    #onDeleteActor(doc: ActorPF2e | TokenDocumentPF2e) {
+        const actor = doc instanceof Actor ? doc : doc.actor;
+        if (this.isCurrentActor(actor)) {
+            this.setActor(null);
+        }
     }
 
     #onRenderActorSheet(sheet: ActorSheetPF2e, $html: JQuery) {
