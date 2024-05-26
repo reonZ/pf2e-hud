@@ -144,7 +144,7 @@ $panel-gap: 5px;
 }
 
 #tooltip {
-    .pf2e-hud-list {
+    .pf2e-hud-iconed-list {
         display: grid;
         grid-template-columns: 1.4em 2em;
         align-items: center;
@@ -154,6 +154,14 @@ $panel-gap: 5px;
         span {
             text-align: end;
         }
+    }
+
+    .pf2e-hud-left {
+        text-align: start;
+    }
+
+    &:has(.pf2e-hud-left) {
+        max-width: unset;
     }
 }
 

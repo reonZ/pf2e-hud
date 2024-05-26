@@ -258,7 +258,7 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
             adjustment:
                 (isNPC && ADJUSTMENTS[actor.attributes.adjustment ?? "normal"]) || undefined,
             otherSpeeds: otherSpeeds
-                ? `<div class="pf2e-hud-list" style="--font-size: ${scale}px">${otherSpeeds}</div>`
+                ? `<div class="pf2e-hud-iconed-list" style="--font-size: ${scale}px">${otherSpeeds}</div>`
                 : undefined,
         };
 

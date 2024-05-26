@@ -1,4 +1,5 @@
 import {
+    addListener,
     addListenerAll,
     createHTMLFromString,
     createHook,
@@ -163,11 +164,21 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         const actor = this.actor;
         const parentData = await super._prepareContext(options);
 
-        return {
+        const setTooltip = ["setActor"];
+        if (actor) setTooltip.push("unsetActor");
+
+        const setActorTooltip = `<div class="pf2e-hud-left">
+            ${setTooltip.map((x) => `<div>${localize("menu", x)}</div>`).join("")}
+        </div>`;
+
+        const data: PersistentContext = {
             ...parentData,
             isNPC: !!actor?.isOfType("npc"),
             isCharacter: !!actor?.isOfType("character"),
+            setActorTooltip,
         };
+
+        return data;
     }
 
     async _renderHTML(
@@ -266,6 +277,7 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         }
 
         this.#actor = actor;
+        this.setSetting("selected", actor?.uuid ?? "");
 
         if (!skipRender) this.render(true);
     }
@@ -307,10 +319,12 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
 
     #activateMenuListeners(html: HTMLElement) {
         const actor = this.actor;
-        const menuElement = this.menuElement;
-        if (!menuElement) return;
 
-        addListenerAll(menuElement, "[data-action]", (event, el) => {
+        addListener(html, "[data-action='select-actor']", "contextmenu", () => {
+            this.setActor(null);
+        });
+
+        addListenerAll(html, "[data-action]", (event, el) => {
             const action = elementData<{ action: MenuActionEvent }>(el).action;
 
             switch (action) {
@@ -368,11 +382,10 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
 
     #activatePortraitListeners(html: HTMLElement) {
         const actor = this.actor;
-        const portraitElement = this.portraitElement;
-        if (!actor || !portraitElement) return;
+        if (!actor) return;
 
-        addUpdateActorFromInput(portraitElement, actor);
-        addArmorListeners(portraitElement, actor);
+        addUpdateActorFromInput(html, actor);
+        addArmorListeners(html, actor);
     }
 
     #prepareMainContext(context: PersistentContext): MainContext | PersistentContext {
@@ -436,6 +449,7 @@ type MainContext = PersistentContext &
 type PersistentContext = BaseActorContext & {
     isCharacter: boolean;
     isNPC: boolean;
+    setActorTooltip: string;
 };
 
 type PartName = "menu" | "main" | "portrait";

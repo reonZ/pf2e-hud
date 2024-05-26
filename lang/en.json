@@ -174,10 +174,11 @@
             },
             "menu": {
                 "openSheet": "Open Sheet",
-                "fromToken": "Set selected token as persistent actor"
+                "setActor": "[Left Click] Set selected token as persistent actor",
+                "unsetActor": "[Right Click] Uset persistent actor"
             },
             "portrait": {
-                "selectActor": "Select this actor as persistent"
+                "selectActor": "Set this actor as persistent"
             }
         },
         "tracker": {
