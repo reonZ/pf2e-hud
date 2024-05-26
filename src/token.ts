@@ -1,8 +1,6 @@
 import {
-    R,
     createHTMLFromString,
     createHook,
-    getFlag,
     libWrapper,
     localizePath,
     registerWrapper,
@@ -16,10 +14,12 @@ import {
 import { hud } from "./main";
 import {
     ADJUSTMENTS,
+    AdvancedActorData,
     SHARED_PARTIALS,
     addArmorListeners,
     addSharedListeners,
     addUpdateActorFromInput,
+    getAdvancedData,
     getCoverEffect,
 } from "./shared";
 
@@ -198,43 +198,10 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
 
         const actor = this.token!.actor!;
         const isNPC = actor.isOfType("npc");
-        const isCharacter = actor.isOfType("character");
-        const { speeds } = parentData as BaseTokenContext;
-
-        const mainSpeed = (() => {
-            if (!speeds?.length) return;
-
-            const selectedSpeed = getFlag<MovementType>(actor, "speed");
-            if (selectedSpeed) {
-                const index = speeds.findIndex((speed) => speed.type === selectedSpeed);
-                if (index !== -1) return speeds.splice(index, 1)[0];
-            }
-
-            const landSpeed = speeds[0];
-            if (!this.setting("highestSpeed")) return speeds.shift();
-
-            const [_, highestSpeeds] =
-                speeds.length === 1
-                    ? ["", speeds]
-                    : R.pipe(
-                          speeds,
-                          R.groupBy((x) => x.total),
-                          R.toPairs.strict,
-                          R.sortBy([(x) => Number(x[0]), "desc"]),
-                          R.first()
-                      )!;
-            if (highestSpeeds.includes(landSpeed)) return speeds.shift();
-
-            const highestSpeed = highestSpeeds[0];
-            const index = speeds.findIndex((speed) => speed === highestSpeed);
-
-            return speeds.splice(index, 1)[0];
-        })();
-
         const scale = this.setting("scale");
-        const otherSpeeds = speeds
-            ?.map((speed) => `<i class="${speed.icon}"></i> <span>${speed.total}</span>`)
-            .join("");
+        const isCharacter = actor.isOfType("character");
+        const useHighestSpeed = this.setting("highestSpeed");
+        const advancedData = getAdvancedData(actor, parentData, { scale, useHighestSpeed });
 
         const sidebars = Object.entries(SIDEBARS).map(([type, { icon }]) => ({
             type,
@@ -245,8 +212,8 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
 
         const data: TokenContext = {
             ...parentData,
+            ...advancedData,
             sidebars,
-            mainSpeed,
             level: actor.level,
             isFamiliar: actor.isOfType("familiar"),
             isCombatant: isCharacter || isNPC,
@@ -257,9 +224,6 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
             resolve: isCharacter ? actor.system.resources.resolve : undefined,
             adjustment:
                 (isNPC && ADJUSTMENTS[actor.attributes.adjustment ?? "normal"]) || undefined,
-            otherSpeeds: otherSpeeds
-                ? `<div class="pf2e-hud-iconed-list" style="--font-size: ${scale}px">${otherSpeeds}</div>`
-                : undefined,
         };
 
         return data;
@@ -398,33 +362,24 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
 
 type TokenContextBase = BaseActorContext;
 
-type TokenContext = BaseTokenContext & {
-    mainSpeed:
-        | {
-              icon: string;
-              total: number;
-              label: string;
-              type: "land" | "burrow" | "climb" | "fly" | "swim";
-          }
-        | undefined;
-    otherSpeeds: string | undefined;
-    level: number;
-    dying: ValueAndMax | undefined;
-    wounded: ValueAndMax | undefined;
-    adjustment: (typeof ADJUSTMENTS)[keyof typeof ADJUSTMENTS] | undefined;
-    resolve: ValueAndMax | undefined;
-    isFamiliar: boolean;
-    isCombatant: boolean;
-    hasCover: boolean;
-    shield: HeldShieldData | undefined;
-    sidebars: {
-        type: string;
-        icon: string;
-        label: `${string}.${string}`;
-        disabled: boolean;
-    }[];
-    partial: (key: string) => string;
-};
+type TokenContext = BaseTokenContext &
+    AdvancedActorData & {
+        level: number;
+        dying: ValueAndMax | undefined;
+        wounded: ValueAndMax | undefined;
+        adjustment: (typeof ADJUSTMENTS)[keyof typeof ADJUSTMENTS] | undefined;
+        resolve: ValueAndMax | undefined;
+        isFamiliar: boolean;
+        isCombatant: boolean;
+        hasCover: boolean;
+        shield: HeldShieldData | undefined;
+        sidebars: {
+            type: string;
+            icon: string;
+            label: `${string}.${string}`;
+            disabled: boolean;
+        }[];
+    };
 
 type TokenSettings = BaseTokenHUDSettings & {
     enabled: boolean;

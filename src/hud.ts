@@ -95,6 +95,11 @@ abstract class PF2eHudBaseActor<
         };
     }
 
+    close(options?: ApplicationClosingOptions): Promise<ApplicationV2> {
+        delete this.actor?.apps[this.id];
+        return super.close(options);
+    }
+
     isCurrentActor(actor: ActorPF2e | null | undefined) {
         return actor && this.actor?.uuid === actor.uuid;
     }

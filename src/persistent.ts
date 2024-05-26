@@ -20,6 +20,7 @@ import {
     addArmorListeners,
     addSharedListeners,
     addUpdateActorFromInput,
+    getAdvancedData,
     getCoverEffect,
     getDefaultData,
     getHealth,
@@ -108,9 +109,21 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
                 default: "",
                 scope: "client",
                 config: false,
+                onChange: () => {
+                    this.render();
+                },
             },
             {
                 key: "modifiers",
+                type: Boolean,
+                default: false,
+                scope: "client",
+                onChange: () => {
+                    this.render();
+                },
+            },
+            {
+                key: "highestSpeed",
                 type: Boolean,
                 default: false,
                 scope: "client",
@@ -156,7 +169,7 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
                 actor = (game.user as UserPF2e).character;
             }
 
-            if (actor) this.setActor(actor);
+            if (actor) this.setActor(actor, { skipSave: true });
             else this.render(true);
         } else {
             this.close({ forced: true });
@@ -249,7 +262,7 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
     ): Promise<ApplicationV2> {
         if (!options?.forced) return this;
 
-        this.setActor(false);
+        this.#actor = null;
 
         for (const key in this.#elements) {
             this.#elements[key as PartName | "left"]?.remove();
@@ -259,15 +272,20 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         return super.close(options);
     }
 
-    setActor(actor: ActorPF2e | null | false, token?: Token) {
-        const skipRender = actor === false;
-
-        actor ||= null;
-
+    setActor(
+        actor: ActorPF2e | null,
+        { token, skipSave }: { token?: Token; skipSave?: boolean } = {}
+    ) {
         if (this.isCurrentActor(actor)) return;
         if (actor && !isValidActor(actor)) return;
 
+        const savedActor = actor;
         delete this.actor?.apps[this.id];
+
+        if (!actor) {
+            const userActor = (game.user as UserPF2e).character;
+            if (isValidActor(userActor)) actor = userActor;
+        }
 
         if (actor) {
             actor.apps[this.id] = this;
@@ -280,10 +298,10 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
             }
         }
 
-        this.#actor = actor;
-        this.setSetting("selected", actor?.uuid ?? "");
+        this.#actor = actor as ActorType;
 
-        if (!skipRender) this.render(true);
+        if (skipSave) this.render(!!actor);
+        else this.setSetting("selected", savedActor?.uuid ?? "");
     }
 
     #onDeleteActor(doc: ActorPF2e | TokenDocumentPF2e) {
@@ -383,7 +401,7 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         if (tokens.length !== 1 || !isValidActor(token.actor)) {
             return warn("persistent.error.selectOne");
         }
-        this.setActor(token.actor, token);
+        this.setActor(token.actor, { token });
     }
 
     #preparePortraitContext(context: PersistentContext): PortraitContext | PersistentContext {
@@ -421,11 +439,12 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         const actor = this.actor;
         if (!actor) return context;
 
-        const defaultData = getDefaultData(actor, this.useModifiers);
+        const baseData = getDefaultData(actor, this.useModifiers);
+        const advancedData = getAdvancedData(actor, baseData, { scale: 1, useHighestSpeed: true });
 
         return {
             ...context,
-            ...defaultData,
+            ...baseData,
             level: actor.level,
         };
     }

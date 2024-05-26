@@ -122,6 +122,10 @@
                 "modifiers": {
                     "name": "Show Modifiers",
                     "hint": "Should modifiers be displayed instead of DCs in the persistent HUD."
+                },
+                "highestSpeed": {
+                    "name": "Highest Speed",
+                    "hint": "If no speed was manually selected, the highest one will always be shown by default even if the land speed isn't 0."
                 }
             },
             "tracker": {
@@ -176,7 +180,7 @@
         },
         "persistent": {
             "error": {
-                "selectOne": "Select a single token to set as your persistent actor."
+                "selectOne": "Select a single NPC/Character token to set as your persistent actor."
             },
             "menu": {
                 "openSheet": "Open Sheet",

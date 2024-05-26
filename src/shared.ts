@@ -3,8 +3,7 @@ import {
     addListener,
     addListenerAll,
     elementData,
-    getSetting,
-    isOfType,
+    getFlag,
     saveTypes,
     setFlag,
     signedInteger,
@@ -195,7 +194,7 @@ function getDefaultData(actor: ActorPF2e, useModifier?: boolean): BaseActorData 
         ? actor.system.details.speed
         : undefined;
 
-    return {
+    const data: BaseActorData = {
         isOwner,
         isObserver,
         isNPC,
@@ -211,6 +210,67 @@ function getDefaultData(actor: ActorPF2e, useModifier?: boolean): BaseActorData 
         recall: isNPC ? actor.identificationDCs.standard.dc : undefined,
         heroPoints: isCharacter ? actor.heroPoints : undefined,
     };
+
+    return data;
+}
+
+type AdvancedActorData = {
+    otherSpeeds: string | undefined;
+    mainSpeed?: {
+        icon: string;
+        total: number;
+        label: string;
+        type: "land" | "burrow" | "climb" | "fly" | "swim";
+    };
+};
+
+function getAdvancedData(
+    actor: ActorPF2e,
+    { speeds }: BaseActorData,
+    { scale, useHighestSpeed }: { scale: number; useHighestSpeed: boolean }
+): AdvancedActorData {
+    const mainSpeed = (() => {
+        if (!speeds?.length) return;
+
+        const selectedSpeed = getFlag<MovementType>(actor, "speed");
+        if (selectedSpeed) {
+            const index = speeds.findIndex((speed) => speed.type === selectedSpeed);
+            if (index !== -1) return speeds.splice(index, 1)[0];
+        }
+
+        const landSpeed = speeds[0];
+        if (!useHighestSpeed) return speeds.shift();
+
+        const [_, highestSpeeds] =
+            speeds.length === 1
+                ? ["", speeds]
+                : R.pipe(
+                      speeds,
+                      R.groupBy((x) => x.total),
+                      R.toPairs.strict,
+                      R.sortBy([(x) => Number(x[0]), "desc"]),
+                      R.first()
+                  )!;
+        if (highestSpeeds.includes(landSpeed)) return speeds.shift();
+
+        const highestSpeed = highestSpeeds[0];
+        const index = speeds.findIndex((speed) => speed === highestSpeed);
+
+        return speeds.splice(index, 1)[0];
+    })();
+
+    const otherSpeeds = speeds
+        ?.map((speed) => `<i class="${speed.icon}"></i> <span>${speed.total}</span>`)
+        .join("");
+
+    const data: AdvancedActorData = {
+        mainSpeed,
+        otherSpeeds: otherSpeeds
+            ? `<div class="pf2e-hud-iconed-list" style="--font-size: ${scale}px">${otherSpeeds}</div>`
+            : undefined,
+    };
+
+    return data;
 }
 
 function addUpdateActorFromInput(parent: HTMLElement, actor: ActorPF2e) {
@@ -425,9 +485,10 @@ export {
     addSharedListeners,
     addUpdateActorFromInput,
     canObserve,
+    getAdvancedData,
     getAlliance,
     getCoverEffect,
     getDefaultData,
     getHealth,
 };
-export type { BaseActorData, HealthData };
+export type { AdvancedActorData, BaseActorData, HealthData };
