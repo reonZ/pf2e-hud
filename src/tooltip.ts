@@ -248,7 +248,9 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
         options.fontSize = this.setting("fontSize");
     }
 
-    async _prepareContext(options: RenderOptions): Promise<TooltipContext | TooltipContextBase> {
+    async _prepareContext(
+        options: RenderOptions
+    ): Promise<TooltipContext | StatusedTooltipContext | TooltipContextBase> {
         const parentData = await super._prepareContext(options);
         const baseData: TooltipContextBase = {
             ...parentData,
@@ -303,12 +305,6 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
             return baseData;
         }
 
-        const setting = this.setting("type");
-        const { isOwner, isObserver } = parentData;
-
-        const expended = (setting === "owned" && isOwner) || (setting === "observed" && isObserver);
-        if (!expended) return baseData;
-
         const status = (() => {
             const statuses = this.healthStatuses;
             if (!statuses) return;
@@ -327,6 +323,17 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
             const pick = Math.ceil(ratio * (statuses.length - 2));
             return statuses.at(pick - 1);
         })();
+
+        const setting = this.setting("type");
+        const { isOwner, isObserver } = parentData;
+
+        const expended = (setting === "owned" && isOwner) || (setting === "observed" && isObserver);
+        if (!expended) {
+            return {
+                ...baseData,
+                status,
+            };
+        }
 
         const data: TooltipContext = {
             ...parentData,
@@ -588,6 +595,10 @@ type RenderOptions = ApplicationRenderOptions & {
 
 type TooltipContextBase = BaseActorContext & {
     distance: DistanceContext | undefined;
+};
+
+type StatusedTooltipContext = TooltipContextBase & {
+    status: string | undefined;
 };
 
 type TooltipContext = BaseTokenContext & {
