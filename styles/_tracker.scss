@@ -283,13 +283,6 @@ $threat-extreme: red;
         }
     }
 
-    &.textureScaling {
-        .combatants {
-            margin: -3em 0 -2em -3em;
-            padding: 3em 0 2em 3em;
-        }
-    }
-
     &:not(:has(header)) {
         padding-top: 2px;
 
@@ -312,11 +305,13 @@ $threat-extreme: red;
                 display: none;
             }
         }
-    }
 
-    &:not(.collapsed) {
-        .fake {
-            display: none;
+        &.textureScaling {
+            .combatants {
+                margin: -3em 0 -2em -3em;
+                padding: 3em 0 2em 3em;
+                min-height: calc(var(--combatant-height) * 2 + 5em);
+            }
         }
     }
 

@@ -26,11 +26,11 @@
 
 
 <ol class="combatants">
-    {{#unless (or isGM hasActive)}}
+    {{#if (and expand.collapsed hasStarted (not hasActive) (not isGM))}}
     <section class="fake">
         {{i18n 'fake.secret'}}
     </section>
-    {{/unless}}
+    {{/if}}
 
     {{#each turns as |combatant|}}
     <li class="combatant {{combatant.css}}" data-combatant-id="{{combatant.id}}"
@@ -145,11 +145,11 @@
     </li>
     {{/each}}
 
-    {{#unless hasStarted}}
+    {{#if (and expand.collapsed (not hasStarted))}}
     <section class="fake">
         {{i18n 'fake.nothing'}}
     </section>
-    {{/unless}}
+    {{/if}}
 
 </ol>
 
