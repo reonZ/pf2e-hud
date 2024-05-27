@@ -340,6 +340,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
             distance: baseData.distance,
             expended,
             status,
+            ac: actor.isOfType("army") ? actor.system.ac.value : actor.attributes.ac?.value,
             immunities: !!actor.attributes.immunities.length,
             resistances: !!actor.attributes.resistances.length,
             weaknesses: !!actor.attributes.weaknesses.length,
@@ -605,6 +606,7 @@ type TooltipContext = BaseTokenContext & {
     distance: DistanceContext | undefined;
     status: string | undefined;
     expended: boolean;
+    ac: number | undefined;
     immunities: boolean;
     resistances: boolean;
     weaknesses: boolean;
