@@ -229,14 +229,15 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
             document.getElementById("ui-left")?.append(this.#elements.left);
         }
 
-        for (const { name, element } of templates) {
+        for (let { name, element } of templates) {
             const oldElement = this.#elements[name];
             const focusName = oldElement?.querySelector<HTMLInputElement>("input:focus")?.name;
 
             if (oldElement) {
                 oldElement.replaceWith(element);
             } else if (name === "main") {
-                content.append(element);
+                content.replaceChildren(...element.children);
+                element = content;
             } else if (name === "menu") {
                 this.#elements.left.prepend(element);
             } else {
@@ -247,7 +248,7 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
                 element.querySelector<HTMLInputElement>(`input[name="${focusName}"]`)?.focus();
             }
 
-            this.#elements[name] = element;
+            if (name !== "main") this.#elements[name] = element;
             this.#parts[name].activateListeners(element);
         }
     }
@@ -446,6 +447,7 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         return {
             ...context,
             ...baseData,
+            ...advancedData,
             level: actor.level,
         };
     }
