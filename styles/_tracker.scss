@@ -125,6 +125,11 @@ $threat-extreme: red;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
+
+                    &.gm-only {
+                        filter: invert(1);
+                        text-shadow: 0 0 2px black;
+                    }
                 }
 
                 .controls {

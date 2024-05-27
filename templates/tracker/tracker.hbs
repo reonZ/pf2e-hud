@@ -47,7 +47,9 @@
 
 
         <div class="details">
-            <div class="name">{{combatant.name}}</div>
+            <div class="name{{#if (eq combatant.toggleName.active false)}} gm-only{{/if}}">
+                {{combatant.name}}
+            </div>
             <div class="controls">
                 {{!-- if isGM --}}
                 {{#if @root.isGM}}

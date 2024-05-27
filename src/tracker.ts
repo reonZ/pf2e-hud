@@ -6,6 +6,7 @@ import {
     elementData,
     getDispositionColor,
     htmlElement,
+    localize,
     querySelectorArray,
     render,
     templateLocalize,
@@ -153,6 +154,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
 
     async _prepareContext(options: RenderOptions): Promise<TrackerContext | BaseContext> {
         const isGM = game.user.isGM;
+        const unknown = localize("tracker.unknown");
         const parentData = await super._prepareContext(options);
         const combat = this.combat!;
         const combatant = combat.combatant;
@@ -173,6 +175,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
             const initiative = combatant.initiative;
             const hasRolled = initiative !== null;
             const hasPlayerOwner = !!actor?.hasPlayerOwner;
+            const playersCanSeeName = !tokenSetsNameVisibility || combatant.playersCanSeeName;
             const dispositionColor = isCurrent ? getDispositionColor(actor) : new Color("black");
 
             const texture = (useTextureScaling ? combatant.token?.texture : undefined) ?? {
@@ -183,11 +186,10 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
 
             const toggleName = (() => {
                 if (!isGM || !tokenSetsNameVisibility || actor?.alliance === "party") return;
-                const isActive = combatant.playersCanSeeName;
                 return {
-                    active: isActive,
+                    active: playersCanSeeName,
                     tooltip: game.i18n.localize(
-                        isActive ? "PF2E.Encounter.HideName" : "PF2E.Encounter.RevealName"
+                        playersCanSeeName ? "PF2E.Encounter.HideName" : "PF2E.Encounter.RevealName"
                     ),
                 };
             })();
@@ -204,7 +206,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
             const turn: TrackerTurn = {
                 index: i,
                 id: combatant.id,
-                name: combatant.name,
+                name: isGM || playersCanSeeName ? combatant.name : unknown,
                 initiative: String(initiative),
                 hasRolled,
                 texture,

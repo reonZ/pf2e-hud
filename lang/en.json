@@ -197,7 +197,8 @@
             "fake": {
                 "nothing": "Encounter Not Started",
                 "secret": "Something Secret is Happening"
-            }
+            },
+            "unknown": "Unknown"
         },
         "leftClick": "[Left Click]",
         "rightClick": "[Right Click]"
