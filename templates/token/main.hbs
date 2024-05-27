@@ -68,11 +68,7 @@
     {{/if}}
 
     <div class="panel bottom">
-        {{> (partial 'info') icon="fa-solid fa-language" section="languages" tooltip=""}}
-        {{> (partial 'info') icon="fa-solid fa-signal-stream" section="senses" tooltip=""}}
-        {{> (partial 'info') icon="fa-solid fa-solid fa-ankh" section="immunities" tooltip=""}}
-        {{> (partial 'info') icon="fa-solid fa-heart-crack" section="resistances" tooltip=""}}
-        {{> (partial 'info') icon="fa-solid fa-shield-virus" section="weaknesses" tooltip=""}}
+        {{> (partial 'infos') infoSections=infoSections}}
         {{!-- --}}
         {{#if isCombatant}}
         <hr>

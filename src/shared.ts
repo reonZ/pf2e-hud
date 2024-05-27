@@ -14,7 +14,7 @@ const COVER_UUID = "Compendium.pf2e.other-effects.Item.I9lfZUiCwMiGogVi";
 const SHARED_PARTIALS = [
     "numbers",
     "slider",
-    "info",
+    "infos",
     "armor",
     "statistics",
     "stamina",
@@ -41,15 +41,51 @@ const OTHER_ICONS = {
     stealth: "fa-duotone fa-eye-slash",
     athletics: "fa-solid fa-hand-fist",
 };
-
 const OTHER_SLUGS = R.keys.strict(OTHER_ICONS);
+
+const INFOS = {
+    languages: {
+        label: "PF2E.Actor.Creature.Language.Plural",
+        icon: "fa-solid fa-language",
+        createTooltip: (actor: ActorPF2e) => {
+            if (!actor.isOfType("creature")) return [];
+            return actor.system.details.languages.value.map((lang) =>
+                game.i18n.localize(CONFIG.PF2E.languages[lang])
+            );
+        },
+    },
+    senses: {
+        label: "PF2E.Actor.Creature.Sense.Plural",
+        icon: "fa-solid fa-signal-stream",
+        createTooltip: (actor: ActorPF2e) =>
+            actor.perception?.senses.map((sense) => sense.label) ?? [],
+    },
+    immunities: {
+        label: "PF2E.ImmunitiesLabel",
+        icon: "fa-solid fa-solid fa-ankh",
+        createTooltip: (actor: ActorPF2e) =>
+            actor.attributes.immunities.map((immunity) => immunity.label),
+    },
+    resistances: {
+        label: "PF2E.ResistancesLabel",
+        icon: "fa-solid fa-heart-crack",
+        createTooltip: (actor: ActorPF2e) =>
+            actor.attributes.resistances.map((resistance) => resistance.label),
+    },
+    weaknesses: {
+        label: "PF2E.WeaknessesLabel",
+        icon: "fa-solid fa-shield-virus",
+        createTooltip: (actor: ActorPF2e) =>
+            actor.attributes.weaknesses.map((weakness) => weakness.label),
+    },
+};
+const INFO_SLUGS = R.keys.strict(INFOS);
 
 const IWR = {
     immunities: { icon: "fa-solid fa-ankh", label: "PF2E.ImmunitiesLabel" },
     resistances: { icon: "fa-solid fa-heart-crack", label: "PF2E.WeaknessesLabel" },
     weaknesses: { icon: "fa-solid fa-shield-virus", label: "PF2E.ResistancesLabel" },
 };
-
 const IWR_SLUGS = R.keys.strict(IWR);
 
 const ADJUSTMENTS = {
@@ -364,7 +400,7 @@ function getAdvancedData(
 ): AdvancedActorData {
     const isCharacter = actor.isOfType("character");
 
-    const mainSpeed = (() => {
+    const mainSpeed = ((): AdvancedMainSpeed | undefined => {
         if (!speeds?.length) return;
 
         const selectedSpeed = getFlag<MovementType>(actor, "speed");
@@ -398,10 +434,31 @@ function getAdvancedData(
         ?.map((speed) => `<i class="${speed.icon}"></i> <span>${speed.total}</span>`)
         .join("");
 
+    const infoSections = INFO_SLUGS.map((section): AdvancedInfoSection => {
+        const info = INFOS[section];
+        const tooltipData = R.compact(info.createTooltip(actor)).map((row) => `<li>${row}</li>`);
+
+        const tooltip = tooltipData.length
+            ? `<div class="pf2e-hud-left">
+            <h4>${game.i18n.localize(info.label)}</h4>
+            <ul>${tooltipData.join("")}</ul>
+        </div>`
+            : info.label;
+
+        return {
+            section,
+            tooltip,
+            active: tooltipData.length > 0,
+            icon: info.icon,
+            label: info.label,
+        };
+    });
+
     return {
         dying: isCharacter ? actor.attributes.dying : undefined,
         wounded: isCharacter ? actor.attributes.wounded : undefined,
         mainSpeed,
+        infoSections,
         otherSpeeds: otherSpeeds
             ? `<div class="pf2e-hud-iconed-list" style="--font-size: ${fontSize}px">${otherSpeeds}</div>`
             : undefined,
@@ -412,13 +469,25 @@ type AdvancedActorData = {
     otherSpeeds: string | undefined;
     dying: ValueAndMax | undefined;
     wounded: ValueAndMax | undefined;
-    mainSpeed?: {
-        icon: string;
-        total: number;
-        label: string;
-        type: "land" | "burrow" | "climb" | "fly" | "swim";
-    };
+    infoSections: AdvancedInfoSection[];
+    mainSpeed: AdvancedMainSpeed | undefined;
 };
+
+type AdvancedInfoSection = {
+    icon: string;
+    label: string;
+    active: boolean;
+    tooltip: string;
+    section: "languages" | "immunities" | "weaknesses" | "resistances" | "senses";
+};
+
+type AdvancedMainSpeed = {
+    icon: string;
+    total: number;
+    label: string;
+    type: "land" | "burrow" | "climb" | "fly" | "swim";
+};
+
 type AdvancedHealthData = {
     ac: number | undefined;
     hasCover: boolean;

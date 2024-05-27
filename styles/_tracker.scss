@@ -96,6 +96,7 @@ $threat-extreme: red;
                     display: flex;
                     font-size: 1.8em;
                     align-items: center;
+                    z-index: 1;
                 }
 
                 .targets {
@@ -326,9 +327,12 @@ $threat-extreme: red;
 
     &.toggle-menu {
         .combatant {
-            .avatar img,
             .controls:not(.alt) {
                 display: none;
+            }
+
+            .avatar img {
+                opacity: 0.4;
             }
         }
     }

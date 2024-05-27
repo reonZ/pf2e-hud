@@ -87,11 +87,6 @@ $panel-gap: 5px;
             text-align: center;
         }
 
-        &[data-section="adjustment"],
-        &[data-statistic] {
-            justify-content: space-between;
-        }
-
         .numbers {
             display: inline-grid;
             grid-template-columns: var(--input-width) auto var(--input-equivalent-width);
@@ -128,7 +123,23 @@ $panel-gap: 5px;
         }
 
         &.info {
-            cursor: help;
+            &:not(.active) {
+                color: var(--color-disabled);
+            }
+
+            &.active {
+                cursor: help;
+            }
+        }
+
+        &.info,
+        &[data-section="sidebar"] {
+            grid-template-columns: auto;
+        }
+
+        &[data-section="adjustment"],
+        &[data-statistic] {
+            justify-content: space-between;
         }
     }
 }

@@ -41,10 +41,6 @@
                 grid-column: 1 / -1;
                 margin-block: var(--hr-margin);
             }
-
-            [data-section] {
-                grid-template-columns: auto;
-            }
         }
     }
 }

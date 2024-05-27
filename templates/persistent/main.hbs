@@ -1,4 +1,4 @@
-<div class="group first">
+<div class="group primary">
     <div class="app panel">
         {{#if hasActor}}
         {{> (partial 'level')}}
@@ -8,5 +8,10 @@
         {{> (partial 'statistics') list=saves}}
         {{> (partial 'statistics') list=others}}
     </div>
-    <div></div>
+</div>
+
+<div class="group infos">
+    <div class="app panel">
+        {{> (partial 'infos') infoSections=infoSections}}
+    </div>
 </div>
