@@ -12,10 +12,10 @@ import {
     templateLocalize,
 } from "pf2e-api";
 import Sortable, { type SortableEvent } from "sortablejs";
-import { BaseContext, PF2eHudBase } from "./hud";
+import { BaseContext, PF2eHudBaseMain, RenderOptionsHUD } from "./hud";
 import { HealthData, canObserve, getHealth } from "./shared";
 
-class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
+class PF2eHudTracker extends PF2eHudBaseMain<TrackerSettings> {
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
     #targetTokenHook = createHook("targetToken", this.#refreshTargetDisplay.bind(this));
     #renderEffectsHook = createHook("renderEffectsPanel", this.#onRenderEffectsPanel.bind(this));
@@ -38,12 +38,16 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
         return ["tracker", "metrics-tooltip"];
     }
 
-    get key(): string {
+    get hudKey(): string {
         return "tracker";
     }
 
     get enabled(): boolean {
         return this.setting("enabled");
+    }
+
+    get fontSize() {
+        return this.setting("fontSize");
     }
 
     get tracker() {
@@ -143,16 +147,15 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
         }
     }
 
-    _configureRenderOptions(options: RenderOptions) {
+    _configureRenderOptions(options: TrackerRenderOptions) {
         super._configureRenderOptions(options);
 
-        options.fontSize = this.setting("fontSize");
         options.expanded = this.setting("expanded");
         options.collapsed = options.expanded === "false";
         options.textureScaling = this.setting("textureScaling");
     }
 
-    async _prepareContext(options: RenderOptions): Promise<TrackerContext | BaseContext> {
+    async _prepareContext(options: TrackerRenderOptions): Promise<TrackerContext | BaseContext> {
         const isGM = game.user.isGM;
         const unknown = localize("tracker.unknown");
         const parentData = await super._prepareContext(options);
@@ -261,6 +264,8 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
             turns.push(nextCombatant);
         }
 
+        const combatScene = combat?.scene;
+
         const data: TrackerContext = {
             ...parentData,
             isGM,
@@ -273,8 +278,13 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
             canRollNPCs,
             isOwner: !!combatant?.isOwner,
             expand: {
-                tooltip: options.collapsed ? "expand" : "collapse",
+                tooltip: options.collapsed ? "collapsed" : "expanded",
                 collapsed: options.collapsed,
+                icon: options.collapsed ? "fa-solid fa-compress" : "fa-solid fa-expand",
+            },
+            linked: {
+                icon: combatScene !== null ? "fa-solid fa-link" : "fa-solid fa-link-slash",
+                tooltip: combatScene !== null ? "COMBAT.Linked" : "COMBAT.Unlinked",
             },
             i18n: templateLocalize("tracker"),
         };
@@ -284,12 +294,12 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
 
     async _renderHTML(
         context: TrackerContext | BaseContext,
-        options: RenderOptions
+        options: TrackerRenderOptions
     ): Promise<string> {
         return await this.renderTemplate("tracker", context);
     }
 
-    _replaceHTML(result: string, content: HTMLElement, options: RenderOptions): void {
+    _replaceHTML(result: string, content: HTMLElement, options: TrackerRenderOptions): void {
         content.innerHTML = result;
 
         content.style.setProperty(`--font-size`, `${options.fontSize}px`);
@@ -309,7 +319,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
         document.getElementById("ui-top")?.after(element);
     }
 
-    _onRender(context: TrackerContext | BaseContext, options: RenderOptions) {
+    _onRender(context: TrackerContext | BaseContext, options: TrackerRenderOptions) {
         this.#scrollToCurrent(options.collapsed);
         this.#updateEffectsPanel();
     }
@@ -320,7 +330,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
         this.#combatantsElement = null;
 
         const effectsPanel = document.getElementById("effects-panel");
-        if (effectsPanel) effectsPanel.style.maxHeight = "";
+        if (effectsPanel) effectsPanel.style.removeProperty("max-height");
 
         return super.close(options);
     }
@@ -335,7 +345,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
         if (!effectsPanel || !trackerElement) return;
 
         const offsetHeight = trackerElement.offsetHeight;
-        effectsPanel.style.maxHeight = `calc(100% - ${offsetHeight}px - 2em)`;
+        effectsPanel.style.setProperty("max-height", `calc(100% - ${offsetHeight}px - 2em)`);
     }
 
     #scrollToCurrent(collapsed = this.setting("expanded") === "false") {
@@ -590,7 +600,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
     }
 }
 
-type RenderOptions = ApplicationRenderOptions & {
+type TrackerRenderOptions = RenderOptionsHUD & {
     collapsed: boolean;
     expanded: ExpandedSetting;
     fontSize: number;
@@ -638,7 +648,9 @@ type TrackerContext = BaseContext & {
     expand: {
         tooltip: string;
         collapsed: boolean;
+        icon: string;
     };
+    linked: { icon: string; tooltip: string };
     i18n: ReturnType<typeof templateLocalize>;
 };
 

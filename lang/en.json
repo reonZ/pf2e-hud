@@ -88,8 +88,13 @@
                     "hint": "An HUD will be displayed around the currently selected token. It defaults to the User Character if one exist."
                 },
                 "scaleDimensions": {
-                    "name": "Scale Dimensions",
-                    "hint": "When enabled, the HUD will have its dimensions scaled with the canvas."
+                    "name": "Scale With Token",
+                    "hint": "Should the HUD have its dimensions scaled with the token it is attached to.",
+                    "choices": {
+                        "never": "Disabled",
+                        "main": "Main Panels Only",
+                        "all": "Panels and Sidebars"
+                    }
                 },
                 "fontSize": {
                     "name": "Font Size",
@@ -159,25 +164,6 @@
                 "square": "sq."
             }
         },
-        "token": {
-            "sidebars": {
-                "actions": {
-                    "title": "Actions"
-                },
-                "items": {
-                    "title": "Inventory"
-                },
-                "spells": {
-                    "title": "Spellcasting"
-                },
-                "skills": {
-                    "title": "Skills"
-                },
-                "extras": {
-                    "title": "Extras"
-                }
-            }
-        },
         "persistent": {
             "error": {
                 "selectOne": "Select a single NPC/Character token to set as your persistent actor."
@@ -192,13 +178,30 @@
             }
         },
         "tracker": {
-            "expand": "Expand Tracker",
-            "collapse": "Collapse Tracker",
+            "expanded": "Expanded, click to collapse",
+            "collapsed": "Collapsed, click to expand",
             "fake": {
                 "nothing": "Encounter Not Started",
                 "secret": "Something Secret is Happening"
             },
             "unknown": "Unknown"
+        },
+        "sidebars": {
+            "actions": {
+                "title": "Actions"
+            },
+            "items": {
+                "title": "Inventory"
+            },
+            "spells": {
+                "title": "Spellcasting"
+            },
+            "skills": {
+                "title": "Skills"
+            },
+            "extras": {
+                "title": "Extras"
+            }
         },
         "leftClick": "[Left Click]",
         "rightClick": "[Right Click]"

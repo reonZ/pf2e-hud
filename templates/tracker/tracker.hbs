@@ -156,16 +156,15 @@
 
 <footer>
     <a class="combat-control{{#unless canRoll}} disabled{{/unless}}" data-control="rollAll"
-        data-tooltip="{{localize 'COMBAT.RollAll'}}">
+        data-tooltip="COMBAT.RollAll">
         <i class="fa-solid fa-users"></i>
     </a>
     {{#if isGM}}
     <a class="combat-control{{#unless canRollNPCs}} disabled{{/unless}}" data-control="rollNPC"
-        data-tooltip="{{localize 'COMBAT.RollNPC'}}">
+        data-tooltip="COMBAT.RollNPC">
         <i class="fa-solid fa-users-cog"></i>
     </a>
-    <a class="combat-control" data-control="resetAll"
-        data-tooltip="{{localize 'COMBAT.InitiativeReset'}}">
+    <a class="combat-control" data-control="resetAll" data-tooltip="COMBAT.InitiativeReset">
         <i class="fa-solid fa-undo"></i>
     </a>
     {{/if}}
@@ -183,11 +182,14 @@
     <span class="metrics" data-tooltip="{{metrics.tooltip}}">
         <span class="threat {{metrics.threat}}">
             <i class="fa-solid fa-user-graduate"></i>
-            {{!-- {{localize (concat 'PF2E.Encounter.Budget.Threats.' metrics.threat)}} --}}
         </span>
     </span>
     {{!-- end if metrics --}}
     {{/if}}
+    <a class="combat-control linked" data-control="toggleSceneLink"
+        data-tooltip="{{linked.tooltip}}">
+        <i class="{{linked.icon}}"></i>
+    </a>
     <a class="settings" data-control="trackerSettings"
         data-tooltip="{{localize 'COMBAT.Settings'}}">
         <i class="fa-solid fa-cog"></i>
@@ -201,10 +203,6 @@
     {{!-- end if isGM --}}
     {{/if}}
     <a class="expand" data-action="toggle-expand" data-tooltip="{{i18n.path expand.tooltip}}">
-        {{#if expand.collapsed}}
-        <i class="fa-solid fa-expand"></i>
-        {{else}}
-        <i class="fa-solid fa-compress"></i>
-        {{/if}}
+        <i class="{{expand.icon}}"></i>
     </a>
 </footer>

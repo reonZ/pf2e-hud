@@ -206,7 +206,7 @@ $threat-extreme: red;
                 .avatar img,
                 .details .name,
                 .extras {
-                    opacity: 0.4;
+                    opacity: 0.3;
                 }
             }
 
@@ -229,6 +229,7 @@ $threat-extreme: red;
     }
 
     footer {
+        color: var(--color-text-light-6);
         border-top: 2px groove black;
         grid-template-columns: repeat(3, min-content) 1fr repeat(3, min-content);
 
@@ -243,11 +244,16 @@ $threat-extreme: red;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: var(--color-text-light-highlight);
+        }
+
+        .metrics,
+        .linked {
+            grid-column: -3;
         }
 
         .metrics {
             font-size: 0.9em;
-            grid-column: -3;
 
             .threat {
                 text-shadow: 1px 1px 4px var(--color-shadow-dark);
@@ -323,6 +329,10 @@ $threat-extreme: red;
                 display: none;
             }
         }
+
+        .linked {
+            display: none;
+        }
     }
 
     &.toggle-menu {
@@ -334,6 +344,10 @@ $threat-extreme: red;
             .avatar img {
                 opacity: 0.4;
             }
+        }
+
+        .metrics {
+            display: none;
         }
     }
 }
