@@ -7,8 +7,7 @@
     <span>
         <i class="fa-solid fa-circle-h"></i>
     </span>
-    {{> (partial 'slider') name="system.resources.heroPoints" entry=heroPoints
-    action="hero"}}
+    {{> (partial 'slider') entry=heroPoints action="hero"}}
 </div>
 {{else if isNPC}}
 <a data-section="recall-knowledge" data-tooltip="PF2E.RecallKnowledge.Label"

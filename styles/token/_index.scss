@@ -1,13 +1,38 @@
-#pf2e-hud-token {
+[id^="pf2e-hud-token"] {
     --anchor-margin: 4px;
+    --color-active: #db2828;
     --outer-box-shadow: 0 0 20px var(--color-shadow-dark);
     --outer-background: url(../../../ui/denim075.png) repeat #4d4d4d;
 
+    color: var(--color);
+    font-size: var(--font-size);
+
+    [data-section] {
+        &[data-section="sidebar"] {
+            &.active {
+                color: var(--color-active);
+                text-shadow: none;
+            }
+
+            &.disabled {
+                color: var(--color-disabled);
+                pointer-events: none;
+            }
+        }
+    }
+}
+
+#pf2e-hud-token {
     position: absolute;
     pointer-events: none;
-    font-size: var(--font-size);
-    color: var(--color);
     transform-origin: left top;
+}
+
+#pf2e-hud-token:has(#pf2e-hud-token-sidebar),
+body:has(#pf2e-hud-token-sidebar) {
+    #pf2e-hud-token-main {
+        visibility: hidden;
+    }
 }
 
 #pf2e-hud-token-main {
@@ -173,3 +198,6 @@
         }
     }
 }
+
+@import "sidebar";
+@import "spells";

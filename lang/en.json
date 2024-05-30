@@ -51,7 +51,7 @@
                 },
                 "fontSize": {
                     "name": "Font Size",
-                    "hint": "Tooltip font size."
+                    "hint": "Font size for the Tooltip."
                 },
                 "showDistance": {
                     "name": "Display Distance",
@@ -89,16 +89,15 @@
                 },
                 "scaleDimensions": {
                     "name": "Scale With Token",
-                    "hint": "Should the HUD have its dimensions scaled with the token it is attached to.",
-                    "choices": {
-                        "never": "Disabled",
-                        "main": "Main Panels Only",
-                        "all": "Panels and Sidebars"
-                    }
+                    "hint": "Should the HUD have its dimensions scaled with the token it is attached to."
                 },
                 "fontSize": {
                     "name": "Font Size",
-                    "hint": "Token HUD font size."
+                    "hint": "Font size for the Token HUD."
+                },
+                "sidebarFontSize": {
+                    "name": "Sidebars Font Size",
+                    "hint": "Font size for the Token HUD sidebars."
                 },
                 "mode": {
                     "name": "Display Mode",
@@ -116,6 +115,14 @@
                 "highestSpeed": {
                     "name": "Highest Speed",
                     "hint": "If no speed was manually selected, the highest one will always be shown by default even if the land speed isn't 0."
+                },
+                "sidebarHeight": {
+                    "name": "Sidebars Max Height",
+                    "hint": "Sets the sidebars max height as a percentage of the viewport."
+                },
+                "multiColumns": {
+                    "name": "Multi Columns Sidebars",
+                    "hint": "When a sidebar's height is bigger than its max-height, it will be split into 2 or 3 columns."
                 }
             },
             "persistent": {
@@ -145,7 +152,7 @@
                 },
                 "fontSize": {
                     "name": "Font Size",
-                    "hint": "Combat Tracker font size."
+                    "hint": "Font size for the Combat Tracker."
                 },
                 "textureScaling": {
                     "name": "Texture Scaling",
@@ -194,7 +201,12 @@
                 "title": "Inventory"
             },
             "spells": {
-                "title": "Spellcasting"
+                "title": "Spellcasting",
+                "staff": "Staff",
+                "charges": "Charges",
+                "cast": "Cast the Spell",
+                "draw": "Draw Consumable",
+                "broken": "Broken Spell"
             },
             "skills": {
                 "title": "Skills"

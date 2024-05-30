@@ -12,20 +12,13 @@ abstract class PF2eHudBase<TSettings extends Record<string, any>> extends foundr
         },
     };
 
+    abstract get fontSize(): number;
     abstract get templates(): string[] | ReadonlyArray<string>;
-    abstract get key(): string;
-    abstract get enabled(): boolean;
-    abstract get settings(): SettingOptions[];
+    abstract get hudKey(): string;
 
     get partials(): string[] | ReadonlyArray<string> {
         return [];
     }
-
-    get keybinds(): KeybindingActionConfig[] {
-        return [];
-    }
-
-    abstract _onEnable(enabled?: boolean): void;
 
     async _preFirstRender(
         context: ApplicationRenderContext,
@@ -36,7 +29,7 @@ abstract class PF2eHudBase<TSettings extends Record<string, any>> extends foundr
         const templates: Set<string> = new Set();
 
         for (const template of this.templates) {
-            const path = templatePath(this.key, template);
+            const path = templatePath(this.hudKey, template);
             templates.add(path);
         }
 
@@ -48,15 +41,16 @@ abstract class PF2eHudBase<TSettings extends Record<string, any>> extends foundr
         await loadTemplates(Array.from(templates));
     }
 
+    _configureRenderOptions(options: RenderOptionsHUD) {
+        super._configureRenderOptions(options);
+        options.fontSize = this.fontSize;
+    }
+
     async _prepareContext(options: ApplicationRenderOptions): Promise<BaseContext> {
         return {
             partial: (key: string) => templatePath("partials", key),
         };
     }
-
-    enable = foundry.utils.debounce((enabled?: boolean) => {
-        this._onEnable?.(enabled);
-    }, 1);
 
     close(options: ApplicationClosingOptions = {}): Promise<ApplicationV2> {
         options.animate = false;
@@ -64,26 +58,48 @@ abstract class PF2eHudBase<TSettings extends Record<string, any>> extends foundr
     }
 
     setting<K extends keyof TSettings & string>(key: K): TSettings[K] {
-        return getSetting(`${this.key}.${key}`);
-    }
-
-    setSetting<K extends keyof TSettings & string>(key: K, value: TSettings[K]) {
-        return setSetting(`${this.key}.${key}`, value);
+        return getSetting(`${this.hudKey}.${key}`);
     }
 
     renderTemplate(
         template: (typeof this)["templates"][number],
         context: ApplicationRenderContext
     ) {
-        const path = templatePath(this.key, template);
+        const path = templatePath(this.hudKey, template);
         return renderTemplate(path, context);
+    }
+
+    renderPartial(partial: (typeof this)["partials"][number], data: ApplicationRenderContext) {
+        const path = templatePath("partials", partial);
+        return renderTemplate(path, data);
+    }
+}
+
+abstract class PF2eHudBaseMain<
+    TSettings extends Record<string, any>
+> extends PF2eHudBase<TSettings> {
+    abstract get enabled(): boolean;
+    abstract get settings(): SettingOptions[];
+
+    get keybinds(): KeybindingActionConfig[] {
+        return [];
+    }
+
+    abstract _onEnable(enabled?: boolean): void;
+
+    enable = foundry.utils.debounce((enabled?: boolean) => {
+        this._onEnable?.(enabled);
+    }, 1);
+
+    setSetting<K extends keyof TSettings & string>(key: K, value: TSettings[K]) {
+        return setSetting(`${this.hudKey}.${key}`, value);
     }
 }
 
 abstract class PF2eHudBaseActor<
     TSettings extends Record<string, any>,
     TActor extends ActorPF2e = ActorPF2e
-> extends PF2eHudBase<TSettings> {
+> extends PF2eHudBaseMain<TSettings> {
     abstract get actor(): TActor | null;
     abstract get useModifiers(): boolean;
 
@@ -226,19 +242,6 @@ abstract class PF2eHudBaseToken<
         };
     }
 
-    moveOutOfScreen(position: ApplicationPosition) {
-        const element = this.element;
-        if (!element) return position;
-
-        position.left = -1000;
-        position.top = -1000;
-
-        element.style.left = `${-1000}px`;
-        element.style.top = `${-1000}px`;
-
-        return position;
-    }
-
     #onDeleteToken(tokenDocument: TokenDocumentPF2e) {
         if (tokenDocument === this.token?.document) {
             this.close();
@@ -251,6 +254,10 @@ abstract class PF2eHudBaseToken<
         }
     }
 }
+
+type RenderOptionsHUD<TParts extends string = string> = ApplicationRenderOptions<TParts> & {
+    fontSize: number;
+};
 
 type BaseContext = {
     partial: (template: string) => string;
@@ -272,5 +279,11 @@ type BaseTokenHUDSettings = {
     modifiers: boolean;
 };
 
-export { PF2eHudBase, PF2eHudBaseActor, PF2eHudBaseToken };
-export type { BaseActorContext, BaseContext, BaseTokenContext, BaseTokenHUDSettings };
+export { PF2eHudBase, PF2eHudBaseMain, PF2eHudBaseActor, PF2eHudBaseToken };
+export type {
+    BaseActorContext,
+    BaseContext,
+    BaseTokenContext,
+    BaseTokenHUDSettings,
+    RenderOptionsHUD,
+};

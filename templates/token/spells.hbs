@@ -1,0 +1,97 @@
+<div class="item-list multi">
+    {{!-- entry --}}
+    {{#each spells as |entry rank|}}
+    <header>
+        <div class="name">{{localize (lookup @root.labels rank)}}</div>
+        {{#if (or (eq rank 12) (and (eq rank 0) @root.hasFocusCantrip))}}
+        <div data-section="focus-points" data-tooltip="PF2E.Focus.label">
+            {{> (@root.partial 'slider') entry=@root.focusPool action="focus"}}
+        </div>
+        {{/if}}
+    </header>
+    {{!-- spell --}}
+    {{#each entry as |spell|}}
+    <div class="item{{#if spell.virtual}} virtual{{/if}}"
+        data-item-type="spell{{#if spell.virtual}}-slot-group{{/if}}"
+        data-item-id="{{spell.itemId}}" data-entry-id="{{spell.entryId}}"
+        data-cast-rank="{{spell.castRank}}" data-group-id="{{spell.groupId}}" {{#if
+        spell.isPrepared}}data-slot-id="{{spell.slotId}}" {{/if}} {{#if
+        spell.expended}}data-slot-expended{{/if}}>
+        {{!-- image --}}
+        <div class="image">
+            <img src="{{spell.img}}">
+            <i class="fa-solid fa-message"></i>
+        </div>
+        {{!-- details --}}
+        <div class="details">
+            {{!-- name --}}
+            <a class="name" data-action="spell-description">{{spell.name}}</a>
+            {{!-- extras --}}
+            <div class="extras">
+                {{!-- category --}}
+                <div class="category" data-tooltip="{{spell.entryTooltip}}"
+                    data-tooltip-direction="UP">
+                    {{#if (eq rank 13)}}
+                    {{spell.action}}
+                    {{else}}
+                    {{localize spell.category}} {{{actionGlyph spell.action}}}
+                    {{/if}}
+                </div>
+                {{!-- actions --}}
+                <div class="actions" data-section="">
+                    {{!-- if broken --}}
+                    {{#if spell.isBroken}}
+                    <div class="broken" data-tooltip="{{@root.i18n.path 'broken'}}">
+                        <i class="fa-solid fa-link-slash broken"></i>
+                    </div>
+                    {{!-- else not broken --}}
+                    {{else}}
+                    {{!-- if uses --}}
+                    {{#if spell.uses}}
+                    <div {{#if (and spell.uses.max (not spell.isStaff))}}class="numbers" {{/if}}>
+                        <input class="small" type="number" {{#if spell.isStaff}}
+                            data-action="update-staff-charges" {{else}}
+                            data-item-id="{{spell.uses.itemId}}"
+                            data-item-property="{{spell.uses.input}}" {{/if}}
+                            value="{{spell.uses.value}}" min="0" max="{{spell.uses.max}}"
+                            placeholder="0">
+                        {{#if (and spell.uses.max (not spell.isStaff))}}
+                        <span class="slash"> / </span>
+                        <input class="small" type="number" data-item-id="" data-item-property=""
+                            value="{{spell.uses.max}}" placeholder="0" disabled />
+                        {{/if}}
+                    </div>
+                    {{else if (and (not spell.isCantrip) spell.isPrepared)}}
+                    <a data-action="toggle-slot-expended"
+                        data-tooltip="{{#if spell.expended}}PF2E.RestoreSpellTitle{{else}}PF2E.ExpendSpellTitle{{/if}}">
+                        <i
+                            class="fa-solid fa-fw fa-{{#if spell.expended}}plus{{else}}minus{{/if}}-square"></i>
+                    </a>
+                    {{!-- end if uses --}}
+                    {{/if}}
+                    {{!-- if unequipped consumable --}}
+                    {{#if (eq spell.consumable.isEquipped false)}}
+                    <a {{#if spell.expended}}class="disabled" {{else}}data-action="draw-item"
+                        data-item-id="{{spell.consumable.id}}" {{/if}}
+                        data-tooltip="{{@root.i18n.path 'draw'}}">
+                        <i class="fa-solid fa-hand-back-fist"></i>
+                    </a>
+                    {{!-- else not consumable --}}
+                    {{else}}
+                    <a {{#if spell.expended}}class="disabled" {{else}}data-action="cast-spell"
+                        {{/if}} data-tooltip="{{@root.i18n.path 'cast'}}">
+                        <i class="fa-solid fa-play"></i>
+                    </a>
+                    {{!-- end if unequipped consumable --}}
+                    {{/if}}
+                    {{!-- end if broken --}}
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{!-- end spell --}}
+    {{/each}}
+    {{!-- end entry --}}
+    {{/each}}
+</div>

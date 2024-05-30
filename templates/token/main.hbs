@@ -25,13 +25,11 @@
                 data-tooltip="PF2E.Check.Specific.Recovery">
                 <i class="fa-solid fa-tombstone"></i>
             </a>
-            {{> (partial 'slider') name="system.resources.attributes.dying" entry=dying
-            action="dying"}}
+            {{> (partial 'slider') entry=dying action="dying"}}
         </div>
         <div data-section="wounded" data-tooltip="PF2E.ConditionTypeWounded">
             <span><i class="fa-solid fa-notes-medical"></i></span>
-            {{> (partial 'slider') name="system.resources.attributes.wounded" entry=wounded
-            action="wounded"}}
+            {{> (partial 'slider') entry=wounded action="wounded"}}
         </div>
         <div></div>
         {{/if}}
@@ -68,17 +66,11 @@
     {{/if}}
 
     <div class="panel bottom">
-        {{> (partial 'infos') infoSections=infoSections}}
+        {{> (partial 'infos')}}
         {{!-- --}}
         {{#if isCombatant}}
         <hr>
-        {{#each sidebars as |sidebar|}}
-        <a data-section="sidebar" data-sidebar="{{sidebar.type}}" data-tooltip="{{sidebar.label}}"
-            {{#if sidebar.disabled}}class="disabled" {{/if}} data-action="open-sidebar"
-            data-sidebar="{{sidebar.type}}">
-            <i class="{{sidebar.icon}}"></i>
-        </a>
-        {{/each}}
+        {{> (partial 'sidebars')}}
         {{/if}}
     </div>
 </div>

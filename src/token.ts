@@ -1,14 +1,16 @@
 import {
+    addListenerAll,
     createHTMLFromString,
     createHook,
+    elementData,
     libWrapper,
-    localizePath,
     registerWrapper,
 } from "pf2e-api";
 import {
     BaseActorContext,
     BaseTokenContext,
     PF2eHudBaseToken,
+    RenderOptionsHUD,
     type BaseTokenHUDSettings,
 } from "./hud";
 import { hud } from "./main";
@@ -22,20 +24,28 @@ import {
     getAdvancedData,
     getAdvancedHealthData,
 } from "./shared";
+import { SIDEBARS, SidebarElement, SidebarHUD, SidebarName, getSidebars } from "./sidebar";
+import { PF2eHudTokenSidebar } from "./token-sidebars/base";
+import { PF2eHudSpellsSidebar } from "./token-sidebars/spells";
+import { PF2eHudItemsSidebar } from "./token-sidebars/items";
+import { PF2eHudActionsSidebar } from "./token-sidebars/actions";
+import { PF2eHudExtrasSidebar } from "./token-sidebars/extras";
+import { PF2eHudSkillsSidebar } from "./token-sidebars/skills";
 
-const SIDEBARS = {
-    actions: { icon: "fa-solid fa-sword" },
-    items: { icon: "fa-solid fa-backpack" },
-    spells: { icon: "fa-solid fa-wand-magic-sparkles" },
-    skills: { icon: "fa-solid fa-hand" },
-    extras: { icon: "fa-solid fa-cubes" },
-};
+class PF2eHudToken
+    extends PF2eHudBaseToken<TokenSettings, ActorType>
+    implements SidebarHUD<TokenSettings, PF2eHudToken>
+{
+    #canvasPanHook = createHook("canvasPan", () => {
+        this._updatePosition();
+        this.#sidebar?._updatePosition();
+    });
 
-class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
-    #canvasPanHook = createHook("canvasPan", () => this._updatePosition());
-
+    #usedScale = 1;
+    #mainCenter = { x: 0, y: 0 };
     #mainElement: HTMLElement | null = null;
     #initialized = false;
+    #sidebar: PF2eHudTokenSidebar | null = null;
 
     static DEFAULT_OPTIONS: Partial<ApplicationConfiguration> = {
         id: "pf2e-hud-token",
@@ -49,12 +59,28 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
         return ["main"];
     }
 
-    get key(): "token" {
+    get hudKey(): "token" {
         return "token";
+    }
+
+    get fontSize() {
+        return this.setting("fontSize");
     }
 
     get enabled() {
         return this.setting("enabled");
+    }
+
+    get usedScale() {
+        return this.#usedScale;
+    }
+
+    get mainCenter() {
+        return this.#mainCenter;
+    }
+
+    get sidebar() {
+        return this.#sidebar;
     }
 
     get useModifiers(): boolean {
@@ -75,11 +101,23 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
                 requiresReload: true,
             },
             {
+                key: "mode",
+                type: String,
+                choices: ["exploded", "left", "right"],
+                default: "exploded",
+                scope: "client",
+                onChange: () => {
+                    this.toggleSidebar(null);
+                    this.render();
+                },
+            },
+            {
                 key: "scaleDimensions",
                 type: Boolean,
                 default: false,
                 scope: "client",
                 onChange: () => {
+                    this.toggleSidebar(null);
                     this.render();
                 },
             },
@@ -88,7 +126,7 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
                 type: Number,
                 range: {
                     min: 10,
-                    max: 50,
+                    max: 30,
                     step: 1,
                 },
                 default: 14,
@@ -98,13 +136,41 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
                 },
             },
             {
-                key: "mode",
-                type: String,
-                choices: ["exploded", "left", "right"],
-                default: "exploded",
+                key: "sidebarFontSize",
+                type: Number,
+                range: {
+                    min: 10,
+                    max: 30,
+                    step: 1,
+                },
+                default: 14,
                 scope: "client",
                 onChange: () => {
-                    this.render();
+                    this.sidebar?.render();
+                },
+            },
+
+            {
+                key: "sidebarHeight",
+                type: Number,
+                range: {
+                    min: 50,
+                    max: 100,
+                    step: 1,
+                },
+                default: 100,
+                scope: "client",
+                onChange: () => {
+                    this.sidebar?.render();
+                },
+            },
+            {
+                key: "multiColumns",
+                type: Boolean,
+                default: true,
+                scope: "client",
+                onChange: () => {
+                    this.sidebar?.render();
                 },
             },
             {
@@ -190,12 +256,7 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
         });
     }
 
-    _configureRenderOptions(options: RenderOptions) {
-        super._configureRenderOptions(options);
-        options.fontSize = this.setting("fontSize");
-    }
-
-    async _prepareContext(options: RenderOptions): Promise<TokenContext | TokenContextBase> {
+    async _prepareContext(options: RenderOptionsHUD): Promise<TokenContext | TokenContextBase> {
         const parentData = await super._prepareContext(options);
         if (!("health" in parentData)) return parentData;
 
@@ -208,18 +269,11 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
             useHighestSpeed,
         });
 
-        const sidebars = Object.entries(SIDEBARS).map(([type, { icon }]) => ({
-            type,
-            icon,
-            label: localizePath("token.sidebars", type, "title"),
-            disabled: false,
-        }));
-
         const data: TokenContext = {
             ...parentData,
             ...advancedData,
             ...getAdvancedHealthData(actor),
-            sidebars,
+            sidebars: getSidebars({}),
             level: actor.level,
             isFamiliar: actor.isOfType("familiar"),
             isCombatant: isCharacter || isNPC,
@@ -228,18 +282,18 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
         return data;
     }
 
-    async _renderHTML(context: Partial<TokenContext>, options: RenderOptions) {
+    async _renderHTML(context: Partial<TokenContext>, options: RenderOptionsHUD) {
         if (!context.health) return "";
         return this.renderTemplate("main", context);
     }
 
-    _replaceHTML(result: string, content: HTMLElement, options: RenderOptions) {
+    _replaceHTML(result: string, content: HTMLElement, options: RenderOptionsHUD) {
         content.dataset.tokenUuid = this.token?.document.uuid;
         content.style.setProperty("--font-size", `${options.fontSize}px`);
 
-        const focusName = this.#mainElement?.querySelector<HTMLInputElement>("input:focus")?.name;
+        const oldElement = this.#mainElement;
+        const focusName = oldElement?.querySelector<HTMLInputElement>("input:focus")?.name;
 
-        this.#mainElement?.remove();
         this.#mainElement = createHTMLFromString(result);
 
         const mode = this.setting("mode");
@@ -260,7 +314,9 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
                 ?.focus();
         }
 
-        content.replaceChildren(this.#mainElement);
+        if (oldElement) oldElement.replaceWith(this.#mainElement);
+        else content.appendChild(this.#mainElement);
+
         this.#activateListeners(content);
     }
 
@@ -271,14 +327,13 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
 
     _onRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
         this.#canvasPanHook.activate();
+        this.#sidebar?.render(true);
     }
 
-    _updatePosition(position: ApplicationPosition = {} as ApplicationPosition) {
-        const element = this.element;
-        if (!element) return position;
-
+    _updatePosition(position = {} as ApplicationPosition) {
         const token = this.token;
-        if (!token?.actor) return this.moveOutOfScreen(position);
+        const element = this.element;
+        if (!element || !token) return position;
 
         const canvasPosition = canvas.primary.getGlobalPosition();
         const canvasDimensions = canvas.dimensions;
@@ -293,22 +348,36 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
         position.height = canvasDimensions.height;
         position.scale = scaleDimensions ? scale : 1;
 
-        element.style.left = `${canvasPosition.x}px`;
-        element.style.top = `${canvasPosition.y}px`;
-        element.style.width = `${canvasDimensions.width * usedScale}px`;
-        element.style.height = `${canvasDimensions.height * usedScale}px`;
-        element.style.transform = `scale(${scaleDimensions ? scale : 1})`;
+        element.style.setProperty("left", `${canvasPosition.x}px`);
+        element.style.setProperty("top", `${canvasPosition.y}px`);
+        element.style.setProperty("width", `${canvasDimensions.width * usedScale}px`);
+        element.style.setProperty("height", `${canvasDimensions.height * usedScale}px`);
+        element.style.setProperty("transform", `scale(${position.scale})`);
+
+        this.#mainCenter = { x: 0, y: 0 };
 
         if (mainElement) {
             const tokenBounds = token.bounds;
             const tokenDimensions = token.document;
             const ratio = canvas.dimensions.size / 100;
 
-            mainElement.style.left = `${tokenBounds.left * usedScale}px`;
-            mainElement.style.top = `${tokenBounds.top * usedScale}px`;
-            mainElement.style.width = `${tokenDimensions.width * ratio * 100 * usedScale}px`;
-            mainElement.style.height = `${tokenDimensions.height * ratio * 100 * usedScale}px`;
+            const mainLeft = tokenBounds.left * usedScale;
+            const mainTop = tokenBounds.top * usedScale;
+            const mainWidth = tokenDimensions.width * ratio * 100 * usedScale;
+            const mainHeight = tokenDimensions.height * ratio * 100 * usedScale;
+
+            this.#mainCenter = {
+                x: mainLeft + mainWidth / 2,
+                y: mainTop + mainHeight / 2,
+            };
+
+            mainElement.style.setProperty("left", `${mainLeft}px`);
+            mainElement.style.setProperty("top", `${mainTop}px`);
+            mainElement.style.setProperty("width", `${mainWidth}px`);
+            mainElement.style.setProperty("height", `${mainHeight}px`);
         }
+
+        this.#usedScale = position.scale;
 
         return position;
     }
@@ -318,6 +387,8 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
     }
 
     setToken(token: TokenPF2e | null | false) {
+        this.toggleSidebar(null);
+
         if (!token) return super.setToken(token);
 
         const actor = token?.actor;
@@ -334,8 +405,39 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
     }
 
     close(options?: ApplicationClosingOptions): Promise<ApplicationV2> {
+        this.toggleSidebar(null);
+        this.#mainElement = null;
         this.#canvasPanHook.disable();
         return super.close(options);
+    }
+
+    toggleSidebar(sidebar: SidebarName | null) {
+        if (this.#sidebar?.sidebarKey === sidebar) sidebar = null;
+
+        this.#sidebar?.close();
+        this.#sidebar = null;
+
+        if (!sidebar) return;
+
+        switch (sidebar) {
+            case "actions":
+                this.#sidebar = new PF2eHudActionsSidebar(this);
+                break;
+            case "extras":
+                this.#sidebar = new PF2eHudExtrasSidebar(this);
+                break;
+            case "items":
+                this.#sidebar = new PF2eHudItemsSidebar(this);
+                break;
+            case "skills":
+                this.#sidebar = new PF2eHudSkillsSidebar(this);
+                break;
+            case "spells":
+                this.#sidebar = new PF2eHudSpellsSidebar(this);
+                break;
+        }
+
+        this.#sidebar.render(true);
     }
 
     #clickClose() {
@@ -343,6 +445,8 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
 
         if (focused?.closest("[id='pf2e-hud.token']")) {
             focused.blur();
+        } else if (this.sidebar) {
+            this.toggleSidebar(null);
         } else {
             this.close();
         }
@@ -350,18 +454,18 @@ class PF2eHudToken extends PF2eHudBaseToken<TokenSettings, ActorType> {
 
     #activateListeners(html: HTMLElement) {
         const actor = this.actor;
-        const mainElement = this.mainElement;
-        if (!actor || !mainElement) return;
+        if (!actor) return;
 
-        addUpdateActorFromInput(mainElement, actor);
-        addSharedListeners(mainElement, actor);
-        addArmorListeners(mainElement, actor, this.token);
+        addUpdateActorFromInput(html, actor);
+        addSharedListeners(html, actor);
+        addArmorListeners(html, actor, this.token);
+
+        addListenerAll(html, "[data-action='open-sidebar']", (event, el) => {
+            const { sidebar } = elementData<{ sidebar: SidebarName }>(el);
+            this.toggleSidebar(sidebar);
+        });
     }
 }
-
-type RenderOptions = ApplicationRenderOptions & {
-    fontSize: number;
-};
 
 type TokenContextBase = BaseActorContext;
 
@@ -371,12 +475,7 @@ type TokenContext = BaseTokenContext &
         level: number;
         isFamiliar: boolean;
         isCombatant: boolean;
-        sidebars: {
-            type: string;
-            icon: string;
-            label: `${string}.${string}`;
-            disabled: boolean;
-        }[];
+        sidebars: SidebarElement[];
     };
 
 type TokenSettings = BaseTokenHUDSettings & {
@@ -384,9 +483,13 @@ type TokenSettings = BaseTokenHUDSettings & {
     scaleDimensions: boolean;
     mode: "exploded" | "left" | "right";
     fontSize: number;
+    sidebarFontSize: number;
     highestSpeed: boolean;
+    sidebarHeight: number;
+    multiColumns: boolean;
 };
 
 type ActorType = Exclude<ActorInstances[keyof ActorInstances], LootPF2e | PartyPF2e>;
 
 export { PF2eHudToken };
+export type { TokenSettings };

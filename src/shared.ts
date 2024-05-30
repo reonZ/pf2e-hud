@@ -20,6 +20,7 @@ const SHARED_PARTIALS = [
     "stamina",
     "health",
     "level",
+    "sidebars",
 ];
 
 const SPEEDS_ICONS = {
@@ -43,10 +44,17 @@ const OTHER_ICONS = {
 };
 const OTHER_SLUGS = R.keys.strict(OTHER_ICONS);
 
+const IWR_DATA = {
+    immunities: { icon: "fa-solid fa-ankh", label: "PF2E.ImmunitiesLabel" },
+    resistances: { icon: "fa-solid fa-shield-virus", label: "PF2E.ResistancesLabel" },
+    weaknesses: { icon: "fa-solid fa-heart-crack", label: "PF2E.WeaknessesLabel" },
+};
+const IWR_SLUGS = R.keys.strict(IWR_DATA);
+
 const INFOS = {
     languages: {
         label: "PF2E.Actor.Creature.Language.Plural",
-        icon: "fa-solid fa-language",
+        icon: "fa-solid fa-message-dots",
         createTooltip: (actor: ActorPF2e) => {
             if (!actor.isOfType("creature")) return [];
             return actor.system.details.languages.value.map((lang) =>
@@ -61,32 +69,22 @@ const INFOS = {
             actor.perception?.senses.map((sense) => sense.label) ?? [],
     },
     immunities: {
-        label: "PF2E.ImmunitiesLabel",
-        icon: "fa-solid fa-solid fa-ankh",
+        ...IWR_DATA.immunities,
         createTooltip: (actor: ActorPF2e) =>
             actor.attributes.immunities.map((immunity) => immunity.label),
     },
     resistances: {
-        label: "PF2E.ResistancesLabel",
-        icon: "fa-solid fa-heart-crack",
+        ...IWR_DATA.resistances,
         createTooltip: (actor: ActorPF2e) =>
             actor.attributes.resistances.map((resistance) => resistance.label),
     },
     weaknesses: {
-        label: "PF2E.WeaknessesLabel",
-        icon: "fa-solid fa-shield-virus",
+        ...IWR_DATA.weaknesses,
         createTooltip: (actor: ActorPF2e) =>
             actor.attributes.weaknesses.map((weakness) => weakness.label),
     },
 };
 const INFO_SLUGS = R.keys.strict(INFOS);
-
-const IWR = {
-    immunities: { icon: "fa-solid fa-ankh", label: "PF2E.ImmunitiesLabel" },
-    resistances: { icon: "fa-solid fa-heart-crack", label: "PF2E.WeaknessesLabel" },
-    weaknesses: { icon: "fa-solid fa-shield-virus", label: "PF2E.ResistancesLabel" },
-};
-const IWR_SLUGS = R.keys.strict(IWR);
 
 const ADJUSTMENTS = {
     normal: { icon: "fa-regular fa-alien-8bit", label: "PF2E.NPC.Adjustment.NormalLabel" },
@@ -565,7 +563,7 @@ export {
     ADJUSTMENTS,
     ADJUSTMENTS_INDEX,
     ALLIANCES_ICONS,
-    IWR,
+    IWR_DATA,
     IWR_SLUGS,
     OTHER_ICONS,
     OTHER_SLUGS,

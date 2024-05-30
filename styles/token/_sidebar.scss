@@ -1,0 +1,50 @@
+#pf2e-hud-token-sidebar {
+    --max-height: 98vh;
+    --sidebars-height: 1.8em;
+
+    position: absolute;
+    padding: 1vh;
+    max-height: 100vh;
+    max-width: 100vw;
+    z-index: calc(var(--z-index-app) + 30);
+
+    > * {
+        background: var(--outer-background);
+        box-shadow: var(--outer-box-shadow);
+        border-radius: var(--outer-border-radius);
+    }
+
+    .sidebars {
+        max-width: fit-content;
+        height: var(--sidebars-height);
+        padding-inline: 0.5em;
+
+        display: grid;
+        grid-auto-flow: column;
+        justify-items: center;
+        align-items: center;
+        margin-inline: auto;
+        gap: 0.3em;
+
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .inner {
+        min-width: 12em;
+        min-height: 4em;
+        max-height: calc(min(98vh, var(--max-height)) - var(--sidebars-height));
+        max-width: 98vh;
+        padding: 5px;
+
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+
+        &.multi,
+        .multi {
+            column-gap: 0.5em;
+            columns: var(--nb-columns);
+        }
+    }
+}

@@ -10,7 +10,7 @@ import {
     templateLocalize,
     warn,
 } from "pf2e-api";
-import { BaseActorContext, PF2eHudBaseActor } from "./hud";
+import { BaseActorContext, PF2eHudBaseActor, RenderOptionsHUD } from "./hud";
 import { hud } from "./main";
 import {
     AdvancedHealthData,
@@ -25,8 +25,12 @@ import {
     getDefaultData,
     getHealth,
 } from "./shared";
+import { PF2eHudSidebar, SidebarHUD, SidebarName } from "./sidebar";
 
-class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> {
+class PF2eHudPersistent
+    extends PF2eHudBaseActor<PersistentSettings, ActorType>
+    implements SidebarHUD<PersistentSettings, PF2eHudPersistent>
+{
     #renderActorSheetHook = createHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
     #renderHotbarHook = createHook("renderHotbar", this.#onRenderHotbar.bind(this));
     #deleteTokenHook = createHook("deleteToken", this.#onDeleteActor.bind(this));
@@ -71,7 +75,11 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         return ["portrait", "main", "menu"];
     }
 
-    get key(): "persistent" {
+    get fontSize() {
+        return 14;
+    }
+
+    get hudKey(): "persistent" {
         return "persistent";
     }
 
@@ -154,6 +162,10 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         return this.#elements.menu;
     }
 
+    get sidebar(): PF2eHudSidebar<PersistentSettings, PF2eHudPersistent> | null {
+        throw new Error("Method not implemented.");
+    }
+
     _onEnable(enabled: boolean = this.enabled) {
         this.#renderHotbarHook.toggle(enabled);
         this.#renderActorSheetHook.toggle(enabled);
@@ -176,10 +188,9 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
         }
     }
 
-    _configureRenderOptions(options: RenderOptions) {
+    _configureRenderOptions(options: PersistentRenderOptions) {
         super._configureRenderOptions(options);
 
-        // options.fontSize = this.setting("fontSize");
         options.hasSavedActor = !!this.setting("selected");
 
         const allowedParts = this.templates;
@@ -305,6 +316,10 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
 
         if (skipSave) this.render(!!actor);
         else this.setSetting("selected", savedActor?.uuid ?? "");
+    }
+
+    toggleSidebar(sidebar: SidebarName | null): void {
+        throw new Error("Method not implemented.");
     }
 
     #onDeleteActor(doc: ActorPF2e | TokenDocumentPF2e) {
@@ -440,7 +455,7 @@ class PF2eHudPersistent extends PF2eHudBaseActor<PersistentSettings, ActorType> 
 
         const baseData = getDefaultData(actor, this.useModifiers);
         const advancedData = getAdvancedData(actor, baseData, {
-            fontSize: 1,
+            fontSize: options.fontSize,
             useHighestSpeed: true,
         });
 
@@ -504,12 +519,11 @@ type PersistentContext = BaseActorContext & {
 
 type PartName = "menu" | "main" | "portrait";
 
-type RenderOptions = ApplicationRenderOptions<PartName> & {
+type PersistentRenderOptions = RenderOptionsHUD<PartName> & {
     hasSavedActor: boolean;
-    fontSize: number;
 };
 
-type PreparedRenderOptions = Omit<RenderOptions, "parts"> & { parts: PartName[] };
+type PreparedRenderOptions = Omit<PersistentRenderOptions, "parts"> & { parts: PartName[] };
 
 type MenuActionEvent =
     | "toggle-users"

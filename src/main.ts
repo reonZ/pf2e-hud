@@ -27,7 +27,7 @@ Hooks.once("setup", () => {
 
     for (const hud of huds) {
         for (const setting of hud.settings) {
-            const key = `${hud.key}.${setting.key}`;
+            const key = `${hud.hudKey}.${setting.key}`;
 
             if (setting.default === undefined) {
                 setting.default = localize(`settings.${key}.default`);
@@ -38,7 +38,7 @@ Hooks.once("setup", () => {
         }
 
         for (const keybind of hud.keybinds) {
-            keybind.name = `${hud.key}.${keybind.name}`;
+            keybind.name = `${hud.hudKey}.${keybind.name}`;
             registerKeybind(keybind.name, keybind);
         }
     }
@@ -65,11 +65,11 @@ function onRenderSettingsConfig(app: SettingsConfig, $html: JQuery) {
             : settings.find((setting) => setting.scope === "client")!;
         const group = querySelector(
             tab,
-            `[data-setting-id="${MODULE.id}.${hud.key}.${setting.key}"]`
+            `[data-setting-id="${MODULE.id}.${hud.hudKey}.${setting.key}"]`
         );
 
         if (group) {
-            const label = localize("settings", hud.key, "title");
+            const label = localize("settings", hud.hudKey, "title");
             beforeHTMLFromString(group, `<h3>${label}</h3>`);
         }
     }

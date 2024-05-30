@@ -1,0 +1,7 @@
+{{#each sidebars as |sidebar|}}
+<a data-section="sidebar" data-sidebar="{{sidebar.type}}" data-tooltip="{{sidebar.label}}"
+    class="{{#if sidebar.disabled}} disabled{{/if}}{{#if sidebar.active}} active{{/if}}"
+    data-action="open-sidebar" data-sidebar="{{sidebar.type}}">
+    <i class="{{sidebar.icon}}"></i>
+</a>
+{{/each}}

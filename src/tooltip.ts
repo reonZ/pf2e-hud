@@ -13,9 +13,11 @@ import {
     BaseActorContext,
     BaseTokenContext,
     PF2eHudBaseToken,
+    RenderOptionsHUD,
     type BaseTokenHUDSettings,
 } from "./hud";
 import { hud } from "./main";
+import { IWR_DATA, IWR_SLUGS } from "./shared";
 
 const DELAY_BUFFER = 50;
 
@@ -91,7 +93,11 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
         return ["tooltip"];
     }
 
-    get key(): "tooltip" {
+    get fontSize() {
+        return this.setting("fontSize");
+    }
+
+    get hudKey(): "tooltip" {
         return "tooltip";
     }
 
@@ -243,13 +249,8 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
         this.#tokenRefreshWrapper.toggle(enabled && this.setting("drawDistance") > 0);
     }
 
-    _configureRenderOptions(options: RenderOptions) {
-        super._configureRenderOptions(options);
-        options.fontSize = this.setting("fontSize");
-    }
-
     async _prepareContext(
-        options: RenderOptions
+        options: RenderOptionsHUD
     ): Promise<TooltipContext | StatusedTooltipContext | TooltipContextBase> {
         const parentData = await super._prepareContext(options);
         const baseData: TooltipContextBase = {
@@ -341,9 +342,11 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
             expended,
             status,
             ac: actor.isOfType("army") ? actor.system.ac.value : actor.attributes.ac?.value,
-            immunities: !!actor.attributes.immunities.length,
-            resistances: !!actor.attributes.resistances.length,
-            weaknesses: !!actor.attributes.weaknesses.length,
+            iwr: IWR_SLUGS.map((type) => ({
+                type,
+                ...IWR_DATA[type],
+                active: actor.attributes[type].length > 0,
+            })),
         };
 
         return data;
@@ -356,7 +359,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
         return await this.renderTemplate("tooltip", context);
     }
 
-    _replaceHTML(result: string, content: HTMLElement, options: RenderOptions) {
+    _replaceHTML(result: string, content: HTMLElement, options: RenderOptionsHUD) {
         content.dataset.tokenUuid = this.token?.document.uuid;
         content.style.setProperty("--font-size", `${options.fontSize}px`);
         content.innerHTML = result;
@@ -368,11 +371,9 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
     }
 
     _updatePosition(position: ApplicationPosition) {
-        const element = this.element;
-        if (!element || !canvas.ready) return position;
-
         const token = this.token;
-        if (!token?.actor) return this.moveOutOfScreen(position);
+        const element = this.element;
+        if (!element || !token || !canvas.ready) return position;
 
         const scale = token.worldTransform.a;
         const tokenCoords = canvas.clientCoordinatesFromCanvas(token);
@@ -427,8 +428,8 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
         }
 
         if (coords) {
-            element.style.left = `${coords.x}px`;
-            element.style.top = `${coords.y}px`;
+            element.style.setProperty("left", `${coords.x}px`);
+            element.style.setProperty("top", `${coords.y}px`);
 
             position.left = coords.x;
             position.top = coords.y;
@@ -590,10 +591,6 @@ function postionFromTargetX(
     return x;
 }
 
-type RenderOptions = ApplicationRenderOptions & {
-    fontSize: number;
-};
-
 type TooltipContextBase = BaseActorContext & {
     distance: DistanceContext | undefined;
 };
@@ -607,9 +604,11 @@ type TooltipContext = BaseTokenContext & {
     status: string | undefined;
     expended: boolean;
     ac: number | undefined;
-    immunities: boolean;
-    resistances: boolean;
-    weaknesses: boolean;
+    iwr: {
+        active: boolean;
+        icon: string;
+        label: string;
+    }[];
 };
 
 type DistanceType = (typeof SETTING_DISTANCE)[number];

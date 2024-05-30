@@ -54,9 +54,9 @@
     {{/each}}
 
     <section class="iwr" data-section="iwr">
-        <i class="fa-solid fa-ankh {{#unless immunities}}disabled{{/unless}}"></i>
-        <i class="fa-solid fa-heart-crack {{#unless resistances}}disabled{{/unless}}"></i>
-        <i class="fa-solid fa-shield-virus {{#unless weaknesses}}disabled{{/unless}}"></i>
+        {{#each iwr}}
+        <i class="{{this.icon}} {{#unless this.active}}disabled{{/unless}}"></i>
+        {{/each}}
     </section>
 
     {{#each speeds as |speed|}}

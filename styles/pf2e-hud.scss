@@ -176,7 +176,7 @@ $panel-gap: 5px;
     }
 }
 
-@import "./persistent";
-@import "./token";
-@import "./tooltip";
-@import "./tracker";
+@import "persistent";
+@import "token";
+@import "tooltip";
+@import "tracker";
