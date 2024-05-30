@@ -1,5 +1,6 @@
 # 0.3.0
 
+-   third prototype of the module
 -   added functionalities for `languages`, `senses`, `immunities`, `weaknesses` and `resistances` to both the `Token HUD` and `Persistent HUD`
 -   `Persistent HUD`
     -   now remembers persistent actor selection
