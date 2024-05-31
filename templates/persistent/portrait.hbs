@@ -1,4 +1,5 @@
-<div id="pf2e-hud-persistent-portrait" class="app" data-tooltip-direction="UP">
+<div id="pf2e-hud-persistent-portrait" class="app{{#if cleaned}} cleaned{{/if}}"
+    data-tooltip-direction="UP">
     <div class="avatar" style="background-image: url({{avatar}});"></div>
 
     {{#if hasActor}}
@@ -12,4 +13,6 @@
         {{> (partial 'armor')}}
     </div>
     {{/if}}
+
+    <div class="flash"></div>
 </div>

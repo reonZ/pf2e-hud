@@ -5,6 +5,14 @@
     <a data-action="select-actor" data-tooltip="{{setActorTooltip}}">
         <i class="fa-solid fa-user-vneck"></i>
     </a>
+    <a data-action="toggle-clean"
+        data-tooltip="{{#if cleaned}}{{i18n.path 'clean.always'}}{{else}}{{i18n.path 'clean.hover'}}{{/if}}">
+        {{#if cleaned}}
+        <i class="fa-duotone fa-image-user"></i>
+        {{else}}
+        <i class="fa-solid fa-image-user"></i>
+        {{/if}}
+    </a>
     {{#if hasActor}}
     <a data-action="open-sheet" data-tooltip="{{i18n.path 'openSheet'}}">
         <i class="fa-solid fa-file"></i>

@@ -139,6 +139,17 @@ class PF2eHudPersistent
                     this.render();
                 },
             },
+            {
+                key: "cleanPortrait",
+                type: Boolean,
+                default: false,
+                scope: "client",
+                config: false,
+                onChange: (value) => {
+                    this.render({ parts: ["menu"] });
+                    this.portraitElement?.classList.toggle("cleaned", value);
+                },
+            },
         ];
     }
 
@@ -192,6 +203,7 @@ class PF2eHudPersistent
         super._configureRenderOptions(options);
 
         options.hasSavedActor = !!this.setting("selected");
+        options.cleaned = this.setting("cleanPortrait");
 
         const allowedParts = this.templates;
         if (!options.parts) options.parts = allowedParts;
@@ -322,6 +334,25 @@ class PF2eHudPersistent
         throw new Error("Method not implemented.");
     }
 
+    isCurrentActor(actor: ActorPF2e | null | undefined, flash = false) {
+        const isCurrentActor = actor && this.actor?.uuid === actor.uuid;
+        if (isCurrentActor && flash) this.flash();
+        return isCurrentActor;
+    }
+
+    flash() {
+        const off = { boxShadow: "0 0 0px transparent" };
+        const on = {
+            boxShadow:
+                "0 0 var(--flash-outset-blur) 0px var(--flash-outset-color), inset 0 0 var(--flash-inset-blur) 0px var(--flash-inset-color)",
+        };
+
+        this.portraitElement?.querySelector(".flash")?.animate([off, on, on, on, off], {
+            duration: 200,
+            iterations: 2,
+        });
+    }
+
     #onDeleteActor(doc: ActorPF2e | TokenDocumentPF2e) {
         const actor = doc instanceof Actor ? doc : doc.actor;
         if (this.isCurrentActor(actor)) {
@@ -373,6 +404,7 @@ class PF2eHudPersistent
             ...context,
             setActorTooltip: `<div class="pf2e-hud-left">${setTooltip}</div>`,
             hotbarLocked: ui.hotbar.locked,
+            cleaned: options.cleaned,
         };
     }
 
@@ -407,6 +439,10 @@ class PF2eHudPersistent
                     this.#setSelectedToken();
                     break;
                 }
+                case "toggle-clean": {
+                    this.setSetting("cleanPortrait", !this.setting("cleanPortrait"));
+                    break;
+                }
             }
         });
     }
@@ -433,6 +469,7 @@ class PF2eHudPersistent
             avatar: actor.img,
             name: actor.name,
             health: getHealth(actor)!,
+            cleaned: options.cleaned,
         };
 
         return data;
@@ -479,8 +516,6 @@ function isValidActor(actor: Actor | null): actor is CharacterPF2e | NPCPF2e {
     return (actor as ActorPF2e).isOfType("character", "npc") && !!actor?.isOwner;
 }
 
-type ActionEvent = "raise-shield" | "take-cover";
-
 type Part<TContext extends PersistentContext> = {
     prepareContext: (
         context: PersistentContext,
@@ -498,6 +533,7 @@ type Parts = {
 type MenuContext = PersistentContext & {
     hotbarLocked: boolean;
     setActorTooltip: string;
+    cleaned: boolean;
 };
 
 type PortraitContext = PersistentContext &
@@ -505,6 +541,7 @@ type PortraitContext = PersistentContext &
         avatar: string;
         name: string;
         health: HealthData;
+        cleaned: boolean;
     };
 
 type MainContext = PersistentContext &
@@ -521,16 +558,20 @@ type PartName = "menu" | "main" | "portrait";
 
 type PersistentRenderOptions = RenderOptionsHUD<PartName> & {
     hasSavedActor: boolean;
+    cleaned: boolean;
 };
 
-type PreparedRenderOptions = Omit<PersistentRenderOptions, "parts"> & { parts: PartName[] };
+type PreparedRenderOptions = Omit<PersistentRenderOptions, "parts"> & {
+    parts: PartName[];
+};
 
 type MenuActionEvent =
     | "toggle-users"
     | "open-macros"
     | "toggle-hotbar-lock"
     | "open-sheet"
-    | "select-actor";
+    | "select-actor"
+    | "toggle-clean";
 
 type RenderedTemplates = { name: PartName; element: HTMLElement }[];
 
@@ -540,6 +581,7 @@ type PersistentSettings = {
     enabled: boolean;
     selected: string;
     modifiers: boolean;
+    cleanPortrait: boolean;
 };
 
 export { PF2eHudPersistent };

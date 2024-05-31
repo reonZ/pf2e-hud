@@ -80,6 +80,27 @@ $bottom-width: 542px;
         background: rgb(33 33 33);
         padding: 0.2em 0.1em 0.1em;
     }
+
+    .flash {
+        --flash-color: 255, 255, 0;
+        --flash-outset-blur: 20px;
+        --flash-outset-color: rgb(var(--flash-color));
+        --flash-inset-blur: 30px;
+        --flash-inset-color: rgba(var(--flash-color), 0.55);
+
+        inset: 0;
+        pointer-events: none;
+    }
+
+    &.cleaned:not(:hover) {
+        .top {
+            opacity: 0.5;
+        }
+
+        .bottom {
+            opacity: 0;
+        }
+    }
 }
 
 #pf2e-hud-persistent {
