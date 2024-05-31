@@ -2,8 +2,11 @@ import {
     R,
     addListener,
     addListenerAll,
+    closest,
     elementData,
+    getActiveModule,
     getFlag,
+    htmlClosest,
     saveTypes,
     setFlag,
     signedInteger,
@@ -259,12 +262,14 @@ function getAdvancedHealthData(actor: ActorPF2e): AdvancedHealthData {
     };
 }
 
-function addUpdateActorFromInput(parent: HTMLElement, actor: ActorPF2e) {
-    addListenerAll(parent, "input[type='number']", "keyup", (event, el) => {
-        if (event.key === "Enter") {
-            el.blur();
-        }
+function addEnterKeyListeners(parent: HTMLElement) {
+    addListenerAll(parent, "input", "keyup", (event, el) => {
+        if (event.key === "Enter") el.blur();
     });
+}
+
+function addUpdateActorFromInput(parent: HTMLElement, actor: ActorPF2e) {
+    addEnterKeyListeners(parent);
 
     addListenerAll(parent, "input[type='number']", "change", (event, el: HTMLInputElement) => {
         let path = el.name;
@@ -463,6 +468,94 @@ function getAdvancedData(
     };
 }
 
+function addItemPropertyListeners(actor: ActorPF2e, parent: HTMLElement) {
+    addListenerAll(
+        parent,
+        "input[data-item-id][data-item-property]",
+        "change",
+        (event, el: HTMLInputElement) => {
+            event.stopPropagation();
+            const { itemId, itemProperty } = elementData(el);
+            actor.updateEmbeddedDocuments("Item", [
+                {
+                    _id: itemId,
+                    [itemProperty]: el.valueAsNumber,
+                },
+            ]);
+        }
+    );
+}
+
+function addStavesListeners(actor: ActorPF2e, parent: HTMLElement) {
+    const pf2eDailies = getActiveModule<PF2eDailiesModule>("pf2e-dailies");
+    if (!pf2eDailies || !actor.isOfType("character")) return;
+
+    addListenerAll(
+        parent,
+        "[data-action='update-staff-charges']",
+        "change",
+        (event, el: HTMLInputElement) => {
+            const value = el.valueAsNumber;
+            pf2eDailies.api.setStaffChargesValue(actor, value);
+        }
+    );
+}
+
+function getItemFromElement(actor: ActorPF2e, el: HTMLElement) {
+    const itemElement = closest(el, "[data-item-id]");
+    const { itemId, parentId, entryId } = itemElement?.dataset ?? {};
+
+    if (entryId && actor.isOfType("creature")) {
+        const collection = actor.spellcasting.collections.get(entryId, {
+            strict: true,
+        });
+        return collection.get(itemId, { strict: true });
+    }
+
+    const item = actor.items.get(parentId ?? itemId, { strict: true });
+    return parentId && item.isOfType("physical")
+        ? item.subitems.get(itemId, { strict: true })
+        : item;
+}
+
+function getSpellFromElement(actor: CreaturePF2e, target: HTMLElement) {
+    const spellRow = closest(target, "[data-item-id]");
+    const { itemId, entryId, slotId } = spellRow?.dataset ?? {};
+    const collection = actor.spellcasting.collections.get(entryId, {
+        strict: true,
+    });
+
+    return {
+        slotId,
+        collection,
+        castRank: spellRow?.dataset.castRank,
+        spell: collection.get(itemId, { strict: true }),
+    };
+}
+
+function sendItemToChat(actor: ActorPF2e, event: MouseEvent, el: HTMLElement) {
+    const itemEl = htmlClosest(el, "[data-item-id]");
+    const collectionId = itemEl?.dataset.entryId;
+    const collection: Collection<ItemPF2e> =
+        collectionId && actor.isOfType("creature")
+            ? actor.spellcasting?.collections.get(collectionId, { strict: true }) ?? actor.items
+            : actor.items;
+
+    const itemId = itemEl?.dataset.itemId;
+    const item = collection.get(itemId, { strict: true });
+
+    if (item.isOfType("spell")) {
+        const castRank = Number(itemEl?.dataset.castRank ?? NaN);
+        return item.toMessage(event, { data: { castRank } });
+    } else if (item.isOfType("physical")) {
+        const subitemId = htmlClosest(event.target, "[data-subitem-id]")?.dataset.subitemId;
+        const actualItem = subitemId ? item.subitems.get(subitemId, { strict: true }) : item;
+        return actualItem.toMessage(event);
+    }
+
+    return item.toMessage(event);
+}
+
 type AdvancedActorData = {
     otherSpeeds: string | undefined;
     dying: ValueAndMax | undefined;
@@ -571,7 +664,10 @@ export {
     SHARED_PARTIALS,
     SPEEDS_ICONS,
     addArmorListeners,
+    addEnterKeyListeners,
+    addItemPropertyListeners,
     addSharedListeners,
+    addStavesListeners,
     addUpdateActorFromInput,
     canObserve,
     getAdvancedData,
@@ -580,5 +676,8 @@ export {
     getCoverEffect,
     getDefaultData,
     getHealth,
+    getItemFromElement,
+    getSpellFromElement,
+    sendItemToChat,
 };
 export type { AdvancedActorData, AdvancedHealthData, BaseActorData, HealthData };

@@ -1,0 +1,35 @@
+[id^="pf2e-hud-popup-"] {
+    --header-height: 2em;
+
+    position: absolute;
+    max-width: 40em;
+    background: var(--outer-background);
+    border-radius: var(--outer-border-radius);
+    box-shadow: var(--outer-box-shadow);
+
+    .window-header {
+        font-size: revert;
+    }
+
+    .window-content {
+        padding: 0;
+    }
+
+    .item-summary {
+        padding: 0 0.5em 0.5em;
+
+        .tags > .tag.light {
+            --tag-color: var(--color-text-dark-2);
+
+            background: #ffffffd1;
+        }
+
+        .button-group {
+            align-items: start;
+            display: flex;
+            gap: var(--space-6);
+            justify-content: center;
+            flex-direction: column;
+        }
+    }
+}

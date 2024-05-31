@@ -1,7 +1,15 @@
-import { SublocalizeI18n, createHTMLFromString, localizePath, templateLocalize } from "pf2e-api";
+import {
+    SublocalizeI18n,
+    addListenerAll,
+    createHTMLFromString,
+    localizePath,
+    templateLocalize,
+} from "pf2e-api";
 import { BaseContext, PF2eHudBase } from "./hud";
 import { PF2eHudPersistent } from "./persistent";
 import { PF2eHudToken } from "./token";
+import { getItemFromElement } from "./shared";
+import { PF2eHudPopup } from "./popup";
 
 const SIDEBARS = ["actions", "items", "spells", "skills", "extras"] as const;
 
@@ -74,6 +82,8 @@ abstract class PF2eHudSidebar<
         return this.#innerElement!;
     }
 
+    abstract _activateListener(html: HTMLElement): void;
+
     _configureRenderOptions(options: SidebarRenderOptions) {
         super._configureRenderOptions(options);
         options.fontSize = this.fontSize;
@@ -87,24 +97,33 @@ abstract class PF2eHudSidebar<
         };
     }
 
-    async _renderHTML(context: any, options: SidebarRenderOptions): Promise<string> {
+    async _renderHTML(context: any, options: SidebarRenderOptions): Promise<HTMLElement> {
         const template = await this.renderTemplate(this.templates[0], context);
-        return `<div class="inner" data-tooltip-direction="UP">${template}</div>`;
+        const innerTemplate = `<div class="inner" data-tooltip-direction="UP">${template}</div>`;
+        return createHTMLFromString(innerTemplate);
     }
 
-    _replaceHTML(result: string, content: HTMLElement, options: SidebarRenderOptions) {
+    _replaceHTML(result: HTMLElement, content: HTMLElement, options: SidebarRenderOptions) {
         content.style.setProperty("--font-size", `${options.fontSize}px`);
 
         const oldElement = this.#innerElement;
-
-        this.#innerElement = createHTMLFromString(result);
+        this.#innerElement = result;
 
         if (oldElement) oldElement.replaceWith(this.#innerElement);
         else content.appendChild(this.#innerElement);
+
+        this.#activateListeners(this.#innerElement);
+        this._activateListener(this.#innerElement);
     }
 
     _insertElement(element: HTMLElement) {
         element.dataset.actorUuid = this.#parentHud.actor?.uuid;
+    }
+
+    #activateListeners(html: HTMLElement) {
+        addListenerAll(html, "[data-action='item-description']", (event, el) => {
+            PF2eHudPopup.showItemSummary(this.actor, el);
+        });
     }
 }
 
@@ -134,5 +153,5 @@ type SidebarElement = {
     active: boolean;
 };
 
-export { SIDEBARS, SIDEBAR_ICONS, PF2eHudSidebar, getSidebars };
-export type { SidebarElement, SidebarHUD, SidebarName, SidebarRenderOptions, SidebarContext };
+export { PF2eHudSidebar, SIDEBARS, SIDEBAR_ICONS, getSidebars };
+export type { SidebarContext, SidebarElement, SidebarHUD, SidebarName, SidebarRenderOptions };

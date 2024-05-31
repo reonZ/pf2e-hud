@@ -123,6 +123,14 @@
                 "multiColumns": {
                     "name": "Multi Columns Sidebars",
                     "hint": "When a sidebar's height is bigger than its max-height, it will be split into 2 or 3 columns."
+                },
+                "closeOnSpell": {
+                    "name": "Close on Spell Cast",
+                    "hint": "Should the HUD/sidebar be closed when casting a spell."
+                },
+                "closeOnSendToChat": {
+                    "name": "Close on Send to Chat",
+                    "hint": "Should the HUD/sidebar be closed when sending an item to chat."
                 }
             },
             "persistent": {
@@ -171,6 +179,13 @@
                 "square": "sq."
             }
         },
+        "token": {
+            "closeChoices": {
+                "never": "Disabled",
+                "sidebar": "Sidebar Only",
+                "all": "HUD & Sidebar"
+            }
+        },
         "persistent": {
             "error": {
                 "selectOne": "Select a single NPC/Character token to set as your persistent actor."
@@ -178,7 +193,11 @@
             "menu": {
                 "openSheet": "Open Sheet",
                 "setActor": "Set selected token as persistent actor",
-                "unsetActor": "Uset persistent actor"
+                "unsetActor": "Uset persistent actor",
+                "clean": {
+                    "always": "Always show UI on portrait",
+                    "hover": "Only show UI when hovering the portrait"
+                }
             },
             "portrait": {
                 "selectActor": "Set this actor as persistent"

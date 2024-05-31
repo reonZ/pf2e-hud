@@ -1,11 +1,15 @@
 $panel-gap: 5px;
 
 [id^="pf2e-hud"] {
+    --outer-background: url(../../../ui/denim075.png) repeat #4d4d4d;
+    --outer-box-shadow: 0 0 20px var(--color-shadow-dark);
+    --outer-border-width: 1px;
+    --outer-border: var(--outer-border-width) solid var(--color-border-dark);
     --outer-border-radius: 4px;
     --input-width: 2.4em;
     --input-width-small: 1.8em;
     --input-equivalent-width: 2.2em;
-    --input-background: rgb(255 255 255 / 16%);
+    --input-background: rgb(255 255 255 / 8%);
     --icon-width: 1.4em;
     --color: var(--color-text-light-highlight);
     --color-disabled: var(--color-text-dark-5);
@@ -30,6 +34,18 @@ $panel-gap: 5px;
     input,
     select {
         color: var(--color);
+    }
+
+    select {
+        flex: 1;
+        padding: 0;
+        border: none;
+        background: var(--input-background);
+
+        option {
+            color: fieldtext;
+            background: revert;
+        }
     }
 
     input[type="number"] {
@@ -180,3 +196,4 @@ $panel-gap: 5px;
 @import "token";
 @import "tooltip";
 @import "tracker";
+@import "popup";

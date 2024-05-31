@@ -1,8 +1,6 @@
 #pf2e-hud-tooltip {
     --outer-padding: 4px;
-    --outer-box-shadow: 0 0 20px var(--color-shadow-dark);
     --inner-padding: 0.5em;
-    --background: url(../../../ui/denim075.png) repeat #4d4d4d;
 
     z-index: 9999;
     position: absolute;
@@ -14,7 +12,7 @@
     .distance,
     .status,
     .inner {
-        background: var(--background);
+        background: var(--outer-background);
         border-radius: var(--outer-border-radius);
         box-shadow: var(--outer-box-shadow);
         padding: 0.2em var(--inner-padding);
@@ -53,11 +51,15 @@
         --section-width: calc(var(--icon-width) + var(--span-width) + var(--section-gap));
 
         min-width: 8em;
-        max-width: calc(var(--inner-padding) * 2 + var(--inner-gap) * 2 + var(--section-width) * 3);
+        max-width: calc(
+            var(--inner-padding) * 2 + var(--inner-gap) * 2 + var(--section-width) * 3 +
+                var(--outer-border-width) * 2
+        );
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
         gap: 0.3em var(--inner-gap);
+        border: var(--outer-border);
 
         header,
         hr {

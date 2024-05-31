@@ -1,6 +1,7 @@
 #pf2e-hud-token-sidebar {
     --max-height: 98vh;
     --sidebars-height: 1.8em;
+    --image-border: 1px solid rgba(255, 255, 255, 0.2196078431);
 
     position: absolute;
     padding: 1vh;
@@ -12,6 +13,10 @@
         background: var(--outer-background);
         box-shadow: var(--outer-box-shadow);
         border-radius: var(--outer-border-radius);
+    }
+
+    a.disabled {
+        color: var(--color-disabled);
     }
 
     .sidebars {
@@ -31,20 +36,122 @@
     }
 
     .inner {
+        --max-width: 16em;
+
         min-width: 12em;
         min-height: 4em;
         max-height: calc(min(98vh, var(--max-height)) - var(--sidebars-height));
         max-width: 98vh;
         padding: 5px;
+        overflow: auto;
 
         display: flex;
         flex-direction: column;
-        overflow: auto;
+        gap: 0.3em;
+
+        border: var(--outer-border);
 
         &.multi,
         .multi {
             column-gap: 0.5em;
             columns: var(--nb-columns);
+
+            > * {
+                break-inside: avoid;
+            }
+        }
+
+        .option-toggles {
+            display: flex;
+            flex-flow: column wrap;
+            max-width: calc(var(--max-width) * var(--nb-columns));
+
+            .toggle {
+                display: flex;
+                flex-wrap: wrap;
+                width: 100%;
+
+                label {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.3em;
+
+                    input[type="checkbox"] {
+                        height: 1.3em;
+                        margin: 0;
+                        padding: 0;
+                    }
+
+                    .name {
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+
+                        &.unchecked-disabled {
+                            color: var(--color-disabled);
+                        }
+                    }
+                }
+
+                select {
+                    --margin: 0.5em;
+
+                    margin-left: var(--margin);
+                    max-width: calc(100% - var(--margin));
+                }
+            }
+        }
+
+        .item {
+            max-width: var(--max-width);
+
+            .image {
+                position: relative;
+                height: 100%;
+                aspect-ratio: 1 / 1;
+                background: #ffffff2b;
+                border: var(--image-border);
+                border-radius: 4px;
+                cursor: pointer;
+
+                img {
+                    height: 100%;
+                    aspect-ratio: 1/1;
+                    border-radius: 4px;
+                    border: none;
+                }
+
+                i {
+                    position: absolute;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    inset: 0;
+                    font-size: 1.6em;
+                    width: unset;
+                }
+
+                &:not(:hover) {
+                    i {
+                        display: none;
+                    }
+                }
+
+                &:hover {
+                    img {
+                        opacity: 0;
+                    }
+                }
+            }
+        }
+
+        *:has(> .name) {
+            overflow: hidden;
+
+            .name {
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
     }
 }

@@ -279,7 +279,7 @@ type BaseTokenHUDSettings = {
     modifiers: boolean;
 };
 
-export { PF2eHudBase, PF2eHudBaseMain, PF2eHudBaseActor, PF2eHudBaseToken };
+export { PF2eHudBase, PF2eHudBaseActor, PF2eHudBaseMain, PF2eHudBaseToken };
 export type {
     BaseActorContext,
     BaseContext,

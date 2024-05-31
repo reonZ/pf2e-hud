@@ -1,9 +1,11 @@
 import {
+    R,
     addListenerAll,
     createHTMLFromString,
     createHook,
     elementData,
     libWrapper,
+    localizePath,
     registerWrapper,
 } from "pf2e-api";
 import {
@@ -24,13 +26,21 @@ import {
     getAdvancedData,
     getAdvancedHealthData,
 } from "./shared";
-import { SIDEBARS, SidebarElement, SidebarHUD, SidebarName, getSidebars } from "./sidebar";
-import { PF2eHudTokenSidebar } from "./token-sidebars/base";
-import { PF2eHudSpellsSidebar } from "./token-sidebars/spells";
-import { PF2eHudItemsSidebar } from "./token-sidebars/items";
+import { SidebarElement, SidebarHUD, SidebarName, getSidebars } from "./sidebar";
 import { PF2eHudActionsSidebar } from "./token-sidebars/actions";
+import { PF2eHudTokenSidebar } from "./token-sidebars/base";
 import { PF2eHudExtrasSidebar } from "./token-sidebars/extras";
+import { PF2eHudItemsSidebar } from "./token-sidebars/items";
 import { PF2eHudSkillsSidebar } from "./token-sidebars/skills";
+import { PF2eHudSpellsSidebar } from "./token-sidebars/spells";
+
+const CLOSE_SETTINGS = ["closeOnSendToChat", "closeOnSpell"] as const;
+const CLOSE_OPTIONS = ["never", "sidebar", "all"] as const;
+
+const CLOSE_CHOICES = R.mapToObj(CLOSE_OPTIONS, (option) => [
+    option,
+    `pf2e-hud.token.closeChoices.${option}`,
+]);
 
 class PF2eHudToken
     extends PF2eHudBaseToken<TokenSettings, ActorType>
@@ -173,6 +183,15 @@ class PF2eHudToken
                     this.sidebar?.render();
                 },
             },
+            ...CLOSE_SETTINGS.map(
+                (key): SettingOptions => ({
+                    key,
+                    type: String,
+                    choices: CLOSE_CHOICES,
+                    default: "never",
+                    scope: "client",
+                })
+            ),
             {
                 key: "modifiers",
                 type: Boolean,
@@ -396,7 +415,7 @@ class PF2eHudToken
             !actor?.isOwner ||
             actor.isOfType("loot", "party") ||
             actor.sheet.rendered ||
-            hud.persistent.isCurrentActor(actor)
+            hud.persistent.isCurrentActor(actor, true)
         ) {
             token = null;
         }
@@ -440,6 +459,16 @@ class PF2eHudToken
         this.#sidebar.render(true);
     }
 
+    closeIf(option: SidebarCloseOptions) {
+        const setting = this.setting(option);
+
+        if (setting === "all") {
+            return this.close();
+        } else if (setting === "sidebar") {
+            return this.toggleSidebar(null);
+        }
+    }
+
     #clickClose() {
         const focused = document.activeElement as HTMLElement;
 
@@ -460,7 +489,7 @@ class PF2eHudToken
         addSharedListeners(html, actor);
         addArmorListeners(html, actor, this.token);
 
-        addListenerAll(html, "[data-action='open-sidebar']", (event, el) => {
+        addListenerAll(html, "[data-action='open-sidebar']:not(.disabled)", (event, el) => {
             const { sidebar } = elementData<{ sidebar: SidebarName }>(el);
             this.toggleSidebar(sidebar);
         });
@@ -478,18 +507,22 @@ type TokenContext = BaseTokenContext &
         sidebars: SidebarElement[];
     };
 
-type TokenSettings = BaseTokenHUDSettings & {
-    enabled: boolean;
-    scaleDimensions: boolean;
-    mode: "exploded" | "left" | "right";
-    fontSize: number;
-    sidebarFontSize: number;
-    highestSpeed: boolean;
-    sidebarHeight: number;
-    multiColumns: boolean;
-};
+type SidebarCloseOptions = (typeof CLOSE_SETTINGS)[number];
+type SidebarCloseOption = (typeof CLOSE_OPTIONS)[number];
+
+type TokenSettings = BaseTokenHUDSettings &
+    Record<SidebarCloseOptions, SidebarCloseOption> & {
+        enabled: boolean;
+        scaleDimensions: boolean;
+        mode: "exploded" | "left" | "right";
+        fontSize: number;
+        sidebarFontSize: number;
+        highestSpeed: boolean;
+        sidebarHeight: number;
+        multiColumns: boolean;
+    };
 
 type ActorType = Exclude<ActorInstances[keyof ActorInstances], LootPF2e | PartyPF2e>;
 
 export { PF2eHudToken };
-export type { TokenSettings };
+export type { SidebarCloseOption, TokenSettings };

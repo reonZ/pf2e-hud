@@ -18,19 +18,19 @@
         spell.isPrepared}}data-slot-id="{{spell.slotId}}" {{/if}} {{#if
         spell.expended}}data-slot-expended{{/if}}>
         {{!-- image --}}
-        <div class="image">
+        <div class="image" data-action="send-to-chat">
             <img src="{{spell.img}}">
             <i class="fa-solid fa-message"></i>
         </div>
         {{!-- details --}}
         <div class="details">
             {{!-- name --}}
-            <a class="name" data-action="spell-description">{{spell.name}}</a>
+            <a class="name" data-action="item-description">{{spell.name}}</a>
             {{!-- extras --}}
             <div class="extras">
                 {{!-- category --}}
                 <div class="category" data-tooltip="{{spell.entryTooltip}}"
-                    data-tooltip-direction="UP">
+                    data-tooltip-direction="DOWN">
                     {{#if (eq rank 13)}}
                     {{spell.action}}
                     {{else}}

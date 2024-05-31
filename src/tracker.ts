@@ -365,14 +365,18 @@ class PF2eHudTracker extends PF2eHudBaseMain<TrackerSettings> {
         combatantsList.scrollTop = activeCombatant.offsetTop - clientHeight / 2;
     }
 
-    #activateListeners(html: HTMLElement) {
-        const tracker = this.tracker;
+    _onClickAction(event: PointerEvent, target: HTMLElement) {
+        const action = target.dataset.action;
 
-        addListener(html, "[data-action='toggle-expand']", (event) => {
+        if (action === "toggle-expand") {
             event.preventDefault();
             const newValue = this.setting("expanded") === "false" ? "true" : "false";
             this.setSetting("expanded", newValue);
-        });
+        }
+    }
+
+    #activateListeners(html: HTMLElement) {
+        const tracker = this.tracker;
 
         addListenerAll(html, ".combat-control", (event) => {
             event.preventDefault();

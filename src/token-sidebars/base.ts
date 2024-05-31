@@ -1,11 +1,32 @@
-import { addListenerAll, createHTMLFromString, elementData } from "pf2e-api";
+import {
+    R,
+    addListener,
+    addListenerAll,
+    createHTMLFromString,
+    elementData,
+    htmlClosest,
+    htmlQuery,
+} from "pf2e-api";
 import { PF2eHudSidebar, SidebarName, SidebarRenderOptions, getSidebars } from "../sidebar";
 import { PF2eHudToken, TokenSettings } from "../token";
+import { sendItemToChat } from "../shared";
+
+const ROLLOPTIONS_PLACEMENT = {
+    actions: "actions",
+    spells: "spellcasting",
+    items: "inventory",
+    skills: "proficiencies",
+    extras: undefined,
+} as const;
 
 abstract class PF2eHudTokenSidebar extends PF2eHudSidebar<TokenSettings, PF2eHudToken> {
     static DEFAULT_OPTIONS: Partial<ApplicationConfiguration> = {
         id: "pf2e-hud-token-sidebar",
     };
+
+    get partial() {
+        return ["rolloptions"];
+    }
 
     get fontSize() {
         return this.setting("sidebarFontSize");
@@ -19,6 +40,29 @@ abstract class PF2eHudTokenSidebar extends PF2eHudSidebar<TokenSettings, PF2eHud
         return this.parentHud.mainElement!;
     }
 
+    get itemElements() {
+        return this.innerElement.querySelectorAll(".item");
+    }
+
+    async _renderHTML(context: any, options: SidebarRenderOptions): Promise<HTMLElement> {
+        const innerElement = await super._renderHTML(context, options);
+
+        const placement = ROLLOPTIONS_PLACEMENT[this.sidebarKey];
+        if (placement) {
+            const toggles = R.pipe(
+                R.values(this.actor.synthetics.toggles).flatMap((domain) => Object.values(domain)),
+                R.filter((option) => option.placement === placement)
+            );
+
+            const template = await this.renderPartial("rolloptions", { toggles });
+            const element = createHTMLFromString(template);
+
+            innerElement.prepend(element);
+        }
+
+        return innerElement;
+    }
+
     _insertElement(element: HTMLElement) {
         super._insertElement(element);
         document.body.append(element);
@@ -30,7 +74,7 @@ abstract class PF2eHudTokenSidebar extends PF2eHudSidebar<TokenSettings, PF2eHud
         });
         const sidebarsElement = createHTMLFromString(sidebarsTemplate);
         sidebarsElement.classList.add("sidebars");
-        sidebarsElement.dataset.tooltipDirection = "UP";
+        sidebarsElement.dataset.tooltipDirection = "DOWN";
 
         this.element?.prepend(sidebarsElement);
         this.#activateSidebarsListeners(sidebarsElement);
@@ -48,6 +92,14 @@ abstract class PF2eHudTokenSidebar extends PF2eHudSidebar<TokenSettings, PF2eHud
                 const columns = Math.clamp(Math.ceil(scrollHeight / computedMaxHeight), 1, 3);
 
                 this.innerElement.style.setProperty("--nb-columns", String(columns));
+            }
+        }
+
+        for (const itemElement of this.itemElements) {
+            const nameElement = itemElement.querySelector<HTMLElement>(".name")!;
+
+            if (nameElement && nameElement.scrollWidth > nameElement.offsetWidth) {
+                nameElement.dataset.tooltip = nameElement.innerHTML.trim();
             }
         }
     }
@@ -96,6 +148,43 @@ abstract class PF2eHudTokenSidebar extends PF2eHudSidebar<TokenSettings, PF2eHud
 
     _onPosition(position: ApplicationPosition) {
         requestAnimationFrame(() => this._updatePosition());
+    }
+
+    _onClickAction(event: PointerEvent, target: HTMLElement) {
+        const action = target.dataset.action;
+
+        switch (action) {
+            case "send-to-chat":
+                sendItemToChat(this.actor, event, target);
+                this.parentHud.closeIf("closeOnSendToChat");
+                break;
+        }
+    }
+
+    _activateListener(html: HTMLElement) {
+        addListener(html, "[data-option-toggles]", "change", (event) => {
+            const toggleRow = htmlClosest(event.target, "[data-item-id][data-domain][data-option]");
+            const checkbox = htmlQuery<HTMLInputElement>(
+                toggleRow,
+                "input[data-action=toggle-roll-option]"
+            );
+            const suboptionsSelect = htmlQuery<HTMLSelectElement>(
+                toggleRow,
+                "select[data-action=set-suboption"
+            );
+            const { domain, option, itemId } = toggleRow?.dataset ?? {};
+            const suboption = suboptionsSelect?.value ?? null;
+
+            if (checkbox && domain && option) {
+                this.actor.toggleRollOption(
+                    domain,
+                    option,
+                    itemId ?? null,
+                    checkbox.checked,
+                    suboption
+                );
+            }
+        });
     }
 
     #activateSidebarsListeners(html: HTMLElement) {

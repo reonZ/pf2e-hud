@@ -1,8 +1,6 @@
 [id^="pf2e-hud-token"] {
     --anchor-margin: 4px;
     --color-active: #db2828;
-    --outer-box-shadow: 0 0 20px var(--color-shadow-dark);
-    --outer-background: url(../../../ui/denim075.png) repeat #4d4d4d;
 
     color: var(--color);
     font-size: var(--font-size);
@@ -79,6 +77,7 @@ body:has(#pf2e-hud-token-sidebar) {
         box-shadow: var(--outer-box-shadow);
         border-radius: var(--outer-border-radius);
         padding: 0.2rem var(--outer-padding-right) 0.2rem 0.3rem;
+        border: var(--outer-border);
 
         &.left,
         &.right {
@@ -161,6 +160,7 @@ body:has(#pf2e-hud-token-sidebar) {
         background: var(--outer-background);
         box-shadow: var(--outer-box-shadow);
         border-radius: var(--outer-border-radius);
+        border: var(--outer-border);
         display: flex;
         flex-direction: column;
         padding: 0.1rem 0.4rem 0.4rem;
