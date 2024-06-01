@@ -182,7 +182,7 @@ $panel-gap: 5px;
         }
 
         &[data-section="shield"] {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: auto 1fr;
 
             a {
                 display: flex;
@@ -196,6 +196,7 @@ $panel-gap: 5px;
 
             span {
                 text-align: center;
+                margin-right: 0.5em;
             }
         }
     }

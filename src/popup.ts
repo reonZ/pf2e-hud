@@ -1,4 +1,4 @@
-import { addListener, closest, isInstanceOf } from "pf2e-api";
+import { addListener, closest, elementData, getRankLabel, isInstanceOf } from "pf2e-api";
 import { getItemFromElement } from "./utils";
 
 type PF2eHudPopupConfig = {
@@ -25,7 +25,7 @@ class PF2eHudPopup extends foundry.applications.api.ApplicationV2 {
         this.#config = config;
     }
 
-    static async showItemSummary(actor: ActorPF2e, el: HTMLElement, title?: string) {
+    static async showItemSummary(actor: ActorPF2e, el: HTMLElement) {
         const target = closest(el, ".item");
         if (!target) return;
 
@@ -43,11 +43,15 @@ class PF2eHudPopup extends foundry.applications.api.ApplicationV2 {
 
         await actor.sheet.itemRenderer.renderItemSummary(summaryElement, item, data);
 
+        let title = `${actor.name} - ${item.name}`;
+
         if (castRank) {
             summaryElement.dataset.castRank = castRank;
+
+            const rank = Number(castRank) as ZeroToTen;
+            title += ` (${getRankLabel(rank)})`;
         }
 
-        title ??= target.querySelector(".name")?.textContent ?? "";
         new PF2eHudPopup({ actor, content: summaryElement }, { window: { title } }).render(true);
     }
 

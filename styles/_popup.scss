@@ -31,5 +31,10 @@
             justify-content: center;
             flex-direction: column;
         }
+
+        a.content-link i,
+        a.inline-roll i {
+            color: unset;
+        }
     }
 }

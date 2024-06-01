@@ -4,6 +4,7 @@ import {
     addListenerAll,
     closest,
     elementData,
+    getActiveModule,
     getFlag,
     htmlClosest,
     setFlag,
@@ -497,6 +498,60 @@ function getSpellFromElement(actor: CreaturePF2e, target: HTMLElement) {
     };
 }
 
+function addStavesListeners(actor: ActorPF2e, html: HTMLElement) {
+    const pf2eDailies = getActiveModule<PF2eDailiesModule>("pf2e-dailies");
+    if (!pf2eDailies || !actor.isOfType("character")) return;
+
+    addListenerAll(
+        html,
+        "[data-action='update-staff-charges']",
+        "change",
+        (event, el: HTMLInputElement) => {
+            const value = el.valueAsNumber;
+            pf2eDailies.api.setStaffChargesValue(actor, value);
+        }
+    );
+}
+
+function addItemPropertyListeners(actor: ActorPF2e, parent: HTMLElement) {
+    addListenerAll(
+        parent,
+        "input[data-item-id][data-item-property]",
+        "change",
+        (event, el: HTMLInputElement) => {
+            event.stopPropagation();
+            const { itemId, itemProperty } = elementData(el);
+            actor.updateEmbeddedDocuments("Item", [
+                {
+                    _id: itemId,
+                    [itemProperty]: el.valueAsNumber,
+                },
+            ]);
+        }
+    );
+}
+
+function addFocusListeners(actor: ActorPF2e, html: HTMLElement) {
+    if (actor.isOfType("character")) {
+        addListenerAll(html, "[data-slider-action='focus']", "mousedown", (event, el) => {
+            const direction = event.button === 0 ? 1 : -1;
+            const focusPoints = actor.system.resources.focus;
+            const newValue = Math.clamp(focusPoints.value + direction, 0, focusPoints.max);
+
+            if (newValue !== focusPoints.value) {
+                actor.update({ "system.resources.focus.value": newValue });
+            }
+        });
+    }
+}
+
+function addSpellsListeners(actor: ActorPF2e, html: HTMLElement) {
+    addEnterKeyListeners(html);
+    addStavesListeners(actor, html);
+    addItemPropertyListeners(actor, html);
+    addFocusListeners(actor, html);
+}
+
 type StatsSpeed = {
     icon: string;
     total: number;
@@ -609,9 +664,12 @@ export {
     IWR_DATA,
     STATS_PARTIALS,
     addEnterKeyListeners,
+    addItemPropertyListeners,
     addSendItemToChatListeners,
+    addSpellsListeners,
     addStatsAdvancedListeners,
     addStatsHeaderListeners,
+    addStavesListeners,
     canObserve,
     getHealth,
     getItemFromElement,
