@@ -24,6 +24,7 @@ const SHARED_PARTIALS = [
     "health",
     "level",
     "sidebars",
+    "speed",
 ];
 
 const SPEEDS_ICONS = {

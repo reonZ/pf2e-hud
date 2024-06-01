@@ -40,12 +40,7 @@
         {{/unless}}
         {{!-- --}}
         {{#if mainSpeed}}
-        <a data-section="speeds" data-tooltip="{{otherSpeeds}}" {{#unless
-            otherSpeeds}}class="disabled" {{/unless}} data-speed="{{mainSpeed.type}}"
-            data-action="change-speed">
-            <i class="{{mainSpeed.icon}}"></i>
-            <span>{{mainSpeed.total}}</span>
-        </a>
+        {{> (partial 'speed')}}
         {{/if}}
         {{#if isVehicle}}
         {{> (partial 'statistics') list=saves}}
