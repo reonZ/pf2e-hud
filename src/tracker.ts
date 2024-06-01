@@ -13,7 +13,7 @@ import {
 } from "pf2e-api";
 import Sortable, { type SortableEvent } from "sortablejs";
 import { BaseContext, PF2eHudBaseMain, RenderOptionsHUD } from "./hud";
-import { HealthData, canObserve, getHealth } from "./shared";
+import { HealthData, canObserve, getHealth } from "./utils";
 
 class PF2eHudTracker extends PF2eHudBaseMain<TrackerSettings> {
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));

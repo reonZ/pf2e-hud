@@ -7,10 +7,8 @@
         <div class="name">{{name}}</div>
     </div>
 
-    <div class="bottom">
-        {{> (partial 'stamina')}}
-        {{> (partial 'health')}}
-        {{> (partial 'armor')}}
+    <div class="bottom panel stats-header">
+        {{> (partial 'stats_header')}}
     </div>
     {{/if}}
 

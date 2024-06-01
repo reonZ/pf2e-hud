@@ -8,14 +8,10 @@ import {
     htmlClosest,
     localizePath,
 } from "pf2e-api";
-import {
-    addEnterKeyListeners,
-    addItemPropertyListeners,
-    addStavesListeners,
-    getSpellFromElement,
-} from "../shared";
+
 import { SidebarContext, SidebarRenderOptions } from "../sidebar";
 import { PF2eHudTokenSidebar } from "./base";
+import { getSpellFromElement } from "../utils";
 
 class PF2eHudSpellsSidebar extends PF2eHudTokenSidebar {
     get sidebarKey(): "spells" {
@@ -44,23 +40,23 @@ class PF2eHudSpellsSidebar extends PF2eHudTokenSidebar {
     _activateListener(html: HTMLElement) {
         super._activateListener(html);
 
-        addEnterKeyListeners(html);
-        addListenerAll(html, "[data-action]:not(disabled)", this.#actionEvents.bind(this));
-        addItemPropertyListeners(this.actor, html);
-        addStavesListeners(this.actor, html);
+        // addEnterKeyListeners(html);
+        // addListenerAll(html, "[data-action]:not(disabled)", this.#actionEvents.bind(this));
+        // addItemPropertyListeners(this.actor, html);
+        // addStavesListeners(this.actor, html);
 
-        const actor = this.actor;
-        if (actor.isOfType("character")) {
-            addListenerAll(html, "[data-slider-action='focus']", "mousedown", (event, el) => {
-                const direction = event.button === 0 ? 1 : -1;
-                const focusPoints = actor.system.resources.focus;
-                const newValue = Math.clamp(focusPoints.value + direction, 0, focusPoints.max);
+        // const actor = this.actor;
+        // if (actor.isOfType("character")) {
+        //     addListenerAll(html, "[data-slider-action='focus']", "mousedown", (event, el) => {
+        //         const direction = event.button === 0 ? 1 : -1;
+        //         const focusPoints = actor.system.resources.focus;
+        //         const newValue = Math.clamp(focusPoints.value + direction, 0, focusPoints.max);
 
-                if (newValue !== focusPoints.value) {
-                    this.actor.update({ "system.resources.focus.value": newValue });
-                }
-            });
-        }
+        //         if (newValue !== focusPoints.value) {
+        //             this.actor.update({ "system.resources.focus.value": newValue });
+        //         }
+        //     });
+        // }
     }
 
     #actionEvents(event: MouseEvent, target: HTMLElement) {

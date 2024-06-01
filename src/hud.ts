@@ -1,5 +1,4 @@
-import { createHook, getSetting, setSetting, signedInteger, templatePath } from "pf2e-api";
-import { BaseActorData, HealthData, getDefaultData, getHealth } from "./shared";
+import { createHook, getSetting, setSetting, templatePath } from "pf2e-api";
 
 abstract class PF2eHudBase<TSettings extends Record<string, any>> extends foundry.applications.api
     .ApplicationV2 {
@@ -147,38 +146,6 @@ abstract class PF2eHudBaseToken<
         this.#tearDownHook.toggle(enabled);
     }
 
-    async _prepareContext(
-        options: ApplicationRenderOptions
-    ): Promise<BaseTokenContext | BaseActorContext> {
-        const parentData = await super._prepareContext(options);
-
-        const actor = this.actor;
-        if (!actor) return parentData;
-
-        const health = getHealth(actor);
-        if (!health) return parentData;
-
-        const isArmy = actor.isOfType("army");
-        const defaultData = getDefaultData(actor, this.useModifiers);
-        const token = this.token!;
-        const { isOwner, isObserver } = defaultData;
-        const name =
-            isOwner || !game.pf2e.settings.tokens.nameVisibility || isObserver
-                ? token.document.name
-                : undefined;
-
-        const data: BaseTokenContext = {
-            ...parentData,
-            ...defaultData,
-            health,
-            name,
-            scouting: isArmy ? signedInteger(actor.scouting.mod) : undefined,
-            hardness: actor.isOfType("vehicle", "hazard") ? actor.attributes.hardness : undefined,
-        };
-
-        return data;
-    }
-
     async render(
         options: boolean | ApplicationRenderOptions = {},
         _options: ApplicationRenderOptions = {}
@@ -267,23 +234,9 @@ type BaseActorContext = BaseContext & {
     hasActor: boolean;
 };
 
-type BaseTokenContext = BaseActorContext &
-    BaseActorData & {
-        health: HealthData;
-        name: string | undefined;
-        scouting: string | undefined;
-        hardness: number | undefined;
-    };
-
 type BaseTokenHUDSettings = {
     modifiers: boolean;
 };
 
 export { PF2eHudBase, PF2eHudBaseActor, PF2eHudBaseMain, PF2eHudBaseToken };
-export type {
-    BaseActorContext,
-    BaseContext,
-    BaseTokenContext,
-    BaseTokenHUDSettings,
-    RenderOptionsHUD,
-};
+export type { BaseActorContext, BaseContext, BaseTokenHUDSettings, RenderOptionsHUD };

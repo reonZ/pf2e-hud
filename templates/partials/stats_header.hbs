@@ -1,0 +1,86 @@
+{{!-- stamina --}}
+{{#if health.useStamina}}
+<div data-section="resolve" data-tooltip="PF2E.ResolvePointsShortLabel">
+    <a data-action="use-resolve">
+        <i class="fa-solid fa-circle-r"></i>
+    </a>
+    <input class="small" type="number" name="system.resources.resolve" value="{{resolve.value}}"
+        min="0" max="{{resolve.max}}">
+</div>
+<div class="double" data-section="stamina" data-tooltip="PF2E.StaminaPointsShortLabel">
+    <span><i class="fa-solid fa-heart-pulse"></i></span>
+    {{> (partial 'numbers') name="system.attributes.hp.sp" entry=health.sp}}
+</div>
+{{/if}}
+
+{{!-- hardness --}}
+{{#if hardness includeZero=true}}
+<div data-section="hardness" data-tooltip="PF2E.HardnessLabel">
+    <span><i class="fa-solid fa-turtle"></i></span>
+    <span>{{hardness}}</span>
+</div>
+{{!-- scouting --}}
+{{else if scouting}}
+<a data-section="scouting" data-tooltip="PF2E.Kingmaker.Army.Scouting" data-action="roll-statistic"
+    data-statistic="scouting">
+    <i class="fa-solid fa-flag"></i>
+    <span>{{scouting}}</span>
+</a>
+{{!-- temp hp --}}
+{{else}}
+<div data-section="temp-hp" data-tooltip="pf2e-hud.hud.tempHP">
+    <span><i class="fa-solid fa-heart-half-stroke"></i></span>
+    <input class="small" type="number" name="system.attributes.hp.temp" value="{{health.temp}}"
+        min="0">
+</div>
+{{/if}}
+{{!-- hp --}}
+<div class="double" data-section="hp" data-tooltip="PF2E.HitPointsHeader">
+    <span><i class="fa-solid fa-heart"></i></span>
+    {{> (partial 'numbers') name="system.attributes.hp" entry=health}}
+</div>
+
+{{!-- ac --}}
+<div data-section="ac" data-tooltip="PF2E.ArmorClassLabel">
+    <a data-action="take-cover" data-tooltip="PF2E.Actions.TakeCover.Title">
+        {{#if hasCover}}
+        <i class="fa-solid fa-helmet-battle"></i>
+        {{else}}
+        <i class="fa-regular fa-helmet-battle"></i>
+        {{/if}}
+    </a>
+    <span>{{ac}}</span>
+</div>
+{{!-- shield --}}
+{{#if isCharacter}}
+<div class="double" data-section="shield">
+    <a {{#if (eq shield.itemId null)}}class="disabled" {{/if}} data-action="raise-shield"
+        data-tooltip="PF2E.Actions.RaiseAShield.SingleActionTitle">
+        {{#if shield.broken}}
+        <i class="fa-regular fa-shield-slash"></i>
+        {{else if shield.raised}}
+        <i class="fa-solid fa-shield"></i>
+        {{else}}
+        <i class="fa-regular fa-shield"></i>
+        {{/if}}
+        <span>({{shield.hardness}})&nbsp;</span>
+    </a>
+    {{#if shield.itemId}}
+    <input type="number" name="system.attributes.shield.hp" value="{{shield.hp.value}}" min="0"
+        max="{{shield.hp.max}}" data-tooltip="PF2E.Actor.Creature.Shield.HitPoints.Value">
+    {{else}}
+    <span>N/A</span>
+    {{/if}}
+</div>
+{{!-- adjustment --}}
+{{else if isNPC}}
+<div class="double" data-section="adjustment">
+    <a data-slider-action="adjustment" data-tooltip="pf2e-hud.hud.toggleAdjustment">
+        <i class="{{adjustment.icon}}"></i>
+        <span>{{localize adjustment.label}}</span>
+    </a>
+    <a data-action="show-notes" data-tooltip="PF2E.NPC.NotesTab">
+        <i class="fa-duotone fa-clipboard"></i>
+    </a>
+</div>
+{{/if}}

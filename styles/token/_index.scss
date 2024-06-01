@@ -39,10 +39,12 @@ body:has(#pf2e-hud-token-sidebar) {
 
     .panel {
         &.top {
-            grid-template-columns: repeat(2, auto);
+            .name,
+            hr {
+                grid-column: 1 / span 3;
+            }
 
             .name {
-                grid-column: 1 / span 2;
                 text-align: center;
                 white-space: nowrap;
                 overflow: hidden;
@@ -51,8 +53,8 @@ body:has(#pf2e-hud-token-sidebar) {
                 margin-bottom: -0.2em;
             }
 
-            .double {
-                grid-column: 1 / span 2;
+            hr {
+                margin-block: 0.1em;
             }
         }
 
@@ -70,7 +72,7 @@ body:has(#pf2e-hud-token-sidebar) {
 
 #pf2e-hud-token-main.exploded {
     .panel {
-        --outer-padding-right: 0.4rem;
+        --outer-padding-right: 0.3rem;
 
         position: absolute;
         background: var(--outer-background);
@@ -99,10 +101,6 @@ body:has(#pf2e-hud-token-sidebar) {
         &.right {
             top: 0;
             left: calc(100% + var(--anchor-margin));
-
-            [data-section] {
-                justify-content: space-between;
-            }
         }
 
         &.bottom {
@@ -111,16 +109,23 @@ body:has(#pf2e-hud-token-sidebar) {
             padding: 0.4em;
         }
 
-        @container pf2e-hud-token-main (min-height:  5.4em) {
+        @container pf2e-hud-token-main (min-height:  5em) {
             &.right,
             &.left {
                 bottom: auto;
                 top: 50%;
                 transform: translateY(-50%);
             }
+
+            &.bottom,
+            &.top {
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%);
+            }
         }
 
-        @container pf2e-hud-token-main (min-height: 8.8em) {
+        @container pf2e-hud-token-main (min-height: 9em) {
             &.right,
             &.left {
                 grid-template-rows: none;
@@ -128,26 +133,19 @@ body:has(#pf2e-hud-token-sidebar) {
             }
         }
 
-        @container pf2e-hud-token-main (min-width: 7.4em) {
-            &.top:has(.double) {
-                left: 50%;
-                transform: translateX(-50%);
-            }
-        }
-
-        &.left + .panel.bottom {
+        &.left + .panel.bottom,
+        &.top + .panel.bottom {
             right: auto;
             left: 50%;
             transform: translateX(-50%);
         }
 
-        @container pf2e-hud-token-main (min-height: 4.6em) {
-            &.bottom,
-            &.top {
-                right: auto;
-                left: 50%;
-                transform: translateX(-50%);
-            }
+        &.top:only-child,
+        &.top:has(+ .panel.right),
+        &.top:has(+ .panel.bottom) {
+            right: auto;
+            left: 50%;
+            transform: translateX(-50%);
         }
     }
 }

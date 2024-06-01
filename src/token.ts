@@ -5,27 +5,15 @@ import {
     createHook,
     elementData,
     libWrapper,
-    localizePath,
     registerWrapper,
 } from "pf2e-api";
 import {
     BaseActorContext,
-    BaseTokenContext,
     PF2eHudBaseToken,
     RenderOptionsHUD,
     type BaseTokenHUDSettings,
 } from "./hud";
 import { hud } from "./main";
-import {
-    AdvancedActorData,
-    AdvancedHealthData,
-    SHARED_PARTIALS,
-    addArmorListeners,
-    addSharedListeners,
-    addUpdateActorFromInput,
-    getAdvancedData,
-    getAdvancedHealthData,
-} from "./shared";
 import { SidebarElement, SidebarHUD, SidebarName, getSidebars } from "./sidebar";
 import { PF2eHudActionsSidebar } from "./token-sidebars/actions";
 import { PF2eHudTokenSidebar } from "./token-sidebars/base";
@@ -33,6 +21,15 @@ import { PF2eHudExtrasSidebar } from "./token-sidebars/extras";
 import { PF2eHudItemsSidebar } from "./token-sidebars/items";
 import { PF2eHudSkillsSidebar } from "./token-sidebars/skills";
 import { PF2eHudSpellsSidebar } from "./token-sidebars/spells";
+import {
+    STATS_PARTIALS,
+    StatsAdvanced,
+    StatsHeaderWithExtras,
+    addStatsAdvancedListeners,
+    addStatsHeaderListeners,
+    getStatsAdvanced,
+    getStatsHeader,
+} from "./utils";
 
 const CLOSE_SETTINGS = ["closeOnSendToChat", "closeOnSpell"] as const;
 const CLOSE_OPTIONS = ["never", "sidebar", "all"] as const;
@@ -62,7 +59,7 @@ class PF2eHudToken
     };
 
     get partials() {
-        return SHARED_PARTIALS;
+        return STATS_PARTIALS;
     }
 
     get templates(): ["main"] {
@@ -276,26 +273,20 @@ class PF2eHudToken
     }
 
     async _prepareContext(options: RenderOptionsHUD): Promise<TokenContext | TokenContextBase> {
+        const actor = this.actor!;
         const parentData = await super._prepareContext(options);
-        if (!("health" in parentData)) return parentData;
-
-        const actor = this.token!.actor!;
-        const isNPC = actor.isOfType("npc");
-        const isCharacter = actor.isOfType("character");
-        const useHighestSpeed = this.setting("highestSpeed");
-        const advancedData = getAdvancedData(actor, parentData, {
-            fontSize: options.fontSize,
-            useHighestSpeed,
-        });
+        const statsMain = getStatsHeader(actor, true);
+        if (!statsMain.health) return parentData;
 
         const data: TokenContext = {
             ...parentData,
-            ...advancedData,
-            ...getAdvancedHealthData(actor),
+            ...statsMain,
+            ...getStatsAdvanced(actor, {
+                useModifier: this.useModifiers,
+                useHighestSpeed: this.setting("highestSpeed"),
+            }),
             sidebars: getSidebars({}),
-            level: actor.level,
-            isFamiliar: actor.isOfType("familiar"),
-            isCombatant: isCharacter || isNPC,
+            name: this.token!.document.name,
         };
 
         return data;
@@ -485,9 +476,8 @@ class PF2eHudToken
         const actor = this.actor;
         if (!actor) return;
 
-        addUpdateActorFromInput(html, actor);
-        addSharedListeners(html, actor);
-        addArmorListeners(html, actor, this.token);
+        addStatsHeaderListeners(actor, html, this.token);
+        addStatsAdvancedListeners(actor, html);
 
         addListenerAll(html, "[data-action='open-sidebar']:not(.disabled)", (event, el) => {
             const { sidebar } = elementData<{ sidebar: SidebarName }>(el);
@@ -498,12 +488,10 @@ class PF2eHudToken
 
 type TokenContextBase = BaseActorContext;
 
-type TokenContext = BaseTokenContext &
-    AdvancedActorData &
-    AdvancedHealthData & {
-        level: number;
-        isFamiliar: boolean;
-        isCombatant: boolean;
+type TokenContext = BaseActorContext &
+    StatsHeaderWithExtras &
+    StatsAdvanced & {
+        name: string;
         sidebars: SidebarElement[];
     };
 

@@ -1,7 +1,7 @@
-{{#each list as |statistic|}}
+{{#each statistics as |statistic|}}
 <a data-section="{{statistic.slug}}" data-tooltip="{{statistic.label}}" data-action="roll-statistic"
     data-statistic="{{statistic.slug}}">
-    <i class="{{statistic.icon}}"></i>
+    <span><i class="{{statistic.icon}}"></i></span>
     {{#if statistic.value}}
     <span>{{statistic.value}}</span>
     {{else}}

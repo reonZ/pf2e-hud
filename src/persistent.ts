@@ -12,20 +12,16 @@ import {
 } from "pf2e-api";
 import { BaseActorContext, PF2eHudBaseActor, RenderOptionsHUD } from "./hud";
 import { hud } from "./main";
-import {
-    AdvancedHealthData,
-    BaseActorData,
-    HealthData,
-    SHARED_PARTIALS,
-    addArmorListeners,
-    addSharedListeners,
-    addUpdateActorFromInput,
-    getAdvancedData,
-    getAdvancedHealthData,
-    getDefaultData,
-    getHealth,
-} from "./shared";
 import { PF2eHudSidebar, SidebarHUD, SidebarName } from "./sidebar";
+import {
+    STATS_PARTIALS,
+    StatsAdvanced,
+    StatsHeaderWithExtras,
+    addStatsAdvancedListeners,
+    addStatsHeaderListeners,
+    getStatsAdvanced,
+    getStatsHeader,
+} from "./utils";
 
 class PF2eHudPersistent
     extends PF2eHudBaseActor<PersistentSettings, ActorType>
@@ -70,7 +66,7 @@ class PF2eHudPersistent
     };
 
     get partials() {
-        return SHARED_PARTIALS;
+        return STATS_PARTIALS;
     }
 
     get templates(): PartName[] {
@@ -479,10 +475,9 @@ class PF2eHudPersistent
 
         const data: PortraitContext = {
             ...context,
-            ...getAdvancedHealthData(actor),
+            ...getStatsHeader(actor, true),
             avatar: actor.img,
             name: actor.name,
-            health: getHealth(actor)!,
             cleaned: options.cleaned,
         };
 
@@ -493,8 +488,7 @@ class PF2eHudPersistent
         const actor = this.actor;
         if (!actor) return;
 
-        addUpdateActorFromInput(html, actor);
-        addArmorListeners(html, actor);
+        addStatsHeaderListeners(actor, html);
     }
 
     #prepareMainContext(
@@ -504,25 +498,22 @@ class PF2eHudPersistent
         const actor = this.actor;
         if (!actor) return context;
 
-        const baseData = getDefaultData(actor, this.useModifiers);
-        const advancedData = getAdvancedData(actor, baseData, {
-            fontSize: options.fontSize,
-            useHighestSpeed: true,
-        });
-
-        return {
+        const data: MainContext = {
             ...context,
-            ...baseData,
-            ...advancedData,
-            level: actor.level,
+            ...getStatsAdvanced(actor, {
+                useModifier: this.useModifiers,
+                useHighestSpeed: this.setting("highestSpeed"),
+            }),
         };
+
+        return data;
     }
 
     #activateMainListeners(html: HTMLElement) {
         const actor = this.actor;
         if (!actor) return;
 
-        addSharedListeners(html, actor);
+        addStatsAdvancedListeners(actor, html);
     }
 }
 
@@ -551,17 +542,13 @@ type MenuContext = PersistentContext & {
 };
 
 type PortraitContext = PersistentContext &
-    AdvancedHealthData & {
+    StatsHeaderWithExtras & {
         avatar: string;
         name: string;
-        health: HealthData;
         cleaned: boolean;
     };
 
-type MainContext = PersistentContext &
-    BaseActorData & {
-        level: number;
-    };
+type MainContext = PersistentContext & StatsAdvanced;
 
 type PersistentContext = BaseActorContext & {
     isCharacter: boolean;
@@ -595,6 +582,7 @@ type PersistentSettings = {
     enabled: boolean;
     selected: string;
     modifiers: boolean;
+    highestSpeed: boolean;
     cleanPortrait: boolean;
 };
 

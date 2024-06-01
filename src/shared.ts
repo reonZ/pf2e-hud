@@ -23,7 +23,6 @@ const SHARED_PARTIALS = [
     "stamina",
     "health",
     "level",
-    "sidebars",
     "speed",
 ];
 
@@ -151,7 +150,7 @@ function getHealth(actor: ActorPF2e): HealthData | undefined {
     const currentTotal = currentHP + currentSP;
     const maxTotal = hp.max + maxSP;
 
-    const calculateRation = (value: number, max: number) => {
+    const calculateRatio = (value: number, max: number) => {
         const ratio = value / max;
         return {
             ratio,
@@ -162,18 +161,18 @@ function getHealth(actor: ActorPF2e): HealthData | undefined {
     return {
         value: currentHP,
         max: hp.max,
-        ...calculateRation(currentHP, hp.max),
+        ...calculateRatio(currentHP, hp.max),
         temp: hp.temp,
         sp: {
             value: currentSP,
             max: maxSP,
-            ...calculateRation(currentSP, maxSP),
+            ...calculateRatio(currentSP, maxSP),
         },
         useStamina,
         total: {
             value: currentTotal,
             max: maxTotal,
-            ...calculateRation(currentTotal, maxTotal),
+            ...calculateRatio(currentTotal, maxTotal),
         },
     };
 }
@@ -652,33 +651,3 @@ type HealthData = {
     value: number;
     max: number;
 };
-
-export {
-    ADJUSTMENTS,
-    ADJUSTMENTS_INDEX,
-    ALLIANCES_ICONS,
-    IWR_DATA,
-    IWR_SLUGS,
-    OTHER_ICONS,
-    OTHER_SLUGS,
-    SAVES_ICONS,
-    SHARED_PARTIALS,
-    SPEEDS_ICONS,
-    addArmorListeners,
-    addEnterKeyListeners,
-    addItemPropertyListeners,
-    addSharedListeners,
-    addStavesListeners,
-    addUpdateActorFromInput,
-    canObserve,
-    getAdvancedData,
-    getAdvancedHealthData,
-    getAlliance,
-    getCoverEffect,
-    getDefaultData,
-    getHealth,
-    getItemFromElement,
-    getSpellFromElement,
-    sendItemToChat,
-};
-export type { AdvancedActorData, AdvancedHealthData, BaseActorData, HealthData };

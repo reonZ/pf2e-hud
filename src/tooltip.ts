@@ -11,13 +11,21 @@ import {
 } from "pf2e-api";
 import {
     BaseActorContext,
-    BaseTokenContext,
     PF2eHudBaseToken,
     RenderOptionsHUD,
     type BaseTokenHUDSettings,
 } from "./hud";
 import { hud } from "./main";
-import { IWR_DATA, IWR_SLUGS } from "./shared";
+import {
+    IWR_DATA,
+    StatsHeader,
+    StatsSpeed,
+    StatsStatistic,
+    canObserve,
+    getSpeeds,
+    getStatistics,
+    getStatsHeader,
+} from "./utils";
 
 const DELAY_BUFFER = 50;
 
@@ -298,11 +306,9 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
             };
         })();
 
-        if (
-            !("health" in parentData) ||
-            !parentData.health ||
-            hud.persistent.isCurrentActor(actor)
-        ) {
+        const statsMain = getStatsHeader(actor, false);
+
+        if (!statsMain.health || hud.persistent.isCurrentActor(actor)) {
             return baseData;
         }
 
@@ -310,7 +316,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
             const statuses = this.healthStatuses;
             if (!statuses) return;
 
-            let { value, max, ratio } = parentData.health.total;
+            let { value, max, ratio } = statsMain.health.total;
             value = Math.clamp(value, 0, max);
 
             if (value === 0) {
@@ -326,7 +332,8 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
         })();
 
         const setting = this.setting("type");
-        const { isOwner, isObserver } = parentData;
+        const isOwner = actor.isOwner;
+        const isObserver = canObserve(actor);
 
         const expended = (setting === "owned" && isOwner) || (setting === "observed" && isObserver);
         if (!expended) {
@@ -336,17 +343,26 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
             };
         }
 
+        const name =
+            isOwner || !game.pf2e.settings.tokens.nameVisibility || isObserver
+                ? token.document.name
+                : undefined;
+
+        const iwr = IWR_DATA.map((iwr) => ({
+            ...iwr,
+            active: actor.attributes[iwr.type].length > 0,
+        }));
+
         const data: TooltipContext = {
             ...parentData,
+            ...statsMain,
+            ...getSpeeds(actor),
+            statistics: getStatistics(actor, this.useModifiers),
             distance: baseData.distance,
             expended,
             status,
-            ac: actor.isOfType("army") ? actor.system.ac.value : actor.attributes.ac?.value,
-            iwr: IWR_SLUGS.map((type) => ({
-                type,
-                ...IWR_DATA[type],
-                active: actor.attributes[type].length > 0,
-            })),
+            name,
+            iwr,
         };
 
         return data;
@@ -599,17 +615,21 @@ type StatusedTooltipContext = TooltipContextBase & {
     status: string | undefined;
 };
 
-type TooltipContext = BaseTokenContext & {
-    distance: DistanceContext | undefined;
-    status: string | undefined;
-    expended: boolean;
-    ac: number | undefined;
-    iwr: {
-        active: boolean;
-        icon: string;
-        label: string;
-    }[];
-};
+type TooltipContext = BaseActorContext &
+    StatsHeader & {
+        distance: DistanceContext | undefined;
+        status: string | undefined;
+        expended: boolean;
+        name: string | undefined;
+        speeds: StatsSpeed[];
+        speedNote: string | undefined;
+        statistics: StatsStatistic[];
+        iwr: {
+            active: boolean;
+            icon: string;
+            label: string;
+        }[];
+    };
 
 type DistanceType = (typeof SETTING_DISTANCE)[number];
 

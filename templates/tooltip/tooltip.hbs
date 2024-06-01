@@ -5,7 +5,6 @@
 {{/if}}
 
 {{#if expended}}
-
 <div class="inner">
     {{#if name}}
     <header>{{name}}</header>
@@ -21,6 +20,11 @@
     <section data-section="hardness">
         <i class="fa-solid fa-turtle"></i>
         <span>{{hardness}}</span>
+    </section>
+    {{else if scouting}}
+    <section data-section="scouting">
+        <i class="fa-solid fa-flag"></i>
+        <span>{{scouting}}</span>
     </section>
     {{else}}
     <section data-section="temp-hp">
@@ -39,17 +43,10 @@
         {{/if}}
     </section>
 
-    {{#each saves as |save|}}
-    <section data-section="save">
-        <i class="{{save.icon}}"></i>
-        <span>{{save.value}}</span>
-    </section>
-    {{/each}}
-
-    {{#each others as |other|}}
-    <section data-section="other-statistic">
-        <i class="{{other.icon}}"></i>
-        <span>{{other.value}}</span>
+    {{#each statistics as |statistic|}}
+    <section data-section="statistics" data-statistic="{{statistic.slug}}">
+        <i class="{{statistic.icon}}"></i>
+        <span>{{statistic.value}}</span>
     </section>
     {{/each}}
 
@@ -75,11 +72,8 @@
     </section>
     {{/if}}
 </div>
-
 {{else if status}}
-
 <div class="status" style="--hue: {{health.total.hue}};" data-section="health-status">
     {{status}}
 </div>
-
 {{/if}}

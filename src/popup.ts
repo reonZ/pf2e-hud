@@ -1,9 +1,10 @@
-import { closest, isInstanceOf } from "pf2e-api";
-import { getItemFromElement } from "./shared";
+import { addListener, closest, isInstanceOf } from "pf2e-api";
+import { getItemFromElement } from "./utils";
 
 type PF2eHudPopupConfig = {
     content: HTMLElement;
     actor: ActorPF2e;
+    item?: ItemPF2e;
 };
 
 class PF2eHudPopup extends foundry.applications.api.ApplicationV2 {
@@ -41,14 +42,6 @@ class PF2eHudPopup extends foundry.applications.api.ApplicationV2 {
         summaryElement.dataset.tooltipClass = "pf2e";
 
         await actor.sheet.itemRenderer.renderItemSummary(summaryElement, item, data);
-        // InlineRollLinks.listen(description, item);
-
-        if (item.isOfType("consumable")) {
-            const consumeLinks = summaryElement.querySelectorAll("[data-action='consume-item']");
-            for (const btn of consumeLinks) {
-                btn.addEventListener("click", () => item.consume());
-            }
-        }
 
         if (castRank) {
             summaryElement.dataset.castRank = castRank;
@@ -60,6 +53,14 @@ class PF2eHudPopup extends foundry.applications.api.ApplicationV2 {
 
     get contentElement() {
         return this.#config.content;
+    }
+
+    get actor() {
+        return this.#config.actor;
+    }
+
+    get item() {
+        return this.#config.item;
     }
 
     async _renderHTML(context: any, options: ApplicationRenderOptions): Promise<HTMLElement> {
@@ -77,10 +78,16 @@ class PF2eHudPopup extends foundry.applications.api.ApplicationV2 {
     }
 
     #activateListeners(html: HTMLElement) {
-        const consumeElements = html.querySelectorAll("[data-action^='consume-']");
-        for (const consumeElement of consumeElements) {
-            consumeElement.addEventListener("click", () => this.close());
+        const item = this.item;
+
+        if (item?.isOfType("consumable")) {
+            addListener(html, "[data-action='consume-item'", () => {
+                item.consume();
+                this.close();
+            });
         }
+
+        // InlineRollLinks.listen(description, item);
     }
 }
 

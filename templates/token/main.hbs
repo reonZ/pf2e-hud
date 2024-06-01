@@ -1,71 +1,48 @@
 <div id="pf2e-hud-token-main">
-    <div class="panel top">
-        {{#if name}}
+    <div class="panel top stats-header">
         <div class="name">{{name}}</div>
-        {{/if}}
-        {{!-- --}}
-        {{> (partial 'stamina')}}
-        {{!-- --}}
-        {{#if hardness includeZero=true}}
-        <div data-section="hardness" data-tooltip="PF2E.HardnessLabel">
-            <span><i class="fa-solid fa-turtle"></i></span>
-            <span>{{hardness}}</span>
+        <hr>
+        {{> (partial 'stats_header')}}
+        {{#unless isCombatant}}
+        <div class="double extras">
+            {{> (partial 'stats_level')}}
+            {{#if (or isVehicle isHazard)}}
+            {{> (partial 'stats_statistics')}}
+            {{else if isFamiliar}}
+            {{> (partial 'stats_speed')}}
+            {{/if}}
         </div>
-        {{/if}}
-        {{> (partial 'health') noTemp=(or isVehicle isHazard) double=isArmy}}
-        {{#if isCombatant}}
-        {{> (partial 'armor')}}
-        {{/if}}
+        {{/unless}}
     </div>
 
+    {{#if isCombatant}}
     <div class="panel left">
         {{#if isCharacter}}
-        <div data-section="dying" data-tooltip="PF2E.ConditionTypeDying">
-            <a {{#unless dying.value}}class="disabled" {{/unless}} data-action="recovery-check"
-                data-tooltip="PF2E.Check.Specific.Recovery">
-                <i class="fa-solid fa-tombstone"></i>
-            </a>
-            {{> (partial 'slider') entry=dying action="dying"}}
-        </div>
-        <div data-section="wounded" data-tooltip="PF2E.ConditionTypeWounded">
-            <span><i class="fa-solid fa-notes-medical"></i></span>
-            {{> (partial 'slider') entry=wounded action="wounded"}}
-        </div>
-        <div></div>
+        {{> (partial 'stats_extras')}}
         {{/if}}
-        {{!-- --}}
-        {{> (partial 'level')}}
-        {{#unless isCombatant}}
-        {{> (partial 'armor')}}
-        {{/unless}}
-        {{!-- --}}
-        {{#if mainSpeed}}
-        {{> (partial 'speed')}}
-        {{/if}}
-        {{#if isVehicle}}
-        {{> (partial 'statistics') list=saves}}
-        {{else if isArmy}}
-        <a data-section="scouting" data-tooltip="PF2E.Kingmaker.Army.Scouting"
-            data-action="roll-statistic" data-statistic="scouting">
-            <i class="fa-solid fa-flag"></i>
-            <span>{{scouting}}</span>
+        {{> (partial 'stats_level')}}
+        {{> (partial 'stats_speed')}}
+        {{#if isNPC}}
+        <a data-section="recall-knowledge" data-tooltip="PF2E.RecallKnowledge.Label"
+            data-action="recall-knowledge">
+            <i class="fa-solid fa-book"></i>
+            <span>{{recall}}</span>
         </a>
         {{/if}}
     </div>
+    {{/if}}
 
     {{#if (or isCombatant isFamiliar)}}
     <div class="panel right">
-        {{> (partial 'statistics') list=saves}}
-        {{> (partial 'statistics') list=others}}
+        {{> (partial 'stats_statistics')}}
     </div>
     {{/if}}
 
     <div class="panel bottom">
-        {{> (partial 'infos')}}
-        {{!-- --}}
-        {{#if isCombatant}}
+        {{#unless isArmy}}
+        {{> (partial 'stats_infos')}}
         <hr>
+        {{/unless}}
         {{> (partial 'sidebars')}}
-        {{/if}}
     </div>
 </div>

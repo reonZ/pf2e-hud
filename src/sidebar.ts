@@ -8,7 +8,6 @@ import {
 import { BaseContext, PF2eHudBase } from "./hud";
 import { PF2eHudPersistent } from "./persistent";
 import { PF2eHudToken } from "./token";
-import { getItemFromElement } from "./shared";
 import { PF2eHudPopup } from "./popup";
 
 const SIDEBARS = ["actions", "items", "spells", "skills", "extras"] as const;

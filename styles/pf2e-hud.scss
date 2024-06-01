@@ -90,6 +90,20 @@ $panel-gap: 5px;
         line-height: 1.4;
         display: grid;
         gap: var(--section-gap);
+
+        &.stats-header {
+            grid-template-columns: repeat(3, auto);
+
+            .double {
+                grid-column: 2 / span 2;
+
+                &.extras {
+                    display: grid;
+                    grid-template-columns: min-content 1fr;
+                    justify-items: center;
+                }
+            }
+        }
     }
 
     [data-section] {
@@ -101,6 +115,11 @@ $panel-gap: 5px;
         span + span {
             min-width: 1.5em;
             text-align: center;
+        }
+
+        span:has(i) {
+            display: flex;
+            align-items: center;
         }
 
         .numbers {
@@ -156,6 +175,28 @@ $panel-gap: 5px;
         &[data-section="adjustment"],
         &[data-statistic] {
             justify-content: space-between;
+
+            span + span {
+                text-align: end;
+            }
+        }
+
+        &[data-section="shield"] {
+            grid-template-columns: 1fr 1fr;
+
+            a {
+                display: flex;
+                align-items: center;
+                gap: var(--inline-gap);
+            }
+
+            input {
+                width: 90%;
+            }
+
+            span {
+                text-align: center;
+            }
         }
     }
 }
