@@ -35,7 +35,9 @@ class PF2eHudPersistent
     #renderHotbarHook = createHook("renderHotbar", this.#onRenderHotbar.bind(this));
     #deleteTokenHook = createHook("deleteToken", this.#onDeleteActor.bind(this));
     #deleteActorHook = createHook("deleteActor", this.#onDeleteActor.bind(this));
+    #updateUserHook = createHook("updateUser", this.#onUpdateUser.bind(this));
 
+    #isUserCharacter: boolean = false;
     #actor: ActorType | null = null;
 
     #elements: Record<PartName | "left", HTMLElement | null> = {
@@ -182,6 +184,7 @@ class PF2eHudPersistent
         this.#renderActorSheetHook.toggle(enabled);
         this.#deleteTokenHook.toggle(enabled);
         this.#deleteActorHook.toggle(enabled);
+        this.#updateUserHook.toggle(enabled);
 
         if (enabled) {
             const selected = this.setting("selected");
@@ -289,6 +292,7 @@ class PF2eHudPersistent
         if (!options?.forced) return this;
 
         this.#actor = null;
+        this.#isUserCharacter = false;
 
         for (const key in this.#elements) {
             this.#elements[key as PartName | "left"]?.remove();
@@ -302,8 +306,7 @@ class PF2eHudPersistent
         actor: ActorPF2e | null,
         { token, skipSave }: { token?: Token; skipSave?: boolean } = {}
     ) {
-        if (this.isCurrentActor(actor)) return;
-        if (actor && !isValidActor(actor)) return;
+        if (actor && (this.isCurrentActor(actor) || !isValidActor(actor))) return;
 
         const savedActor = actor;
         delete this.actor?.apps[this.id];
@@ -324,6 +327,7 @@ class PF2eHudPersistent
             }
         }
 
+        this.#isUserCharacter = actor === game.user.character;
         this.#actor = actor as ActorType;
 
         if (skipSave) this.render(!!actor);
@@ -351,6 +355,16 @@ class PF2eHudPersistent
             duration: 200,
             iterations: 2,
         });
+    }
+
+    #onUpdateUser(user: UserPF2e, updates: Partial<UserSourceData>) {
+        if (
+            user === game.user &&
+            "character" in updates &&
+            (!this.actor || this.#isUserCharacter)
+        ) {
+            this.setActor(user.character);
+        }
     }
 
     #onDeleteActor(doc: ActorPF2e | TokenDocumentPF2e) {
@@ -513,7 +527,7 @@ class PF2eHudPersistent
 }
 
 function isValidActor(actor: Actor | null): actor is CharacterPF2e | NPCPF2e {
-    return (actor as ActorPF2e).isOfType("character", "npc") && !!actor?.isOwner;
+    return !!actor && (actor as ActorPF2e).isOfType("character", "npc") && !!actor.isOwner;
 }
 
 type Part<TContext extends PersistentContext> = {
