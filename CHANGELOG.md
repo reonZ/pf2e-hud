@@ -1,3 +1,17 @@
+# 0.4.0
+
+-   made a complet refactor of the templates across the different HUDs
+-   `Popup`
+    -   implemented the fundamentals for the popup application
+    -   the popup is an actual foundry application and is persistent (can be moved/minimized)
+-   `Token HUD`
+    -   spells sidebar is now fully functional
+-   `Persistent HUD`
+    -   added new icon to remove the UI elements from the portrait, they show up when hovering over it
+    -   added a flash animation on the portrait when selecting a token linked to the currently set actor
+    -   added missing UI elements, the persistent HUD now has all the elements that are shown in the `Token HUD`
+    -   improved automated set/unset of the persistent actor when changing user character
+
 # 0.3.0
 
 -   third prototype of the module
