@@ -17,6 +17,7 @@ import {
 } from "./hud";
 import { hud } from "./main";
 import {
+    HealthData,
     IWR_DATA,
     StatsHeader,
     StatsSpeed,
@@ -337,10 +338,13 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e> {
 
         const expended = (setting === "owned" && isOwner) || (setting === "observed" && isObserver);
         if (!expended) {
-            return {
+            const data: StatusedTooltipContext = {
                 ...baseData,
                 status,
+                health: statsMain.health,
             };
+
+            return data;
         }
 
         const name =
@@ -613,6 +617,7 @@ type TooltipContextBase = BaseActorContext & {
 
 type StatusedTooltipContext = TooltipContextBase & {
     status: string | undefined;
+    health: HealthData;
 };
 
 type TooltipContext = BaseActorContext &
