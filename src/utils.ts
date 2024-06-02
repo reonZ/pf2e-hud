@@ -453,6 +453,21 @@ function getItemFromElement(actor: ActorPF2e, el: HTMLElement) {
         : item;
 }
 
+function getSpellFromElement(actor: CreaturePF2e, target: HTMLElement) {
+    const spellRow = closest(target, "[data-item-id]");
+    const { itemId, entryId, slotId } = spellRow?.dataset ?? {};
+    const collection = actor.spellcasting.collections.get(entryId, {
+        strict: true,
+    });
+
+    return {
+        slotId,
+        collection,
+        castRank: spellRow?.dataset.castRank,
+        spell: collection.get(itemId, { strict: true }),
+    };
+}
+
 function canObserve(actor: ActorPF2e | null | undefined) {
     if (!actor) return false;
     return actor.testUserPermission(game.user, "OBSERVER");
@@ -481,21 +496,6 @@ function addSendItemToChatListeners(actor: ActorPF2e, html: HTMLElement) {
             item.toMessage(event);
         }
     });
-}
-
-function getSpellFromElement(actor: CreaturePF2e, target: HTMLElement) {
-    const spellRow = closest(target, "[data-item-id]");
-    const { itemId, entryId, slotId } = spellRow?.dataset ?? {};
-    const collection = actor.spellcasting.collections.get(entryId, {
-        strict: true,
-    });
-
-    return {
-        slotId,
-        collection,
-        castRank: spellRow?.dataset.castRank,
-        spell: collection.get(itemId, { strict: true }),
-    };
 }
 
 function addStavesListeners(actor: ActorPF2e, html: HTMLElement) {

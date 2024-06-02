@@ -65,6 +65,7 @@
             display: flex;
             flex-flow: column wrap;
             max-width: calc(var(--max-width) * var(--nb-columns));
+            margin-inline: auto;
 
             .toggle {
                 display: flex;

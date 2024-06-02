@@ -78,6 +78,12 @@ class PF2eHudSpellsSidebar extends PF2eHudTokenSidebar {
 
                 return collection?.setSlotExpendedState(groupId, slotId, expend);
             }
+
+            case "draw-item": {
+                const itemId = htmlClosest(event.target, "[data-item-id")?.dataset.itemId;
+                const item = actor.inventory.get(itemId, { strict: true });
+                return actor.changeCarryType(item, { carryType: "held", handsHeld: 1 });
+            }
         }
     }
 }
@@ -86,7 +92,7 @@ interface PF2eHudSpellsSidebar {
     get actor(): CreaturePF2e;
 }
 
-type SpellsActionEvent = "cast-spell" | "toggle-slot-expended";
+type SpellsActionEvent = "cast-spell" | "toggle-slot-expended" | "draw-item";
 
 type SpellsSidebarContext = SidebarContext & SummarizedSpellsData & {};
 
