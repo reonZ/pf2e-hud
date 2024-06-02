@@ -9,7 +9,7 @@ import {
 } from "pf2e-api";
 import { PF2eHudSidebar, SidebarName, SidebarRenderOptions, getSidebars } from "../sidebar";
 import { PF2eHudToken, TokenSettings } from "../token";
-import { addSendItemToChatListeners } from "../utils";
+import { addDragoverListener, addSendItemToChatListeners } from "../utils";
 
 const ROLLOPTIONS_PLACEMENT = {
     actions: "actions",
@@ -152,6 +152,7 @@ abstract class PF2eHudTokenSidebar extends PF2eHudSidebar<TokenSettings, PF2eHud
 
     _activateListener(html: HTMLElement) {
         addSendItemToChatListeners(this.actor, html);
+        addDragoverListener(this.element!);
 
         addListener(html, "[data-option-toggles]", "change", (event) => {
             const toggleRow = htmlClosest(event.target, "[data-item-id][data-domain][data-option]");

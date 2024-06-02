@@ -75,4 +75,17 @@ function onRenderSettingsConfig(app: SettingsConfig, $html: JQuery) {
     }
 }
 
+window.addEventListener(
+    "dragstart",
+    () => {
+        document.body.classList.add("pf2e-hud-fadeout");
+        window.addEventListener(
+            "dragend",
+            () => setTimeout(() => document.body.classList.remove("pf2e-hud-fadeout"), 500),
+            { once: true, capture: true }
+        );
+    },
+    true
+);
+
 export { hudList as hud };

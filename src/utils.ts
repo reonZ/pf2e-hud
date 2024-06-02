@@ -552,6 +552,20 @@ function addSpellsListeners(actor: ActorPF2e, html: HTMLElement) {
     addFocusListeners(actor, html);
 }
 
+function addDragoverListener(html: HTMLElement) {
+    html.addEventListener(
+        "dragover",
+        () => {
+            html.style.setProperty("pointer-events", "none");
+            window.addEventListener("dragend", () => html.style.removeProperty("pointer-events"), {
+                once: true,
+                capture: true,
+            });
+        },
+        true
+    );
+}
+
 type StatsSpeed = {
     icon: string;
     total: number;
@@ -663,6 +677,7 @@ export type {
 export {
     IWR_DATA,
     STATS_PARTIALS,
+    addDragoverListener,
     addEnterKeyListeners,
     addItemPropertyListeners,
     addSendItemToChatListeners,

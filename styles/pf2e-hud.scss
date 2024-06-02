@@ -234,6 +234,20 @@ $panel-gap: 5px;
     }
 }
 
+body.pf2e-hud-fadeout {
+    [id^="pf2e-hud-token"],
+    [id^="pf2e-hud-popup-"] {
+        opacity: 0.1;
+        transition: opacity 250ms;
+    }
+
+    [id^="pf2e-hud-token"] {
+        .panel {
+            pointer-events: none;
+        }
+    }
+}
+
 @import "persistent";
 @import "token";
 @import "tooltip";

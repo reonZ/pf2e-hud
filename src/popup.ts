@@ -1,5 +1,5 @@
 import { addListener, closest, elementData, getRankLabel, isInstanceOf } from "pf2e-api";
-import { getItemFromElement } from "./utils";
+import { addDragoverListener, getItemFromElement } from "./utils";
 
 type PF2eHudPopupConfig = {
     content: HTMLElement;
@@ -92,6 +92,7 @@ class PF2eHudPopup extends foundry.applications.api.ApplicationV2 {
         }
 
         // InlineRollLinks.listen(description, item);
+        addDragoverListener(this.element!);
     }
 }
 
