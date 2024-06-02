@@ -311,7 +311,7 @@ class PF2eHudTracker extends PF2eHudBaseMain<TrackerSettings> {
         this.#combatantElement = this.#combatantsElement.querySelector(".combatant.active");
 
         this.#refreshTargetDisplay();
-        this.#activateListeners(content);
+        this.#activateListeners(content, options);
     }
 
     _insertElement(element: HTMLElement) {
@@ -375,7 +375,7 @@ class PF2eHudTracker extends PF2eHudBaseMain<TrackerSettings> {
         }
     }
 
-    #activateListeners(html: HTMLElement) {
+    #activateListeners(html: HTMLElement, options: TrackerRenderOptions) {
         const tracker = this.tracker;
 
         addListenerAll(html, ".combat-control", (event) => {
@@ -415,7 +415,7 @@ class PF2eHudTracker extends PF2eHudBaseMain<TrackerSettings> {
 
         addListenerAll(html, ".combatant", this.#onCombatantClick.bind(this));
 
-        if (this.combatantsElement) {
+        if (this.combatantsElement && !options.collapsed) {
             Sortable.create(this.combatantsElement, {
                 animation: 200,
                 dragClass: "drag",
