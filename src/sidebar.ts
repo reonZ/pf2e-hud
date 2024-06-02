@@ -9,27 +9,45 @@ import { BaseContext, PF2eHudBase } from "./hud";
 import { PF2eHudPersistent } from "./persistent";
 import { PF2eHudToken } from "./token";
 import { PF2eHudPopup } from "./popup";
+import { hasSpells } from "./utils";
 
 const SIDEBARS = ["actions", "items", "spells", "skills", "extras"] as const;
 
-const SIDEBAR_ICONS = {
-    actions: "fa-solid fa-sword",
-    items: "fa-solid fa-backpack",
-    spells: "fa-solid fa-wand-magic-sparkles",
-    skills: "fa-solid fa-hand",
-    extras: "fa-solid fa-cubes",
+const SIDEBAR_DATA = {
+    actions: {
+        icon: "fa-solid fa-sword",
+        disabled: (actor: ActorPF2e) => false,
+    },
+    items: {
+        icon: "fa-solid fa-backpack",
+        disabled: (actor: ActorPF2e) => false,
+    },
+    spells: {
+        icon: "fa-solid fa-wand-magic-sparkles",
+        disabled: (actor: ActorPF2e) => !hasSpells(actor),
+    },
+    skills: {
+        icon: "fa-solid fa-hand",
+        disabled: (actor: ActorPF2e) => false,
+    },
+    extras: {
+        icon: "fa-solid fa-cubes",
+        disabled: (actor: ActorPF2e) => false,
+    },
 };
 
-function getSidebars(disabled: Partial<Record<SidebarName, boolean>>, active?: SidebarName) {
-    return SIDEBARS.map(
-        (type): SidebarElement => ({
+function getSidebars(actor: ActorPF2e, active?: SidebarName) {
+    return SIDEBARS.map((type): SidebarElement => {
+        const { icon, disabled } = SIDEBAR_DATA[type];
+
+        return {
             type,
-            icon: SIDEBAR_ICONS[type],
+            icon,
             label: localizePath("sidebars", type, "title"),
-            disabled: !!disabled[type],
+            disabled: disabled(actor),
             active: active === type,
-        })
-    );
+        };
+    });
 }
 
 abstract class PF2eHudSidebar<
@@ -152,5 +170,5 @@ type SidebarElement = {
     active: boolean;
 };
 
-export { PF2eHudSidebar, SIDEBARS, SIDEBAR_ICONS, getSidebars };
+export { PF2eHudSidebar, getSidebars };
 export type { SidebarContext, SidebarElement, SidebarHUD, SidebarName, SidebarRenderOptions };

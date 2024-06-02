@@ -566,6 +566,17 @@ function addDragoverListener(html: HTMLElement) {
     );
 }
 
+function hasSpells(actor: ActorPF2e) {
+    return (
+        actor.isOfType("character", "npc") &&
+        actor.spellcasting.contents.some(
+            (entry) =>
+                (entry.spells?.size && entry.spells?.size > 0) ||
+                (entry.isEphemeral && entry.id.endsWith("-casting"))
+        )
+    );
+}
+
 type StatsSpeed = {
     icon: string;
     total: number;
@@ -693,4 +704,5 @@ export {
     getStatsAdvanced,
     getStatistics,
     getStatsHeader,
+    hasSpells,
 };

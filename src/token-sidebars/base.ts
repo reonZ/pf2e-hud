@@ -70,7 +70,7 @@ abstract class PF2eHudTokenSidebar extends PF2eHudSidebar<TokenSettings, PF2eHud
 
     async _onFirstRender(context: ApplicationRenderContext, options: SidebarRenderOptions) {
         const sidebarsTemplate = await this.renderPartial("sidebars", {
-            sidebars: getSidebars({}, this.sidebarKey),
+            sidebars: getSidebars(this.actor, this.sidebarKey),
         });
         const sidebarsElement = createHTMLFromString(sidebarsTemplate);
         sidebarsElement.classList.add("sidebars");

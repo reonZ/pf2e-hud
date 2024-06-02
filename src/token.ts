@@ -273,7 +273,7 @@ class PF2eHudToken
     }
 
     async _prepareContext(options: RenderOptionsHUD): Promise<TokenContext | TokenContextBase> {
-        const actor = this.actor!;
+        const actor = this.actor;
         const parentData = await super._prepareContext(options);
         const statsMain = getStatsHeader(actor, true);
         if (!statsMain.health) return parentData;
@@ -285,7 +285,7 @@ class PF2eHudToken
                 useModifier: this.useModifiers,
                 useHighestSpeed: this.setting("highestSpeed"),
             }),
-            sidebars: getSidebars({}),
+            sidebars: getSidebars(actor),
             name: this.token!.document.name,
         };
 
@@ -484,6 +484,10 @@ class PF2eHudToken
             this.toggleSidebar(sidebar);
         });
     }
+}
+
+interface PF2eHudToken {
+    get actor(): ActorType;
 }
 
 type TokenContextBase = BaseActorContext;
