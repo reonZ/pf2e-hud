@@ -119,6 +119,12 @@ class PF2eHudPersistent
                 },
             },
             {
+                key: "noflash",
+                type: Boolean,
+                default: false,
+                scope: "client",
+            },
+            {
                 key: "modifiers",
                 type: Boolean,
                 default: false,
@@ -340,6 +346,8 @@ class PF2eHudPersistent
     }
 
     flash() {
+        if (this.setting("noflash")) return;
+
         const off = { boxShadow: "0 0 0px transparent" };
         const on = {
             boxShadow:
@@ -583,6 +591,7 @@ type PersistentSettings = {
     modifiers: boolean;
     highestSpeed: boolean;
     cleanPortrait: boolean;
+    noflash: boolean;
 };
 
 export { PF2eHudPersistent };

@@ -150,6 +150,10 @@
                 "highestSpeed": {
                     "name": "Highest Speed",
                     "hint": "If no speed was manually selected, the highest one will always be shown by default even if the land speed isn't 0."
+                },
+                "noflash": {
+                    "name": "Disable Flash",
+                    "hint": "Disables the portrait flash effect when selecting a token linked to the currently set persistent actor."
                 }
             },
             "tracker": {

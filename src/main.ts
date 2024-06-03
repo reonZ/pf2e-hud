@@ -61,8 +61,8 @@ function onRenderSettingsConfig(app: SettingsConfig, $html: JQuery) {
     for (const hud of Object.values(hudList)) {
         const settings = hud.settings;
         const setting = game.user.isGM
-            ? settings.find((setting) => setting.config)
-            : settings.find((setting) => setting.config && setting.scope === "client");
+            ? settings.find((setting) => setting.config !== false)
+            : settings.find((setting) => setting.config !== false && setting.scope === "client");
 
         const group = querySelector(
             tab,
