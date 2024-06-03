@@ -3,13 +3,18 @@ import {
     addListener,
     addListenerAll,
     createHTMLFromString,
-    elementData,
     htmlClosest,
     htmlQuery,
 } from "pf2e-api";
-import { PF2eHudSidebar, SidebarName, SidebarRenderOptions, getSidebars } from "../sidebar";
+import {
+    PF2eHudSidebar,
+    SidebarCloseOptions,
+    SidebarName,
+    SidebarRenderOptions,
+    getSidebars,
+} from "../sidebar";
 import { PF2eHudToken, TokenSettings } from "../token";
-import { addDragoverListener, addSendItemToChatListeners } from "../utils";
+import { addDragoverListener } from "../utils";
 
 const ROLLOPTIONS_PLACEMENT = {
     actions: "actions",
@@ -19,13 +24,20 @@ const ROLLOPTIONS_PLACEMENT = {
     extras: undefined,
 } as const;
 
+const sidebarCloseOptionToSetting = {
+    sendToChat: "closeOnSendToChat",
+    castSpell: "closeOnSpell",
+} as const;
+
 abstract class PF2eHudTokenSidebar extends PF2eHudSidebar<TokenSettings, PF2eHudToken> {
+    #sidebarsElement!: HTMLElement;
+
     static DEFAULT_OPTIONS: Partial<ApplicationConfiguration> = {
         id: "pf2e-hud-token-sidebar",
     };
 
-    get partial() {
-        return ["rolloptions"];
+    get partials() {
+        return ["rolloptions", "item_image"];
     }
 
     get fontSize() {
@@ -42,6 +54,17 @@ abstract class PF2eHudTokenSidebar extends PF2eHudSidebar<TokenSettings, PF2eHud
 
     get itemElements() {
         return this.innerElement.querySelectorAll(".item");
+    }
+
+    /**
+     * total height if there was overflow allowed
+     */
+    get virtualHeight() {
+        const scrollElement = this.scrollElement;
+        return (
+            (this.element?.offsetHeight ?? 0) +
+            ((scrollElement?.scrollHeight ?? 0) - (scrollElement?.offsetHeight ?? 0))
+        );
     }
 
     async _renderHTML(context: any, options: SidebarRenderOptions): Promise<HTMLElement> {
@@ -72,27 +95,23 @@ abstract class PF2eHudTokenSidebar extends PF2eHudSidebar<TokenSettings, PF2eHud
         const sidebarsTemplate = await this.renderPartial("sidebars", {
             sidebars: getSidebars(this.actor, this.sidebarKey),
         });
-        const sidebarsElement = createHTMLFromString(sidebarsTemplate);
-        sidebarsElement.classList.add("sidebars");
-        sidebarsElement.dataset.tooltipDirection = "DOWN";
+        this.#sidebarsElement = createHTMLFromString(sidebarsTemplate);
+        this.#sidebarsElement.classList.add("sidebars");
+        this.#sidebarsElement.dataset.tooltipDirection = "DOWN";
 
-        this.element?.prepend(sidebarsElement);
-        this.#activateSidebarsListeners(sidebarsElement);
+        this.element?.prepend(this.#sidebarsElement);
+        this.#activateSidebarsListeners(this.#sidebarsElement);
     }
 
     _onRender(context: ApplicationRenderContext, options: SidebarRenderOptions) {
         if (this.setting("multiColumns")) {
-            const scrollElement = this.scrollElement;
+            const winHeight = window.innerHeight;
+            const maxHeight = this.setting("sidebarHeight");
+            const currentHeight = this.virtualHeight;
+            const computedMaxHeight = winHeight * (maxHeight / 100);
+            const columns = Math.clamp(Math.ceil(currentHeight / computedMaxHeight), 1, 3);
 
-            if (scrollElement) {
-                const winHeight = window.innerHeight;
-                const maxHeight = this.setting("sidebarHeight");
-                const scrollHeight = scrollElement.scrollHeight;
-                const computedMaxHeight = winHeight * (maxHeight / 100);
-                const columns = Math.clamp(Math.ceil(scrollHeight / computedMaxHeight), 1, 3);
-
-                this.innerElement.style.setProperty("--nb-columns", String(columns));
-            }
+            this.innerElement.style.setProperty("--nb-columns", String(columns));
         }
 
         for (const itemElement of this.itemElements) {
@@ -151,7 +170,6 @@ abstract class PF2eHudTokenSidebar extends PF2eHudSidebar<TokenSettings, PF2eHud
     }
 
     _activateListener(html: HTMLElement) {
-        addSendItemToChatListeners(this.actor, html);
         addDragoverListener(this.element!);
 
         addListener(html, "[data-option-toggles]", "change", (event) => {
@@ -179,9 +197,18 @@ abstract class PF2eHudTokenSidebar extends PF2eHudSidebar<TokenSettings, PF2eHud
         });
     }
 
+    closeIf(option: SidebarCloseOptions) {
+        const setting = this.setting(sidebarCloseOptionToSetting[option]);
+        if (setting === "all") {
+            this.parentHud.close();
+        } else if (setting === "sidebar") {
+            return this.parentHud.toggleSidebar(null);
+        }
+    }
+
     #activateSidebarsListeners(html: HTMLElement) {
         addListenerAll(html, "[data-action='open-sidebar']", (event, el) => {
-            const { sidebar } = elementData<{ sidebar: SidebarName }>(el);
+            const { sidebar } = el.dataset as { sidebar: SidebarName };
             this.parentHud.toggleSidebar(sidebar);
         });
     }

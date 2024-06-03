@@ -1,14 +1,22 @@
 import {
+    ErrorPF2e,
+    ITEM_CARRY_TYPES,
+    IdentifyItemPopup,
     R,
     addListener,
     addListenerAll,
     closest,
+    coerceToSpellGroupId,
+    consumeItem,
+    createHTMLElement,
+    detachSubitem,
     elementData,
     getActiveModule,
     getFlag,
     htmlClosest,
     setFlag,
     signedInteger,
+    tupleHasValue,
 } from "pf2e-api";
 
 const COVER_UUID = "Compendium.pf2e.other-effects.Item.I9lfZUiCwMiGogVi";
@@ -201,7 +209,7 @@ function addStatsHeaderListeners(actor: ActorPF2e, html: HTMLElement, token?: To
     });
 
     addListenerAll(html, "[data-action]:not(.disabled)", (event, el) => {
-        const action = elementData<{ action: StatsHeaderActionEvent }>(el).action;
+        const action = el.dataset.action as StatsHeaderActionEvent;
 
         switch (action) {
             case "raise-shield": {
@@ -310,10 +318,7 @@ function getStatsAdvanced(
         const tooltipData = R.compact(createTooltip(actor)).map((row) => `<li>${row}</li>`);
 
         const tooltip = tooltipData.length
-            ? `<div class="pf2e-hud-left">
-                <h4>${game.i18n.localize(label)}</h4>
-                <ul>${tooltipData.join("")}</ul>
-            </div>`
+            ? `<h4>${game.i18n.localize(label)}</h4><ul>${tooltipData.join("")}</ul>`
             : label;
 
         return {
@@ -375,24 +380,22 @@ function getStatsAdvanced(
         recall: isNPC ? actor.identificationDCs.standard.dc : undefined,
         heroPoints: isCharacter ? actor.heroPoints : undefined,
         statistics: getStatistics(actor, useModifier),
-        otherSpeeds: otherSpeeds
-            ? `<div class="pf2e-hud-iconed-list">${otherSpeeds}</div>`
-            : undefined,
+        otherSpeeds: otherSpeeds || undefined,
     };
 }
 
 function addStatsAdvancedListeners(actor: ActorPF2e, html: HTMLElement) {
     addListenerAll(html, "[data-action]:not(.disabled)", (event, el) => {
-        const action = elementData<{ action: StatsAdvancedActionEvent }>(el).action;
+        const action = el.dataset.action as StatsAdvancedActionEvent;
 
         switch (action) {
             case "roll-statistic": {
-                const slug = elementData<{ statistic: string }>(el).statistic;
+                const slug = elementData(el).statistic;
                 actor.getStatistic(slug)?.roll({ event });
                 break;
             }
             case "change-speed": {
-                const selected = elementData<{ speed: MovementType }>(el).speed;
+                const selected = el.dataset.speed as MovementType;
                 const speeds: MovementType[] = [
                     "land",
                     ...(actor as CreaturePF2e).attributes.speed.otherSpeeds.map(
@@ -410,7 +413,7 @@ function addStatsAdvancedListeners(actor: ActorPF2e, html: HTMLElement) {
     addListenerAll(html, "[data-slider-action]:not(.disabled)", "mousedown", (event, el) => {
         if (![0, 2].includes(event.button)) return;
 
-        const action = elementData<{ sliderAction: StatsAdvancedSliderEvent }>(el).sliderAction;
+        const action = el.dataset.sliderAction as StatsAdvancedSliderEvent;
         const direction = event.button === 0 ? 1 : -1;
 
         switch (action) {
@@ -473,31 +476,6 @@ function canObserve(actor: ActorPF2e | null | undefined) {
     return actor.testUserPermission(game.user, "OBSERVER");
 }
 
-function addSendItemToChatListeners(actor: ActorPF2e, html: HTMLElement) {
-    addListenerAll(html, "[data-action='send-to-chat']", (event, el) => {
-        const itemEl = htmlClosest(el, "[data-item-id]");
-        const collectionId = itemEl?.dataset.entryId;
-        const collection: Collection<ItemPF2e> =
-            collectionId && actor.isOfType("creature")
-                ? actor.spellcasting?.collections.get(collectionId, { strict: true }) ?? actor.items
-                : actor.items;
-
-        const itemId = itemEl?.dataset.itemId;
-        const item = collection.get(itemId, { strict: true });
-
-        if (item.isOfType("spell")) {
-            const castRank = Number(itemEl?.dataset.castRank ?? NaN);
-            item.toMessage(event, { data: { castRank } });
-        } else if (item.isOfType("physical")) {
-            const subitemId = htmlClosest(event.target, "[data-subitem-id]")?.dataset.subitemId;
-            const actualItem = subitemId ? item.subitems.get(subitemId, { strict: true }) : item;
-            actualItem.toMessage(event);
-        } else {
-            item.toMessage(event);
-        }
-    });
-}
-
 function addStavesListeners(actor: ActorPF2e, html: HTMLElement) {
     const pf2eDailies = getActiveModule<PF2eDailiesModule>("pf2e-dailies");
     if (!pf2eDailies || !actor.isOfType("character")) return;
@@ -545,11 +523,212 @@ function addFocusListeners(actor: ActorPF2e, html: HTMLElement) {
     }
 }
 
-function addSpellsListeners(actor: ActorPF2e, html: HTMLElement) {
+function addSendItemToChatListeners(
+    actor: ActorPF2e,
+    html: HTMLElement,
+    onSendToChat?: () => void
+) {
+    addListenerAll(html, "[data-action='send-to-chat']", (event, el) => {
+        const item = getItemFromElement(actor, el);
+
+        if (item.isOfType("spell")) {
+            const castRank = Number(closest(el, "[data-cast-rank]")?.dataset.castRank ?? NaN);
+            item.toMessage(event, { data: { castRank } });
+        } else {
+            item.toMessage(event);
+        }
+
+        onSendToChat?.();
+    });
+}
+
+function addSpellsListeners(
+    actor: CharacterPF2e | NPCPF2e,
+    html: HTMLElement,
+    onSpellCast?: () => void
+) {
     addEnterKeyListeners(html);
-    addStavesListeners(actor, html);
     addItemPropertyListeners(actor, html);
+    addStavesListeners(actor, html);
     addFocusListeners(actor, html);
+
+    addListenerAll(html, "[data-action]:not(disabled)", (event, el) => {
+        const action = el.dataset.action as SpellsActionEvent;
+
+        switch (action) {
+            case "cast-spell": {
+                const { spell, castRank, collection, slotId } = getSpellFromElement(actor, el);
+                const maybeCastRank = Number(castRank) || NaN;
+
+                if (Number.isInteger(maybeCastRank) && maybeCastRank.between(1, 10)) {
+                    const rank = maybeCastRank as OneToTen;
+
+                    onSpellCast?.();
+
+                    return (
+                        spell.parentItem?.consume() ??
+                        collection.entry.cast(spell, { rank, slotId: Number(slotId) })
+                    );
+                }
+
+                break;
+            }
+
+            case "toggle-slot-expended": {
+                const row = htmlClosest(event.target, "[data-item-id]");
+                const groupId = coerceToSpellGroupId(row?.dataset.groupId);
+                if (!groupId) throw ErrorPF2e("Unexpected error toggling expended state");
+
+                const slotId = Number(row?.dataset.slotId) || 0;
+                const entryId = row?.dataset.entryId ?? "";
+                const expend = row?.dataset.slotExpended === undefined;
+                const collection = actor.spellcasting.collections.get(entryId);
+
+                return collection?.setSlotExpendedState(groupId, slotId, expend);
+            }
+
+            case "draw-item": {
+                const itemId = htmlClosest(event.target, "[data-item-id")?.dataset.itemId;
+                const item = actor.inventory.get(itemId, { strict: true });
+                return actor.changeCarryType(item, { carryType: "held", handsHeld: 1 });
+            }
+        }
+    });
+}
+
+function addItemsListeners(actor: ActorPF2e, html: HTMLElement) {
+    addEnterKeyListeners(html);
+    addItemPropertyListeners(actor, html);
+
+    addListenerAll(html, "[data-item-id]", "dragstart", (event, el) => {
+        if (!event.dataTransfer) return;
+
+        const item = getItemFromElement(actor, el);
+
+        const img = new Image();
+        img.src = item.img;
+        img.style.width = "32px";
+        img.style.height = "32px";
+        img.style.borderRadius = "4px";
+        img.style.position = "absolute";
+        img.style.left = "-1000px";
+        document.body.append(img);
+
+        event.dataTransfer.setDragImage(img, 16, 16);
+        event.dataTransfer.setData(
+            "text/plain",
+            JSON.stringify({ ...item.toDragData(), fromInventory: true })
+        );
+
+        el.addEventListener("dragend", () => img.remove(), { once: true });
+    });
+
+    addListenerAll(html, "[data-action]:not(disabled)", (event, el) => {
+        const action = el.dataset.action as ItemsActionEvent;
+
+        const item = getItemFromElement(actor, el) as PhysicalItemPF2e;
+
+        switch (action) {
+            case "toggle-container": {
+                if (!item.isOfType("backpack")) return;
+                const isCollapsed = item.system.collapsed ?? false;
+                return item.update({ "system.collapsed": !isCollapsed });
+            }
+
+            case "delete-item": {
+                return actor.sheet.deleteItem(item, event);
+            }
+
+            case "edit-item": {
+                return item.sheet.render(true);
+            }
+
+            case "toggle-identified": {
+                if (item.isIdentified) {
+                    item.setIdentificationStatus("unidentified");
+                } else {
+                    new IdentifyItemPopup(item).render(true);
+                }
+                break;
+            }
+
+            case "toggle-invested": {
+                const itemId = htmlClosest(event.target, "[data-item-id]")?.dataset.itemId;
+                if (itemId && actor.isOfType("character")) {
+                    actor.toggleInvested(itemId);
+                }
+                break;
+            }
+
+            case "detach-subitem": {
+                return detachSubitem(item, event.ctrlKey);
+            }
+
+            case "repair-item": {
+                return game.pf2e.actions.repair({ event, item });
+            }
+
+            case "open-carry-type-menu": {
+                if (actor.isOfType("character")) {
+                    openCarryTypeMenu(actor, el);
+                }
+                break;
+            }
+
+            case "use-item": {
+                if (item.isOfType("consumable") && !item.isAmmo) {
+                    consumeItem(event, item);
+                }
+                break;
+            }
+        }
+    });
+}
+
+async function openCarryTypeMenu(actor: CharacterPF2e, anchor: HTMLElement): Promise<void> {
+    // Close the menu and return early if any carry-type menu is already open
+    const menuOpen = !!document.body.querySelector("aside.locked-tooltip.carry-type-menu");
+    if (menuOpen) game.tooltip.dismissLockedTooltips();
+
+    const itemId = htmlClosest(anchor, "[data-item-id]")?.dataset.itemId;
+    const item = actor.inventory.get(itemId, { strict: true });
+    const hasStowingContainers = actor.itemTypes.backpack.some(
+        (i) => i.system.stowing && !i.isInContainer
+    );
+    const templateArgs = { item, hasStowingContainers };
+    const template = await renderTemplate(
+        "systems/pf2e/templates/actors/partials/carry-type.hbs",
+        templateArgs
+    );
+    const content = createHTMLElement("ul", { innerHTML: template });
+
+    content.addEventListener("click", (event) => {
+        const menuOption = htmlClosest(event.target, "a[data-carry-type]");
+        if (!menuOption) return;
+
+        const carryType = menuOption.dataset.carryType;
+        if (!tupleHasValue(ITEM_CARRY_TYPES, carryType)) {
+            throw ErrorPF2e("Unexpected error retrieving requested carry type");
+        }
+
+        const handsHeld = Number(menuOption.dataset.handsHeld) || 0;
+        if (!tupleHasValue([0, 1, 2], handsHeld)) {
+            throw ErrorPF2e("Invalid number of hands specified");
+        }
+
+        const inSlot = "inSlot" in menuOption.dataset;
+        const current = item.system.equipped;
+        if (
+            carryType !== current.carryType ||
+            inSlot !== current.inSlot ||
+            (carryType === "held" && handsHeld !== current.handsHeld)
+        ) {
+            actor.changeCarryType(item, { carryType, handsHeld, inSlot });
+            game.tooltip.dismissLockedTooltips();
+        }
+    });
+
+    game.tooltip.activate(anchor, { cssClass: "pf2e-carry-type", content, locked: true });
 }
 
 function addDragoverListener(html: HTMLElement) {
@@ -576,6 +755,19 @@ function hasSpells(actor: ActorPF2e) {
         )
     );
 }
+
+type ItemsActionEvent =
+    | "toggle-container"
+    | "delete-item"
+    | "edit-item"
+    | "toggle-identified"
+    | "toggle-invested"
+    | "detach-subitem"
+    | "repair-item"
+    | "open-carry-type-menu"
+    | "use-item";
+
+type SpellsActionEvent = "cast-spell" | "toggle-slot-expended" | "draw-item";
 
 type StatsSpeed = {
     icon: string;
@@ -676,20 +868,12 @@ type HealthData = {
     max: number;
 };
 
-export type {
-    HealthData,
-    StatsHeaderWithExtras,
-    StatsAdvanced,
-    StatsHeader,
-    StatsSpeed,
-    StatsSpeeds,
-    StatsStatistic,
-};
 export {
     IWR_DATA,
     STATS_PARTIALS,
     addDragoverListener,
     addEnterKeyListeners,
+    addItemsListeners,
     addItemPropertyListeners,
     addSendItemToChatListeners,
     addSpellsListeners,
@@ -701,8 +885,17 @@ export {
     getItemFromElement,
     getSpeeds,
     getSpellFromElement,
-    getStatsAdvanced,
     getStatistics,
+    getStatsAdvanced,
     getStatsHeader,
     hasSpells,
+};
+export type {
+    HealthData,
+    StatsAdvanced,
+    StatsHeader,
+    StatsHeaderWithExtras,
+    StatsSpeed,
+    StatsSpeeds,
+    StatsStatistic,
 };

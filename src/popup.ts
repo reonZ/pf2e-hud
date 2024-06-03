@@ -1,4 +1,4 @@
-import { addListener, closest, elementData, getRankLabel, isInstanceOf } from "pf2e-api";
+import { addListener, closest, getRankLabel, isInstanceOf } from "pf2e-api";
 import { addDragoverListener, getItemFromElement } from "./utils";
 
 type PF2eHudPopupConfig = {

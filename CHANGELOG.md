@@ -1,6 +1,6 @@
 # 0.4.0
 
--   made a complet refactor of the templates across the different HUDs
+-   made a complete refactor of the templates across the different HUDs
 -   `Popup`
     -   implemented the fundamentals for the popup application
     -   the popup is an actual foundry application and is persistent (can be moved/minimized)

@@ -1,4 +1,4 @@
-<div class="item-list multi">
+<div class="item-list scroll">
     {{!-- entry --}}
     {{#each spells as |entry rank|}}
     <header>
@@ -10,77 +10,73 @@
         {{/if}}
     </header>
     {{!-- spell --}}
-    {{#each entry as |spell|}}
-    <div class="item{{#if spell.virtual}} virtual{{/if}}"
-        data-item-type="spell{{#if spell.virtual}}-slot-group{{/if}}"
-        data-item-id="{{spell.itemId}}" data-entry-id="{{spell.entryId}}"
-        data-cast-rank="{{spell.castRank}}" data-group-id="{{spell.groupId}}" {{#if
-        spell.isPrepared}}data-slot-id="{{spell.slotId}}" {{/if}} {{#if
-        spell.expended}}data-slot-expended{{/if}}>
+    {{#each entry as |item|}}
+    <div class="item{{#if item.virtual}} virtual{{/if}}"
+        data-item-type="spell{{#if item.virtual}}-slot-group{{/if}}" data-item-id="{{item.itemId}}"
+        data-entry-id="{{item.entryId}}" data-cast-rank="{{item.castRank}}"
+        data-group-id="{{item.groupId}}" {{#if item.isPrepared}}data-slot-id="{{item.slotId}}"
+        {{/if}} {{#if item.expended}}data-slot-expended{{/if}}>
         {{!-- image --}}
-        <div class="image" data-action="send-to-chat">
-            <img src="{{spell.img}}">
-            <i class="fa-solid fa-message"></i>
-        </div>
+        {{> (@root.partial 'item_image') item}}
         {{!-- details --}}
         <div class="details">
             {{!-- name --}}
             <div class="name">
-                <a data-action="item-description">{{spell.name}}</a>
+                <a data-action="item-description">{{item.name}}</a>
             </div>
             {{!-- extras --}}
             <div class="extras">
                 {{!-- category --}}
-                <div class="category" data-tooltip="{{spell.entryTooltip}}"
+                <div class="category" data-tooltip="{{item.entryTooltip}}"
                     data-tooltip-direction="DOWN">
                     {{#if (eq rank 13)}}
-                    {{spell.action}}
+                    {{item.action}}
                     {{else}}
-                    {{localize spell.category}} {{{actionGlyph spell.action}}}
+                    {{localize item.category}} {{{actionGlyph item.action}}}
                     {{/if}}
                 </div>
                 {{!-- actions --}}
                 <div class="actions" data-section="">
                     {{!-- if broken --}}
-                    {{#if spell.isBroken}}
+                    {{#if item.isBroken}}
                     <div class="broken" data-tooltip="{{@root.i18n.path 'broken'}}">
                         <i class="fa-solid fa-link-slash broken"></i>
                     </div>
                     {{!-- else not broken --}}
                     {{else}}
                     {{!-- if uses --}}
-                    {{#if spell.uses}}
-                    <div {{#if (and spell.uses.max (not spell.isStaff))}}class="numbers" {{/if}}>
-                        <input class="small" type="number" {{#if spell.isStaff}}
+                    {{#if item.uses}}
+                    <div {{#if (and item.uses.max (not item.isStaff))}}class="numbers" {{/if}}>
+                        <input class="small" type="number" {{#if item.isStaff}}
                             data-action="update-staff-charges" {{else}}
-                            data-item-id="{{spell.uses.itemId}}"
-                            data-item-property="{{spell.uses.input}}" {{/if}}
-                            value="{{spell.uses.value}}" min="0" max="{{spell.uses.max}}"
+                            data-item-id="{{item.uses.itemId}}"
+                            data-item-property="{{item.uses.input}}" {{/if}}
+                            value="{{item.uses.value}}" min="0" max="{{item.uses.max}}"
                             placeholder="0">
-                        {{#if (and spell.uses.max (not spell.isStaff))}}
+                        {{#if (and item.uses.max (not item.isStaff))}}
                         <span class="slash"> / </span>
                         <input class="small" type="number" data-item-id="" data-item-property=""
-                            value="{{spell.uses.max}}" placeholder="0" disabled />
+                            value="{{item.uses.max}}" placeholder="0" disabled />
                         {{/if}}
                     </div>
-                    {{else if (and (not spell.isCantrip) spell.isPrepared)}}
+                    {{else if (and (not item.isCantrip) item.isPrepared)}}
                     <a data-action="toggle-slot-expended"
-                        data-tooltip="{{#if spell.expended}}PF2E.RestoreSpellTitle{{else}}PF2E.ExpendSpellTitle{{/if}}">
+                        data-tooltip="{{#if item.expended}}PF2E.RestoreSpellTitle{{else}}PF2E.ExpendSpellTitle{{/if}}">
                         <i
-                            class="fa-solid fa-fw fa-{{#if spell.expended}}plus{{else}}minus{{/if}}-square"></i>
+                            class="fa-solid fa-fw fa-{{#if item.expended}}plus{{else}}minus{{/if}}-square"></i>
                     </a>
                     {{!-- end if uses --}}
                     {{/if}}
                     {{!-- if unequipped consumable --}}
-                    {{#if (eq spell.consumable.isEquipped false)}}
-                    <a {{#if spell.expended}}class="disabled" {{else}}data-action="draw-item"
-                        data-item-id="{{spell.consumable.id}}" {{/if}}
+                    {{#if (eq item.consumable.isEquipped false)}}
+                    <a {{#if item.expended}}class="disabled" {{else}}data-action="draw-item"
+                        data-item-id="{{item.consumable.id}}" {{/if}}
                         data-tooltip="{{@root.i18n.path 'draw'}}">
                         <i class="fa-solid fa-hand-back-fist"></i>
                     </a>
                     {{!-- else not consumable --}}
                     {{else}}
-                    <a {{#if spell.expended}}class="disabled" {{else}}data-action="cast-spell"
+                    <a {{#if item.expended}}class="disabled" {{else}}data-action="cast-spell"
                         {{/if}} data-tooltip="{{@root.i18n.path 'cast'}}">
                         <i class="fa-solid fa-play"></i>
                     </a>

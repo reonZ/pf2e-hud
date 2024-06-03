@@ -3,7 +3,6 @@ import {
     addListenerAll,
     createHTMLFromString,
     createHook,
-    elementData,
     htmlElement,
     isInstanceOf,
     localize,
@@ -402,7 +401,7 @@ class PF2eHudPersistent
         const setTooltipParts = [["setActor", "leftClick"]];
         if (options.hasSavedActor) setTooltipParts.push(["unsetActor", "rightClick"]);
 
-        const setTooltip = setTooltipParts
+        const setActorTooltip = setTooltipParts
             .map(([key, click]) => {
                 let msg = localize("persistent.menu", key);
                 if (options.hasSavedActor) msg = `${localize(click)} ${msg}`;
@@ -412,7 +411,7 @@ class PF2eHudPersistent
 
         return {
             ...context,
-            setActorTooltip: `<div class="pf2e-hud-left">${setTooltip}</div>`,
+            setActorTooltip,
             hotbarLocked: ui.hotbar.locked,
             cleaned: options.cleaned,
         };
@@ -426,7 +425,7 @@ class PF2eHudPersistent
         });
 
         addListenerAll(html, "[data-action]", (event, el) => {
-            const action = elementData<{ action: MenuActionEvent }>(el).action;
+            const action = el.dataset.action as MenuActionEvent;
 
             switch (action) {
                 case "toggle-users": {

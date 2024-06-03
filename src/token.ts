@@ -3,7 +3,6 @@ import {
     addListenerAll,
     createHTMLFromString,
     createHook,
-    elementData,
     libWrapper,
     registerWrapper,
 } from "pf2e-api";
@@ -179,6 +178,12 @@ class PF2eHudToken
                 onChange: () => {
                     this.sidebar?.render();
                 },
+            },
+            {
+                key: "closeAllOnCLick",
+                type: Boolean,
+                default: false,
+                scope: "client",
             },
             ...CLOSE_SETTINGS.map(
                 (key): SettingOptions => ({
@@ -450,20 +455,15 @@ class PF2eHudToken
         this.#sidebar.render(true);
     }
 
-    closeIf(option: SidebarCloseOptions) {
-        const setting = this.setting(option);
-
-        if (setting === "all") {
-            return this.close();
-        } else if (setting === "sidebar") {
-            return this.toggleSidebar(null);
-        }
-    }
-
     #clickClose() {
+        if (this.setting("closeAllOnCLick")) {
+            this.close();
+            return;
+        }
+
         const focused = document.activeElement as HTMLElement;
 
-        if (focused?.closest("[id='pf2e-hud.token']")) {
+        if (focused?.closest("[id^='pf2e-hud-token']")) {
             focused.blur();
         } else if (this.sidebar) {
             this.toggleSidebar(null);
@@ -480,7 +480,7 @@ class PF2eHudToken
         addStatsAdvancedListeners(actor, html);
 
         addListenerAll(html, "[data-action='open-sidebar']:not(.disabled)", (event, el) => {
-            const { sidebar } = elementData<{ sidebar: SidebarName }>(el);
+            const { sidebar } = el.dataset as { sidebar: SidebarName };
             this.toggleSidebar(sidebar);
         });
     }
@@ -499,11 +499,11 @@ type TokenContext = BaseActorContext &
         sidebars: SidebarElement[];
     };
 
-type SidebarCloseOptions = (typeof CLOSE_SETTINGS)[number];
-type SidebarCloseOption = (typeof CLOSE_OPTIONS)[number];
+type TokenCloseOption = (typeof CLOSE_OPTIONS)[number];
+type TokenCloseSetting = (typeof CLOSE_SETTINGS)[number];
 
 type TokenSettings = BaseTokenHUDSettings &
-    Record<SidebarCloseOptions, SidebarCloseOption> & {
+    Record<TokenCloseSetting, TokenCloseOption> & {
         enabled: boolean;
         scaleDimensions: boolean;
         mode: "exploded" | "left" | "right";
@@ -512,9 +512,10 @@ type TokenSettings = BaseTokenHUDSettings &
         highestSpeed: boolean;
         sidebarHeight: number;
         multiColumns: boolean;
+        closeAllOnCLick: boolean;
     };
 
 type ActorType = Exclude<ActorInstances[keyof ActorInstances], LootPF2e | PartyPF2e>;
 
 export { PF2eHudToken };
-export type { SidebarCloseOption, TokenSettings };
+export type { TokenCloseOption, TokenCloseSetting, TokenSettings };

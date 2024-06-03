@@ -124,6 +124,10 @@
                     "name": "Multi Columns Sidebars",
                     "hint": "When a sidebar's height is bigger than its max-height, it will be split into 2 or 3 columns."
                 },
+                "closeAllOnCLick": {
+                    "name": "Full Close on Click",
+                    "hint": "When enabled, clicking anywhere on the board will close thr HUD entirely. When disabled, it will take you out of any input field or close the sidebar first."
+                },
                 "closeOnSpell": {
                     "name": "Close on Spell Cast",
                     "hint": "Should the HUD/sidebar be closed when casting a spell."

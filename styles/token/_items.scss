@@ -1,0 +1,202 @@
+#pf2e-hud-token-sidebar .items {
+    .item-list.scroll {
+        .inventory-wealth,
+        .inventory-bulk {
+            max-width: var(--max-width);
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.3em;
+        }
+
+        .inventory-wealth {
+            justify-content: space-between;
+            margin-right: 0.2em;
+
+            > * {
+                display: flex;
+                align-items: center;
+                gap: 0.2em;
+            }
+        }
+
+        .inventory-bulk {
+            .encumbrance {
+                flex: 1;
+                position: relative;
+                display: flex;
+                padding-inline: 0.3em;
+                justify-content: space-between;
+                background: var(--input-background);
+
+                .encumbrance-bar {
+                    position: absolute;
+                    height: 100%;
+                    background: var(--color-pf-secondary);
+                    top: 0;
+                    left: 0;
+                }
+
+                .left,
+                .right {
+                    z-index: 1;
+                    font-size: 0.86em;
+                    white-space: nowrap;
+                }
+            }
+
+            &.encumbered {
+                .encumbrance-bar {
+                    background: var(--color-pf-tertiary-darkest);
+                }
+
+                &.over-limit {
+                    .encumbrance-bar {
+                        background: var(--color-pf-primary);
+                    }
+                }
+            }
+        }
+
+        .item {
+            .sub-spacer {
+                --spacer-width: 0.4em;
+                --spacer-color: var(--image-border-color);
+
+                position: relative;
+                width: var(--spacer-width);
+
+                &::before,
+                &::after {
+                    border-left: 1px solid var(--spacer-color);
+                    content: "";
+                    height: calc(50% + var(--item-spacing));
+                    position: absolute;
+
+                    width: calc(var(--spacer-width) + var(--item-gap));
+                }
+
+                &:not(.straight)::before {
+                    border-bottom: 1px solid var(--spacer-color);
+                }
+
+                &::before {
+                    top: calc(-1 * var(--item-spacing) - 0.15em);
+                }
+
+                &::after {
+                    top: calc(50% - var(--item-spacing));
+                }
+            }
+
+            .details {
+                .name {
+                    [data-action="toggle-container"] {
+                        font-size: 0.9em;
+                    }
+                }
+
+                .extras {
+                    display: flex;
+                    gap: 1.5em;
+
+                    > * {
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .stats {
+                        gap: 0.3em;
+
+                        .bulk {
+                            font-size: 0.95em;
+                            margin-top: -0.05em;
+                        }
+
+                        .temporary {
+                            font-size: 0.86em;
+                        }
+                    }
+
+                    .item-controls {
+                        --color-active: #616bed;
+
+                        gap: 0.1em;
+
+                        span.use {
+                            color: var(--color-disabled);
+                        }
+
+                        > a {
+                            height: 1em;
+                            margin-top: -0.3em;
+
+                            &.active {
+                                color: var(--color-active);
+                            }
+
+                            &.toggle-invested {
+                                font-size: 1.1em;
+                                margin-bottom: -0.1em;
+                            }
+
+                            &.item-carry-type {
+                                text-align: right;
+                            }
+
+                            &.worn {
+                                &.held {
+                                    font-size: 1.1em;
+                                }
+
+                                .fa-stack {
+                                    margin-top: -0.7em;
+                                    margin-left: -0.5em;
+                                    margin-right: -0.1em;
+                                    padding-top: 0.4em;
+                                    height: 2em;
+                                    overflow: hidden;
+                                }
+
+                                .fa-1,
+                                .fa-2 {
+                                    position: relative;
+                                    left: 0.25em;
+                                }
+                            }
+
+                            &.detach {
+                                font-size: 0.8em;
+
+                                .fa-stack {
+                                    margin-right: 0.2em;
+                                }
+                            }
+
+                            &.delete {
+                                font-size: 0.925em;
+                            }
+                        }
+                    }
+                }
+            }
+
+            &:not(:is([data-parent-id], [data-item-type])):has(
+                    + :is([data-parent-id], [data-item-type])
+                ) {
+                .image {
+                    border-bottom-left-radius: 0;
+                }
+            }
+
+            &:is([data-parent-id], [data-item-type]):not(
+                    :has(+ :is([data-parent-id], [data-item-type]))
+                ) {
+                .sub-spacer {
+                    &::after {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+}

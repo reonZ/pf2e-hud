@@ -7,9 +7,9 @@ import {
 } from "pf2e-api";
 import { BaseContext, PF2eHudBase } from "./hud";
 import { PF2eHudPersistent } from "./persistent";
-import { PF2eHudToken } from "./token";
 import { PF2eHudPopup } from "./popup";
-import { hasSpells } from "./utils";
+import { PF2eHudToken } from "./token";
+import { addSendItemToChatListeners, hasSpells } from "./utils";
 
 const SIDEBARS = ["actions", "items", "spells", "skills", "extras"] as const;
 
@@ -72,7 +72,7 @@ abstract class PF2eHudSidebar<
     abstract get sidebarKey(): SidebarName;
 
     get scrollElement() {
-        return this.innerElement;
+        return this.innerElement.querySelector<HTMLElement>(".item-list.scroll");
     }
 
     get templates() {
@@ -124,7 +124,9 @@ abstract class PF2eHudSidebar<
         content.style.setProperty("--font-size", `${options.fontSize}px`);
 
         const oldElement = this.#innerElement;
+
         this.#innerElement = result;
+        this.#innerElement.classList.add(this.sidebarKey);
 
         if (oldElement) oldElement.replaceWith(this.#innerElement);
         else content.appendChild(this.#innerElement);
@@ -137,24 +139,31 @@ abstract class PF2eHudSidebar<
         element.dataset.actorUuid = this.#parentHud.actor?.uuid;
     }
 
+    abstract closeIf(option: SidebarCloseOptions): void;
+
     #activateListeners(html: HTMLElement) {
+        addSendItemToChatListeners(this.actor, html, () => this.closeIf("sendToChat"));
+
         addListenerAll(html, "[data-action='item-description']", (event, el) => {
             PF2eHudPopup.showItemSummary(this.actor, el);
         });
     }
 }
 
+interface SidebarHUD<
+    TSettings extends Record<string, any> = Record<string, any>,
+    TSidebar extends PF2eHudToken | PF2eHudPersistent = PF2eHudToken | PF2eHudPersistent
+> {
+    get sidebar(): PF2eHudSidebar<TSettings, TSidebar> | null;
+
+    toggleSidebar(sidebar: SidebarName | null): void;
+}
+
+type SidebarCloseOptions = "sendToChat" | "castSpell";
+
 type SidebarContext = BaseContext & {
     i18n: SublocalizeI18n;
 };
-
-interface SidebarHUD<
-    TSettings extends Record<string, any>,
-    TSidebar extends PF2eHudToken | PF2eHudPersistent
-> {
-    get sidebar(): PF2eHudSidebar<TSettings, TSidebar> | null;
-    toggleSidebar(sidebar: SidebarName | null): void;
-}
 
 type SidebarName = (typeof SIDEBARS)[number];
 
@@ -171,4 +180,11 @@ type SidebarElement = {
 };
 
 export { PF2eHudSidebar, getSidebars };
-export type { SidebarContext, SidebarElement, SidebarHUD, SidebarName, SidebarRenderOptions };
+export type {
+    SidebarCloseOptions,
+    SidebarContext,
+    SidebarElement,
+    SidebarHUD,
+    SidebarName,
+    SidebarRenderOptions,
+};

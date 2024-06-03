@@ -480,7 +480,7 @@ class PF2eHudTracker extends PF2eHudBaseMain<TrackerSettings> {
         if (!combat) return;
 
         const parent = el.closest<HTMLElement>(".combatant")!;
-        const { control } = elementData<CombatantControlDataset>(el);
+        const { control } = el.dataset as CombatantControlDataset;
         const { combatantId } = elementData(parent);
 
         switch (control) {
@@ -562,7 +562,7 @@ class PF2eHudTracker extends PF2eHudBaseMain<TrackerSettings> {
 
         if (this.#toggled && combat?.started) {
             const currenTurn = combat.turn!;
-            const { combatantId } = elementData<CombatantDataset>(el);
+            const { combatantId } = el.dataset as CombatantDataset;
             const turn = combat.turns.findIndex((combatant) => combatant.id === combatantId);
             if (currenTurn === turn) return;
 
