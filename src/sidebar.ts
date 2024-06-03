@@ -20,7 +20,7 @@ const SIDEBAR_DATA = {
     },
     items: {
         icon: "fa-solid fa-backpack",
-        disabled: (actor: ActorPF2e) => false,
+        disabled: (actor: ActorPF2e) => actor.inventory.size < 1,
     },
     spells: {
         icon: "fa-solid fa-wand-magic-sparkles",
