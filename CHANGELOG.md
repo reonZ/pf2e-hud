@@ -1,3 +1,18 @@
+# 0.5.0
+
+-   `Combat Tracker`
+    -   prevent being able to drag & drop combatant when the tracker is collapsed
+-   `Popup`
+    -   will now fade out when the user is dragging anything in the page
+-   `Token HUD`
+    -   will now fade out when the user is dragging anything in the page
+    -   now disable the `spells` sidebar icon when no spell exist on the actor
+    -   added a new `Full Close on Click` setting
+    -   added draw icon functionality to spell consumables
+    -   added the `items` sidebar (fully functionnal)
+-   `Token Tooltip`
+    -   fixed health status not changing colour
+
 # 0.4.0
 
 -   made a complete refactor of the templates across the different HUDs
@@ -5,7 +20,7 @@
     -   implemented the fundamentals for the popup application
     -   the popup is an actual foundry application and is persistent (can be moved/minimized)
 -   `Token HUD`
-    -   spells sidebar is now fully functional
+    -   `spells` sidebar is now fully functional
 -   `Persistent HUD`
     -   added new icon to remove the UI elements from the portrait, they show up when hovering over it
     -   added a flash animation on the portrait when selecting a token linked to the currently set actor
