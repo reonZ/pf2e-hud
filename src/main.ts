@@ -61,11 +61,12 @@ function onRenderSettingsConfig(app: SettingsConfig, $html: JQuery) {
     for (const hud of Object.values(hudList)) {
         const settings = hud.settings;
         const setting = game.user.isGM
-            ? settings[0]
-            : settings.find((setting) => setting.scope === "client")!;
+            ? settings.find((setting) => setting.config)
+            : settings.find((setting) => setting.config && setting.scope === "client");
+
         const group = querySelector(
             tab,
-            `[data-setting-id="${MODULE.id}.${hud.hudKey}.${setting.key}"]`
+            `[data-setting-id="${MODULE.id}.${hud.hudKey}.${setting!.key}"]`
         );
 
         if (group) {
