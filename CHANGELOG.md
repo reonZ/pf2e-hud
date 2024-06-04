@@ -9,9 +9,9 @@
     -   now disable the `spells` sidebar icon when no spell exist on the actor
     -   added a new `Full Close on Click` setting
     -   added draw icon functionality to spell consumables
-    -   added the `items` sidebar (fully functionnal)
+    -   added the `items` sidebar (fully functional)
 -   `Token Tooltip`
-    -   fixed health status not changing colour
+    -   fixed health status not changing color
 
 # 0.4.0
 

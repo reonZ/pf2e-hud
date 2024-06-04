@@ -222,7 +222,11 @@
         },
         "sidebars": {
             "actions": {
-                "title": "Actions"
+                "title": "Actions",
+                "reach": "Reach {reach} ft.",
+                "thrown": "Thrown {increment}/{max} ft.",
+                "ranged": "Range {max} ft.",
+                "rangedWithIncrement": "Range {increment}/{max} ft."
             },
             "items": {
                 "title": "Inventory"

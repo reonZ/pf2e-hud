@@ -11,7 +11,7 @@ import {
     createHTMLElement,
     detachSubitem,
     elementData,
-    getActiveModule,
+    getActivePF2eModule,
     getFlag,
     htmlClosest,
     setFlag,
@@ -477,7 +477,7 @@ function canObserve(actor: ActorPF2e | null | undefined) {
 }
 
 function addStavesListeners(actor: ActorPF2e, html: HTMLElement) {
-    const pf2eDailies = getActiveModule<PF2eDailiesModule>("pf2e-dailies");
+    const pf2eDailies = getActivePF2eModule("pf2e-dailies");
     if (!pf2eDailies || !actor.isOfType("character")) return;
 
     addListenerAll(
@@ -873,8 +873,8 @@ export {
     STATS_PARTIALS,
     addDragoverListener,
     addEnterKeyListeners,
-    addItemsListeners,
     addItemPropertyListeners,
+    addItemsListeners,
     addSendItemToChatListeners,
     addSpellsListeners,
     addStatsAdvancedListeners,

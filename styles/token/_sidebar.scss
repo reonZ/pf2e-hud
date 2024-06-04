@@ -95,7 +95,8 @@
 
         .item-list.scroll {
             --header-border: 1px solid #ffffff1f;
-            --header-background: #0000003d;
+            --header-background: rgba(0, 0, 0, 0.239);
+            --name-background: rgba(255, 255, 255, 0.09);
 
             white-space: nowrap;
             column-gap: 0.5em;
@@ -198,7 +199,7 @@
                     --color-rarity-rare: #5996f7;
                     --color-rarity-unique: #d05fff;
 
-                    background-color: rgb(255 255 255 / 9%);
+                    background-color: var(--name-background);
                     padding-inline: 0.2em;
 
                     [data-action="item-description"] {
@@ -224,14 +225,11 @@
                     font-size: 0.9em;
                 }
             }
+        }
 
-            &.temporary {
-                .details {
-                    .name {
-                        background-color: rgba(var(--temporary-color), 0.1);
-                    }
-                }
-            }
+        .variants {
+            display: flex;
+            flex-wrap: wrap;
         }
 
         *:has(> .name) {
