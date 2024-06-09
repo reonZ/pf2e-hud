@@ -1,0 +1,58 @@
+#pf2e-hud-sidebar .inner.spells {
+    header {
+        position: relative;
+
+        [data-section="focus-points"] {
+            position: absolute;
+            right: 0.2em;
+            top: 0;
+        }
+    }
+
+    .item {
+        .details {
+            .extras {
+                a:has(i) {
+                    line-height: 1;
+                    margin-top: 2px;
+                }
+
+                .category {
+                    display: flex;
+                    padding-left: 0.2em;
+                    gap: 0.2em;
+
+                    .action-glyph {
+                        font-size: 0.8em;
+                        margin-top: 1px;
+                    }
+                }
+
+                .actions {
+                    display: flex;
+                    align-items: center;
+
+                    .numbers {
+                        --input-width: 2em;
+                        --input-equivalent-width: 1.8em;
+
+                        margin-right: -0.2em;
+                    }
+                }
+            }
+        }
+
+        &[data-slot-expended] {
+            .image {
+                filter: grayscale(1);
+            }
+
+            .details {
+                .name {
+                    color: var(--color-disabled);
+                    text-decoration: line-through;
+                }
+            }
+        }
+    }
+}

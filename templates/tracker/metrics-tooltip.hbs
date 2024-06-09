@@ -1,24 +1,22 @@
-<div class="pf2e-hud-metrics">
-    <div>
-        {{localize 'PF2E.Encounter.Budget.Threat'}}:
-        <span class="threat {{threat}}">{{localize (concat 'PF2E.Encounter.Budget.Threats.'
-            threat)}}</span>
-    </div>
-    <div>
-        {{localize 'PF2E.Encounter.Metrics.Award.Label' xp=award.xp}} *
-    </div>
-    <div>
-        {{localize 'PF2E.Encounter.Metrics.Budget' spent=budget.spent max=budget.max
-        partyLevel=budget.partyLevel}}
-    </div>
-    <div class="small">
-        *{{#if (eq award.recipients.length 1)}}
-        {{localize 'PF2E.Encounter.Metrics.Award.Tooltip.Singular'}}
-        {{else if (eq award.recipients.length 4)}}
-        {{localize 'PF2E.Encounter.Metrics.Award.Tooltip.Four'}}
-        {{else}}
-        {{localize 'PF2E.Encounter.Metrics.Award.Tooltip.Plural' xpPerFour=budget.spent
-        recipients=award.recipients.length}}
-        {{/if}}
-    </div>
+<div>
+    {{localize 'PF2E.Encounter.Budget.Threat'}}:
+    <span class="threat {{threat}}">{{localize (concat 'PF2E.Encounter.Budget.Threats.'
+        threat)}}</span>
+</div>
+<div>
+    {{localize 'PF2E.Encounter.Metrics.Award.Label' xp=award.xp}} *
+</div>
+<div>
+    {{localize 'PF2E.Encounter.Metrics.Budget' spent=budget.spent max=budget.max
+    partyLevel=budget.partyLevel}}
+</div>
+<div class="small">
+    *{{#if (eq award.recipients.length 1)}}
+    {{localize 'PF2E.Encounter.Metrics.Award.Tooltip.Singular'}}
+    {{else if (eq award.recipients.length 4)}}
+    {{localize 'PF2E.Encounter.Metrics.Award.Tooltip.Four'}}
+    {{else}}
+    {{localize 'PF2E.Encounter.Metrics.Award.Tooltip.Plural' xpPerFour=budget.spent
+    recipients=award.recipients.length}}
+    {{/if}}
 </div>

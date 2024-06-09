@@ -25,6 +25,12 @@ $bottom-width: 542px;
 }
 
 #pf2e-hud-persistent-portrait {
+    --flash-color: 255, 255, 0;
+    --flash-outset-blur: 20px;
+    --flash-outset-color: rgb(var(--flash-color));
+    --flash-inset-blur: 30px;
+    --flash-inset-color: rgba(var(--flash-color), 0.55);
+
     position: relative;
     flex: 1;
     height: 100%;
@@ -82,12 +88,6 @@ $bottom-width: 542px;
     }
 
     .flash {
-        --flash-color: 255, 255, 0;
-        --flash-outset-blur: 20px;
-        --flash-outset-color: rgb(var(--flash-color));
-        --flash-inset-blur: 30px;
-        --flash-inset-color: rgba(var(--flash-color), 0.55);
-
         inset: 0;
         pointer-events: none;
     }
@@ -103,15 +103,15 @@ $bottom-width: 542px;
     }
 }
 
-#pf2e-hud-persistent {
+#pf2e-hud-persistent-main {
+    --one-three-rows: 1.1fr 3fr 0;
+
     width: calc($bottom-width - 3px);
     height: var(--hud-height);
     z-index: calc(var(--z-index-app) - 1);
     gap: var(--panel-gap);
 
     .group {
-        --one-three-rows: 1.1fr 3fr 0;
-
         display: grid;
         grid-template-rows: var(--one-three-rows);
         gap: var(--panel-gap);
@@ -154,11 +154,11 @@ $bottom-width: 542px;
     }
 }
 
-#ui-bottom > #pf2e-hud-persistent {
+#ui-bottom > #pf2e-hud-persistent-main {
     justify-content: start;
 }
 
-#pf2e-hud-persistent + div {
+#pf2e-hud-persistent-main + div {
     #hotbar-directory-controls,
     #hotbar-lock {
         display: none;

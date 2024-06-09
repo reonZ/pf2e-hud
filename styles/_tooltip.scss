@@ -1,6 +1,10 @@
 #pf2e-hud-tooltip {
     --outer-padding: 4px;
     --inner-padding: 0.5em;
+    --inner-gap: 0.6em;
+    --span-width: 1.7em;
+    --section-gap: 0.1em;
+    --section-width: calc(var(--icon-width) + var(--span-width) + var(--section-gap));
 
     z-index: 9999;
     position: absolute;
@@ -45,11 +49,6 @@
     }
 
     .inner {
-        --span-width: 1.7em;
-        --inner-gap: 0.6em;
-        --section-gap: 0.1em;
-        --section-width: calc(var(--icon-width) + var(--span-width) + var(--section-gap));
-
         min-width: 8em;
         max-width: calc(
             var(--inner-padding) * 2 + var(--inner-gap) * 2 + var(--section-width) * 3 +

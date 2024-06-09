@@ -405,8 +405,9 @@ $threat-extreme: red;
     }
 }
 
-#tooltip {
-    .pf2e-hud-metrics {
+#tooltip,
+aside.locked-tooltip {
+    &.pf2e-hud-metrics {
         display: flex;
         flex-direction: column;
         flex-wrap: nowrap;

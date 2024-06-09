@@ -1,50 +1,84 @@
 import {
     MODULE,
-    beforeHTMLFromString,
-    htmlElement,
+    createHTMLElement,
+    htmlQuery,
     localize,
-    querySelector,
     registerKeybind,
     registerSetting,
-} from "pf2e-api";
-import { PF2eHudPersistent } from "./persistent";
-import { PF2eHudToken } from "./token";
-import { PF2eHudTooltip } from "./tooltip";
-import { PF2eHudTracker } from "./tracker";
+} from "module-api";
+import { PF2eHudToken } from "./hud/token";
+import { PF2eHudTooltip } from "./hud/tooltip";
+import { PF2eHudPersistent } from "./hud/persistent";
+import { PF2eHudTracker } from "./hud/tracker";
+import { PF2eHudBase } from "./hud/base/base";
 
-const hudList = {
+MODULE.register("pf2e-hud", "PF2e HUD");
+
+const HUDS = {
     tooltip: new PF2eHudTooltip(),
     token: new PF2eHudToken(),
     persistent: new PF2eHudPersistent(),
     tracker: new PF2eHudTracker(),
 };
 
-MODULE.register("pf2e-hud", "PF2e HUD");
-
 Hooks.once("setup", () => {
-    const isGM = game.user.isGM;
-    const huds = Object.values(hudList);
+    const huds = Object.values(HUDS);
+    const settings: SettingOptions[] = [];
+
+    registerSetting({
+        key: "useModifiers",
+        type: Boolean,
+        default: false,
+        scope: "client",
+        onChange: () => {
+            HUDS.token.render();
+            HUDS.persistent.render();
+        },
+    });
+
+    registerSetting({
+        key: "highestSpeed",
+        type: Boolean,
+        default: false,
+        scope: "client",
+        onChange: () => {
+            HUDS.token.render();
+            HUDS.persistent.render();
+        },
+    });
 
     for (const hud of huds) {
-        for (const setting of hud.settings) {
-            const key = `${hud.hudKey}.${setting.key}`;
+        const currentOffset = settings.length;
+        const orphanSettings: SettingOptions[] = [];
+
+        for (const setting of hud.SETTINGS) {
+            const key = `${hud.key}.${setting.key}`;
+            const index = hud.SETTINGS_ORDER.indexOf(setting.key as any);
 
             if (setting.default === undefined) {
                 setting.default = localize(`settings.${key}.default`);
             }
 
             setting.key = key;
-            registerSetting(setting);
+
+            if (index !== -1) settings[index + currentOffset] = setting;
+            else orphanSettings.push(setting);
         }
 
-        for (const keybind of hud.keybinds) {
-            keybind.name = `${hud.hudKey}.${keybind.name}`;
+        settings.push(...orphanSettings);
+
+        for (const keybind of hud.keybinds ?? []) {
+            keybind.name = `${hud.key}.${keybind.name}`;
             registerKeybind(keybind.name, keybind);
         }
     }
 
+    for (const setting of settings) {
+        registerSetting(setting);
+    }
+
     MODULE.current.api = {
-        hud: hudList,
+        hud: HUDS,
     };
 
     for (const hud of huds) {
@@ -52,29 +86,21 @@ Hooks.once("setup", () => {
     }
 });
 
-Hooks.on("renderSettingsConfig", onRenderSettingsConfig);
+Hooks.on("renderSettingsConfig", (app: SettingsConfig, $html: JQuery) => {
+    const html = $html[0];
+    const tab = htmlQuery(html, `.tab[data-tab="${MODULE.id}"]`);
 
-function onRenderSettingsConfig(app: SettingsConfig, $html: JQuery) {
-    const html = htmlElement($html);
-    const tab = querySelector(html, `.tab[data-tab="${MODULE.id}"]`);
+    for (const hud of Object.values(HUDS)) {
+        const group = htmlQuery(tab, `[data-setting-id^="${MODULE.id}.${hud.key}."]`);
+        if (!group) continue;
 
-    for (const hud of Object.values(hudList)) {
-        const settings = hud.settings;
-        const setting = game.user.isGM
-            ? settings.find((setting) => setting.config !== false)
-            : settings.find((setting) => setting.config !== false && setting.scope === "client");
+        const titleElement = createHTMLElement("h3", {
+            innerHTML: localize("settings", hud.key, "title"),
+        });
 
-        const group = querySelector(
-            tab,
-            `[data-setting-id="${MODULE.id}.${hud.hudKey}.${setting!.key}"]`
-        );
-
-        if (group) {
-            const label = localize("settings", hud.hudKey, "title");
-            beforeHTMLFromString(group, `<h3>${label}</h3>`);
-        }
+        group.before(titleElement);
     }
-}
+});
 
 window.addEventListener(
     "dragstart",
@@ -89,4 +115,4 @@ window.addEventListener(
     true
 );
 
-export { hudList as hud };
+export { HUDS as hud };

@@ -1,0 +1,182 @@
+[id^="pf2e-hud-token"] {
+    --anchor-margin: 4px;
+
+    color: var(--color);
+    font-size: var(--font-size);
+}
+
+#pf2e-hud-token {
+    position: absolute;
+    pointer-events: none;
+    transform-origin: left top;
+}
+
+#pf2e-hud-token-main {
+    position: absolute;
+    container: pf2e-hud-token-main / size;
+
+    .panel {
+        &.top {
+            .name,
+            hr {
+                grid-column: 1 / span 3;
+            }
+
+            .name {
+                text-align: center;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                padding-inline: 0.3em;
+                margin-bottom: -0.2em;
+            }
+
+            hr {
+                margin-block: 0.1em;
+            }
+        }
+
+        &.bottom {
+            grid-template-columns: repeat(5, 1fr);
+            column-gap: 0.4em;
+
+            hr {
+                grid-column: 1 / -1;
+                margin-block: var(--hr-margin);
+            }
+        }
+    }
+}
+
+#pf2e-hud-token-main.exploded {
+    --outer-padding-right: 0.3rem;
+
+    .panel {
+        position: absolute;
+        background: var(--outer-background);
+        box-shadow: var(--outer-box-shadow);
+        border-radius: var(--outer-border-radius);
+        padding: 0.2rem var(--outer-padding-right) 0.2rem 0.3rem;
+        border: var(--outer-border);
+
+        &.left,
+        &.right {
+            grid-template-rows: repeat(3, 1fr);
+            grid-auto-flow: column;
+        }
+
+        &.top {
+            left: 0;
+            bottom: calc(100% + var(--anchor-margin));
+            padding-right: calc(var(--outer-padding-right) - 0.2rem);
+        }
+
+        &.left {
+            bottom: 0;
+            right: calc(100% + var(--anchor-margin));
+        }
+
+        &.right {
+            top: 0;
+            left: calc(100% + var(--anchor-margin));
+        }
+
+        &.bottom {
+            right: 0;
+            top: calc(100% + var(--anchor-margin));
+            padding: 0.4em;
+        }
+
+        @container pf2e-hud-token-main (min-height:  5em) {
+            &.right,
+            &.left {
+                bottom: auto;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            &.bottom,
+            &.top {
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+
+        @container pf2e-hud-token-main (min-height: 9em) {
+            &.right,
+            &.left {
+                grid-template-rows: none;
+                grid-auto-flow: row;
+            }
+        }
+
+        &.left + .panel.bottom,
+        &.top + .panel.bottom {
+            right: auto;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        &.top:only-child,
+        &.top:has(+ .panel.right),
+        &.top:has(+ .panel.bottom) {
+            right: auto;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    }
+}
+
+#pf2e-hud-token-main:not(.exploded) {
+    --panel-margin-block: 0.2em;
+    --panel-spacer-gap: calc(var(--panel-margin-block) + var(--hr-margin));
+
+    .joined {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--outer-background);
+        box-shadow: var(--outer-box-shadow);
+        border-radius: var(--outer-border-radius);
+        border: var(--outer-border);
+        display: flex;
+        flex-direction: column;
+        padding: 0.1rem 0.4rem 0.4rem;
+
+        &.left {
+            left: auto;
+            right: calc(100% + var(--anchor-margin));
+        }
+
+        &:not(.left) {
+            right: auto;
+            left: calc(100% + var(--anchor-margin));
+        }
+
+        .panel {
+            &.left,
+            &.right {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            &.bottom {
+                [data-section] {
+                    justify-items: center;
+                }
+            }
+
+            &:not(:last-child) {
+                border-bottom: 1px solid var(--hr-color);
+                margin-bottom: var(--panel-spacer-gap);
+                padding-bottom: var(--panel-spacer-gap);
+            }
+        }
+    }
+}
+
+body:has(#pf2e-hud-sidebar .inner.token) {
+    #pf2e-hud-token-main {
+        visibility: hidden;
+    }
+}

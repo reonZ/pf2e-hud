@@ -1,16 +1,11 @@
-<div id="pf2e-hud-persistent-portrait" class="app{{#if cleaned}} cleaned{{/if}}"
-    data-tooltip-direction="UP">
-    <div class="avatar" style="background-image: url({{avatar}});"></div>
-
-    {{#if hasActor}}
-    <div class="top">
-        <div class="name">{{name}}</div>
-    </div>
-
-    <div class="bottom panel stats-header">
-        {{> (partial 'stats_header')}}
-    </div>
-    {{/if}}
-
-    <div class="flash"></div>
+<div class="avatar" style="background-image: url({{avatar}});"></div>
+{{#if hasActor}}
+<div class="top">
+    <div class="name">{{name}}</div>
 </div>
+
+<div class="bottom panel stats-header">
+    {{> (partial 'stats_header')}}
+</div>
+{{/if}}
+<div class="flash"></div>
