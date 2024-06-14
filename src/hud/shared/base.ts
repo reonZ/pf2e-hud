@@ -1,4 +1,4 @@
-import { R, getSetting, signedInteger } from "module-api";
+import { R, getSetting, htmlClosest, signedInteger } from "foundry-pf2e";
 
 const IWR_DATA = [
     { type: "immunities", icon: "fa-solid fa-ankh", label: "PF2E.ImmunitiesLabel" },
@@ -120,6 +120,33 @@ function getStatistics(actor: ActorPF2e) {
     );
 }
 
+async function getItemFromElement(
+    actor: ActorPF2e,
+    el: HTMLElement
+): Promise<ItemPF2e<ActorPF2e> | null> {
+    const element = htmlClosest(el, ".item");
+    if (!element) return null;
+
+    const { parentId, itemId, itemUuid, itemType, actionIndex, entryId } = element.dataset;
+    const isFormula = !!itemUuid && "isFormula" in element.dataset;
+
+    const item = parentId
+        ? actor.inventory.get(parentId, { strict: true }).subitems.get(itemId, { strict: true })
+        : isFormula
+        ? await fromUuid<ItemPF2e>(itemUuid)
+        : entryId
+        ? actor.spellcasting?.collections
+              .get(entryId, { strict: true })
+              .get(itemId, { strict: true }) ?? null
+        : itemType === "condition"
+        ? actor.conditions.get(itemId, { strict: true })
+        : actionIndex
+        ? actor.system.actions?.[Number(actionIndex)].item ?? null
+        : actor.items.get(itemId ?? "") ?? null;
+
+    return item instanceof Item && item.actor ? (item as ItemPF2e<ActorPF2e>) : null;
+}
+
 type StatsStatistic = {
     slug: string;
     icon: string;
@@ -167,5 +194,5 @@ type HealthData = {
     max: number;
 };
 
-export type { HealthData, StatsHeader, StatsStatistic, StatsSpeed, StatsSpeeds };
-export { IWR_DATA, getHealth, getSpeeds, getStatistics, getStatsHeader };
+export { IWR_DATA, getHealth, getItemFromElement, getSpeeds, getStatistics, getStatsHeader };
+export type { HealthData, StatsHeader, StatsSpeed, StatsSpeeds, StatsStatistic };

@@ -1,5 +1,6 @@
-import { R, addListener, addListenerAll, elementDataset, htmlClosest, setFlag } from "module-api";
+import { R, addListener, addListenerAll, elementDataset, htmlClosest, setFlag } from "foundry-pf2e";
 import { getCoverEffect } from "./advanced";
+import { getItemFromElement } from "./base";
 
 const ADJUSTMENTS_INDEX = ["weak", null, "elite"] as const;
 
@@ -133,30 +134,13 @@ function addStatsAdvancedListeners(actor: ActorPF2e, html: HTMLElement) {
     }
 }
 
-function getItemFromElement(actor: ActorPF2e, el: HTMLElement): ItemPF2e | undefined {
-    const itemElement = htmlClosest(el, ".item[data-item-id]");
-    if (!itemElement) return;
-
-    const { itemId, parentId, entryId } = elementDataset(itemElement);
-
-    if (entryId && actor.isOfType("creature")) {
-        const collection = actor.spellcasting.collections.get(entryId, {
-            strict: true,
-        });
-        return collection.get(itemId);
-    }
-
-    const item = actor.items.get(parentId ?? itemId);
-    return parentId && item?.isOfType("physical") ? item.subitems.get(itemId) : item;
-}
-
 function addSendItemToChatListeners(
     actor: ActorPF2e,
     html: HTMLElement,
     onSendToChat?: () => void
 ) {
-    addListenerAll(html, "[data-action='send-to-chat']", (event, el) => {
-        const item = getItemFromElement(actor, el);
+    addListenerAll(html, "[data-action='send-to-chat']", async (event, el) => {
+        const item = await getItemFromElement(actor, el);
         if (!item) return;
 
         if (item.isOfType("spell")) {
@@ -185,7 +169,6 @@ type StatsAdvancedSliderEvent = "hero" | "wounded" | "dying";
 
 export {
     addEnterKeyListeners,
-    getItemFromElement,
     addSendItemToChatListeners,
     addStatsAdvancedListeners,
     addStatsHeaderListeners,
