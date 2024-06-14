@@ -31,13 +31,22 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig> extends foundry.applica
         return this.config.event;
     }
 
+    abstract _activateListeners(html: HTMLElement): void;
+
     _replaceHTML(result: HTMLElement, content: HTMLElement, options: ApplicationRenderOptions) {
         content.replaceChildren(result);
         this.#activateListeners(result);
         this._activateListeners(result);
     }
 
-    abstract _activateListeners(html: HTMLElement): void;
+    _onFirstRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
+        const event = this.event;
+        const bounds = this.element.getBoundingClientRect();
+
+        options.position ??= {};
+        options.position.left = event.clientX - bounds.width / 2;
+        options.position.top = event.clientY - bounds.height / 2;
+    }
 
     close(options: ApplicationClosingOptions = {}): Promise<this> {
         options.animate = false;
