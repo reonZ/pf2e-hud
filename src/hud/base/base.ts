@@ -1,4 +1,4 @@
-import { getSetting, render, setSetting, settingPath, templatePath } from "module-api";
+import { getSetting, render, setSetting, settingPath, templatePath } from "foundry-pf2e";
 
 const GLOBAL_SETTINGS: ReadonlyArray<keyof GlobalSettings> = [
     "highestSpeed",

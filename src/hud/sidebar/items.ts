@@ -8,9 +8,9 @@ import {
     detachSubitem,
     htmlClosest,
     tupleHasValue,
-} from "module-api";
+} from "foundry-pf2e";
+import { getItemFromElement } from "../shared/base";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
-import { getItemFromElement } from "../shared/listeners";
 
 class PF2eHudSidebarItems extends PF2eHudSidebar {
     get key(): SidebarName {
@@ -43,8 +43,8 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
     _activateListeners(html: HTMLElement) {
         const actor = this.actor;
 
-        addListenerAll(html, "[data-item-id]", "dragstart", (event, el) => {
-            const item = getItemFromElement(actor, el);
+        addListenerAll(html, "[data-item-id]", "dragstart", async (event, el) => {
+            const item = await getItemFromElement(actor, el);
             if (!item || !event.dataTransfer) return;
 
             const img = new Image();
@@ -65,9 +65,9 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
             el.addEventListener("dragend", () => img.remove(), { once: true });
         });
 
-        addListenerAll(html, "[data-action]:not(disabled)", (event, el) => {
+        addListenerAll(html, "[data-action]:not(disabled)", async (event, el) => {
             const action = el.dataset.action as ItemsActionEvent;
-            const item = getItemFromElement(actor, el);
+            const item = await getItemFromElement(actor, el);
             if (!item?.isOfType("physical")) return;
 
             switch (action) {

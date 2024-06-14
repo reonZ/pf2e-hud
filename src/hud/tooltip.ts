@@ -8,7 +8,7 @@ import {
     isHoldingModifierKeys,
     libWrapper,
     localize,
-} from "module-api";
+} from "foundry-pf2e";
 import { hud } from "../main";
 import {
     BaseTokenContext,

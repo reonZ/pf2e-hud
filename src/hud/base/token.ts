@@ -1,4 +1,4 @@
-import { createHook } from "module-api";
+import { createHook } from "foundry-pf2e";
 import {
     BaseActorContext,
     BaseActorRenderOptions,

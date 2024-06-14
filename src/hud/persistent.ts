@@ -7,7 +7,7 @@ import {
     localize,
     templateLocalize,
     warn,
-} from "module-api";
+} from "foundry-pf2e";
 import {
     BaseActorContext,
     BaseActorRenderOptions,

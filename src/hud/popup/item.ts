@@ -1,4 +1,4 @@
-import { addListener, createHTMLElement, getRankLabel, htmlClosest } from "module-api";
+import { addListener, createHTMLElement, getRankLabel, htmlClosest } from "foundry-pf2e";
 import { PF2eHudPopup, PopupConfig } from "./base";
 
 class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {

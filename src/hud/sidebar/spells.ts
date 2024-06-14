@@ -1,5 +1,6 @@
 import {
     ErrorPF2e,
+    MODULE,
     SummarizedSpellsData,
     addListenerAll,
     changeCarryType,
@@ -9,7 +10,7 @@ import {
     getSummarizedSpellsDataForRender,
     htmlClosest,
     localize,
-} from "module-api";
+} from "foundry-pf2e";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 
 class PF2eHudSidebarSpells extends PF2eHudSidebar {
@@ -20,8 +21,8 @@ class PF2eHudSidebarSpells extends PF2eHudSidebar {
     async _prepareContext(options: SidebarRenderOptions): Promise<SpellsContext> {
         const parentData = await super._prepareContext(options);
         const summarizedData = await getSummarizedSpellsDataForRender(this.actor, false, {
-            staff: localize("sidebars.spells.staff"),
-            charges: localize("sidebars.spells.charges"),
+            staff: MODULE.path("sidebars.spells.staff"),
+            charges: MODULE.path("sidebars.spells.charges"),
         });
 
         const data: SpellsContext = {

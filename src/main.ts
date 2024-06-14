@@ -5,12 +5,11 @@ import {
     localize,
     registerKeybind,
     registerSetting,
-} from "module-api";
+} from "foundry-pf2e";
+import { PF2eHudPersistent } from "./hud/persistent";
 import { PF2eHudToken } from "./hud/token";
 import { PF2eHudTooltip } from "./hud/tooltip";
-import { PF2eHudPersistent } from "./hud/persistent";
 import { PF2eHudTracker } from "./hud/tracker";
-import { PF2eHudBase } from "./hud/base/base";
 
 MODULE.register("pf2e-hud", "PF2e HUD");
 

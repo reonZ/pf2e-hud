@@ -11,7 +11,7 @@ import {
     localize,
     render,
     templateLocalize,
-} from "module-api";
+} from "foundry-pf2e";
 import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
 import { HealthData, getHealth } from "./shared/base";
 import Sortable, { SortableEvent } from "sortablejs";

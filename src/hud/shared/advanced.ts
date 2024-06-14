@@ -1,4 +1,4 @@
-import { R, getFlag, getSetting } from "module-api";
+import { R, getFlag, getSetting } from "foundry-pf2e";
 import { IWR_DATA, StatsSpeed, StatsStatistic, getSpeeds, getStatistics } from "./base";
 
 const COVER_UUID = "Compendium.pf2e.other-effects.Item.I9lfZUiCwMiGogVi";

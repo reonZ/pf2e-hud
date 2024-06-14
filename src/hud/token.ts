@@ -27,7 +27,7 @@ import {
     createHook,
     libWrapper,
     registerWrapper,
-} from "module-api";
+} from "foundry-pf2e";
 import { addStatsAdvancedListeners, addStatsHeaderListeners } from "./shared/listeners";
 
 const CLOSE_OPTIONS = ["never", "sidebar", "all"] as const;
