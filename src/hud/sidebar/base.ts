@@ -11,17 +11,14 @@ import {
     render,
     templateLocalize,
     templatePath,
-} from "module-api";
+} from "foundry-pf2e";
 import { PF2eHudBaseActor } from "../base/actor";
 import { IPF2eHudAdvanced } from "../base/advanced";
 import { GlobalSettings } from "../base/base";
-import {
-    addEnterKeyListeners,
-    addSendItemToChatListeners,
-    getItemFromElement,
-} from "../shared/listeners";
 import { PF2eHudItemPopup } from "../popup/item";
 import { addDragoverListener } from "../shared/advanced";
+import { getItemFromElement } from "../shared/base";
+import { addEnterKeyListeners, addSendItemToChatListeners } from "../shared/listeners";
 
 const SIDEBARS = [
     {
@@ -121,7 +118,16 @@ abstract class PF2eHudSidebar extends foundry.applications.api
      */
     get virtualHeight() {
         const scrollElement = this.scrollElement;
-        return scrollElement?.scrollHeight ?? 0;
+        const elementStyle = getComputedStyle(this.element);
+        const innerStyle = getComputedStyle(this.innerElement);
+        return (
+            (scrollElement?.scrollHeight ?? 0) +
+            parseFloat(elementStyle.paddingTop) +
+            parseFloat(elementStyle.paddingBottom) +
+            parseInt(innerStyle.borderTopWidth) +
+            parseInt(innerStyle.borderBottomWidth) +
+            4
+        );
     }
 
     /**
@@ -129,13 +135,8 @@ abstract class PF2eHudSidebar extends foundry.applications.api
      */
     get maxHeight() {
         const { limits } = this.parenHUD.anchor;
-        const style = getComputedStyle(this.element);
-        const paddingTop = parseFloat(style.paddingTop);
-        const paddingBottom = parseFloat(style.paddingBottom);
         const allottedHeight = (limits?.bottom ?? window.innerHeight) - (limits?.top ?? 0);
-        return (
-            (allottedHeight - paddingTop - paddingBottom) * (this.getSetting("sidebarHeight") / 100)
-        );
+        return allottedHeight * (this.getSetting("sidebarHeight") / 100);
     }
 
     abstract _activateListeners(html: HTMLElement): void;
@@ -248,11 +249,12 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
     _onRender(context: ApplicationRenderContext, options: SidebarRenderOptions) {
         const innerElement = this.innerElement;
+        const multiColumns = this.getSetting("multiColumns");
 
-        if (this.getSetting("multiColumns")) {
+        if (multiColumns > 1) {
             const maxHeight = this.maxHeight;
             const virtualHeight = this.virtualHeight;
-            const columns = Math.clamp(Math.ceil(virtualHeight / maxHeight), 1, 3);
+            const columns = Math.clamp(Math.ceil(virtualHeight / maxHeight), 1, multiColumns);
 
             if (columns > 1) {
                 innerElement.style.setProperty("--nb-columns", String(columns));
@@ -325,14 +327,14 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         addDragoverListener(this.element);
         addSendItemToChatListeners(this.actor, html);
 
-        addListenerAll(html, "[data-action='item-description']", (event, el) => {
+        addListenerAll(html, "[data-action='item-description']", async (event, el) => {
             const actor = this.actor;
-            const item = getItemFromElement(actor, el);
+            const item = await getItemFromElement(actor, el);
             if (!isOwnedItem(item)) return;
             new PF2eHudItemPopup({ actor, item, event }).render(true);
         });
 
-        addListenerAll(html, "[data-action='toggle-roll-option']", "change", (event, el) => {
+        addListenerAll(html, ".option-toggle", "change", (event, el) => {
             const toggleRow = htmlClosest(el, "[data-item-id][data-domain][data-option]");
             const checkbox = htmlQuery<HTMLInputElement>(
                 toggleRow,
@@ -415,7 +417,7 @@ type SidebarMenu = {
 type SidebarSettings = {
     sidebarFontSize: number;
     sidebarHeight: number;
-    multiColumns: boolean;
+    multiColumns: number;
 };
 
 export { PF2eHudSidebar, getSidebars };

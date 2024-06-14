@@ -1,4 +1,4 @@
-import { settingPath, templatePath } from "module-api";
+import { settingPath, templatePath } from "foundry-pf2e";
 import { PF2eHudSidebarActions } from "../sidebar/actions";
 import { PF2eHudSidebar, SidebarEvent, SidebarName } from "../sidebar/base";
 import { PF2eHudSidebarExtras } from "../sidebar/extras";
@@ -66,9 +66,14 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
                 },
                 {
                     key: "multiColumns",
-                    type: Boolean,
-                    default: true,
+                    type: Number,
+                    default: 3,
                     scope: "client",
+                    range: {
+                        min: 1,
+                        max: 5,
+                        step: 1,
+                    },
                     name: settingPath("shared.multiColumns.name"),
                     hint: settingPath("shared.multiColumns.hint"),
                     onChange: () => {
