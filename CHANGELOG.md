@@ -1,3 +1,21 @@
+# 0.6.0
+
+-   this release requires `PF2e Toolbelt` to be updated to version `2.7.3` if used on your world
+-   the module and its package dependency received a complet refactor
+-   the `Use Modifiers` and `Show Highest Speed` settings are now global instead of per HUD
+-   `Multi Columns Sidebars` settings now accept a value instead of just on/off
+    -   sidebars can now have up to 5 columns
+    -   the module still decides whenever a new column needs to be created
+-   `Persistent HUD`:
+    -   added a new `Disable Flash` setting
+-   `Popup`:
+    -   the popup can now be minimize and resized
+    -   added a new `Popup on Cursor` setting to center the popup on the cusrsor when first rendered
+    -   `@Damage` and `@Check` links aren't usable yet, the system has [plans](https://github.com/foundryvtt/pf2e/pull/15009) for those
+-   `Sidebar`:
+    -   sidebars are now planned to be shared between both the `Token HUD` and `Persistent HUD`
+    -   implemented the `actions` sidebar (fully functional)
+
 # 0.5.0
 
 -   `Combat Tracker`
