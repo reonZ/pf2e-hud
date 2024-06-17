@@ -295,7 +295,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             button: HTMLElement,
             readyOnly = false
         ): T | null => {
-            const actionIndex = Number(htmlClosest(button, "[data-index]")?.dataset.index ?? "NaN");
+            const actionIndex = Number(htmlClosest(button, ".item")?.dataset.index ?? "NaN");
             const rootAction = this.actor.system.actions?.at(actionIndex) ?? null;
             const altUsage = tupleHasValue(["thrown", "melee"], button?.dataset.altUsage)
                 ? button?.dataset.altUsage
