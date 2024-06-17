@@ -9,6 +9,10 @@
                 "name": "Use Modifiers",
                 "hint": "Display modifiers instead of the difficulty value in the different HUD elements."
             },
+            "popupOnCursor": {
+                "name": "Popup on Cursor",
+                "hint": "The module popup will be centered on the position of the cursor when it is first rendered (instead of showing up in the center of the viewport)."
+            },
             "shared": {
                 "enabled": {
                     "name": "Enabled",
@@ -28,7 +32,7 @@
                 },
                 "multiColumns": {
                     "name": "Multi Columns Sidebars",
-                    "hint": "When a sidebar's height is bigger than its max-height, it will be split into 2 or 3 columns."
+                    "hint": "When a sidebar's height is bigger than its max-height, it will be split into up to x columns."
                 }
             },
             "tooltip": {
@@ -190,7 +194,9 @@
                 "reach": "Reach {reach} ft.",
                 "thrown": "Thrown {increment}/{max} ft.",
                 "ranged": "Range {max} ft.",
-                "rangedWithIncrement": "Range {increment}/{max} ft."
+                "rangedWithIncrement": "Range {increment}/{max} ft.",
+                "blasts": "Elemental Blasts",
+                "stances": "Stances"
             },
             "items": {
                 "title": "Inventory"

@@ -46,6 +46,13 @@ Hooks.once("setup", () => {
         },
     });
 
+    registerSetting({
+        key: "popupOnCursor",
+        type: Boolean,
+        default: true,
+        scope: "client",
+    });
+
     for (const hud of huds) {
         const currentOffset = settings.length;
         const orphanSettings: SettingOptions[] = [];

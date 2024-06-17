@@ -1,3 +1,4 @@
+import { getSetting } from "foundry-pf2e";
 import { addDragoverListener } from "../shared/advanced";
 
 abstract class PF2eHudPopup<TConfig extends PopupConfig> extends foundry.applications.api
@@ -13,7 +14,7 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig> extends foundry.applica
         id: "pf2e-hud-popup-{id}",
         window: {
             positioned: true,
-            resizable: false,
+            resizable: true,
             minimizable: true,
             frame: true,
         },
@@ -31,15 +32,15 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig> extends foundry.applica
         return this.config.event;
     }
 
-    abstract _activateListeners(html: HTMLElement): void;
-
     _replaceHTML(result: HTMLElement, content: HTMLElement, options: ApplicationRenderOptions) {
         content.replaceChildren(result);
         this.#activateListeners(result);
-        this._activateListeners(result);
+        this._activateListeners?.(result);
     }
 
     _onFirstRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
+        if (!getSetting("popupOnCursor")) return;
+
         const event = this.event;
         const bounds = this.element.getBoundingClientRect();
 
@@ -57,6 +58,10 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig> extends foundry.applica
         // InlineRollLinks.listen(description, item);
         addDragoverListener(this.element);
     }
+}
+
+interface PF2eHudPopup<TConfig extends PopupConfig> extends foundry.applications.api.ApplicationV2 {
+    _activateListeners?(html: HTMLElement): void;
 }
 
 type PopupConfig = {
