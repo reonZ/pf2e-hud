@@ -24,7 +24,12 @@ const SIDEBARS = [
     {
         type: "actions",
         icon: "fa-solid fa-sword",
-        disabled: (actor: ActorPF2e) => false,
+        disabled: (actor: ActorPF2e) => {
+            if (!actor.isOfType("character")) {
+                return !actor.system.actions?.length && !actor.itemTypes.action.length;
+            }
+            return false;
+        },
     },
     {
         type: "items",
