@@ -26,16 +26,7 @@ class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
         return castRank ? (Number(castRank) as ZeroToTen) : undefined;
     }
 
-    async _prepareContext(options: ApplicationRenderOptions): Promise<ItemPopupContext> {
-        const data: ItemPopupContext = {};
-
-        return data;
-    }
-
-    async _renderHTML(
-        context: ItemPopupContext,
-        options: ApplicationRenderOptions
-    ): Promise<HTMLElement> {
+    async _renderHTML(context: never, options: ApplicationRenderOptions): Promise<HTMLElement> {
         const item = this.item;
         const actor = this.actor;
         const dataset = this.dataset;
@@ -65,8 +56,6 @@ class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
         }
     }
 }
-
-type ItemPopupContext = {};
 
 type ItemPopupConfig = PopupConfig & {
     item: ItemPF2e<ActorPF2e>;

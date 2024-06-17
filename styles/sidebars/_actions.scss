@@ -1,0 +1,144 @@
+#pf2e-hud-sidebar .inner.actions {
+    --max-column-width: 18.5em;
+    --attack-background: #171f693d;
+    --attack-border-color: #353d83;
+    --damage-background: #5e000052;
+    --damage-border-color: #5d3232;
+    --category-width: 1.4em;
+
+    header {
+        .controls {
+            font-size: 0.9em;
+        }
+    }
+
+    .item {
+        .category {
+            display: flex;
+            width: var(--category-width);
+            justify-content: center;
+
+            img {
+                filter: invert(0.8);
+                border: none;
+                height: 1.35em;
+                margin-bottom: -0.2em;
+            }
+
+            i {
+                font-size: 0.95em;
+            }
+        }
+
+        .hands-occupied {
+            font-style: italic;
+            font-size: 0.9em;
+            padding-left: 0.3em;
+            color: var(--color-disabled);
+        }
+
+        .variants {
+            &.controls {
+                margin-left: calc(var(--category-width) + var(--variant-gap));
+            }
+        }
+
+        .variant {
+            cursor: pointer;
+
+            select {
+                color: inherit;
+                border: 0;
+                height: 100%;
+                background: none;
+
+                &:focus {
+                    outline: none;
+                    box-shadow: none;
+                }
+            }
+
+            .magazine {
+                font-family: var(--sans-serif);
+                font-weight: 600;
+                display: flex;
+                line-height: 1.4;
+                gap: var(--variant-gap);
+
+                .icon {
+                    display: inline-block;
+                    width: 1.6em;
+                    height: 100%;
+                    background-image: url(../../../systems/pf2e/assets/icons/heavy-bullets.svg);
+                    background-size: 80%;
+                    filter: invert(0.8);
+                    background-repeat: no-repeat;
+                    background-position-x: center;
+                    font-size: 0.8em;
+                    margin-left: -0.4em;
+                }
+            }
+
+            &.attack {
+                background: var(--attack-background);
+                border-color: var(--attack-border-color);
+            }
+
+            &.damage {
+                background: var(--damage-background);
+                border-color: var(--damage-border-color);
+            }
+
+            &.ammo {
+                display: flex;
+            }
+        }
+
+        .versatiles {
+            display: flex;
+            gap: var(--variant-gap);
+
+            .variant {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                &.selected {
+                    cursor: default;
+                    background: #e7e2e2;
+                    color: #424242;
+                    box-shadow: inset 0 0 3px 1px black;
+                    border: 0;
+
+                    i {
+                        margin-bottom: -0.05em;
+                    }
+                }
+            }
+        }
+
+        .controls {
+            [data-action="toggle-stance"] {
+                font-size: 1.1em;
+
+                &.disabled {
+                    cursor: default;
+                    pointer-events: all;
+                }
+            }
+
+            > a:not([data-action="toggle-stance"]) {
+                margin-bottom: -0.1em;
+                font-size: 0.9em;
+            }
+        }
+
+        &.attack {
+            flex-direction: column;
+        }
+
+        &.hidden {
+            display: none;
+        }
+    }
+}

@@ -11,7 +11,9 @@ $panel-gap: 5px;
     --input-equivalent-width: 2.2em;
     --input-background: rgb(255 255 255 / 8%);
     --icon-width: 1.4em;
-    --color: var(--color-text-light-highlight);
+    --color: #f1f1f1;
+    --color-alt: #cbcbc3;
+    --color-highlight: #ffffff;
     --color-active: #db2828;
     --color-disabled: var(--color-text-dark-5);
     --inline-gap: 0.2em;
@@ -22,6 +24,7 @@ $panel-gap: 5px;
     --panel-padding-block: 0.2em;
     --panel-padding-inline: 0.3em;
     --interface-margin: var(--panel-gap);
+    --hr-spacing: 0;
 
     &.app,
     .app {
@@ -72,6 +75,10 @@ $panel-gap: 5px;
     a {
         &.disabled {
             pointer-events: none;
+
+            &:hover {
+                text-shadow: none;
+            }
         }
     }
 
@@ -81,7 +88,7 @@ $panel-gap: 5px;
     }
 
     hr {
-        margin: 0;
+        margin: var(--hr-spacing);
         border-bottom: 0;
         border-color: var(--hr-color);
     }

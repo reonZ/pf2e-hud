@@ -1,14 +1,4 @@
 #pf2e-hud-sidebar .inner.spells {
-    header {
-        position: relative;
-
-        [data-section="focus-points"] {
-            position: absolute;
-            right: 0.2em;
-            top: 0;
-        }
-    }
-
     .item {
         .details {
             .extras {

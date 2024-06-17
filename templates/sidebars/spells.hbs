@@ -3,7 +3,7 @@
 <header>
     <div class="name">{{localize (lookup @root.labels rank)}}</div>
     {{#if (or (eq rank 12) (and (eq rank 0) @root.hasFocusCantrip))}}
-    <div data-section="focus-points" data-tooltip="PF2E.Focus.label">
+    <div class="controls" data-section="focus-points" data-tooltip="PF2E.Focus.label">
         {{> (@root.partial 'slider') entry=@root.focusPool action="focus"}}
     </div>
     {{/if}}

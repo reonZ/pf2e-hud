@@ -12,6 +12,14 @@
     --color-rarity-uncommon: #cb8470;
     --color-rarity-rare: #5996f7;
     --color-rarity-unique: #d05fff;
+    --variant-background: #ffffff09;
+    --variant-border: 1px solid #ffffff24;
+    --variant-color: #e3e3e3;
+    --variant-gap: 0.1em;
+    --toggle-margin-left: 0.5em;
+    --chat-icon-size: 1.6em;
+    --action-img-background: #ffffff7a;
+    --action-highlight: rgb(255 255 255 / 7%);
 
     position: absolute;
     padding: var(--outer-padding);
@@ -37,7 +45,6 @@
         min-height: 4em;
         max-width: calc(100vw - var(--outer-padding) * 2);
         max-height: min(100vh - var(--outer-padding) * 2, var(--max-height));
-        // overflow: hidden;
 
         display: flex;
         flex-direction: column;
@@ -96,12 +103,12 @@
         display: flex;
         flex-wrap: wrap;
         width: 100%;
+        margin-bottom: 0.3em;
 
         label {
             display: flex;
             align-items: center;
             gap: 0.3em;
-            margin-bottom: 0.3em;
 
             input[type="checkbox"] {
                 height: 1.1em;
@@ -121,22 +128,30 @@
         }
 
         select {
-            --margin: 0.5em;
-
-            margin-left: var(--margin);
-            max-width: calc(100% - var(--margin));
+            margin-left: var(--toggle-margin-left);
+            max-width: calc(100% - var(--toggle-margin-left));
+            height: 1.4em;
         }
     }
 
     header {
+        position: relative;
         background: var(--header-background);
         border: var(--header-border);
         border-left: 0;
         border-right: 0;
-        height: 1.4em;
+        padding-block: 0.2em;
 
         .name {
             text-align: center;
+        }
+
+        .controls {
+            position: absolute;
+            inset: 0 0.2em 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 0.3em;
         }
 
         &:not(:first-of-type) {
@@ -146,16 +161,47 @@
 
     .item {
         display: flex;
-        height: 2.5em;
         max-width: var(--max-column-width);
-        gap: var(--item-gap);
         margin-top: var(--item-spacing);
+
+        &:has(.image) {
+            height: 2.5em;
+            gap: var(--item-gap);
+        }
+
+        &.action {
+            --image-border-color: transparent;
+            --name-background: transparent;
+            --chat-icon-size: 1em;
+
+            height: 1.5em;
+            align-items: center;
+
+            .image {
+                img {
+                    background: var(--action-img-background);
+                }
+            }
+
+            .name {
+                flex: 1;
+            }
+
+            .controls {
+                display: flex;
+                align-items: center;
+                gap: 0.2em;
+            }
+
+            &:hover {
+                background: var(--action-highlight);
+            }
+        }
 
         .image {
             position: relative;
             height: 100%;
             aspect-ratio: 1 / 1;
-            background: #ffffff2b;
             border: 1px solid var(--image-border-color);
             border-radius: 4px;
             cursor: pointer;
@@ -171,7 +217,7 @@
                 position: absolute;
 
                 &.chat {
-                    font-size: 1.6em;
+                    font-size: var(--chat-icon-size);
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -209,25 +255,6 @@
             flex-direction: column;
             justify-content: space-between;
 
-            .name {
-                background-color: var(--name-background);
-                padding-inline: 0.2em;
-
-                [data-action="item-description"] {
-                    &.rarity-uncommon {
-                        color: var(--color-rarity-uncommon);
-                    }
-
-                    &.rarity-rare {
-                        color: var(--color-rarity-rare);
-                    }
-
-                    &.rarity-unique {
-                        color: var(--color-rarity-unique);
-                    }
-                }
-            }
-
             .extras {
                 display: flex;
                 justify-content: space-between;
@@ -236,11 +263,50 @@
                 font-size: 0.9em;
             }
         }
-    }
 
-    .variants {
-        display: flex;
-        flex-wrap: wrap;
+        .name {
+            background-color: var(--name-background);
+            padding-inline: 0.2em;
+
+            [data-action="item-description"] {
+                &.rarity-uncommon {
+                    color: var(--color-rarity-uncommon);
+                }
+
+                &.rarity-rare {
+                    color: var(--color-rarity-rare);
+                }
+
+                &.rarity-unique {
+                    color: var(--color-rarity-unique);
+                }
+            }
+        }
+
+        .variants {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--variant-gap);
+            font-size: 0.85em;
+            color: var(--variant-color);
+
+            .variant {
+                height: calc(var(--font-size) * 1.2);
+                border-radius: 2px;
+                border: var(--variant-border);
+                background: var(--variant-background);
+                padding-inline: 0.1em;
+
+                &:not(:empty) {
+                    margin-top: var(--item-gap);
+                }
+
+                &:hover {
+                    color: var(--color-highlight);
+                }
+            }
+        }
     }
 
     *:has(> .name) {
