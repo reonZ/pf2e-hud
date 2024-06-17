@@ -19,7 +19,7 @@
         "typescript": "5.3.3"
     },
     "dependencies": {
-        "module-api": "file:../../../../dev/module-api",
+        "foundry-pf2e": "file:../../../../dev/foundry-pf2e",
         "sortablejs": "^1.15.2"
     }
 }

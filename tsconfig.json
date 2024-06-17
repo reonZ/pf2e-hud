@@ -15,7 +15,7 @@
         "strictPropertyInitialization": true,
         "strictBindCallApply": true,
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
-        "types": ["module-api", "@types/sortablejs"],
+        "types": ["foundry-pf2e", "@types/sortablejs"],
         "rootDir": "src",
         "outDir": "scripts"
     },
