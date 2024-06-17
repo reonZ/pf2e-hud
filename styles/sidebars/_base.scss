@@ -302,8 +302,12 @@
                     margin-top: var(--item-gap);
                 }
 
-                &:hover {
-                    color: var(--color-highlight);
+                &[data-action] {
+                    cursor: pointer;
+
+                    &:hover {
+                        color: var(--color-highlight);
+                    }
                 }
             }
         }
