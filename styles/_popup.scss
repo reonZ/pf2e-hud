@@ -1,5 +1,7 @@
 [id^="pf2e-hud-popup-"] {
     --header-height: 2em;
+    --link-background: #0000001c;
+    --color-text-dark-improved: #11d393;
 
     position: absolute;
     max-width: 40em;
@@ -13,15 +15,29 @@
 
     .window-content {
         padding: 0;
+        color: var(--color);
+
+        hr {
+            margin: revert;
+            height: 1px;
+        }
     }
 
     .item-summary {
         padding: 0 0.5em 0.5em;
 
-        .tags > .tag.light {
-            --tag-color: var(--color-text-dark-2);
+        .level {
+            display: none;
+        }
 
-            background: #ffffffd1;
+        .tags {
+            padding: 0;
+
+            > .tag.light {
+                --tag-color: var(--color-text-dark-2);
+
+                background: #ffffffd1;
+            }
         }
 
         .button-group {
@@ -30,11 +46,40 @@
             gap: var(--space-6);
             justify-content: center;
             flex-direction: column;
+
+            button {
+                color: var(--color);
+            }
         }
 
-        a.content-link i,
-        a.inline-roll i {
-            color: unset;
+        [data-visibility="gm"] {
+            border-radius: 0;
+            background: none;
+            outline: 1px dotted rgb(255 255 255 / 44%);
+            line-height: 1.1;
         }
+
+        a.content-link,
+        a.inline-roll,
+        a.inline-check {
+            padding: 0 0.2em 0 0;
+            background: var(--color-cool-5-50);
+
+            i {
+                color: unset;
+            }
+        }
+
+        a.inline-check {
+            color: var(--color-alt);
+        }
+
+        p:last-of-type:empty {
+            min-height: 0;
+        }
+    }
+
+    .text-content {
+        padding-inline: 0.5em;
     }
 }
