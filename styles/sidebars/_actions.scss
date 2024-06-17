@@ -90,6 +90,17 @@
             &.ammo {
                 display: flex;
             }
+
+            &.extra {
+                background: var(--variant-background-reversed);
+                color: var(--color-reversed);
+                box-shadow: inset 0 0 2px 0px #5f5d5d;
+                padding-inline-start: 0.2em;
+            }
+
+            &.info {
+                cursor: help;
+            }
         }
 
         .versatiles {

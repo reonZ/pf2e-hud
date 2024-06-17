@@ -75,12 +75,12 @@
     {{#if (or strike.traits.length strike.additionalEffects.length)}}
     <div class="variants">
         {{#each strike.traits as |trait|}}
-        <div class="variant info" data-action="trait-description" data-index="{{@index}}">
+        <div class="variant info" data-tooltip="{{trait.description}}" data-tooltip-class="pf2e">
             {{trait.label}}
         </div>
         {{/each}}
         {{#each strike.additionalEffects as |trait|}}
-        <div class="variant">
+        <div class="variant extra">
             {{localize trait.label}}
         </div>
         {{/each}}
