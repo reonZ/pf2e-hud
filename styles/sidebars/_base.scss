@@ -21,7 +21,7 @@
     --chat-icon-size: 1.6em;
     --action-img-background: #ffffff7a;
     --action-highlight: rgb(255 255 255 / 7%);
-    --arrow-color: rgb(37 36 36);
+    --arrow-color: rgb(47 47 47);
 
     position: absolute;
     padding: var(--outer-padding);
@@ -46,7 +46,7 @@
         min-width: 12em;
         min-height: 4em;
         max-width: calc(100vw - var(--outer-padding) * 2);
-        max-height: min(100vh - var(--outer-padding) * 2, var(--max-height));
+        max-height: calc(min(100vh, var(--max-height)) - var(--outer-padding) * 2);
 
         display: flex;
         flex-direction: column;
