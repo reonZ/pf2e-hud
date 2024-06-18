@@ -1,7 +1,17 @@
+# 0.7.0
+
+-   added support for `Persisten HUD` sidebars
+-   added trait description tooltips to NPCs strikes
+-   tweaked the multi-columns logic to try to avoid useless scrollbars
+-   heavily distinguish NPCs ability related strike traits from other strike traits
+-   disable the `actions` sidebar icon for non-character actors that don't have any action
+-   the selected persistent actor is now saved in a user flag instead of client setting (this shouldn't be cross-world)
+-   fixed NPCs ability related strike traits not always being localized
+
 # 0.6.0
 
 -   this release requires `PF2e Toolbelt` to be updated to version `2.7.3` if used on your world
--   the module and its package dependency received a complet refactor
+-   the module and its package dependency received a complete refactor
 -   the `Use Modifiers` and `Show Highest Speed` settings are now global instead of per HUD
 -   `Multi Columns Sidebars` settings now accept a value instead of just on/off
     -   sidebars can now have up to 5 columns
@@ -10,7 +20,7 @@
     -   added a new `Disable Flash` setting
 -   `Popup`:
     -   the popup can now be minimize and resized
-    -   added a new `Popup on Cursor` setting to center the popup on the cusrsor when first rendered
+    -   added a new `Popup on Cursor` setting to center the popup on the cursor when first rendered
     -   `@Damage` and `@Check` links aren't usable yet, the system has [plans](https://github.com/foundryvtt/pf2e/pull/15009) for those
 -   `Sidebar`:
     -   sidebars are now planned to be shared between both the `Token HUD` and `Persistent HUD`
