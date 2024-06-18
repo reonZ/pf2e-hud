@@ -1,5 +1,19 @@
 {
     "pf2e-hud": {
+        "keybindings": {
+            "persistent": {
+                "setActor": {
+                    "name": "Set Persistent Actor",
+                    "hint": "Set the selected token's actor as persistent."
+                }
+            },
+            "tracker": {
+                "toggle": {
+                    "name": "Toggle Tracker Menu",
+                    "hint": "Toggle the combat tracker menu to show additional options."
+                }
+            }
+        },
         "settings": {
             "highestSpeed": {
                 "name": "Show Highest Speed",
@@ -169,7 +183,7 @@
             "menu": {
                 "openSheet": "Open Sheet",
                 "setActor": "Set selected token as persistent actor",
-                "unsetActor": "Uset persistent actor",
+                "unsetActor": "Unset persistent actor",
                 "clean": {
                     "always": "Always show UI on portrait",
                     "hover": "Only show UI when hovering the portrait"
