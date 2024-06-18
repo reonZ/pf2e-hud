@@ -110,32 +110,6 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         return htmlQuery(this.innerElement, ".item-list");
     }
 
-    /**
-     * total height if there was overflow allowed
-     */
-    get virtualHeight() {
-        const scrollElement = this.scrollElement;
-        const elementStyle = getComputedStyle(this.element);
-        const innerStyle = getComputedStyle(this.innerElement);
-        return (
-            (scrollElement?.scrollHeight ?? 0) +
-            parseFloat(elementStyle.paddingTop) +
-            parseFloat(elementStyle.paddingBottom) +
-            parseInt(innerStyle.borderTopWidth) +
-            parseInt(innerStyle.borderBottomWidth) +
-            4
-        );
-    }
-
-    /**
-     * max height limited by the parent hud allotted bounds
-     */
-    get maxHeight() {
-        const { limits } = this.parentHUD.anchor;
-        const allottedHeight = (limits?.bottom ?? window.innerHeight) - (limits?.top ?? 0);
-        return allottedHeight * (this.getSetting("sidebarHeight") / 100);
-    }
-
     abstract _activateListeners(html: HTMLElement): void;
 
     async _preFirstRender(
@@ -244,8 +218,8 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         const multiColumns = this.getSetting("multiColumns");
 
         if (multiColumns > 1) {
-            const maxHeight = this.maxHeight;
-            const virtualHeight = this.virtualHeight;
+            const maxHeight = this.getMaxHeight(true);
+            const virtualHeight = (this.scrollElement?.scrollHeight ?? 0) + 8;
             const columns = Math.clamp(Math.ceil(virtualHeight / maxHeight), 1, multiColumns);
 
             if (columns > 1) {
@@ -263,7 +237,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         if (!element) return position;
 
         const anchor = this.parentHUD.anchor;
-        const maxHeight = this.maxHeight;
+        const maxHeight = this.getMaxHeight();
         const bounds = element.getBoundingClientRect();
         const center: Point = { x: anchor.x, y: anchor.y };
         const limits = {
@@ -297,6 +271,27 @@ abstract class PF2eHudSidebar extends foundry.applications.api
     async close(options: ApplicationClosingOptions = {}): Promise<this> {
         options.animate = false;
         return super.close(options);
+    }
+
+    getMaxHeight(inner?: boolean) {
+        const { limits } = this.parentHUD.anchor;
+        const allottedHeight = (limits?.bottom ?? window.innerHeight) - (limits?.top ?? 0);
+        const maxHeight = allottedHeight * (this.getSetting("sidebarHeight") / 100);
+
+        if (inner) {
+            const elementStyle = getComputedStyle(this.element);
+            const innerStyle = getComputedStyle(this.innerElement);
+
+            return (
+                maxHeight -
+                parseFloat(elementStyle.paddingTop) -
+                parseFloat(elementStyle.paddingBottom) -
+                parseInt(innerStyle.borderTopWidth) -
+                parseInt(innerStyle.borderBottomWidth)
+            );
+        }
+
+        return maxHeight;
     }
 
     getSetting<K extends keyof SidebarSettings & string>(key: K): SidebarSettings[K];
