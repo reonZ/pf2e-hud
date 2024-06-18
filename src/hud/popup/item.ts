@@ -18,11 +18,11 @@ class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
     }
 
     get dataset() {
-        return htmlClosest(this.event.target, ".item[data-item-id]")!.dataset;
+        return htmlClosest(this.event.target, ".item[data-item-id]")?.dataset;
     }
 
     get castRank() {
-        const castRank = this.dataset.castRank;
+        const castRank = this.dataset?.castRank;
         return castRank ? (Number(castRank) as ZeroToTen) : undefined;
     }
 
