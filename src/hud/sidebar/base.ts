@@ -94,12 +94,12 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         return ["item_image"];
     }
 
-    get parenHUD() {
+    get parentHUD() {
         return this.#parentHud;
     }
 
     get actor() {
-        return this.parenHUD.actor!;
+        return this.parentHUD.actor!;
     }
 
     get innerElement() {
@@ -108,14 +108,6 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
     get scrollElement() {
         return htmlQuery(this.innerElement, ".item-list");
-    }
-
-    get itemElements() {
-        return this.innerElement.querySelectorAll<HTMLElement>(".item[data-item-id]");
-    }
-
-    get sidebars() {
-        return htmlQuery(this.innerElement, ":scope > .sidebars");
     }
 
     /**
@@ -139,7 +131,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
      * max height limited by the parent hud allotted bounds
      */
     get maxHeight() {
-        const { limits } = this.parenHUD.anchor;
+        const { limits } = this.parentHUD.anchor;
         const allottedHeight = (limits?.bottom ?? window.innerHeight) - (limits?.top ?? 0);
         return allottedHeight * (this.getSetting("sidebarHeight") / 100);
     }
@@ -183,18 +175,13 @@ abstract class PF2eHudSidebar extends foundry.applications.api
             innerHTML: sidebarTemplate,
         });
 
-        const sidebarsElement = createHTMLElement("div", {
-            classes: ["sidebars"],
-            innerHTML: await render("partials/sidebars", {
-                sidebars: getSidebars(this.actor, this.key),
-            }),
+        const innerElement = createHTMLElement("div", {
+            classes: ["inner", this.key, this.parentHUD.key],
+            dataset: { tooltipDirection: "UP", sidebar: this.key },
+            children: [listElement],
         });
 
-        const innerElement = createHTMLElement("div", {
-            classes: ["inner", this.key, this.parenHUD.key],
-            dataset: { tooltipDirection: "UP", sidebar: this.key },
-            children: [sidebarsElement, listElement],
-        });
+        await this.parentHUD._renderSidebarHTML?.(innerElement, this.key);
 
         const placement = ROLLOPTIONS_PLACEMENT[this.key];
         if (placement) {
@@ -268,46 +255,37 @@ abstract class PF2eHudSidebar extends foundry.applications.api
             }
         }
 
-        const sidebars = this.sidebars;
-        sidebars?.classList.toggle("bottom", innerElement.offsetHeight < sidebars.offsetHeight);
-
-        for (const itemElement of this.itemElements) {
-            const nameElement = itemElement.querySelector<HTMLElement>(".name");
-            if (nameElement && nameElement.scrollWidth > nameElement.offsetWidth) {
-                nameElement.dataset.tooltip = nameElement.innerHTML.trim();
-            }
-        }
+        this.parentHUD._onRenderSidebar?.(innerElement);
     }
 
     _updatePosition(position = {} as ApplicationPosition) {
         const element = this.element;
         if (!element) return position;
 
-        const anchor = this.parenHUD.anchor;
+        const anchor = this.parentHUD.anchor;
         const maxHeight = this.maxHeight;
         const bounds = element.getBoundingClientRect();
         const center: Point = { x: anchor.x, y: anchor.y };
-        const limitRight = anchor.limits?.right ?? window.innerWidth;
-        const limitBottom = anchor.limits?.bottom ?? window.innerHeight;
+        const limits = {
+            right: anchor.limits?.right ?? window.innerWidth,
+            bottom: anchor.limits?.bottom ?? window.innerHeight,
+        };
 
         position.left = center.x - bounds.width / 2;
         position.top = center.y - bounds.height / 2;
 
-        if (position.left + bounds.width > limitRight) position.left = limitRight - bounds.width;
+        if (position.left + bounds.width > limits.right)
+            position.left = limits.right - bounds.width;
         if (position.left < 0) position.left = 0;
-        if (position.top + bounds.height > limitBottom) position.top = limitBottom - bounds.height;
+        if (position.top + bounds.height > limits.bottom)
+            position.top = limits.bottom - bounds.height;
         if (position.top < 0) position.top = 0;
 
         element.style.setProperty("left", `${position.left}px`);
         element.style.setProperty("top", `${position.top}px`);
         element.style.setProperty("--max-height", `${maxHeight}px`);
 
-        if (center.x <= 0 || center.x >= limitRight || center.y <= 0 || center.y >= limitBottom) {
-            element.style.setProperty("display", "none");
-            return position;
-        } else {
-            element.style.removeProperty("display");
-        }
+        this.parentHUD._updateSidebarPosition?.(element, center, limits);
 
         return position;
     }
@@ -324,7 +302,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
     getSetting<K extends keyof SidebarSettings & string>(key: K): SidebarSettings[K];
     getSetting<K extends keyof GlobalSettings & string>(key: K): GlobalSettings[K];
     getSetting<K extends (keyof SidebarSettings | keyof GlobalSettings) & string>(key: K) {
-        return this.parenHUD.getSetting(key as any);
+        return this.parentHUD.getSetting(key as any);
     }
 
     #activateListeners(html: HTMLElement) {
@@ -365,7 +343,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
         addListenerAll(html, "[data-action='open-sidebar']", (event, el) => {
             const sidebar = el.dataset.sidebar as SidebarName;
-            this.parenHUD.toggleSidebar(sidebar);
+            this.parentHUD.toggleSidebar(sidebar);
         });
 
         addListenerAll(

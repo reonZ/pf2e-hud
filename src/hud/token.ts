@@ -1,16 +1,27 @@
 import {
-    BaseTokenContext,
-    BaseTokenRenderOptions,
-    BaseTokenSettings,
-    PF2eHudBaseToken,
-} from "./base/token";
+    R,
+    createHTMLElement,
+    createHook,
+    htmlQuery,
+    libWrapper,
+    registerWrapper,
+    render,
+} from "foundry-pf2e";
+import { hud } from "../main";
 import {
     AdvancedHudAnchor,
     AdvancedHudEvent,
     CLOSE_SETTINGS,
     CloseSetting,
+    addSidebarsListeners,
     makeAdvancedHUD,
 } from "./base/advanced";
+import {
+    BaseTokenContext,
+    BaseTokenRenderOptions,
+    BaseTokenSettings,
+    PF2eHudBaseToken,
+} from "./base/token";
 import {
     StatsAdvanced,
     StatsHeaderExtras,
@@ -18,17 +29,8 @@ import {
     getStatsHeaderExtras,
 } from "./shared/advanced";
 import { StatsHeader, getStatsHeader } from "./shared/base";
-import { SidebarMenu, SidebarName, SidebarSettings, getSidebars } from "./sidebar/base";
-import { hud } from "../main";
-import {
-    R,
-    addListenerAll,
-    createHTMLElement,
-    createHook,
-    libWrapper,
-    registerWrapper,
-} from "foundry-pf2e";
 import { addStatsAdvancedListeners, addStatsHeaderListeners } from "./shared/listeners";
+import { SidebarMenu, SidebarName, SidebarSettings, getSidebars } from "./sidebar/base";
 
 const CLOSE_OPTIONS = ["never", "sidebar", "all"] as const;
 const CLOSE_CHOICES = R.mapToObj(CLOSE_OPTIONS, (option) => [
@@ -105,7 +107,7 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
         ]);
     }
 
-    get key() {
+    get key(): "token" {
         return "token";
     }
 
@@ -127,6 +129,10 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
             x: bounds.x + bounds.width / 2,
             y: bounds.y + bounds.height / 2,
         };
+    }
+
+    get sidebars() {
+        return this.mainElement?.querySelector<HTMLElement>(".panel.bottom") ?? null;
     }
 
     _onEnable() {
@@ -181,14 +187,6 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
             },
             "WRAPPER"
         );
-
-        Hooks.on("renderTokenHUD", () => {
-            this.close();
-        });
-
-        Hooks.on("renderActorSheet", (sheet: ActorSheetPF2e) => {
-            if (this.isCurrentActor(sheet.actor)) this.close();
-        });
     }
 
     _onSetToken(token: TokenPF2e | null): void {
@@ -318,6 +316,42 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
         return position;
     }
 
+    async _renderSidebarHTML(innerElement: HTMLElement, sidebar: SidebarName) {
+        const sidebarsElement = createHTMLElement("div", {
+            classes: ["sidebars"],
+            innerHTML: await render("partials/sidebars", {
+                sidebars: getSidebars(this.actor, sidebar),
+            }),
+        });
+
+        innerElement.prepend(sidebarsElement);
+    }
+
+    _onRenderSidebar(innerElement: HTMLElement) {
+        const sidebars = htmlQuery(innerElement, ":scope > .sidebars");
+        sidebars?.classList.toggle("bottom", innerElement.offsetHeight < sidebars.offsetHeight);
+
+        const itemElements = innerElement.querySelectorAll<HTMLElement>(".item[data-item-id]");
+        for (const itemElement of itemElements) {
+            const nameElement = itemElement.querySelector<HTMLElement>(".name");
+            if (nameElement && nameElement.scrollWidth > nameElement.offsetWidth) {
+                nameElement.dataset.tooltip = nameElement.innerHTML.trim();
+            }
+        }
+    }
+
+    _updateSidebarPosition(
+        element: HTMLElement,
+        center: Point,
+        { bottom, right }: { right: number; bottom: number }
+    ) {
+        if (center.x <= 0 || center.x >= right || center.y <= 0 || center.y >= bottom) {
+            element.style.setProperty("display", "none");
+        } else {
+            element.style.removeProperty("display");
+        }
+    }
+
     setToken(token: TokenPF2e | null) {
         this.toggleSidebar(null);
 
@@ -370,11 +404,7 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
     #activateListeners(html: HTMLElement) {
         addStatsHeaderListeners(this.actor, html, this.token);
         addStatsAdvancedListeners(this.actor, html);
-
-        addListenerAll(html, "[data-action='open-sidebar']:not(.disabled)", (event, el) => {
-            const sidebar = el.dataset.sidebar as SidebarName;
-            this.toggleSidebar(sidebar);
-        });
+        addSidebarsListeners(this, html);
     }
 }
 

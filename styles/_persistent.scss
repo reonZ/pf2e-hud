@@ -104,6 +104,8 @@ $bottom-width: 542px;
 }
 
 #pf2e-hud-persistent-main {
+    --info-width: 2.24em;
+    --primary-width: 7.6em;
     --one-three-rows: 1.1fr 3fr 0;
 
     width: calc($bottom-width - 3px);
@@ -122,7 +124,7 @@ $bottom-width: 542px;
         }
 
         &.infos {
-            width: 2.24em;
+            width: var(--info-width);
 
             .panel {
                 grid-row: 1 / span 2;
@@ -130,7 +132,7 @@ $bottom-width: 542px;
         }
 
         &.primary {
-            width: 7.6em;
+            width: var(--primary-width);
             grid-template-columns: 1fr 1fr;
 
             .header {
@@ -146,9 +148,29 @@ $bottom-width: 542px;
             }
         }
 
-        &.extras {
-            .panel {
-                grid-row: 2;
+        &.stretch {
+            flex: 1;
+
+            .sidebars {
+                grid-row: 1;
+                grid-auto-flow: column;
+                justify-content: start;
+                width: fit-content;
+                min-width: 9.438em;
+            }
+
+            .bottom {
+                grid-row: 2 / 3;
+                display: flex;
+                gap: var(--panel-gap);
+
+                .shortcuts {
+                    flex: 1;
+                    display: grid;
+                    gap: var(--panel-gap);
+                    justify-content: start;
+                    grid-template-columns: repeat(4, 5.332em);
+                }
             }
         }
     }

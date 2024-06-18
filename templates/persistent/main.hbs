@@ -14,10 +14,21 @@
         {{> (partial 'stats_statistics')}}
     </div>
 </div>
-{{#if isCharacter}}
-<div class="group extras">
-    <div class="panel app">
-        {{> (partial 'stats_extras')}}
+<div class="group stretch">
+    <div class="panel app sidebars">
+        {{> (partial 'sidebars')}}
+    </div>
+    <div class="bottom">
+        {{#if isCharacter}}
+        <div class="panel app">
+            {{> (partial 'stats_extras')}}
+        </div>
+        {{/if}}
+        <div class="shortcuts">
+            <div class="shortcut app"></div>
+            <div class="shortcut app"></div>
+            <div class="shortcut app"></div>
+            <div class="shortcut app"></div>
+        </div>
     </div>
 </div>
-{{/if}}

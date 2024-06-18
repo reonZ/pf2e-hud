@@ -78,7 +78,7 @@ class PF2eHudSidebarSpells extends PF2eHudSidebar {
                     if (!Number.isInteger(maybeCastRank) || !maybeCastRank.between(1, 10)) return;
 
                     const rank = maybeCastRank as OneToTen;
-                    this.parenHUD.closeIf("cast-spell");
+                    this.parentHUD.closeIf("cast-spell");
 
                     return (
                         spell.parentItem?.consume() ??

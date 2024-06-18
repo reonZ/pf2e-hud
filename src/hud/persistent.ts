@@ -3,11 +3,14 @@ import {
     addListenerAll,
     createHTMLElement,
     createHook,
+    createWrapper,
     isInstanceOf,
+    libWrapper,
     localize,
     templateLocalize,
     warn,
 } from "foundry-pf2e";
+import { hud } from "../main";
 import {
     BaseActorContext,
     BaseActorRenderOptions,
@@ -19,18 +22,19 @@ import {
     AdvancedHudEvent,
     CLOSE_SETTINGS,
     CloseSetting,
+    IPF2eHudAdvanced,
+    addSidebarsListeners,
     makeAdvancedHUD,
 } from "./base/advanced";
-import { hud } from "../main";
-import { StatsHeader, getStatsHeader } from "./shared/base";
 import {
     StatsAdvanced,
     StatsHeaderExtras,
     getAdvancedStats,
     getStatsHeaderExtras,
 } from "./shared/advanced";
-import { SidebarSettings } from "./sidebar/base";
+import { StatsHeader, getStatsHeader } from "./shared/base";
 import { addStatsAdvancedListeners, addStatsHeaderListeners } from "./shared/listeners";
+import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
 
 class PF2eHudPersistent extends makeAdvancedHUD(
     PF2eHudBaseActor<PersistentSettings, PersistentHudActor>
@@ -141,7 +145,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         return ["portrait", "main", "menu"];
     }
 
-    get key(): string {
+    get key(): "persistent" {
         return "persistent";
     }
 
@@ -169,13 +173,28 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         return this.#elements.menu;
     }
 
+    get sidebars() {
+        return this.mainElement?.querySelector<HTMLElement>(".sidebars") ?? null;
+    }
+
     get anchor(): AdvancedHudAnchor {
-        return { x: 0, y: 0 };
+        const sidebars = this.mainElement?.querySelector(".sidebars");
+        if (!sidebars) return { x: 100, y: 100 };
+
+        const { left, top, width } = sidebars.getBoundingClientRect();
+
+        return {
+            x: left + width / 2,
+            y: top,
+            limits: {
+                bottom: top,
+            },
+        };
     }
 
     _onEnable(enabled: boolean = this.enabled) {
-        this.#renderHotbarHook.toggle(enabled);
         this.#renderActorSheetHook.toggle(enabled);
+        this.#renderHotbarHook.toggle(enabled);
         this.#deleteTokenHook.toggle(enabled);
         this.#deleteActorHook.toggle(enabled);
         this.#updateUserHook.toggle(enabled);
@@ -216,6 +235,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = parentData.actor;
         return {
             ...parentData,
+            sidebars: getSidebars(actor),
             isNPC: actor.isOfType("npc"),
             isCharacter: actor.isOfType("character"),
         };
@@ -313,7 +333,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const setting = this.getSetting(settingKey);
 
         if (setting) {
-            this.toggleSidebar(null);
+            this.closeSidebar();
             return true;
         }
 
@@ -532,6 +552,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         if (!actor) return;
 
         addStatsAdvancedListeners(this.actor, html);
+        addSidebarsListeners(this, html);
     }
 }
 
@@ -592,6 +613,7 @@ type Parts = {
 type PersistentContext = Omit<BaseActorContext<PersistentHudActor>, "actor" | "hasActor"> & {
     hasActor: true;
     actor: PersistentHudActor;
+    sidebars: SidebarMenu[];
     isCharacter: boolean;
     isNPC: boolean;
 };

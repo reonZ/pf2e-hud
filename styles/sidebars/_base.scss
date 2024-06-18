@@ -21,6 +21,7 @@
     --chat-icon-size: 1.6em;
     --action-img-background: #ffffff7a;
     --action-highlight: rgb(255 255 255 / 7%);
+    --arrow-color: rgb(37 36 36);
 
     position: absolute;
     padding: var(--outer-padding);
@@ -52,6 +53,43 @@
         position: relative;
 
         border: var(--outer-border);
+
+        &.persistent {
+            --arrow-width: calc(var(--outer-padding) * 0.9);
+
+            &.actions {
+                --icon-offset: -2;
+            }
+
+            &.items {
+                --icon-offset: -1;
+            }
+
+            &.spells {
+                --icon-offset: 0;
+            }
+
+            &.skills {
+                --icon-offset: 1;
+            }
+
+            &.extras {
+                --icon-offset: 2;
+            }
+
+            &::before {
+                content: "";
+                z-index: -1;
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                transform: translateX(calc(-50% + var(--icon-offset) * 1.8em));
+
+                border-left: var(--arrow-width) solid transparent;
+                border-right: var(--arrow-width) solid transparent;
+                border-top: var(--arrow-width) solid var(--arrow-color);
+            }
+        }
     }
 
     .sidebars {

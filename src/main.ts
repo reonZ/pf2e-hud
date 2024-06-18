@@ -20,6 +20,12 @@ const HUDS = {
     tracker: new PF2eHudTracker(),
 };
 
+Hooks.once("canvasReady", () => {
+    document
+        .getElementById("board")
+        ?.addEventListener("click", () => HUDS.persistent.closeSidebar());
+});
+
 Hooks.once("setup", () => {
     const huds = Object.values(HUDS);
     const settings: SettingOptions[] = [];
@@ -90,6 +96,16 @@ Hooks.once("setup", () => {
     for (const hud of huds) {
         hud.enable();
     }
+});
+
+Hooks.on("renderTokenHUD", () => {
+    HUDS.token.close();
+    HUDS.persistent.closeSidebar();
+});
+
+Hooks.on("renderActorSheet", (sheet: ActorSheetPF2e) => {
+    if (HUDS.token.isCurrentActor(sheet.actor)) HUDS.token.close();
+    if (HUDS.persistent.isCurrentActor(sheet.actor)) HUDS.persistent.closeSidebar();
 });
 
 Hooks.on("renderSettingsConfig", (app: SettingsConfig, $html: JQuery) => {

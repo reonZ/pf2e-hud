@@ -1,4 +1,4 @@
-import { settingPath, templatePath } from "foundry-pf2e";
+import { addListenerAll, settingPath, templatePath } from "foundry-pf2e";
 import { PF2eHudSidebarActions } from "../sidebar/actions";
 import { PF2eHudSidebar, SidebarEvent, SidebarName } from "../sidebar/base";
 import { PF2eHudSidebarExtras } from "../sidebar/extras";
@@ -6,6 +6,7 @@ import { PF2eHudSidebarItems } from "../sidebar/items";
 import { PF2eHudSidebarSkills } from "../sidebar/skills";
 import { PF2eHudSidebarSpells } from "../sidebar/spells";
 import { BaseActorContext, BaseActorRenderOptions, PF2eHudBaseActor } from "./actor";
+import { hud } from "../../main";
 
 const CLOSE_SETTINGS = ["closeOnSendToChat", "closeOnSpell"] as const;
 
@@ -13,6 +14,7 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
     abstract class PF2eHudAdvanced extends constructor {
         #sidebar: PF2eHudSidebar | null = null;
 
+        abstract get sidebars(): HTMLElement | null;
         abstract get anchor(): AdvancedHudAnchor;
 
         get partials(): string[] {
@@ -115,7 +117,7 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
         }
 
         _onClose(this: PF2eHudAdvanced & PF2eHudBaseActor, options: ApplicationClosingOptions) {
-            this.toggleSidebar(null);
+            this.closeSidebar();
             const thisSuper = constructor.prototype as PF2eHudBaseActor;
             thisSuper._onClose.call(this, options);
         }
@@ -131,11 +133,24 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
             }
         }
 
+        closeSidebar(this: PF2eHudAdvanced & PF2eHudBaseActor) {
+            this.#sidebar?.close();
+            this.#sidebar = null;
+
+            const sidebarElements = this.sidebars?.querySelectorAll<HTMLElement>("[data-sidebar]");
+            for (const sidebarElement of sidebarElements ?? []) {
+                sidebarElement.classList.remove("active");
+            }
+        }
+
         toggleSidebar(this: PF2eHudAdvanced & PF2eHudBaseActor, sidebar: SidebarName | null) {
             if (this.#sidebar?.key === sidebar) sidebar = null;
 
-            this.#sidebar?.close();
-            this.#sidebar = null;
+            const otherHUD = this.key === "token" ? hud.persistent : hud.token;
+            otherHUD.closeSidebar();
+            otherHUD.close();
+
+            this.closeSidebar();
 
             if (!sidebar) return;
 
@@ -164,6 +179,26 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
     return PF2eHudAdvanced as C & (abstract new (...args: any[]) => IPF2eHudAdvanced);
 }
 
+function addSidebarsListeners(hud: IPF2eHudAdvanced, html: HTMLElement) {
+    addListenerAll(html, "[data-action='open-sidebar']:not(.disabled)", (event, el) => {
+        const sidebar = el.dataset.sidebar as SidebarName;
+        const wasActive = el.classList.contains("active");
+
+        hud.toggleSidebar(sidebar);
+
+        const sidebarElements = (el.parentElement as HTMLElement).querySelectorAll<HTMLElement>(
+            "[data-sidebar]"
+        );
+
+        for (const sidebarElement of sidebarElements) {
+            sidebarElement.classList.toggle(
+                "active",
+                sidebarElement.dataset.sidebar === sidebar && !wasActive
+            );
+        }
+    });
+}
+
 type AdvancedHudAnchor = Point & {
     limits?: {
         left?: number;
@@ -185,11 +220,21 @@ interface IPF2eHudAdvanced {
     get partials(): string[];
     get sidebar(): PF2eHudSidebar | null;
     get anchor(): AdvancedHudAnchor;
+    get sidebars(): HTMLElement | null;
 
+    _renderSidebarHTML?(innerElement: HTMLElement, sidebar: SidebarName): Promise<void>;
+    _onRenderSidebar?(innerElement: HTMLElement): void;
+    _updateSidebarPosition?(
+        element: HTMLElement,
+        center: Point,
+        limits: { right: number; bottom: number }
+    ): void;
+
+    closeSidebar(): void;
     closeIf(event: AdvancedHudEvent): boolean;
     toggleSidebar(sidebar: SidebarName | null): void;
     eventToSetting(event: AdvancedHudEvent): CloseSetting;
 }
 
-export { CLOSE_SETTINGS, makeAdvancedHUD };
+export { CLOSE_SETTINGS, addSidebarsListeners, makeAdvancedHUD };
 export type { AdvancedHudAnchor, AdvancedHudEvent, CloseSetting, IPF2eHudAdvanced };
