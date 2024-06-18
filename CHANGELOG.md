@@ -1,6 +1,6 @@
 # 0.7.0
 
--   added support for `Persisten HUD` sidebars
+-   added support for `Persistent HUD` sidebars
 -   added trait description tooltips to NPCs strikes
 -   tweaked the multi-columns logic to try to avoid useless scrollbars
 -   heavily distinguish NPCs ability related strike traits from other strike traits
