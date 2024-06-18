@@ -3,10 +3,10 @@ import {
     addListenerAll,
     createHTMLElement,
     createHook,
-    createWrapper,
+    getFlag,
     isInstanceOf,
-    libWrapper,
     localize,
+    setFlag,
     templateLocalize,
     warn,
 } from "foundry-pf2e";
@@ -22,7 +22,6 @@ import {
     AdvancedHudEvent,
     CLOSE_SETTINGS,
     CloseSetting,
-    IPF2eHudAdvanced,
     addSidebarsListeners,
     makeAdvancedHUD,
 } from "./base/advanced";
@@ -96,14 +95,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
     get SETTINGS(): SettingOptions[] {
         return super.SETTINGS.concat([
-            {
-                key: "selected",
-                type: String,
-                default: "",
-                scope: "client",
-                config: false,
-                onChange: () => this.render(),
-            },
             {
                 key: "noflash",
                 type: Boolean,
@@ -192,6 +183,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         };
     }
 
+    get selected() {
+        return getFlag<string>(game.user, "persistent.selected") ?? "";
+    }
+
     _onEnable(enabled: boolean = this.enabled) {
         this.#renderActorSheetHook.toggle(enabled);
         this.#renderHotbarHook.toggle(enabled);
@@ -200,7 +195,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         this.#updateUserHook.toggle(enabled);
 
         if (enabled) {
-            const selected = this.getSetting("selected");
+            const selected = this.selected;
 
             let actor = fromUuidSync<ActorPF2e>(selected);
 
@@ -218,7 +213,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     _configureRenderOptions(options: PersistentRenderOptions) {
         super._configureRenderOptions(options);
 
-        options.hasSavedActor = !!this.getSetting("selected");
+        options.hasSavedActor = !!this.selected;
         options.cleaned = this.getSetting("cleanPortrait");
 
         const allowedParts = this.templates;
@@ -307,8 +302,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         }
     }
 
-    _insertElement(element: HTMLElement) {}
-
     _actorCleanup() {
         this.#actor = null;
         this.#isUserCharacter = false;
@@ -368,8 +361,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         this.#isUserCharacter = actor === game.user.character;
         this.#actor = actor as PersistentHudActor;
 
-        if (skipSave) this.render(!!actor);
-        else this.setSetting("selected", savedActor?.uuid ?? "");
+        if (!skipSave) setFlag(game.user, "persistent.selected", savedActor?.uuid ?? "");
+        this.render(!!actor);
     }
 
     isCurrentActor(actor: Maybe<ActorPF2e>, flash = false): actor is PersistentHudActor {
@@ -621,7 +614,6 @@ type PersistentContext = Omit<BaseActorContext<PersistentHudActor>, "actor" | "h
 type PersistentSettings = BaseActorSettings &
     SidebarSettings &
     Record<CloseSetting, boolean> & {
-        selected: string;
         cleanPortrait: boolean;
         noflash: boolean;
     };
