@@ -30,6 +30,7 @@
     z-index: calc(var(--z-index-app) + 30);
     color: var(--color);
     font-size: var(--font-size);
+    pointer-events: none;
 
     a.disabled {
         color: var(--color-disabled);
@@ -37,6 +38,7 @@
 
     .inner,
     .sidebars {
+        pointer-events: all;
         background: var(--outer-background);
         box-shadow: var(--outer-box-shadow);
         border-radius: var(--outer-border-radius);
