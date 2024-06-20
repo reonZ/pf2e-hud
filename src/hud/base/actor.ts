@@ -24,7 +24,7 @@ abstract class PF2eHudBaseActor<
         super._onClose(options);
     }
 
-    isValidActor(actor: Maybe<ActorPF2e>): actor is TActor {
+    isValidActor(actor: Maybe<ActorPF2e>): actor is ActorPF2e {
         const types = this.allowedActorTypes;
         return actor instanceof Actor && (types.length === 0 || actor.isOfType(...types));
     }

@@ -25,10 +25,47 @@
         </div>
         {{/if}}
         <div class="shortcuts">
-            <div class="shortcut app"></div>
-            <div class="shortcut app"></div>
-            <div class="shortcut app"></div>
-            <div class="shortcut app"></div>
+            {{#if shortcutGroups}}
+            {{#each shortcutGroups as |shortcutGroup|}}
+            <div class="shortcut-group{{#if shortcutGroup.split}} split{{/if}}">
+                {{#each shortcutGroup.shortcuts as |shortcut|}}
+                <div class="shortcut app{{#if shortcut.isEmpty}} empty{{else if shortcut.isDisabled}} disabled{{/if}}"
+                    data-group-index="{{shortcut.groupIndex}}" data-index="{{shortcut.index}}"
+                    data-tooltip="{{shortcut.name}}">
+                    {{#unless
+                    shortcut.isEmpty}}{{> shortcut
+                    shortcut=shortcut}}{{/unless}}</div>
+                {{/each}}
+            </div>
+            {{/each}}
+            {{else}}
+            {{#times 4}}
+            <div class="shortcut-group">
+                <div class="shortcut app"></div>
+            </div>
+            {{/times}}
+            {{/if}}
         </div>
     </div>
 </div>
+
+{{#*inline 'shortcut'}}
+<img src="{{shortcut.img}}" {{#if shortcut.isOutOfStock}}class="out-of-stock" {{/if}}>
+{{!-- consumable --}}
+{{#if (eq shortcut.type 'consumable')}}
+<div class="quantity boxed">{{shortcut.quantity}}</div>
+{{#if shortcut.isGeneric}}
+<div class="generic">
+    <i class="fa-solid fa-star"></i>
+</div>
+{{/if}}
+{{#if shortcut.categoryIcon}}
+<div class="category-icon">
+    <i class="{{shortcut.categoryIcon}}"></i>
+</div>
+{{/if}}
+{{#if shortcut.rank}}
+<div class="rank boxed">{{shortcut.rank}}</div>
+{{/if}}
+{{/if}}
+{{/inline}}

@@ -1,13 +1,18 @@
 import {
+    MODULE,
+    R,
     addListener,
     addListenerAll,
+    consumeItem,
     createHTMLElement,
     createHook,
+    elementDataset,
     getFlag,
-    isInstanceOf,
     localize,
+    resolveMacroActor,
     setFlag,
     templateLocalize,
+    unsetFlag,
     warn,
 } from "foundry-pf2e";
 import { hud } from "../main";
@@ -34,6 +39,8 @@ import {
 import { StatsHeader, getStatsHeader } from "./shared/base";
 import { addStatsAdvancedListeners, addStatsHeaderListeners } from "./shared/listeners";
 import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
+
+const ROMAN_RANKS = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"] as const;
 
 class PF2eHudPersistent extends makeAdvancedHUD(
     PF2eHudBaseActor<PersistentSettings, PersistentHudActor>
@@ -199,7 +206,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
             let actor = fromUuidSync<ActorPF2e>(selected);
 
-            if (!isValidActor(actor)) {
+            if (!this.isValidActor(actor)) {
                 actor = game.user.character;
             }
 
@@ -337,14 +344,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         actor: ActorPF2e | null,
         { token, skipSave }: { token?: Token; skipSave?: boolean } = {}
     ) {
-        if (actor && (this.isCurrentActor(actor) || !isValidActor(actor))) return;
+        if (actor && (this.isCurrentActor(actor) || !this.isValidActor(actor))) return;
 
         const savedActor = actor;
         this._actorCleanup();
 
         if (!actor) {
             const userActor = game.user.character;
-            if (isValidActor(userActor)) actor = userActor;
+            if (this.isValidActor(userActor)) actor = userActor;
         }
 
         if (actor) {
@@ -371,6 +378,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         return isCurrentActor;
     }
 
+    isValidActor(actor: Maybe<ActorPF2e>): actor is ActorPF2e {
+        return super.isValidActor(actor) && actor.isOwner;
+    }
+
     flash() {
         if (this.getSetting("noflash")) return;
 
@@ -384,6 +395,90 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             duration: 200,
             iterations: 2,
         });
+    }
+
+    getShortcut(
+        groupIndex: Maybe<number | string>,
+        index: Maybe<number | string>
+    ): Shortcut | EmptyShortcut {
+        index = String(index);
+        groupIndex = String(groupIndex);
+
+        const actor = this.actor as ActorPF2e;
+        if (!actor || !groupIndex || isNaN(Number(groupIndex)) || !index || isNaN(Number(index))) {
+            MODULE.throwError("an error occured while trying to access the shortcut");
+        }
+
+        const shortcut = getFlag<ShortcutFlag>(
+            actor,
+            "persistent.shortcuts",
+            game.user.id,
+            groupIndex,
+            index
+        );
+
+        const emptyData: EmptyShortcut = {
+            index,
+            groupIndex,
+            isEmpty: true,
+        };
+
+        if (!shortcut) return emptyData;
+
+        switch (shortcut.type) {
+            case "consumable": {
+                const isGeneric = "slug" in shortcut;
+                const item = isGeneric
+                    ? actor.itemTypes.consumable.find((item) => itemSlug(item) === shortcut.slug)
+                    : actor.items.get<ConsumablePF2e<ActorPF2e>>(shortcut.id);
+
+                if (item && !item.isOfType("consumable")) {
+                    MODULE.throwError("an error occured while trying to access the shortcut");
+                }
+
+                if (!isGeneric && !item) return emptyData;
+
+                const quantity = item?.quantity ?? 0;
+                const uses =
+                    item?.uses.max && (item.uses.max > 1 || item.category === "wand")
+                        ? item.uses.value
+                        : undefined;
+                const isOutOfStock = quantity === 0 || uses === 0;
+                const categoryIcon =
+                    item?.category === "scroll"
+                        ? "fa-solid fa-scroll"
+                        : item?.category === "wand"
+                        ? "fa-solid fa-wand-magic-sparkles"
+                        : undefined;
+
+                const img =
+                    item?.system.spell?.img ?? item?.img ?? (shortcut as { img: string }).img;
+
+                let name = item?.name ?? (shortcut as { name: string }).name;
+                if (uses !== undefined && quantity > 1) name += ` x ${quantity}`;
+
+                return {
+                    ...shortcut,
+                    uses,
+                    isDisabled: item?.isAmmo || isOutOfStock,
+                    rank: consumableRank(item, true),
+                    categoryIcon,
+                    isOutOfStock,
+                    isGeneric,
+                    quantity: uses ?? quantity,
+                    item,
+                    name,
+                    img,
+                } satisfies ConsumableShortcut;
+            }
+        }
+
+        return emptyData;
+    }
+
+    getShortcutFromElement(el: HTMLElement) {
+        const { groupIndex, index } = el.dataset;
+        return this.getShortcut(groupIndex, index);
     }
 
     #onUpdateUser(user: UserPF2e, updates: Partial<UserSourcePF2e>) {
@@ -405,7 +500,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
     #onRenderActorSheet(sheet: ActorSheetPF2e, $html: JQuery) {
         const actor = sheet.actor;
-        if (!isValidActor(actor)) return;
+        if (!this.isValidActor(actor)) return;
 
         const html = $html[0];
         const titleElement = html
@@ -436,7 +531,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #setSelectedToken() {
         const tokens = canvas.tokens.controlled;
         const token = tokens[0];
-        if (tokens.length !== 1 || !isValidActor(token.actor)) {
+        if (tokens.length !== 1 || !this.isValidActor(token.actor)) {
             return warn("persistent.error.selectOne");
         }
         this.setActor(token.actor, { token });
@@ -532,9 +627,37 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = this.actor;
         if (!actor) return context;
 
+        const shortcutGroups: ShortcutGroup[] = (() =>
+            R.pipe(
+                R.range(0, 4),
+                R.map((groupIndex): ShortcutGroup => {
+                    let shortcuts = R.pipe(
+                        R.range(0, 4),
+                        R.map((index) => this.getShortcut(groupIndex, index))
+                    );
+
+                    const split = (() => {
+                        const firstShortcut = shortcuts.find(
+                            (shortcut): shortcut is Shortcut => "type" in shortcut
+                        );
+                        if (firstShortcut && firstShortcut.type !== "attack") return true;
+
+                        shortcuts = [firstShortcut ?? shortcuts[0]];
+
+                        return false;
+                    })();
+
+                    return {
+                        split,
+                        shortcuts,
+                    };
+                })
+            ))();
+
         const data: MainContext = {
             ...context,
             ...getAdvancedStats(actor),
+            shortcutGroups,
         };
 
         return data;
@@ -546,12 +669,181 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         addStatsAdvancedListeners(this.actor, html);
         addSidebarsListeners(this, html);
+
+        addListenerAll(
+            html,
+            ".stretch .shortcuts .shortcut",
+            "drop",
+            this.#onShortcutDrop.bind(this)
+        );
+
+        addListenerAll(html, ".stretch .shortcuts .shortcut", "contextmenu", (event, el) => {
+            const { groupIndex, index } = elementDataset(el);
+            unsetFlag(actor, "persistent.shortcuts", game.user.id, groupIndex, index);
+        });
+
+        addListenerAll(
+            html,
+            ".stretch .shortcuts .shortcut:not(.empty):not(.disabled)",
+            (event, el) => {
+                const shortcut = this.getShortcutFromElement(el);
+                if (shortcut.isEmpty) return;
+
+                switch (shortcut.type) {
+                    case "consumable": {
+                        if (shortcut.item) consumeItem(event, shortcut.item);
+                        break;
+                    }
+                }
+            }
+        );
+    }
+
+    async #onShortcutDrop(event: DragEvent, el: HTMLElement) {
+        const dropData: HotbarDropData = TextEditor.getDragEventData(event);
+        const wrongType = () => warn("persistent.main.shortcut.wrongType");
+        const wrongActor = () => warn("persistent.main.shortcut.wrongActor");
+
+        console.log(dropData);
+
+        if (!["Item", "RollOption", "Action"].includes(dropData.type ?? "")) {
+            return wrongType();
+        }
+
+        if (
+            dropData.type === "Item" &&
+            dropData.itemType === "melee" &&
+            typeof dropData.index === "number"
+        ) {
+            dropData.type = "Action";
+        }
+
+        const actor = this.actor!;
+        const shortcut = this.getShortcutFromElement(el);
+        const { index, groupIndex } = shortcut;
+
+        let newShortcut: ShortcutFlag;
+
+        switch (dropData.type) {
+            case "Item": {
+                if (!dropData.uuid || !dropData.itemType) return wrongType();
+
+                const item = await fromUuid<ItemPF2e>(dropData.uuid);
+
+                if (!item?.isOfType("consumable", "spell", "action")) return wrongType();
+                if (!this.isCurrentActor(item.actor)) return wrongActor();
+
+                if (item.isOfType("consumable")) {
+                    if (event.ctrlKey && item.system.uses.autoDestroy) {
+                        newShortcut = {
+                            type: "consumable",
+                            index,
+                            groupIndex,
+                            img: item.system.spell?.img ?? item.img,
+                            name: item.name,
+                            slug: itemSlug(item),
+                        } satisfies ConsumableShortcutFlag;
+                    } else {
+                        newShortcut = {
+                            type: "consumable",
+                            id: item.id,
+                            index,
+                            groupIndex,
+                        } satisfies ConsumableShortcutFlag;
+                    }
+                }
+
+                break;
+            }
+
+            case "Action": {
+                if (typeof dropData.index !== "number" && !dropData.elementTrait)
+                    return warn("persistent.main.shortcut.wrongType");
+
+                const itemActor = resolveMacroActor(dropData.actorUUID);
+                if (!this.isCurrentActor(itemActor)) return wrongActor();
+
+                break;
+            }
+
+            case "RollOption": {
+                break;
+            }
+        }
+
+        setFlag(actor, "persistent.shortcuts", game.user.id, groupIndex, index, newShortcut);
     }
 }
 
-function isValidActor(actor: ActorPF2e | null): actor is ActorPF2e {
-    return isInstanceOf(actor, "ActorPF2e") && actor.isOfType("character", "npc") && actor.isOwner;
+function consumableRank(item: Maybe<ConsumablePF2e>, roman: true): RomanRank | undefined;
+function consumableRank(item: Maybe<ConsumablePF2e>, roman?: false): OneToTen | undefined;
+function consumableRank(
+    item: Maybe<ConsumablePF2e>,
+    roman?: boolean
+): RomanRank | OneToTen | undefined {
+    const rank = item?.system.spell
+        ? item.system.spell.system.location.heightenedLevel ?? item.system.spell.system.level.value
+        : undefined;
+    return rank && roman ? ROMAN_RANKS[rank] : rank;
 }
+
+function itemSlug(item: ItemPF2e) {
+    if (item.isOfType("consumable") && item.system.spell) {
+        const spell = item.system.spell;
+        const baseSlug = spell.system.slug ?? game.pf2e.system.sluggify(spell.name);
+        const rank = consumableRank(item);
+        return `${baseSlug}-rank-${rank}`;
+    }
+    return item.slug ?? game.pf2e.system.sluggify(item.name);
+}
+
+type ShortcutType = "action" | "attack" | "consumable" | "spell" | "toggle";
+
+type ShortcutFlagBase<T extends ShortcutType> = {
+    type: T;
+    index: string;
+    groupIndex: string;
+};
+
+type AttackShortcutFlag = ShortcutFlagBase<"attack">;
+
+type ConsumableShortcutFlag = ShortcutFlagBase<"consumable"> &
+    (
+        | {
+              slug: string;
+              img: string;
+              name: string;
+          }
+        | { id: string }
+    );
+
+type ShortcutFlag = ConsumableShortcutFlag | AttackShortcutFlag;
+
+type BaseShortCut = { name: string; isEmpty?: false; img: string; isDisabled: boolean };
+
+type ConsumableShortcut = BaseShortCut &
+    ConsumableShortcutFlag & {
+        item: ConsumablePF2e<ActorPF2e> | undefined;
+        quantity: number;
+        uses: number | undefined;
+        isGeneric: boolean;
+        rank: RomanRank | undefined;
+        categoryIcon: string | undefined;
+        isOutOfStock: boolean;
+    };
+
+type AttackShortcut = BaseShortCut & AttackShortcutFlag;
+
+type Shortcut = ConsumableShortcut | AttackShortcut;
+
+type EmptyShortcut = { index: string; groupIndex: string; isEmpty: true };
+
+type ShortcutGroup = {
+    split: boolean;
+    shortcuts: (Shortcut | { index: string; groupIndex: string })[];
+};
+
+type RomanRank = (typeof ROMAN_RANKS)[number];
 
 type MenuActionEvent =
     | "toggle-users"
@@ -573,7 +865,10 @@ type PortraitContext = PersistentContext &
         name: string;
     };
 
-type MainContext = PersistentContext & StatsAdvanced;
+type MainContext = PersistentContext &
+    StatsAdvanced & {
+        shortcutGroups: ShortcutGroup[];
+    };
 
 type PersistentTemplates = { name: PartName; element: HTMLElement }[];
 

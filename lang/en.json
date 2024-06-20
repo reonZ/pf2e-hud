@@ -191,6 +191,12 @@
             },
             "portrait": {
                 "selectActor": "Set this actor as persistent"
+            },
+            "main": {
+                "shortcut": {
+                    "wrongActor": "You can only create shortcuts from the same persistent actor.",
+                    "wrongType": "You cannot create a shortcut for that type."
+                }
             }
         },
         "tracker": {
