@@ -1,0 +1,45 @@
+<div class="variants blasts">
+    {{!-- category --}}
+    <span class="category">
+        {{#if melee}}
+        <img class="alt-usage-icon" src="systems/pf2e/icons/mdi/sword.svg"
+            data-tooltip="{{blast.reach}}">
+        {{else}}
+        <i class="fa-regular fa-meteor fa-rotate-180 alt-usage-icon"
+            data-tooltip="{{blast.range.label}}"></i>
+        {{/if}}
+    </span>
+    {{!-- attacks --}}
+    <div class="variant attack" data-action="blast-attack" data-melee="{{melee}}"
+        data-map-increases="0">
+        {{localize "PF2E.SpecificRule.Kineticist.Impulse.ElementalBlast.ShortLabel"}}
+        {{numberFormat blast.statistic.check.mod sign=true}}
+    </div>
+    <div class="variant attack" data-action="blast-attack" data-melee="{{melee}}"
+        data-map-increases="1">
+        {{#if melee}}
+        {{@root.variantLabel blast.maps.melee.map1}}
+        {{else}}
+        {{@root.variantLabel blast.maps.ranged.map1}}
+        {{/if}}
+    </div>
+    <div class="variant attack" data-action="blast-attack" data-melee="{{melee}}"
+        data-map-increases="2">
+        {{#if melee}}
+        {{@root.variantLabel blast.maps.melee.map2}}
+        {{else}}
+        {{@root.variantLabel blast.maps.ranged.map2}}
+        {{/if}}
+    </div>
+    {{!-- damages --}}
+    <div class="variant damage" data-action="blast-damage" data-melee="{{melee}}"
+        data-outcome="success"
+        data-tooltip="{{#if melee}}{{blast.formula.melee.damage}}{{else}}{{blast.formula.ranged.damage}}{{/if}}">
+        {{localize "PF2E.DamageLabel"}}
+    </div>
+    <div class="variant damage" data-action="blast-damage" data-melee="{{melee}}"
+        data-outcome="critical-success"
+        data-tooltip="{{#if melee}}{{blast.formula.melee.critical}}{{else}}{{blast.formula.ranged.critical}}{{/if}}">
+        {{localize "PF2E.CriticalDamageLabel"}}
+    </div>
+</div>

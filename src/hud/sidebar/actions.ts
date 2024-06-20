@@ -13,9 +13,9 @@ import {
     objectHasKey,
     tupleHasValue,
 } from "foundry-pf2e";
-import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
-import { PF2eHudTextPopup } from "../popup/text";
 import { eventToRollMode, getActionIcon } from "foundry-pf2e/src/pf2e";
+import { PF2eHudTextPopup } from "../popup/text";
+import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 
 const ACTION_TYPES = {
     action: { sort: 0, label: "PF2E.ActionsActionsHeader" },
@@ -24,35 +24,6 @@ const ACTION_TYPES = {
     passive: { sort: 3, label: "PF2E.NPC.PassivesLabel" },
     exploration: { sort: 3, label: "PF2E.TravelSpeed.ExplorationActivity" },
 };
-
-function getActionCategory(actor: ActorPF2e, item: WeaponPF2e<ActorPF2e> | MeleePF2e<ActorPF2e>) {
-    if (item.isMelee) {
-        const reach = actor.getReach({ action: "attack", weapon: item });
-
-        return {
-            type: "melee",
-            tooltip: localize("sidebars.actions.reach", { reach }),
-        };
-    }
-
-    const range = item.range!;
-    const isThrown = item.isThrown;
-    const key = isThrown ? "thrown" : range.increment ? "rangedWithIncrement" : "ranged";
-
-    return {
-        type: isThrown ? "thrown" : "ranged",
-        tooltip: localize("sidebars.actions", key, range),
-    };
-}
-
-async function getExtendedData(action: StrikeData, actor: ActorPF2e): Promise<ExtendedStrikeUsage> {
-    return {
-        ...action,
-        damageFormula: String(await action.damage?.({ getFormula: true })),
-        criticalFormula: String(await action.critical?.({ getFormula: true })),
-        category: actor.isOfType("character") ? getActionCategory(actor, action.item) : undefined,
-    };
-}
 
 class PF2eHudSidebarActions extends PF2eHudSidebar {
     get key(): SidebarName {
@@ -63,7 +34,6 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
         const actor = this.actor;
         const isCharacter = actor.isOfType("character");
         const parentData = await super._prepareContext(options);
-        const rollData = actor.getRollData();
         const toolbelt = getActiveModule("pf2e-toolbelt");
 
         const stances = (() => {
@@ -77,66 +47,8 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             };
         })();
 
-        const blasts = await (async () => {
-            if (!isCharacter) return;
-
-            const blastData = new game.pf2e.ElementalBlast(actor);
-            const reach =
-                actor.attributes.reach.base +
-                (blastData.infusion?.traits.melee.includes("reach") ? 5 : 0);
-
-            return Promise.all(
-                blastData.configs.map(async (config): Promise<ActionBlast> => {
-                    const damageType =
-                        config.damageTypes.find((dt) => dt.selected)?.value ?? "untyped";
-
-                    const formulaFor = (
-                        outcome: "success" | "criticalSuccess",
-                        melee = true
-                    ): Promise<string | null> =>
-                        blastData.damage({
-                            element: config.element,
-                            damageType,
-                            melee,
-                            outcome,
-                            getFormula: true,
-                        });
-
-                    return {
-                        ...config,
-                        reach: localize("sidebars.actions.reach", { reach }),
-                        damageType,
-                        formula: {
-                            melee: {
-                                damage: await formulaFor("success"),
-                                critical: await formulaFor("criticalSuccess"),
-                            },
-                            ranged: {
-                                damage: await formulaFor("success", false),
-                                critical: await formulaFor("criticalSuccess", false),
-                            },
-                        },
-                    };
-                })
-            );
-        })();
-
-        const strikes = await Promise.all(
-            (actor.system.actions ?? []).map(
-                async (strike, index): Promise<ExtendedStrike> => ({
-                    ...(await getExtendedData(strike, actor)),
-                    index,
-                    visible: !isCharacter || (strike as CharacterStrike).visible,
-                    description: await TextEditor.enrichHTML(strike.description, {
-                        secrets: true,
-                        rollData,
-                    }),
-                    altUsages: await Promise.all(
-                        (strike.altUsages ?? []).map((altUsage) => getExtendedData(altUsage, actor))
-                    ),
-                })
-            )
-        );
+        const blasts = isCharacter ? await getBlastData(actor) : undefined;
+        const strikes = await getStrikeData(actor);
 
         const heroActions = (() => {
             if (!isCharacter || !toolbelt?.getSetting("heroActions.enabled")) return;
@@ -264,7 +176,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             blasts: blasts?.sort((a, b) => a.label.localeCompare(b.label, game.i18n.lang)),
             strikes: strikes.sort((a, b) => a.index - b.index),
             isCharacter,
-            variantLabel: (label: string) => label.replace(/.+\((.+)\)/, "$1"),
+            variantLabel,
             showUnreadyStrikes: !!actor.getFlag("pf2e", "showUnreadyStrikes"),
         };
 
@@ -500,6 +412,181 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
     }
 }
 
+async function getBlastData(
+    actor: CharacterPF2e,
+    elementTrait: ElementTrait
+): Promise<ActionBlast | undefined>;
+async function getBlastData(actor: CharacterPF2e, elementTrait?: undefined): Promise<ActionBlast[]>;
+async function getBlastData(
+    actor: CharacterPF2e,
+    elementTrait?: ElementTrait
+): Promise<ActionBlast | ActionBlast[] | undefined> {
+    const blastData = new game.pf2e.ElementalBlast(actor);
+
+    const configs = elementTrait
+        ? R.filter([blastData.configs.find((c) => c.element === elementTrait)], R.isTruthy)
+        : blastData.configs;
+
+    const reach =
+        actor.attributes.reach.base + (blastData.infusion?.traits.melee.includes("reach") ? 5 : 0);
+
+    const blasts = await Promise.all(
+        configs.map(async (config): Promise<ActionBlast> => {
+            const damageType = config.damageTypes.find((dt) => dt.selected)?.value ?? "untyped";
+
+            const formulaFor = (
+                outcome: "success" | "criticalSuccess",
+                melee = true
+            ): Promise<string | null> =>
+                blastData.damage({
+                    element: config.element,
+                    damageType,
+                    melee,
+                    outcome,
+                    getFormula: true,
+                });
+
+            return {
+                ...config,
+                attack: (event: MouseEvent, mapIncreases: number, el: HTMLElement) => {
+                    return blastData.attack({
+                        event,
+                        mapIncreases,
+                        melee: el.dataset.melee === "true",
+                        damageType,
+                        element: config.element,
+                    });
+                },
+                damage: (event: MouseEvent, el: HTMLElement) => {
+                    return blastData.damage({
+                        event,
+                        damageType,
+                        element: config.element,
+                        melee: el.dataset.melee === "true",
+                        outcome: el.dataset.outcome === "success" ? "success" : "criticalSuccess",
+                    });
+                },
+                reach: localize("sidebars.actions.reach", { reach }),
+                damageType,
+                formula: {
+                    melee: {
+                        damage: await formulaFor("success"),
+                        critical: await formulaFor("criticalSuccess"),
+                    },
+                    ranged: {
+                        damage: await formulaFor("success", false),
+                        critical: await formulaFor("criticalSuccess", false),
+                    },
+                },
+            };
+        })
+    );
+
+    return elementTrait ? blasts[0] : blasts;
+}
+
+async function getStrikeData(
+    actor: ActorPF2e,
+    options: { id: string; slug: string }
+): Promise<ActionStrike | undefined>;
+async function getStrikeData(actor: ActorPF2e, options?: undefined): Promise<ActionStrike[]>;
+async function getStrikeData(
+    actor: ActorPF2e,
+    options?: { id: string; slug: string }
+): Promise<ActionStrike | ActionStrike[] | undefined> {
+    const rollData = actor.getRollData();
+    const isCharacter = actor.isOfType("character");
+
+    const actorStrikes = actor.system.actions ?? [];
+    const actions = options
+        ? R.filter(
+              [
+                  actorStrikes.find((s) => s.item.id === options.id && s.slug === options.slug) ??
+                      actorStrikes.find((s) => s.slug === options.slug),
+              ],
+              R.isTruthy
+          )
+        : actorStrikes;
+
+    const strikes = await Promise.all(
+        actions.map(
+            async (strike, index): Promise<ActionStrike> => ({
+                ...(await getActionData(strike, actor)),
+                index,
+                visible: !isCharacter || (strike as CharacterStrike).visible,
+                description: await TextEditor.enrichHTML(strike.description, {
+                    secrets: true,
+                    rollData,
+                }),
+                altUsages: await Promise.all(
+                    (strike.altUsages ?? []).map((altUsage) => getActionData(altUsage, actor))
+                ),
+            })
+        )
+    );
+
+    return options ? strikes[0] : strikes;
+}
+
+function getActionCategory(actor: ActorPF2e, item: WeaponPF2e<ActorPF2e> | MeleePF2e<ActorPF2e>) {
+    if (item.isMelee) {
+        const reach = actor.getReach({ action: "attack", weapon: item });
+
+        return {
+            type: "melee",
+            tooltip: localize("sidebars.actions.reach", { reach }),
+        };
+    }
+
+    const range = item.range!;
+    const isThrown = item.isThrown;
+    const key = isThrown ? "thrown" : range.increment ? "rangedWithIncrement" : "ranged";
+
+    return {
+        type: isThrown ? "thrown" : "ranged",
+        tooltip: localize("sidebars.actions", key, range),
+    };
+}
+
+async function getActionData(action: StrikeData, actor: ActorPF2e): Promise<ActionStrikeUsage> {
+    return {
+        ...action,
+        damageFormula: String(await action.damage?.({ getFormula: true })),
+        criticalFormula: String(await action.critical?.({ getFormula: true })),
+        category: actor.isOfType("character") ? getActionCategory(actor, action.item) : undefined,
+    };
+}
+
+function variantLabel(label: string) {
+    return label.replace(/.+\((.+)\)/, "$1");
+}
+
+type ActionStrikeUsage = StrikeData & {
+    damageFormula: string;
+    criticalFormula: string;
+    category: Maybe<{
+        type: string;
+        tooltip: string;
+    }>;
+};
+
+type ActionStrike = ActionStrikeUsage & {
+    index: number;
+    visible: boolean;
+    description: string;
+    altUsages: ActionStrikeUsage[];
+};
+
+type ActionBlast = ElementalBlastSheetConfig & {
+    reach: string;
+    attack: (
+        event: MouseEvent,
+        mapIncreases: number,
+        el: HTMLElement
+    ) => Promise<Rolled<CheckRoll> | null>;
+    damage: (event: MouseEvent, el: HTMLElement) => Promise<string | Rolled<DamageRoll> | null>;
+};
+
 type Action =
     | "blast-attack"
     | "blast-damage"
@@ -533,32 +620,12 @@ type ActionData = {
     }>;
 };
 
-type ExtendedStrikeUsage = StrikeData & {
-    damageFormula: string;
-    criticalFormula: string;
-    category: Maybe<{
-        type: string;
-        tooltip: string;
-    }>;
-};
-
-type ExtendedStrike = ExtendedStrikeUsage & {
-    index: number;
-    visible: boolean;
-    description: string;
-    altUsages: ExtendedStrikeUsage[];
-};
-
-type ActionBlast = ElementalBlastSheetConfig & {
-    reach: string;
-};
-
 type ActionsContext = SidebarContext & {
     isCharacter: boolean;
     showUnreadyStrikes: boolean;
     variantLabel: (label: string) => string;
     blasts: ActionBlast[] | undefined;
-    strikes: ExtendedStrike[];
+    strikes: ActionStrike[];
     actionSections: {
         type: "action" | "exploration" | "free" | "reaction" | "passive";
         label: string;
@@ -579,4 +646,5 @@ type ActionsContext = SidebarContext & {
     }>;
 };
 
-export { PF2eHudSidebarActions };
+export type { ActionBlast, ActionStrike };
+export { PF2eHudSidebarActions, getBlastData, getStrikeData, variantLabel };

@@ -107,6 +107,10 @@ $bottom-width: 542px;
     --info-width: 2.24em;
     --primary-width: 7.6em;
     --one-three-rows: 1.1fr 3fr 0;
+    --attack-background: #171f69de;
+    --attack-border-color: #3a49c9;
+    --damage-background: #6d1010de;
+    --damage-border-color: #c93a3a;
 
     // width: calc($bottom-width - 3px);
     width: fit-content;
@@ -177,22 +181,35 @@ $bottom-width: 542px;
                     .shortcut-group {
                         .shortcut {
                             --offset: -0.3em;
+
                             position: relative;
                             height: 100%;
 
                             > * {
                                 position: absolute;
+                            }
+
+                            > :not(.variants, [data-action], .controls) {
                                 pointer-events: none;
                             }
 
                             img {
                                 border: 0;
                                 background: none;
-                                inset: 0;
+                            }
 
-                                &.out-of-stock {
-                                    filter: grayscale(1);
-                                }
+                            > img {
+                                height: 100%;
+                                inset: 0;
+                            }
+
+                            .name {
+                                white-space: nowrap;
+                                left: 50%;
+                                bottom: calc(100% + 0.35em);
+                                transform: translateX(-50%);
+                                background: var(--outer-background);
+                                padding: 0.4em 0.5em;
                             }
 
                             .boxed {
@@ -229,8 +246,108 @@ $bottom-width: 542px;
                                 font-size: 0.9em;
                             }
 
+                            .controls {
+                                top: 0.2em;
+                                left: 0;
+                                display: flex;
+
+                                .type-toggle {
+                                    margin-top: 0.05em;
+                                }
+
+                                .extras ~ .type-toggle {
+                                    margin-left: -0.1em;
+                                }
+
+                                .type-toggle:first-child {
+                                    margin-left: 0.2em;
+
+                                    + .type-toggle {
+                                        margin-left: 0.2em;
+                                    }
+                                }
+                            }
+
+                            .variants {
+                                inset: 0;
+                                display: flex;
+                                flex-direction: column;
+
+                                pointer-events: all;
+                                overflow: hidden;
+
+                                .category {
+                                    flex: 1;
+                                    position: relative;
+                                    background: #00000091;
+
+                                    img,
+                                    i {
+                                        position: absolute;
+                                        position: absolute;
+                                        right: 0.2em;
+                                    }
+
+                                    img {
+                                        top: 0.1em;
+                                        height: 1.3em;
+                                        filter: invert(1);
+                                    }
+
+                                    i {
+                                        top: 0.2em;
+                                    }
+                                }
+
+                                .variant {
+                                    cursor: pointer;
+                                    text-align: center;
+                                    border-width: 1px 0 0;
+                                    border-style: solid;
+                                    text-transform: uppercase;
+                                    font-size: 0.85em;
+
+                                    &.attack {
+                                        background: var(--attack-background);
+                                        border-color: var(--attack-border-color);
+                                    }
+
+                                    &.damage {
+                                        background: var(--damage-background);
+                                        border-color: var(--damage-border-color);
+                                    }
+
+                                    &:nth-child(4),
+                                    &:last-child {
+                                        border-radius: 0 0 4px 4px;
+                                    }
+
+                                    &:hover {
+                                        filter: brightness(1.5);
+                                    }
+                                }
+
+                                &.blasts {
+                                    .category {
+                                        i,
+                                        img {
+                                            cursor: pointer;
+                                        }
+
+                                        i:hover {
+                                            text-shadow: 0 0 8px var(--color-shadow-primary);
+                                        }
+
+                                        img:hover {
+                                            filter: invert(89%) sepia(30%) saturate(3986%)
+                                                hue-rotate(300deg) brightness(104%) contrast(106%);
+                                        }
+                                    }
+                                }
+                            }
+
                             &:not(:hover) {
-                                .alt-img {
+                                > :not(img) {
                                     display: none;
                                 }
                             }
@@ -240,13 +357,45 @@ $bottom-width: 542px;
                                 background: rgb(0 0 0 / 37%);
                             }
 
-                            &:not(.empty):not(.disabled) {
+                            &:not(.empty, .disabled, .attack) {
                                 cursor: pointer;
 
                                 &:hover {
                                     img {
-                                        filter: brightness(1.3);
+                                        filter: brightness(1.5);
                                     }
+                                }
+                            }
+
+                            &.faded-out {
+                                img {
+                                    filter: grayscale(1);
+                                }
+                            }
+
+                            &:not(.damage) {
+                                .variant.damage,
+                                .type-toggle.attack {
+                                    display: none;
+                                }
+                            }
+
+                            &.damage {
+                                .variant.attack,
+                                .type-toggle.damage {
+                                    display: none;
+                                }
+                            }
+
+                            &:not(.use-variant) {
+                                .variants + .variants {
+                                    display: none;
+                                }
+                            }
+
+                            &.use-variant {
+                                .variants:has(+ .variants) {
+                                    display: none;
                                 }
                             }
                         }

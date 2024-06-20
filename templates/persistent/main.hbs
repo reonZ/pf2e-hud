@@ -29,9 +29,8 @@
             {{#each shortcutGroups as |shortcutGroup|}}
             <div class="shortcut-group{{#if shortcutGroup.split}} split{{/if}}">
                 {{#each shortcutGroup.shortcuts as |shortcut|}}
-                <div class="shortcut app{{#if shortcut.isEmpty}} empty{{else if shortcut.isDisabled}} disabled{{/if}}"
-                    data-group-index="{{shortcut.groupIndex}}" data-index="{{shortcut.index}}"
-                    data-tooltip="{{shortcut.name}}">
+                <div class="shortcut app {{shortcut.type}}{{#if shortcut.isEmpty}} empty{{else if shortcut.isDisabled}} disabled{{/if}}{{#if shortcut.isFadedOut}} faded-out{{/if}}"
+                    data-group-index="{{shortcut.groupIndex}}" data-index="{{shortcut.index}}">
                     {{#unless
                     shortcut.isEmpty}}{{> shortcut
                     shortcut=shortcut}}{{/unless}}</div>
@@ -50,22 +49,55 @@
 </div>
 
 {{#*inline 'shortcut'}}
-<img src="{{shortcut.img}}" {{#if shortcut.isOutOfStock}}class="out-of-stock" {{/if}}>
+<img src="{{shortcut.img}}">
+<div class="name app">{{shortcut.name}}</div>
 {{!-- consumable --}}
 {{#if (eq shortcut.type 'consumable')}}
-<div class="quantity boxed">{{shortcut.quantity}}</div>
-{{#if shortcut.isGeneric}}
+{{> consumable consumable=shortcut}}
+{{/if}}
+{{!-- attack --}}
+{{#if (eq shortcut.type 'attack')}}
+{{> attack attack=shortcut}}
+{{/if}}
+{{/inline}}
+
+{{#*inline 'consumable'}}
+<div class="quantity boxed">{{consumable.quantity}}</div>
+{{#if consumable.isGeneric}}
 <div class="generic">
     <i class="fa-solid fa-star"></i>
 </div>
 {{/if}}
-{{#if shortcut.categoryIcon}}
+{{#if consumable.categoryIcon}}
 <div class="category-icon">
-    <i class="{{shortcut.categoryIcon}}"></i>
+    <i class="{{consumable.categoryIcon}}"></i>
 </div>
 {{/if}}
-{{#if shortcut.rank}}
-<div class="rank boxed">{{shortcut.rank}}</div>
+{{#if consumable.rank}}
+<div class="rank boxed">{{consumable.rank}}</div>
 {{/if}}
+{{/inline}}
+
+{{#*inline 'attack'}}
+{{#if attack.blast}}
+{{> (@root.partial 'action_blast-row') blast=attack.blast melee=true}}
+{{> (@root.partial 'action_blast-row') blast=attack.blast melee=false}}
 {{/if}}
+{{#unless attack.isDisabled}}
+<div class="controls">
+    {{#if @root.isCharacter}}
+    <a class="extras" data-action="open-attack-popup" data-element-trait="{{attack.elementTrait}}"
+        data-itemId="{{attack.itemId}}" data-slug="{{attack.slug}}"
+        data-type="{{ifThen attack.blast 'blast' 'strike'}}">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+    </a>
+    {{/if}}
+    <a class="type-toggle attack" data-action="toggle-damage">
+        <i class="fa-solid fa-bullseye"></i>
+    </a>
+    <a class="type-toggle damage" data-action="toggle-damage">
+        <i class="fa-solid fa-burst"></i>
+    </a>
+</div>
+{{/unless}}
 {{/inline}}
