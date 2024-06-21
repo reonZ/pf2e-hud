@@ -1,4 +1,5 @@
 import { addListenerAll, settingPath, templatePath } from "foundry-pf2e";
+import { hud } from "../../main";
 import { PF2eHudSidebarActions } from "../sidebar/actions";
 import { PF2eHudSidebar, SidebarEvent, SidebarName } from "../sidebar/base";
 import { PF2eHudSidebarExtras } from "../sidebar/extras";
@@ -6,7 +7,6 @@ import { PF2eHudSidebarItems } from "../sidebar/items";
 import { PF2eHudSidebarSkills } from "../sidebar/skills";
 import { PF2eHudSidebarSpells } from "../sidebar/spells";
 import { BaseActorContext, BaseActorRenderOptions, PF2eHudBaseActor } from "./actor";
-import { hud } from "../../main";
 
 const CLOSE_SETTINGS = ["closeOnSendToChat", "closeOnSpell"] as const;
 

@@ -98,16 +98,6 @@ Hooks.once("setup", () => {
     }
 });
 
-Hooks.on("renderTokenHUD", () => {
-    HUDS.token.close();
-    HUDS.persistent.closeSidebar();
-});
-
-Hooks.on("renderActorSheet", (sheet: ActorSheetPF2e) => {
-    if (HUDS.token.isCurrentActor(sheet.actor)) HUDS.token.close();
-    if (HUDS.persistent.isCurrentActor(sheet.actor)) HUDS.persistent.closeSidebar();
-});
-
 Hooks.on("renderSettingsConfig", (app: SettingsConfig, $html: JQuery) => {
     const html = $html[0];
     const tab = htmlQuery(html, `.tab[data-tab="${MODULE.id}"]`);

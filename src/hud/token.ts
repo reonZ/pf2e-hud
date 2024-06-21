@@ -187,6 +187,14 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
             },
             "WRAPPER"
         );
+
+        Hooks.on("renderTokenHUD", () => {
+            this.close();
+        });
+
+        Hooks.on("renderActorSheet", (sheet: ActorSheetPF2e) => {
+            if (this.isCurrentActor(sheet.actor)) this.close();
+        });
     }
 
     _onSetToken(token: TokenPF2e | null): void {
