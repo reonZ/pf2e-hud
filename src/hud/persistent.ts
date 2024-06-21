@@ -4,12 +4,12 @@ import {
     addListener,
     addListenerAll,
     arrayIncludes,
+    confirmDialog,
     consumeItem,
     createHTMLElement,
     createHook,
     elementDataset,
     getFlag,
-    htmlClosest,
     localize,
     objectHasKey,
     openAttackpopup,
@@ -42,7 +42,6 @@ import {
 } from "./shared/advanced";
 import { StatsHeader, getStatsHeader } from "./shared/base";
 import { addStatsAdvancedListeners, addStatsHeaderListeners } from "./shared/listeners";
-import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
 import {
     ActionBlast,
     ActionStrike,
@@ -50,6 +49,7 @@ import {
     getStrikeData,
     variantLabel,
 } from "./sidebar/actions";
+import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
 
 const ROMAN_RANKS = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"] as const;
 
@@ -57,6 +57,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     PF2eHudBaseActor<PersistentSettings, PersistentHudActor>
 ) {
     #renderActorSheetHook = createHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
+    #renderTokenHudHook = createHook("renderTokenHUD", () => this.closeSidebar());
     #renderHotbarHook = createHook("renderHotbar", this.#onRenderHotbar.bind(this));
     #deleteTokenHook = createHook("deleteToken", this.#onDeleteActor.bind(this));
     #deleteActorHook = createHook("deleteActor", this.#onDeleteActor.bind(this));
@@ -214,6 +215,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
     _onEnable(enabled: boolean = this.enabled) {
         this.#renderActorSheetHook.toggle(enabled);
+        this.#renderTokenHudHook.toggle(enabled);
         this.#renderHotbarHook.toggle(enabled);
         this.#deleteTokenHook.toggle(enabled);
         this.#deleteActorHook.toggle(enabled);
@@ -255,7 +257,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = parentData.actor;
         return {
             ...parentData,
-            sidebars: getSidebars(actor),
             isNPC: actor.isOfType("npc"),
             isCharacter: actor.isOfType("character"),
         };
@@ -324,6 +325,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
             this.#elements[name] = element;
             this.#parts[name].activateListeners(element);
+        }
+    }
+
+    _onRender(context: PersistentContext, options: PersistentRenderOptions) {
+        if (options.parts.includes("main")) {
+            this.sidebar?.render(true);
         }
     }
 
@@ -549,6 +556,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = sheet.actor;
         if (!this.isValidActor(actor)) return;
 
+        this.closeSidebar();
+
         const html = $html[0];
         const titleElement = html
             .closest(".window-app")
@@ -698,6 +707,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const data: MainContext = {
             ...context,
             ...getAdvancedStats(actor),
+            sidebars: getSidebars(actor, this.sidebar?.key),
             shortcutGroups,
             variantLabel,
         };
@@ -737,42 +747,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 arrayIncludes(["consumable"], classList)
             ) {
                 shortcutElement.addEventListener("click", async (event) => {
-                    const shortcut = await this.getShortcutFromElement(shortcutElement);
-                    if (shortcut.isEmpty) return;
-
-                    switch (shortcut.type) {
-                        case "consumable": {
-                            if (shortcut.item) {
-                                if (this.getSetting("confirmShortcuts")) {
-                                    const name = shortcut.item.name;
-                                    const confirm = await foundry.applications.api.DialogV2.confirm(
-                                        {
-                                            window: {
-                                                title: localize(
-                                                    "persistent.main.shortcut.consumable.confirm.title",
-                                                    { name }
-                                                ),
-                                            },
-                                            content: localize(
-                                                "persistent.main.shortcut.consumable.confirm.message",
-                                                { name }
-                                            ),
-                                        }
-                                    );
-
-                                    if (!confirm) return;
-                                }
-
-                                consumeItem(event, shortcut.item);
-                            }
-                            break;
-                        }
-                    }
+                    this.#onShortcutClick(event, shortcutElement);
                 });
             }
 
             addListenerAll(shortcutElement, "[data-action]", (event, el) =>
-                this.#activateMainActionListener(event, shortcutElement, el)
+                this.#onShortcutAction(event, shortcutElement, el)
             );
 
             addListenerAll(shortcutElement, ".variants.blasts .category > *", () => {
@@ -781,11 +761,36 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         }
     }
 
-    async #activateMainActionListener(
-        event: MouseEvent,
-        shortcutElement: HTMLElement,
-        el: HTMLElement
-    ) {
+    async #onShortcutClick(event: MouseEvent, shortcutElement: HTMLElement) {
+        const shortcut = await this.getShortcutFromElement(shortcutElement);
+        if (shortcut.isEmpty) return;
+
+        switch (shortcut.type) {
+            case "consumable": {
+                if (shortcut.item) {
+                    if (this.getSetting("confirmShortcuts")) {
+                        const name = shortcut.item.name;
+                        const confirm = await confirmDialog({
+                            title: localize("persistent.main.shortcut.consumable.confirm.title", {
+                                name,
+                            }),
+                            content: localize(
+                                "persistent.main.shortcut.consumable.confirm.message",
+                                { name }
+                            ),
+                        });
+
+                        if (!confirm) return;
+                    }
+
+                    consumeItem(event, shortcut.item);
+                }
+                break;
+            }
+        }
+    }
+
+    async #onShortcutAction(event: MouseEvent, shortcutElement: HTMLElement, el: HTMLElement) {
         const actor = this.actor!;
         const action = el.dataset.action as ShortcutActionEvent;
 
@@ -1081,6 +1086,7 @@ type PortraitContext = PersistentContext &
 
 type MainContext = PersistentContext &
     StatsAdvanced & {
+        sidebars: SidebarMenu[];
         shortcutGroups: ShortcutGroup[];
         variantLabel: typeof variantLabel;
     };
@@ -1116,7 +1122,6 @@ type Parts = {
 type PersistentContext = Omit<BaseActorContext<PersistentHudActor>, "actor" | "hasActor"> & {
     hasActor: true;
     actor: PersistentHudActor;
-    sidebars: SidebarMenu[];
     isCharacter: boolean;
     isNPC: boolean;
 };
