@@ -516,24 +516,49 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     if (!actor.isOfType("character")) return throwErrror();
 
                     const blast = await getBlastData(actor, shortcut.elementTrait);
+                    const disabled = !blast;
 
                     return {
                         ...shortcut,
-                        isDisabled: !blast,
-                        isFadedOut: !blast,
+                        isDisabled: disabled,
+                        isFadedOut: disabled,
                         blast,
                     } satisfies AttackShortcut as T;
                 } else {
                     const { itemId, slug } = shortcut;
                     const strike = await getStrikeData(actor, { id: itemId, slug });
+                    const disabled = !strike;
 
                     return {
                         ...shortcut,
-                        isDisabled: !strike,
-                        isFadedOut: !strike,
+                        isDisabled: disabled,
+                        isFadedOut: disabled,
                         strike,
                     } satisfies AttackShortcut as T;
                 }
+            }
+
+            case "toggle": {
+                const { domain, option } = shortcut;
+                const item = actor.items.get(shortcut.itemId);
+                const toggle = foundry.utils.getProperty<RollOptionToggle>(
+                    actor,
+                    `synthetics.toggles.${domain}.${option}`
+                );
+                const disabled = !item || !toggle?.enabled;
+                const checked = !!toggle?.checked;
+                const label = game.i18n.localize(
+                    `PF2E.SETTINGS.EnabledDisabled.${checked ? "Enabled" : "Disabled"}`
+                );
+
+                return {
+                    ...shortcut,
+                    isDisabled: disabled,
+                    isFadedOut: disabled,
+                    checked,
+                    item,
+                    name: `${shortcut.name} (${label})`,
+                } satisfies ToggleShortcut as T;
             }
         }
 
@@ -754,7 +779,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
             if (
                 !arrayIncludes(["empty", "disabled"], classList) &&
-                arrayIncludes(["consumable"], classList)
+                arrayIncludes(["consumable", "toggle"], classList)
             ) {
                 shortcutElement.addEventListener("click", async (event) => {
                     this.#onShortcutClick(event, shortcutElement);
@@ -782,26 +807,37 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const shortcut = await this.getShortcutFromElement(shortcutElement);
         if (shortcut.isEmpty) return;
 
+        const actor = this.actor!;
+
         switch (shortcut.type) {
             case "consumable": {
-                if (shortcut.item) {
-                    if (this.getSetting("confirmShortcuts")) {
-                        const name = shortcut.item.name;
-                        const confirm = await confirmDialog({
-                            title: localize("persistent.main.shortcut.consumable.confirm.title", {
-                                name,
-                            }),
-                            content: localize(
-                                "persistent.main.shortcut.consumable.confirm.message",
-                                { name }
-                            ),
-                        });
+                if (!shortcut.item) return;
 
-                        if (!confirm) return;
-                    }
+                if (this.getSetting("confirmShortcuts")) {
+                    const name = shortcut.item.name;
+                    const confirm = await confirmDialog({
+                        title: localize("persistent.main.shortcut.consumable.confirm.title", {
+                            name,
+                        }),
+                        content: localize("persistent.main.shortcut.consumable.confirm.message", {
+                            name,
+                        }),
+                    });
 
-                    consumeItem(event, shortcut.item);
+                    if (!confirm) return;
                 }
+
+                consumeItem(event, shortcut.item);
+
+                break;
+            }
+
+            case "toggle": {
+                if (shortcut.isDisabled) return;
+
+                const { domain, itemId, option } = shortcut;
+                actor.toggleRollOption(domain, option, itemId ?? null);
+
                 break;
             }
         }
@@ -908,6 +944,17 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 if (!(isInstanceOf(item, "ItemPF2e") && item.isEmbedded)) return wrongType();
                 if (!this.isCurrentActor(item.actor)) return wrongActor();
 
+                newShortcut = {
+                    type: "toggle",
+                    index,
+                    groupIndex,
+                    domain,
+                    option,
+                    img: item.img,
+                    itemId: item.id,
+                    name: label,
+                } satisfies ToggleShortcutFlag;
+
                 break;
             }
 
@@ -984,10 +1031,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     } satisfies AttackShortcutFlag;
                 }
 
-                break;
-            }
-
-            case "RollOption": {
                 break;
             }
         }
@@ -1075,6 +1118,14 @@ type ShortcutFlagBase<T extends ShortcutType> = {
     groupIndex: string;
 };
 
+type ToggleShortcutFlag = ShortcutFlagBase<"toggle"> & {
+    itemId: string;
+    domain: string;
+    option: string;
+    name: string;
+    img: string;
+};
+
 type AttackShortcutFlag = ShortcutFlagBase<"attack"> & { img: string; name: string } & (
         | {
               elementTrait: ElementTrait;
@@ -1095,7 +1146,7 @@ type ConsumableShortcutFlag = ShortcutFlagBase<"consumable"> &
         | { id: string }
     );
 
-type ShortcutFlag = ConsumableShortcutFlag | AttackShortcutFlag;
+type ShortcutFlag = ConsumableShortcutFlag | AttackShortcutFlag | ToggleShortcutFlag;
 
 type BaseShortCut<T extends ShortcutType> = ShortcutFlagBase<T> & {
     name: string;
@@ -1104,6 +1155,12 @@ type BaseShortCut<T extends ShortcutType> = ShortcutFlagBase<T> & {
     isDisabled: boolean;
     isFadedOut: boolean;
 };
+
+type ToggleShortcut = BaseShortCut<"toggle"> &
+    ToggleShortcutFlag & {
+        item: ItemPF2e | undefined;
+        checked: boolean;
+    };
 
 type ConsumableShortcut = BaseShortCut<"consumable"> &
     ConsumableShortcutFlag & {
@@ -1131,7 +1188,7 @@ type StrikeShortcut = BaseAttackShortcut & {
 
 type AttackShortcut = BlastShortcut | StrikeShortcut;
 
-type Shortcut = ConsumableShortcut | AttackShortcut;
+type Shortcut = ConsumableShortcut | AttackShortcut | ToggleShortcut;
 
 type EmptyShortcut = { index: string; groupIndex: string; isEmpty: true };
 

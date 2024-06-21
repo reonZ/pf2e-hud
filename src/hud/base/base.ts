@@ -29,8 +29,6 @@ abstract class PF2eHudBase<TSettings extends BaseSettings = BaseSettings> extend
                 name: settingPath("shared.enabled.name"),
                 hint: settingPath("shared.enabled.hint"),
                 onChange: () => {
-                    console.log(this);
-
                     this.enable();
                 },
             },

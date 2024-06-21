@@ -205,6 +205,23 @@ $bottom-width: 542px;
                                 inset: 0;
                             }
 
+                            .check {
+                                inset: 0;
+
+                                i {
+                                    position: absolute;
+                                    font-size: 1.7em;
+                                    left: 50%;
+                                    top: calc(50% + 0.02em);
+                                    transform: translate(-50%, -50%);
+
+                                    &:last-child {
+                                        opacity: 0.7;
+                                        color: black;
+                                    }
+                                }
+                            }
+
                             .name {
                                 white-space: nowrap;
                                 left: 50%;

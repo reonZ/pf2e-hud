@@ -51,14 +51,27 @@
 {{#*inline 'shortcut'}}
 <img src="{{shortcut.img}}">
 <div class="name app">{{shortcut.name}}</div>
-{{!-- consumable --}}
 {{#if (eq shortcut.type 'consumable')}}
 {{> consumable consumable=shortcut}}
-{{/if}}
-{{!-- attack --}}
-{{#if (eq shortcut.type 'attack')}}
+{{else if (eq shortcut.type 'attack')}}
 {{> attack attack=shortcut}}
+{{else if (eq shortcut.type 'toggle') }}
+{{> toggle toggle=shortcut}}
 {{/if}}
+{{/inline}}
+
+{{#*inline 'toggle'}}
+{{#unless toggle.isDisabled}}
+<div class="check{{#if toggle.checked}} active{{/if}}">
+    {{#if toggle.checked}}
+    <i class="fa-regular fa-square-check"></i>
+    <i class="fa-solid fa-square-check"></i>
+    {{else}}
+    <i class="fa-regular fa-square"></i>
+    <i class="fa-solid fa-square"></i>
+    {{/if}}
+</div>
+{{/unless}}
 {{/inline}}
 
 {{#*inline 'consumable'}}
