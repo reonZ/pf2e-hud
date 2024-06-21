@@ -886,7 +886,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         const actor = this.actor!;
         const shortcut = await this.getShortcutFromElement(el);
-        const { index, groupIndex } = shortcut;
+        let { index, groupIndex } = shortcut;
 
         let newShortcut: ShortcutFlag | undefined;
 
@@ -929,7 +929,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 const itemActor = resolveMacroActor(dropData.actorUUID);
                 if (!this.isCurrentActor(itemActor)) return wrongActor();
 
-                const { elementTrait, actorUUID, index: actionIndex } = dropData;
+                const { elementTrait, index: actionIndex } = dropData;
+
+                index = "0";
 
                 if (
                     actor.isOfType("character") &&
@@ -982,6 +984,20 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 )
             ) ?? {};
 
+        if (newShortcut.type === "attack") {
+            const wasSplit =
+                (!shortcut.isEmpty && shortcut.type !== "attack") ||
+                Object.values(group).some((x) => "type" in x && x.type !== "attack");
+
+            if (wasSplit) {
+                for (const key of Object.keys(group)) {
+                    if (key === index) continue;
+                    delete group[key];
+                    group[`-=${key}`] = true;
+                }
+            }
+        }
+
         if (group[index]) {
             const removedKeys: Record<string, any> = {};
 
@@ -994,14 +1010,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         }
 
         group[index] = newShortcut;
-
-        if (newShortcut.type === "attack" && !shortcut.isEmpty && shortcut.type !== "attack") {
-            for (const key of Object.keys(group)) {
-                if (key === index) continue;
-                delete group[key];
-                group[`-=${key}`] = true;
-            }
-        }
 
         setFlag(actor, "persistent.shortcuts", game.user.id, groupIndex, group);
     }
