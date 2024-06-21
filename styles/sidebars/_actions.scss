@@ -80,6 +80,10 @@
             &.attack {
                 background: var(--attack-background);
                 border-color: var(--attack-border-color);
+
+                &:nth-child(4) {
+                    flex: 1;
+                }
             }
 
             &.damage {
