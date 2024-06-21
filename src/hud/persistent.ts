@@ -742,7 +742,29 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
                     switch (shortcut.type) {
                         case "consumable": {
-                            if (shortcut.item) consumeItem(event, shortcut.item);
+                            if (shortcut.item) {
+                                if (this.getSetting("confirmShortcuts")) {
+                                    const name = shortcut.item.name;
+                                    const confirm = await foundry.applications.api.DialogV2.confirm(
+                                        {
+                                            window: {
+                                                title: localize(
+                                                    "persistent.main.shortcut.consumable.confirm.title",
+                                                    { name }
+                                                ),
+                                            },
+                                            content: localize(
+                                                "persistent.main.shortcut.consumable.confirm.message",
+                                                { name }
+                                            ),
+                                        }
+                                    );
+
+                                    if (!confirm) return;
+                                }
+
+                                consumeItem(event, shortcut.item);
+                            }
                             break;
                         }
                     }

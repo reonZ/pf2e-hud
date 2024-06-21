@@ -144,6 +144,10 @@
                 "closeOnSendToChat": {
                     "name": "Close Sidebar on Send to Chat",
                     "hint": "Should the sidebar be closed when sending an item to chat."
+                },
+                "confirmShortcuts": {
+                    "name": "Shortcut Confirm Dialog",
+                    "hint": "This will add a confirmation dialog for shortcuts that consume uses."
                 }
             },
             "tracker": {
@@ -195,7 +199,13 @@
             "main": {
                 "shortcut": {
                     "wrongActor": "You can only create shortcuts from the same persistent actor.",
-                    "wrongType": "You cannot create a shortcut for that type."
+                    "wrongType": "You cannot create a shortcut for that type.",
+                    "consumable": {
+                        "confirm": {
+                            "title": "Consume - {name}",
+                            "message": "Are you sure you want to consume <strong>{name}</strong>?"
+                        }
+                    }
                 }
             }
         },
