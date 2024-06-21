@@ -47,6 +47,7 @@ import {
     ActionStrike,
     getBlastData,
     getStrikeData,
+    getStrikeVariant,
     variantLabel,
 } from "./sidebar/actions";
 import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
@@ -156,6 +157,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 onUp: () => this.#setSelectedToken(),
             },
         ];
+    }
+
+    get partials(): string[] {
+        return super.partials.concat([
+            "action_blast-row",
+            "action_strike-row",
+            "action_auxiliaries",
+        ]);
     }
 
     get templates(): PartName[] {
@@ -755,7 +764,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 this.#onShortcutAction(event, shortcutElement, el)
             );
 
-            addListenerAll(shortcutElement, ".variants.blasts .category > *", () => {
+            addListenerAll(shortcutElement, ".variants .category > *", () => {
                 shortcutElement.classList.toggle("use-variant");
             });
         }
@@ -794,6 +803,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = this.actor!;
         const action = el.dataset.action as ShortcutActionEvent;
 
+        const getStrike = async <T extends StrikeData>(el: HTMLElement, readyOnly = false) => {
+            const shortcut = await this.getShortcutFromElement<StrikeShortcut>(shortcutElement);
+            if (shortcut.isEmpty || !shortcut.strike) return null;
+            return getStrikeVariant<T>(shortcut.strike, el, readyOnly);
+        };
+
         switch (action) {
             case "toggle-damage": {
                 shortcutElement?.classList.toggle("show-damage");
@@ -819,6 +834,26 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 const shortcut = await this.getShortcutFromElement<BlastShortcut>(shortcutElement);
                 if (shortcut.isEmpty || !shortcut.blast) return;
                 return shortcut.blast.damage(event, el);
+            }
+
+            case "strike-attack": {
+                const strike = await getStrike(el, true);
+                const variantIndex = Number(el.dataset.variantIndex);
+                return strike?.variants[variantIndex]?.roll({ event });
+            }
+
+            case "strike-damage":
+            case "strike-critical": {
+                const strike = await getStrike(el);
+                const method = el.dataset.action === "strike-damage" ? "damage" : "critical";
+                return strike?.[method]?.({ event });
+            }
+
+            case "auxiliary-action": {
+                const strike = await getStrike<CharacterStrike>(el);
+                const auxiliaryActionIndex = Number(el.dataset.auxiliaryActionIndex ?? NaN);
+                strike?.auxiliaryActions?.at(auxiliaryActionIndex)?.execute();
+                break;
             }
         }
     }
@@ -987,7 +1022,15 @@ function itemSlug(item: ItemPF2e) {
     return item.slug ?? game.pf2e.system.sluggify(item.name);
 }
 
-type ShortcutActionEvent = "toggle-damage" | "open-attack-popup" | "blast-attack" | "blast-damage";
+type ShortcutActionEvent =
+    | "toggle-damage"
+    | "open-attack-popup"
+    | "blast-attack"
+    | "blast-damage"
+    | "strike-attack"
+    | "strike-damage"
+    | "strike-critical"
+    | "auxiliary-action";
 
 type ShortcutType = "action" | "attack" | "consumable" | "spell" | "toggle";
 

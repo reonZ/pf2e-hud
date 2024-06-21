@@ -111,6 +111,8 @@ $bottom-width: 542px;
     --attack-border-color: #3a49c9;
     --damage-background: #6d1010de;
     --damage-border-color: #c93a3a;
+    --variant-background: #4f4732;
+    --variant-border-color: #9f916e;
 
     // width: calc($bottom-width - 3px);
     width: fit-content;
@@ -246,6 +248,11 @@ $bottom-width: 542px;
                                 font-size: 0.9em;
                             }
 
+                            .background {
+                                inset: 0;
+                                background: rgba(0, 0, 0, 0.568627451);
+                            }
+
                             .controls {
                                 top: 0.2em;
                                 left: 0;
@@ -279,7 +286,6 @@ $bottom-width: 542px;
                                 .category {
                                     flex: 1;
                                     position: relative;
-                                    background: #00000091;
 
                                     img,
                                     i {
@@ -295,7 +301,7 @@ $bottom-width: 542px;
                                     }
 
                                     i {
-                                        top: 0.2em;
+                                        top: 0.25em;
                                     }
                                 }
 
@@ -306,6 +312,9 @@ $bottom-width: 542px;
                                     border-style: solid;
                                     text-transform: uppercase;
                                     font-size: 0.85em;
+                                    background: var(--variant-background);
+                                    border-color: var(--variant-border-color);
+                                    padding-block: 0.05em;
 
                                     &.attack {
                                         background: var(--attack-background);
@@ -327,7 +336,8 @@ $bottom-width: 542px;
                                     }
                                 }
 
-                                &.blasts {
+                                + .variants,
+                                &:has(+ .variants) {
                                     .category {
                                         i,
                                         img {
@@ -352,7 +362,15 @@ $bottom-width: 542px;
                                 }
 
                                 &.attack {
-                                    > :not(img) {
+                                    :not(img, .quantity) {
+                                        display: none;
+                                    }
+                                }
+                            }
+
+                            &:hover {
+                                &.attack {
+                                    .quantity {
                                         display: none;
                                     }
                                 }

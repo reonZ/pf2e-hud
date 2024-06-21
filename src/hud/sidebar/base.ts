@@ -91,7 +91,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
     abstract get key(): SidebarName;
 
     get partials(): string[] {
-        return ["item_image"];
+        return ["item_image", "action_blast-row", "action_strike-row", "action_auxiliaries"];
     }
 
     get parentHUD() {

@@ -90,7 +90,7 @@
     {{!-- attack/damage --}}
     {{#if (any strike.ready @root.showUnreadyStrikes)}}
     {{#if strike.canStrike}}
-    {{> strikeRow strike}}
+    {{> (@root.partial 'action_strike-row') strike}}
     {{/if}}
     {{else if (and (not strike.ready) (not strike.handsAvailable))}}
     <span class="hands-occupied">{{localize "PF2E.Actor.Character.HandsOccupied"}}</span>
@@ -98,7 +98,7 @@
     {{!-- extra attack/damage --}}
     {{#if (and strike.altUsages (or strike.ready @root.showUnreadyStrikes))}}
     {{#each strike.altUsages as |usage|}}
-    {{> strikeRow usage isAltUsage=true}}
+    {{> (@root.partial 'action_strike-row') usage isAltUsage=true}}
     {{/each}}
     {{/if}}
 
@@ -119,27 +119,8 @@
             {{/if}}
         </div>
         {{/if}}
-        {{!--
-    </div> --}}
-    {{!-- auxiliaries --}}
-    {{!-- <div class="variants"> --}}
-        {{#if strike.handsAvailable}}
-        {{#each strike.auxiliaryActions as |aux index|}}
-        <div class="variant" data-action="auxiliary-action" data-auxiliary-action-index="{{index}}">
-            <span>{{aux.label}}</span>
-            <span class="action-glyph">{{aux.glyph}}</span>
-            {{#if aux.options}}
-            <select class="modular">
-                {{#each aux.options as |option|}}
-                <option value="{{option.value}}" {{#if option.selected}} selected{{/if}}>
-                    {{option.label}} {{#if option.selected}}✔️{{/if}}
-                </option>
-                {{/each}}
-            </select>
-            {{/if}}
-        </div>
-        {{/each}}
-        {{/if}}
+        {{!-- auxiliaries --}}
+        {{> (@root.partial 'action_auxiliaries') strike=strike}}
         {{!-- damage types --}}
         {{#if (and item.dealsDamage (or doubleBarrel versatileOptions))}}
         <div class="versatiles">

@@ -208,18 +208,8 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             readyOnly = false
         ): T | null => {
             const actionIndex = Number(htmlClosest(button, ".item")?.dataset.index ?? "NaN");
-            const rootAction = this.actor.system.actions?.at(actionIndex) ?? null;
-            const altUsage = tupleHasValue(["thrown", "melee"], button?.dataset.altUsage)
-                ? button?.dataset.altUsage
-                : null;
-
-            const strike = altUsage
-                ? rootAction?.altUsages?.find((s) =>
-                      altUsage === "thrown" ? s.item.isThrown : s.item.isMelee
-                  ) ?? null
-                : rootAction;
-
-            return strike?.ready || !readyOnly ? (strike as T) : null;
+            const strike = this.actor.system.actions?.at(actionIndex) ?? null;
+            return getStrikeVariant<T>(strike, button, readyOnly);
         };
 
         const getUUID = (button: HTMLElement) => {
@@ -561,6 +551,24 @@ function variantLabel(label: string) {
     return label.replace(/.+\((.+)\)/, "$1");
 }
 
+function getStrikeVariant<T extends StrikeData>(
+    strike: Maybe<StrikeData>,
+    el: HTMLElement,
+    readyOnly = false
+) {
+    const altUsage = tupleHasValue(["thrown", "melee"], el?.dataset.altUsage)
+        ? el?.dataset.altUsage
+        : null;
+
+    const strikeVariant = altUsage
+        ? strike?.altUsages?.find((s) =>
+              altUsage === "thrown" ? s.item.isThrown : s.item.isMelee
+          ) ?? null
+        : strike;
+
+    return strikeVariant?.ready || !readyOnly ? (strikeVariant as T) : null;
+}
+
 type ActionStrikeUsage = StrikeData & {
     damageFormula: string;
     criticalFormula: string;
@@ -647,4 +655,4 @@ type ActionsContext = SidebarContext & {
 };
 
 export type { ActionBlast, ActionStrike };
-export { PF2eHudSidebarActions, getBlastData, getStrikeData, variantLabel };
+export { PF2eHudSidebarActions, getBlastData, getStrikeData, getStrikeVariant, variantLabel };

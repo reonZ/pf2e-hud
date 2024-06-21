@@ -1,0 +1,61 @@
+<div class="variants">
+    {{!-- category --}}
+    {{#if category}}
+    <span class="category">
+        {{#if (eq category.type 'melee')}}
+        <img class="alt-usage-icon" src="systems/pf2e/icons/mdi/sword.svg"
+            data-tooltip="{{category.tooltip}}">
+        {{else if (eq category.type 'thrown')}}
+        <img class="alt-usage-icon" src="systems/pf2e/icons/mdi/thrown.svg"
+            data-tooltip="{{category.tooltip}}">
+        {{else }}
+        <i class="fa-regular fa-bow-arrow" data-tooltip="{{category.tooltip}}"></i>
+        {{/if}}
+    </span>
+    {{/if}}
+    {{!-- attacks --}}
+    {{#each variants as |variant index|}}
+    <div class="variant attack" data-action="strike-attack" data-variant-index="{{index}}" {{#if
+        ../isAltUsage}} data-alt-usage="{{#if ../item.isThrown}}thrown{{else}}melee{{/if}}" {{/if}}
+        {{#if (eq ../quantity 0)}} disabled data-tooltip="{{localize "
+        PF2E.ErrorMessage.WeaponQuantityZero"}}"{{/if}}>
+        {{!-- first attack --}}
+        {{#if (eq index 0)}}
+        {{#if @root.isCharacter}}
+        {{localize "PF2E.WeaponStrikeLabel"}}
+        {{/if}}
+        {{variant.label}}
+        {{!-- other map --}}
+        {{else}}
+        {{@root.variantLabel variant.label}}
+        {{/if}}
+    </div>
+    {{/each}}
+    {{!-- damage --}}
+    {{#if item.dealsDamage}}
+    {{!-- if not character, we split into a new variants line --}}
+    {{#unless @root.isCharacter}}
+</div>
+<div class="variants">
+    {{/unless}}
+    <div class="variant damage" data-action="strike-damage" {{#if
+        isAltUsage}}data-alt-usage="{{#if item.isThrown}}thrown{{else}}melee{{/if}}" {{/if}} {{#if
+        @root.isCharacter}}data-tooltip="{{damageFormula}}" {{/if}}>
+        {{#if @root.isCharacter}}
+        {{localize "PF2E.DamageLabel"}}
+        {{else}}
+        {{damageFormula}}
+        {{/if}}
+    </div>
+    <div class="variant damage" data-action="strike-critical" {{#if
+        isAltUsage}}data-alt-usage="{{#if item.isThrown}}thrown{{else}}melee{{/if}}" {{/if}} {{#if
+        @root.isCharacter}}data-tooltip="{{criticalFormula}}" {{/if}}>
+        {{#if @root.isCharacter}}
+        {{localize "PF2E.CriticalDamageLabel"}}
+        {{else}}
+        {{criticalFormula}}
+        {{/if}}
+    </div>
+    {{!-- end if damage --}}
+    {{/if}}
+</div>

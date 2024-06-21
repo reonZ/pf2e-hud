@@ -19,7 +19,6 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
 
         get partials(): string[] {
             return [
-                "action_blast-row",
                 "stats_header",
                 "stats_statistics",
                 "stats_infos",
