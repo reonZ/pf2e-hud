@@ -723,7 +723,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             });
 
             shortcutElement.addEventListener("mouseleave", () => {
-                shortcutElement.classList.remove("damage");
+                shortcutElement.classList.remove("show-damage");
                 shortcutElement.classList.remove("use-variant");
             });
 
@@ -769,7 +769,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         switch (action) {
             case "toggle-damage": {
-                shortcutElement?.classList.toggle("damage");
+                shortcutElement?.classList.toggle("show-damage");
                 break;
             }
 

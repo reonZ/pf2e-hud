@@ -347,8 +347,14 @@ $bottom-width: 542px;
                             }
 
                             &:not(:hover) {
-                                > :not(img) {
+                                .name {
                                     display: none;
+                                }
+
+                                &.attack {
+                                    > :not(img) {
+                                        display: none;
+                                    }
                                 }
                             }
 
@@ -373,14 +379,14 @@ $bottom-width: 542px;
                                 }
                             }
 
-                            &:not(.damage) {
+                            &:not(.show-damage) {
                                 .variant.damage,
                                 .type-toggle.attack {
                                     display: none;
                                 }
                             }
 
-                            &.damage {
+                            &.show-damage {
                                 .variant.attack,
                                 .type-toggle.damage {
                                     display: none;
