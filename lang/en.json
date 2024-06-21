@@ -145,9 +145,14 @@
                     "name": "Close Sidebar on Send to Chat",
                     "hint": "Should the sidebar be closed when sending an item to chat."
                 },
-                "confirmShortcuts": {
-                    "name": "Shortcut Confirm Dialog",
-                    "hint": "This will add a confirmation dialog for shortcuts that consume uses."
+                "consumableShortcut": {
+                    "name": "Consumable Shortcut",
+                    "hint": "What clicking on a consumable shortcut should do.",
+                    "choices": {
+                        "use": "Use Directly",
+                        "confirm": "Confirm before use",
+                        "chat": "Send to Chat Only"
+                    }
                 }
             },
             "tracker": {

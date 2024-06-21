@@ -109,7 +109,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             "sidebarHeight",
             "multiColumns",
             "noflash",
-            "confirmShortcuts",
+            "consumableShortcut",
             "closeOnSendToChat",
             "closeOnSpell",
         ];
@@ -124,9 +124,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 scope: "client",
             },
             {
-                key: "confirmShortcuts",
-                type: Boolean,
-                default: true,
+                key: "consumableShortcut",
+                type: String,
+                choices: ["use", "confirm", "chat"],
+                default: "confirm",
                 scope: "client",
             },
             {
@@ -534,6 +535,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         isDisabled: disabled,
                         isFadedOut: disabled,
                         strike,
+                        img: strike?.item.img ?? shortcut.img,
+                        name: strike
+                            ? `${game.i18n.localize("PF2E.WeaponStrikeLabel")}: ${strike.label}`
+                            : shortcut.name,
                     } satisfies AttackShortcut as T;
                 }
             }
@@ -557,7 +562,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     isFadedOut: disabled,
                     checked,
                     item,
-                    name: `${shortcut.name} (${label})`,
+                    img: item?.img ?? shortcut.img,
+                    name: item ? `${item.name} (${label})` : shortcut.name,
                 } satisfies ToggleShortcut as T;
             }
         }
@@ -777,10 +783,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 unsetFlag(actor, "persistent.shortcuts", game.user.id, groupIndex, index);
             });
 
-            if (
-                !arrayIncludes(["empty", "disabled"], classList) &&
-                arrayIncludes(["consumable", "toggle"], classList)
-            ) {
+            if (!classList.includes("attack") && !arrayIncludes(["empty", "disabled"], classList)) {
                 shortcutElement.addEventListener("click", async (event) => {
                     this.#onShortcutClick(event, shortcutElement);
                 });
@@ -813,7 +816,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             case "consumable": {
                 if (!shortcut.item) return;
 
-                if (this.getSetting("confirmShortcuts")) {
+                const setting = this.getSetting("consumableShortcut");
+
+                if (setting === "chat") {
+                    return shortcut.item.toMessage(event);
+                }
+
+                if (setting === "confirm") {
                     const name = shortcut.item.name;
                     const confirm = await confirmDialog({
                         title: localize("persistent.main.shortcut.consumable.confirm.title", {
@@ -1266,7 +1275,7 @@ type PersistentSettings = BaseActorSettings &
     Record<CloseSetting, boolean> & {
         cleanPortrait: boolean;
         noflash: boolean;
-        confirmShortcuts: boolean;
+        consumableShortcut: "use" | "confirm" | "chat";
     };
 
 export { PF2eHudPersistent };
