@@ -127,7 +127,7 @@
         <i class="fa-solid fa-ellipsis-vertical"></i>
     </a>
     {{/if}}
-    {{#if attack.strike.ready}}
+    {{#if (or attack.blast attack.strike.ready)}}
     <a class="type-toggle attack" data-action="toggle-damage">
         <i class="fa-solid fa-bullseye"></i>
     </a>
