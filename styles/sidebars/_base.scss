@@ -329,7 +329,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: var(--variant-gap);
-            font-size: 0.85em;
+            font-size: 0.78em;
             color: var(--variant-color);
 
             .variant {
@@ -338,6 +338,7 @@
                 border: var(--variant-border);
                 background: var(--variant-background);
                 padding-inline: 0.1em;
+                text-transform: uppercase;
 
                 &:not(:empty) {
                     margin-top: var(--item-gap);
