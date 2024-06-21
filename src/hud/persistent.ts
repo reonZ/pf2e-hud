@@ -767,6 +767,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             addListenerAll(shortcutElement, ".variants .category > *", () => {
                 shortcutElement.classList.toggle("use-variant");
             });
+
+            const auxilaryElements = shortcutElement.querySelectorAll<HTMLElement>(
+                "[data-action='auxiliary-action']"
+            );
+            for (const auxilaryElement of auxilaryElements) {
+                auxilaryElement.dataset.tooltip = auxilaryElement.innerHTML.trim();
+            }
         }
     }
 
