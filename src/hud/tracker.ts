@@ -39,8 +39,8 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
         return ["started", "enabled", "fontSize", "textureScaling"];
     }
 
-    get SETTINGS() {
-        return super.SETTINGS.concat([
+    getSettings() {
+        return super.getSettings().concat([
             {
                 key: "started",
                 type: Boolean,

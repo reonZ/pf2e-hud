@@ -10,6 +10,7 @@ import {
     createHook,
     elementDataset,
     getFlag,
+    isInstanceOf,
     localize,
     objectHasKey,
     openAttackpopup,
@@ -114,8 +115,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         ];
     }
 
-    get SETTINGS(): SettingOptions[] {
-        return super.SETTINGS.concat([
+    getSettings(): SettingOptions[] {
+        return super.getSettings().concat([
             {
                 key: "noflash",
                 type: Boolean,
@@ -891,6 +892,25 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         let newShortcut: ShortcutFlag | undefined;
 
         switch (dropData.type) {
+            case "RollOption": {
+                const { label, domain, option } = dropData as RollOptionData;
+                if (
+                    typeof label !== "string" ||
+                    !label.length ||
+                    typeof domain !== "string" ||
+                    !domain.length ||
+                    typeof option !== "string" ||
+                    !option.length
+                )
+                    return wrongType();
+
+                const item = fromUuidSync(dropData.uuid ?? "");
+                if (!(isInstanceOf(item, "ItemPF2e") && item.isEmbedded)) return wrongType();
+                if (!this.isCurrentActor(item.actor)) return wrongActor();
+
+                break;
+            }
+
             case "Item": {
                 if (!dropData.uuid || !dropData.itemType) return wrongType();
 

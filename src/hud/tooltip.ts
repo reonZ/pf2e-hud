@@ -109,8 +109,8 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
         ];
     }
 
-    get SETTINGS() {
-        return super.SETTINGS.concat([
+    getSettings() {
+        return super.getSettings().concat([
             {
                 key: "status",
                 type: String,

@@ -31,9 +31,8 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
             ];
         }
 
-        get SETTINGS() {
-            const thisSuper = constructor.prototype as PF2eHudBaseActor;
-            return thisSuper.SETTINGS.concat([
+        getSettings() {
+            return PF2eHudBaseActor.prototype.getSettings.call(this).concat([
                 {
                     key: "sidebarFontSize",
                     type: Number,

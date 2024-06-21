@@ -63,7 +63,7 @@ Hooks.once("setup", () => {
         const currentOffset = settings.length;
         const orphanSettings: SettingOptions[] = [];
 
-        for (const setting of hud.SETTINGS) {
+        for (const setting of hud.getSettings()) {
             const key = `${hud.key}.${setting.key}`;
             const index = hud.SETTINGS_ORDER.indexOf(setting.key as any);
 

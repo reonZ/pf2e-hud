@@ -19,7 +19,7 @@ abstract class PF2eHudBase<TSettings extends BaseSettings = BaseSettings> extend
     abstract get templates(): string[] | ReadonlyArray<string>;
     abstract get SETTINGS_ORDER(): (keyof TSettings)[];
 
-    get SETTINGS(): SettingOptions[] {
+    getSettings(): SettingOptions[] {
         return [
             {
                 key: "enabled",
@@ -28,7 +28,11 @@ abstract class PF2eHudBase<TSettings extends BaseSettings = BaseSettings> extend
                 scope: "client",
                 name: settingPath("shared.enabled.name"),
                 hint: settingPath("shared.enabled.hint"),
-                onChange: () => this.enable(),
+                onChange: () => {
+                    console.log(this);
+
+                    this.enable();
+                },
             },
             {
                 key: "fontSize",
@@ -42,7 +46,9 @@ abstract class PF2eHudBase<TSettings extends BaseSettings = BaseSettings> extend
                 scope: "client",
                 name: settingPath("shared.fontSize.name"),
                 hint: settingPath("shared.fontSize.hint"),
-                onChange: () => this.render(),
+                onChange: () => {
+                    this.render();
+                },
             },
         ];
     }
