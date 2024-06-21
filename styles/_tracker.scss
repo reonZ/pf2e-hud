@@ -298,6 +298,14 @@ $threat-extreme: red;
         }
     }
 
+    &.textureScaling {
+        .combatants {
+            margin: -3em 0 -2em -3em;
+            padding: 3em 0 2em 3em;
+            min-height: calc(var(--combatant-height) * 2 + 5em);
+        }
+    }
+
     &.collapsed {
         .combatants {
             min-height: calc(var(--combatant-height) * 2);
@@ -310,14 +318,6 @@ $threat-extreme: red;
         &:has(.combatant.can-roll) {
             .fake {
                 display: none;
-            }
-        }
-
-        &.textureScaling {
-            .combatants {
-                margin: -3em 0 -2em -3em;
-                padding: 3em 0 2em 3em;
-                min-height: calc(var(--combatant-height) * 2 + 5em);
             }
         }
     }
