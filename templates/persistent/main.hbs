@@ -63,8 +63,8 @@
 {{/inline}}
 
 {{#*inline 'action'}}
-<div class="cost boxed action-glyph">
-    {{action.item.actionCost.value}}
+<div class="cost boxed">
+    {{{actionGlyph action.item.actionCost}}}
 </div>
 {{#if action.frequency}}
 <div class="quantity boxed">
