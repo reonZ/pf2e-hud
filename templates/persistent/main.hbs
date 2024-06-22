@@ -57,6 +57,19 @@
 {{> attack attack=shortcut}}
 {{else if (eq shortcut.type 'toggle') }}
 {{> toggle toggle=shortcut}}
+{{else if (eq shortcut.type 'action')}}
+{{> action action=shortcut}}
+{{/if}}
+{{/inline}}
+
+{{#*inline 'action'}}
+<div class="cost boxed action-glyph">
+    {{action.item.actionCost.value}}
+</div>
+{{#if action.frequency}}
+<div class="quantity boxed">
+    {{action.frequency.value}}
+</div>
 {{/if}}
 {{/inline}}
 

@@ -203,6 +203,7 @@ $bottom-width: 542px;
                             > img {
                                 height: 100%;
                                 inset: 0;
+                                border-radius: 4px;
                             }
 
                             .check {
@@ -241,6 +242,12 @@ $bottom-width: 542px;
                                 right: var(--offset);
                                 bottom: var(--offset);
                                 font-size: 0.9em;
+                            }
+
+                            .cost {
+                                bottom: var(--offset);
+                                left: var(--offset);
+                                font-size: 0.7em;
                             }
 
                             .category-icon {

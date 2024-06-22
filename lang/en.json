@@ -150,9 +150,13 @@
                     "hint": "What clicking on a consumable shortcut should do.",
                     "choices": {
                         "use": "Use Directly",
-                        "confirm": "Confirm before use",
+                        "confirm": "Confirm Before Use",
                         "chat": "Send to Chat Only"
                     }
+                },
+                "confirmShortcut": {
+                    "name": "Confirm Action/Spell Shortcut",
+                    "hint": "Should spell and action shortcuts require confirmation before being used."
                 }
             },
             "tracker": {
@@ -210,6 +214,10 @@
                             "title": "Consume - {name}",
                             "message": "Are you sure you want to consume <strong>{name}</strong>?"
                         }
+                    },
+                    "confirm": {
+                        "title": "Use - {name}",
+                        "message": "Are you sure you want to use <strong>{name}</strong>?"
                     }
                 }
             }

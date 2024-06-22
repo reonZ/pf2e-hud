@@ -118,18 +118,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                     actions: [],
                 };
 
-                const frequency = (() => {
-                    const frequency = ability.frequency;
-                    if (!frequency?.max) return;
-
-                    const perLabel = game.i18n.localize(CONFIG.PF2E.frequencies[frequency.per]);
-
-                    return {
-                        max: frequency.max,
-                        value: frequency.value,
-                        label: `${frequency.max} / ${perLabel}`,
-                    };
-                })();
+                const frequency = getActionFrequency(ability);
 
                 const usage = await (async () => {
                     if (isExploration) return;
@@ -356,29 +345,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                 case "use-action": {
                     const itemId = elementDataset(htmlClosest(button, ".item")!).itemId;
                     const item = actor.items.get(itemId);
-                    if (!item?.isOfType("feat", "action")) return;
-
-                    const frequency = item.frequency;
-                    if (frequency?.max && frequency.value) {
-                        item.update({ "system.frequency.value": frequency.value - 1 });
-                    }
-
-                    if (item.system.selfEffect) {
-                        createSelfEffectMessage(item, eventToRollMode(event));
-                        return;
-                    }
-
-                    const toolbelt = getActiveModule("pf2e-toolbelt");
-                    const macro = await toolbelt?.api.actionable.getActionMacro(item);
-                    if (macro) {
-                        macro?.execute({ actor });
-                    }
-
-                    if (!macro || toolbelt!.getSetting("actionable.message")) {
-                        item.toMessage(event);
-                    }
-
-                    break;
+                    return item?.isOfType("feat", "action") && useAction(item);
                 }
             }
         });
@@ -569,6 +536,41 @@ function getStrikeVariant<T extends StrikeData>(
     return strikeVariant?.ready || !readyOnly ? (strikeVariant as T) : null;
 }
 
+function getActionFrequency(action: FeatPF2e | AbilityItemPF2e) {
+    const frequency = action.frequency;
+    if (!frequency?.max) return;
+
+    const perLabel = game.i18n.localize(CONFIG.PF2E.frequencies[frequency.per]);
+
+    return {
+        max: frequency.max,
+        value: frequency.value,
+        label: `${frequency.max} / ${perLabel}`,
+    };
+}
+
+async function useAction(item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>) {
+    const frequency = item.frequency;
+    if (frequency?.max && frequency.value) {
+        item.update({ "system.frequency.value": frequency.value - 1 });
+    }
+
+    if (item.system.selfEffect) {
+        createSelfEffectMessage(item, eventToRollMode(event));
+        return;
+    }
+
+    const toolbelt = getActiveModule("pf2e-toolbelt");
+    const macro = await toolbelt?.api.actionable.getActionMacro(item);
+    if (macro) {
+        macro?.execute({ actor: item.actor });
+    }
+
+    if (!macro || toolbelt!.getSetting("actionable.message")) {
+        item.toMessage(event);
+    }
+}
+
 type ActionStrikeUsage = StrikeData & {
     damageFormula: string;
     criticalFormula: string;
@@ -655,4 +657,12 @@ type ActionsContext = SidebarContext & {
 };
 
 export type { ActionBlast, ActionStrike };
-export { PF2eHudSidebarActions, getBlastData, getStrikeData, getStrikeVariant, variantLabel };
+export {
+    PF2eHudSidebarActions,
+    getActionFrequency,
+    getBlastData,
+    getStrikeData,
+    getStrikeVariant,
+    useAction,
+    variantLabel,
+};
