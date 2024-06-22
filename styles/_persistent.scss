@@ -245,7 +245,7 @@ $bottom-width: 542px;
                             }
 
                             .cost {
-                                bottom: var(--offset);
+                                top: var(--offset);
                                 left: var(--offset);
                                 font-size: 0.7em;
                             }
