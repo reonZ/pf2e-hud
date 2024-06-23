@@ -134,7 +134,8 @@ $threat-extreme: red;
                 }
 
                 .controls {
-                    [data-control] {
+                    [data-control],
+                    .combatant-control-alt {
                         flex: 0 0 20px;
                         height: 20px;
                         float: left;
@@ -337,7 +338,8 @@ $threat-extreme: red;
 
     &.toggle-menu {
         .combatant {
-            .controls:not(.alt) {
+            .controls:not(.alt),
+            .extras {
                 display: none;
             }
 

@@ -88,24 +88,12 @@
                 {{/unless}}
             </div>
             <div class="controls alt">
-                <a class="combatant-control-alt" data-control="editCombatant"
-                    data-tooltip="COMBAT.CombatantUpdate">
-                    <i class="fa-solid fa-pen-to-square"></i>
+                {{#each @root.contextMenus as |menu|}}
+                <a class="combatant-control-alt" data-action="context-menu-action"
+                    data-index="{{@index}}" data-tooltip="{{menu.name}}">
+                    {{{menu.icon}}}
                 </a>
-                {{#if combatant.hasRolled}}
-                <a class="combatant-control-alt" data-control="resetCombatant"
-                    data-tooltip="COMBAT.CombatantClear">
-                    <i class="fa-solid fa-undo"></i>
-                </a>
-                {{/if}}
-                <a class="combatant-control-alt" data-control="rerollCombatant"
-                    data-tooltip="COMBAT.CombatantReroll">
-                    <i class="fa-solid fa-dice-d20"></i>
-                </a>
-                <a class="combatant-control-alt" data-control="removeCombatant"
-                    data-tooltip="COMBAT.CombatantRemove">
-                    <i class="fa-solid fa-trash"></i>
-                </a>
+                {{/each}}
             </div>
         </div>
 

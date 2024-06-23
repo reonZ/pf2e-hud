@@ -7,14 +7,15 @@ import {
     elementDataset,
     getDispositionColor,
     hasRolledInitiative,
+    htmlClosest,
     htmlQueryAll,
     localize,
     render,
     templateLocalize,
 } from "foundry-pf2e";
+import Sortable, { SortableEvent } from "sortablejs";
 import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
 import { HealthData, getHealth } from "./shared/base";
-import Sortable, { SortableEvent } from "sortablejs";
 
 class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
@@ -26,6 +27,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
     #cancelScroll = false;
     #combatantElement: HTMLElement | null = null;
     #combatantsElement: HTMLElement | null = null;
+    #contextMenus: EntryContextOption[] = [];
 
     static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
         id: "pf2e-hud-tracker",
@@ -101,6 +103,11 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
                 onDown: () => this.#toggleMenu(true),
             },
         ];
+    }
+
+    get contextMenus() {
+        if (this.#contextMenus.length) return this.#contextMenus;
+        return (this.#contextMenus = ui.combat._getEntryContextOptions());
     }
 
     _onClose(options: ApplicationClosingOptions) {
@@ -266,6 +273,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
                 icon: combatScene !== null ? "fa-solid fa-link" : "fa-solid fa-link-slash",
                 tooltip: combatScene !== null ? "COMBAT.Linked" : "COMBAT.Unlinked",
             },
+            contextMenus: this.contextMenus,
             i18n: templateLocalize("tracker"),
         };
 
@@ -326,6 +334,32 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
     #toggleMenu(enabled: boolean) {
         this.#toggled = enabled;
         this.element?.classList.toggle("toggle-menu", enabled);
+
+        if (enabled && this.combatantsElement) {
+            const menus = this.contextMenus;
+            const combatantElements =
+                this.combatantsElement.querySelectorAll<HTMLElement>(".combatant");
+
+            for (const combatantElement of combatantElements) {
+                const target = $(combatantElement);
+                const menuElements =
+                    combatantElement.querySelectorAll<HTMLElement>(".combatant-control-alt");
+
+                for (const menuElement of menuElements) {
+                    const index = Number(menuElement.dataset.index);
+                    const menu = menus.at(index);
+
+                    const display =
+                        menu?.condition !== undefined
+                            ? typeof menu.condition === "function"
+                                ? menu.condition(target)
+                                : menu.condition
+                            : true;
+
+                    menuElement.classList.toggle("hidden", !display);
+                }
+            }
+        }
     }
 
     #updateEffectsPanel(effectsPanel = document.getElementById("effects-panel")) {
@@ -393,38 +427,6 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
             );
 
             targetsElement.innerHTML = targets.join("");
-        }
-    }
-
-    #onCombatantControlAlt(event: MouseEvent, el: HTMLElement) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const tracker = this.tracker;
-        const combat = tracker.viewed;
-        if (!combat) return;
-
-        const parent = el.closest<HTMLLIElement>(".combatant")!;
-        const { control } = elementDataset(el);
-        const { combatantId } = elementDataset(parent);
-
-        switch (control) {
-            case "editCombatant": {
-                tracker._onConfigureCombatant($(parent));
-                break;
-            }
-            case "resetCombatant": {
-                combat.combatants.get(combatantId)?.update({ initiative: null });
-                break;
-            }
-            case "rerollCombatant": {
-                combat.rollInitiative([combatantId]);
-                break;
-            }
-            case "removeCombatant": {
-                combat.combatants.get(combatantId)?.delete();
-                break;
-            }
         }
     }
 
@@ -553,7 +555,16 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
             new CombatTrackerConfig().render(true);
         });
 
-        addListenerAll(html, ".combatant-control-alt", this.#onCombatantControlAlt.bind(this));
+        addListenerAll(html, ".combatant-control-alt", (event, el) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const index = Number(el.dataset.index);
+            const menu = this.contextMenus.at(index);
+            const target = $(htmlClosest(el, "[data-combatant-id]")!);
+
+            menu?.callback(target);
+        });
 
         addListenerAll(html, ".combatant", this.#onCombatantClick.bind(this));
 
@@ -613,6 +624,7 @@ type TrackerContext = {
     };
     linked: { icon: string; tooltip: string };
     i18n: ReturnType<typeof templateLocalize>;
+    contextMenus: EntryContextOption[];
 };
 
 type TrackerRenderOptions = BaseRenderOptions & {
