@@ -1,3 +1,20 @@
+# 0.8.0
+
+-   localized keybinds
+-   made "everything" draggable in the sidebars
+-   fixed not being able to toggle few `Token HUD` and `Persistent HUD` settings
+-   `Combat Tracker`:
+    -   fixed issue with token texture scaling
+-   `Persistent HUD`:
+    -   fixed linked sidebars not re-rendering on actor update
+    -   implement the shortcut slots
+        -   `consumables`, `strikes`, `elemental blasts`, `actions`, `spells` and `Roll Option` toggles can be dropped in the slots to create a shortcut
+        -   only `spells` dragged from a sidebar will be able to be turned into a shortcut
+        -   added `Confirm Action/Spell Shortcut` and `Consumable Shortcut` settings to add confirmation dialogs before using them
+-   `Token HUD`:
+    -   added exception for showing of the HUD when the `alt` key is held
+    -   fixed enabling/disabled the feature not triggering a "require reload" event
+
 # 0.7.0
 
 -   added support for `Persistent HUD` sidebars
