@@ -159,7 +159,8 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
                 event: PIXI.FederatedMouseEvent
             ) {
                 wrapped(event);
-                if (event.shiftKey || event.ctrlKey || game.activeTool !== "select") return;
+                if (event.altKey || event.shiftKey || event.ctrlKey || game.activeTool !== "select")
+                    return;
                 if (this === context.token) context.close();
                 else context.setToken(this);
             },
