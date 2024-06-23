@@ -134,6 +134,16 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 scope: "client",
             },
             {
+                key: "showUsers",
+                type: Boolean,
+                default: true,
+                scope: "client",
+                config: false,
+                onChange: (value) => {
+                    this.leftElement?.classList.toggle("show-users", value);
+                },
+            },
+            {
                 key: "confirmShortcut",
                 type: Boolean,
                 default: true,
@@ -331,6 +341,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             });
             document.getElementById("ui-left")?.append(this.#elements.left);
         }
+
+        this.#elements.left.classList.toggle("show-users", this.getSetting("showUsers"));
 
         for (let { name, element } of templates) {
             const oldElement = this.#elements[name];
@@ -849,7 +861,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
             switch (action) {
                 case "toggle-users": {
-                    this.leftElement?.classList.toggle("show-users");
+                    this.setSetting("showUsers", !this.getSetting("showUsers"));
                     break;
                 }
                 case "open-macros": {
@@ -1617,15 +1629,6 @@ type PersistentContext = Omit<BaseActorContext<PersistentHudActor>, "actor" | "h
     isNPC: boolean;
 };
 
-type PersistentSettings = BaseActorSettings &
-    SidebarSettings &
-    Record<CloseSetting, boolean> & {
-        cleanPortrait: boolean;
-        noflash: boolean;
-        confirmShortcut: boolean;
-        consumableShortcut: "use" | "confirm" | "chat";
-    };
-
 type DropData = HotbarDropData & {
     fromSidebar?: boolean;
     entryId?: string;
@@ -1634,5 +1637,15 @@ type DropData = HotbarDropData & {
     groupId?: StringNumber | "cantrips";
     itemId?: string;
 };
+
+type PersistentSettings = BaseActorSettings &
+    SidebarSettings &
+    Record<CloseSetting, boolean> & {
+        cleanPortrait: boolean;
+        noflash: boolean;
+        confirmShortcut: boolean;
+        consumableShortcut: "use" | "confirm" | "chat";
+        showUsers: boolean;
+    };
 
 export { PF2eHudPersistent };
