@@ -528,6 +528,18 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 const isBroken = !isCantrip && isCharges && !dailiesModule;
                 const isInnate = entrySheetData.isInnate;
 
+                const canCastRank = (() => {
+                    if (!isStaff || !dailiesModule) return false;
+
+                    cached.canCastRank ??= {};
+                    cached.canCastRank[castRank] ??= dailiesModule.api.canCastRank(
+                        actor as CharacterPF2e,
+                        castRank
+                    );
+
+                    return !!cached.canCastRank[castRank];
+                })();
+
                 const group = entrySheetData.groups.find((x) => x.id === groupId);
                 const groupUses =
                     typeof group?.uses?.value === "number"
@@ -565,7 +577,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     isCantrip || isConsumable
                         ? false
                         : isStaff
-                        ? !dailiesModule?.api.canCastRank(actor as CharacterPF2e, castRank)
+                        ? canCastRank
                         : uses
                         ? isCharges
                             ? uses.value < castRank
@@ -1014,8 +1026,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 if (this.getSetting("confirmShortcut") && !(await confimUse(spell.name))) return;
 
                 return (
-                    spell.parentItem?.consume() ??
-                    collection.entry.cast(spell, { rank, slotId: Number(slotId) })
+                    spell.parentItem?.consume() ?? collection.entry.cast(spell, { rank, slotId })
                 );
             }
         }
