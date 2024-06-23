@@ -415,12 +415,15 @@ $bottom-width: 542px;
                                     border-color: var(--variant-border-color);
                                     padding-block: 0.05em;
                                     padding-inline: 0.2em;
-                                    overflow: hidden;
-                                    text-overflow: ellipsis;
-                                    white-space: nowrap;
 
                                     .action-glyph {
                                         display: none;
+                                    }
+
+                                    &:not(.wrap) {
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                        white-space: nowrap;
                                     }
 
                                     &.attack {

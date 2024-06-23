@@ -217,7 +217,8 @@
                     "draw": {
                         "title": "{type} - {name}",
                         "message": "Are you sure you want to {type} <strong>{name}</strong>?"
-                    }
+                    },
+                    "noChannelElements": "Could not find the <strong>Channel Elements</strong> action on this character."
                 }
             }
         },

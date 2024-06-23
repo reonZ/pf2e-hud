@@ -603,7 +603,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 return {
                     ...shortcut,
                     isDisabled: expended || isBroken,
-                    isFadedOut: expended || isBroken,
+                    isFadedOut: expended || isBroken || notCarried,
                     rank: ROMAN_RANKS[castRank],
                     img: spell.img,
                     categoryIcon,
@@ -701,6 +701,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         ...shortcut,
                         isDisabled: disabled,
                         isFadedOut: disabled,
+                        isBlast: true,
                         blast,
                     } satisfies AttackShortcut as T;
                 } else {
@@ -716,7 +717,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     return {
                         ...shortcut,
                         isDisabled: disabled,
-                        isFadedOut: disabled,
+                        isFadedOut: disabled || !strike.ready,
                         strike,
                         img: img ?? shortcut.img,
                         name: strike
@@ -1143,6 +1144,17 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 strike?.auxiliaryActions?.at(auxiliaryActionIndex)?.execute();
                 break;
             }
+
+            case "channel-elements": {
+                const action = actor.itemTypes.action.find((x) => x.slug === "channel-elements");
+
+                if (!action) {
+                    warn("persistent.main.shortcut.noChannelElements");
+                    return;
+                }
+
+                return useAction(action);
+            }
         }
     }
 
@@ -1393,7 +1405,8 @@ type ShortcutActionEvent =
     | "strike-attack"
     | "strike-damage"
     | "strike-critical"
-    | "auxiliary-action";
+    | "auxiliary-action"
+    | "channel-elements";
 
 type ShortcutType = "action" | "attack" | "consumable" | "spell" | "toggle";
 
@@ -1516,6 +1529,7 @@ type BaseAttackShortcut = BaseShortCut<"attack"> &
     };
 
 type BlastShortcut = BaseAttackShortcut & {
+    isBlast: true;
     blast: ActionBlast | undefined;
 };
 

@@ -162,11 +162,19 @@
 {{/inline}}
 
 {{#*inline 'attack'}}
+{{#unless attack.isDisabled}}
 <div class="background"></div>
+{{/unless}}
 {{!-- blast --}}
+{{#if attack.isBlast}}
 {{#if attack.blast}}
 {{> (@root.partial 'action_blast-row') blast=attack.blast melee=true}}
 {{> (@root.partial 'action_blast-row') blast=attack.blast melee=false}}
+{{else}}
+<div class="variants">
+    <div class="variant wrap" data-action="channel-elements">Channel Elements</div>
+</div>
+{{/if}}
 {{!-- strike --}}
 {{else}}
 {{!-- strike ready --}}
