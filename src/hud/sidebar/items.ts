@@ -40,30 +40,16 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
         return data;
     }
 
+    _getDragData(
+        { actionIndex, element }: DOMStringMap,
+        baseDragData: Record<string, JSONValue>,
+        item: Maybe<ItemPF2e<ActorPF2e>>
+    ) {
+        return { frominventory: true };
+    }
+
     _activateListeners(html: HTMLElement) {
         const actor = this.actor;
-
-        addListenerAll(html, "[data-item-id]", "dragstart", async (event, el) => {
-            const item = await getItemFromElement(actor, el);
-            if (!item || !event.dataTransfer) return;
-
-            const img = new Image();
-            img.src = item.img;
-            img.style.width = "32px";
-            img.style.height = "32px";
-            img.style.borderRadius = "4px";
-            img.style.position = "absolute";
-            img.style.left = "-1000px";
-            document.body.append(img);
-
-            event.dataTransfer.setDragImage(img, 16, 16);
-            event.dataTransfer.setData(
-                "text/plain",
-                JSON.stringify({ ...item.toDragData(), fromInventory: true })
-            );
-
-            el.addEventListener("dragend", () => img.remove(), { once: true });
-        });
 
         addListenerAll(html, "[data-action]:not(disabled)", async (event, el) => {
             const action = el.dataset.action as ItemsActionEvent;

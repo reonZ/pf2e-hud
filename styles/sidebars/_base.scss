@@ -200,6 +200,10 @@
         }
     }
 
+    .drag-img {
+        display: none;
+    }
+
     .item {
         display: flex;
         max-width: var(--max-column-width);
@@ -210,9 +214,13 @@
             gap: var(--item-gap);
         }
 
+        &.action,
+        &.option-toggle {
+            --name-background: transparent;
+        }
+
         &.action {
             --image-border-color: transparent;
-            --name-background: transparent;
             --chat-icon-size: 1em;
 
             height: 1.5em;

@@ -40,6 +40,14 @@ class PF2eHudSidebarSpells extends PF2eHudSidebar {
         return data;
     }
 
+    _getDragData(
+        dataset: DOMStringMap,
+        baseDragData: Record<string, JSONValue>,
+        item: Maybe<ItemPF2e<ActorPF2e>>
+    ) {
+        return dataset;
+    }
+
     _activateListeners(html: HTMLElement) {
         const actor = this.actor;
 

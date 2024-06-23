@@ -14,7 +14,7 @@
     data-item-type="spell{{#if item.virtual}}-slot-group{{/if}}" data-item-id="{{item.itemId}}"
     data-entry-id="{{item.entryId}}" data-cast-rank="{{item.castRank}}"
     data-group-id="{{item.groupId}}" {{#if item.isPrepared}}data-slot-id="{{item.slotId}}" {{/if}}
-    {{#if item.expended}}data-slot-expended{{/if}}>
+    {{#if item.expended}}data-slot-expended{{/if}} draggable="true">
     {{!-- image --}}
     {{> (@root.partial 'item_image') item}}
     {{!-- details --}}

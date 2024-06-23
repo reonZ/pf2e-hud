@@ -59,16 +59,84 @@
 {{> toggle toggle=shortcut}}
 {{else if (eq shortcut.type 'action')}}
 {{> action action=shortcut}}
+{{else if (eq shortcut.type 'spell')}}
+{{> spell spell=shortcut}}
 {{/if}}
 {{/inline}}
 
-{{#*inline 'action'}}
-<div class="cost boxed">
-    {{{actionGlyph action.item.actionCost}}}
+{{#*inline 'spell'}}
+<div class="subtitle app">{{spell.entryLabel}}</div>
+{{!-- is broken --}}
+{{#if spell.isBroken}}
+<div class="broken">
+    <i class="fa-solid fa-link-slash broken"></i>
+    <i class="fa-solid fa-link-slash broken"></i>
 </div>
+{{!-- not broken --}}
+{{else}}
+<div class="rank boxed">
+    <span>
+        {{spell.rank}}
+    </span>
+</div>
+{{> cost cost=spell.cost}}
+{{#if spell.categoryIcon}}
+<div class="category-icon">
+    <i class="{{spell.categoryIcon}}"></i>
+</div>
+{{/if}}
+{{#if spell.uses}}
+<div class="quantity boxed">
+    <span>
+        {{spell.uses.value}}
+    </span>
+</div>
+{{else if spell.isPrepared}}
+<div class="prepared boxed">
+    <span>
+        {{ifThen spell.isDisabled '-' '+'}}
+    </span>
+</div>
+{{/if}}
+{{!-- end if broken --}}
+{{/if}}
+{{/inline}}
+
+
+
+{{#*inline 'consumable'}}
+<div class="quantity boxed">
+    <span>
+        {{consumable.quantity}}
+    </span>
+</div>
+{{#if consumable.isGeneric}}
+<div class="generic">
+    <i class="fa-solid fa-star"></i>
+</div>
+{{/if}}
+{{#if consumable.categoryIcon}}
+<div class="category-icon">
+    <i class="{{consumable.categoryIcon}}"></i>
+</div>
+{{/if}}
+{{#if consumable.rank}}
+<div class="rank boxed">
+    <span>
+        {{consumable.rank}}
+    </span>
+</div>
+{{/if}}
+{{> cost cost=consumable.cost}}
+{{/inline}}
+
+{{#*inline 'action'}}
+{{> cost cost=action.cost}}
 {{#if action.frequency}}
 <div class="quantity boxed">
-    {{action.frequency.value}}
+    <span>
+        {{action.frequency.value}}
+    </span>
 </div>
 {{/if}}
 {{/inline}}
@@ -85,23 +153,6 @@
     {{/if}}
 </div>
 {{/unless}}
-{{/inline}}
-
-{{#*inline 'consumable'}}
-<div class="quantity boxed">{{consumable.quantity}}</div>
-{{#if consumable.isGeneric}}
-<div class="generic">
-    <i class="fa-solid fa-star"></i>
-</div>
-{{/if}}
-{{#if consumable.categoryIcon}}
-<div class="category-icon">
-    <i class="{{consumable.categoryIcon}}"></i>
-</div>
-{{/if}}
-{{#if consumable.rank}}
-<div class="rank boxed">{{consumable.rank}}</div>
-{{/if}}
 {{/inline}}
 
 {{#*inline 'attack'}}
@@ -150,4 +201,18 @@
     {{/if}}
 </div>
 {{/unless}}
+{{/inline}}
+
+{{#*inline 'cost'}}
+{{#if cost}}
+<div class="cost boxed">
+    <span>
+        {{#if (eq cost 'extra')}}
+        <i class="fa-solid fa-ellipsis"></i>
+        {{else}}
+        {{{actionGlyph cost}}}
+        {{/if}}
+    </span>
+</div>
+{{/if}}
 {{/inline}}

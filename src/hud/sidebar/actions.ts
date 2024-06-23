@@ -6,6 +6,7 @@ import {
     createSelfEffectMessage,
     elementDataset,
     getActionGlyph,
+    getActionImg,
     getActiveModule,
     htmlClosest,
     htmlQuery,
@@ -145,6 +146,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                     frequency,
                     name: ability.name,
                     img: getActionIcon(actionCost),
+                    dragImg: getActionImg(ability),
                     isActive: isExploration && explorations.includes(id),
                 });
             }
@@ -172,6 +174,23 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
         return data;
     }
 
+    _getDragData(
+        { actionIndex, element }: DOMStringMap,
+        baseDragData: Record<string, JSONValue>,
+        item: Maybe<ItemPF2e<ActorPF2e>>
+    ) {
+        if (actionIndex) {
+            return "itemType" in baseDragData && baseDragData.itemType === "melee"
+                ? { index: Number(actionIndex) }
+                : { type: "Action", index: Number(actionIndex) };
+        } else if (element) {
+            return {
+                type: "Action",
+                elementTrait: element,
+            };
+        }
+    }
+
     _activateListeners(html: HTMLElement) {
         const actor = this.actor;
         const { elementTraits, damageTypes } = CONFIG.PF2E;
@@ -196,7 +215,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             button: HTMLElement,
             readyOnly = false
         ): T | null => {
-            const actionIndex = Number(htmlClosest(button, ".item")?.dataset.index ?? "NaN");
+            const actionIndex = Number(htmlClosest(button, ".item")?.dataset.actionIndex ?? "NaN");
             const strike = this.actor.system.actions?.at(actionIndex) ?? null;
             return getStrikeVariant<T>(strike, button, readyOnly);
         };
@@ -618,6 +637,7 @@ type Action =
 type ActionData = {
     id: string;
     img: string;
+    dragImg: string;
     name: string;
     isActive: boolean;
     usage: Maybe<{

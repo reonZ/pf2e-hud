@@ -208,13 +208,8 @@
             "main": {
                 "shortcut": {
                     "wrongActor": "You can only create shortcuts from the same persistent actor.",
-                    "wrongType": "You cannot create a shortcut for that type.",
-                    "consumable": {
-                        "confirm": {
-                            "title": "Consume - {name}",
-                            "message": "Are you sure you want to consume <strong>{name}</strong>?"
-                        }
-                    },
+                    "wrongType": "You cannot create a shortcut of that type.",
+                    "wrongOrigin": "Only spells from a HUD sidebar can be turned into shortcuts.",
                     "confirm": {
                         "title": "Use - {name}",
                         "message": "Are you sure you want to use <strong>{name}</strong>?"

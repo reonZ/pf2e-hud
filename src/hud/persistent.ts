@@ -10,7 +10,10 @@ import {
     createHook,
     elementDataset,
     getActionImg,
+    getActiveModule,
     getFlag,
+    getRankLabel,
+    imagePath,
     isInstanceOf,
     localize,
     objectHasKey,
@@ -445,7 +448,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
     async getShortcut<T extends Shortcut>(
         groupIndex: Maybe<number | string>,
-        index: Maybe<number | string>
+        index: Maybe<number | string>,
+        cached: Record<string, any> = {}
     ): Promise<T | EmptyShortcut> {
         index = String(index);
         groupIndex = String(groupIndex);
@@ -476,30 +480,122 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         if (!shortcut) return emptyData;
 
         switch (shortcut.type) {
-            case "action": {
-                const item = actor.items.get(shortcut.itemId);
-                if (item && !item.isOfType("action", "feat")) return throwError();
+            case "spell": {
+                const { itemId, entryId, groupId, slotId } = shortcut;
+                const collection = (actor as CreaturePF2e).spellcasting.collections.get(entryId);
+                const spell = collection?.get(itemId);
+                const entry = collection?.entry;
 
-                const name = item?.name ?? shortcut.name;
-                const frequency = item ? getActionFrequency(item) : undefined;
-                const disabled = !item || frequency?.value === 0;
+                if (
+                    !spell ||
+                    !entry ||
+                    !collection ||
+                    isNaN(shortcut.castRank) ||
+                    !shortcut.castRank.between(1, 10)
+                ) {
+                    return emptyData;
+                }
+
+                const castRank = shortcut.castRank as OneToTen;
+
+                cached.rankLabel ??= {};
+                cached.rankLabel[castRank] ??= getRankLabel(castRank);
+                const name = `${spell.name} - ${cached.rankLabel[castRank]}`;
+
+                cached.spellcasting ??= {};
+                cached.spellcasting[entryId] ??= await entry.getSheetData();
+                const entrySheetData = cached.spellcasting[entryId] as SpellcastingSheetData;
+
+                cached.dailiesModule ??= getActiveModule("pf2e-dailies");
+                const dailiesModule = cached.dailiesModule as Maybe<PF2eDailiesModule>;
+
+                cached.entryLabel ??= {};
+                cached.entryLabel[entryId] ??= entrySheetData.statistic?.dc.value
+                    ? `${entry.name} - ${game.i18n.format("PF2E.DCWithValue", {
+                          dc: entrySheetData.statistic?.dc.value,
+                          text: "",
+                      })}`
+                    : entry.name;
+                const entryLabel = cached.entryLabel[entryId] as string;
+
+                const isCantrip = spell.isCantrip;
+                const isFocus = entrySheetData.isFocusPool;
+                const isConsumable = entrySheetData.category === "items";
+                const isPrepared = !!entrySheetData.isPrepared;
+                const isFlexible = entrySheetData.isFlexible;
+                const isCharges = entrySheetData.category === "charges";
+                const isStaff = !!entrySheetData.isStaff;
+                const isBroken = !isCantrip && isCharges && !dailiesModule;
+                const isInnate = entrySheetData.isInnate;
+
+                const group = entrySheetData.groups.find((x) => x.id === groupId);
+                const groupUses =
+                    typeof group?.uses?.value === "number"
+                        ? (group.uses as ValueAndMax)
+                        : undefined;
+
+                const active = slotId ? group?.active[slotId] : undefined;
+
+                const uses =
+                    isCantrip || isConsumable || (isPrepared && !isFlexible)
+                        ? undefined
+                        : isFocus
+                        ? (actor as CreaturePF2e).system.resources?.focus
+                        : isCharges && !isBroken
+                        ? entrySheetData.uses
+                        : isInnate && !spell.atWill
+                        ? spell.system.location.uses
+                        : groupUses;
+
+                const parentType = isConsumable
+                    ? (spell.parentItem?.category as Maybe<"wand" | "scroll">)
+                    : undefined;
+
+                const categoryIcon = isStaff
+                    ? "fa-solid fa-staff"
+                    : isCharges
+                    ? "fa-solid fa-bolt"
+                    : parentType === "wand"
+                    ? "fa-solid fa-wand-magic-sparkles"
+                    : parentType === "scroll"
+                    ? "fa-solid fa-scroll"
+                    : undefined;
+
+                const expended =
+                    isCantrip || isConsumable
+                        ? false
+                        : isStaff
+                        ? !dailiesModule?.api.canCastRank(actor as CharacterPF2e, castRank)
+                        : uses
+                        ? isCharges
+                            ? uses.value < castRank
+                            : uses.value === 0
+                        : !!active?.expended;
 
                 return {
                     ...shortcut,
-                    isDisabled: disabled,
-                    isFadedOut: disabled,
-                    item,
-                    img: item ? getActionImg(item) : shortcut.img,
-                    name: frequency ? `${name} - ${frequency.label}` : name,
-                    frequency,
-                } satisfies ActionShortcut as T;
+                    isDisabled: expended || isBroken,
+                    isFadedOut: expended || isBroken,
+                    rank: ROMAN_RANKS[castRank],
+                    img: spell.img,
+                    categoryIcon,
+                    collection,
+                    item: spell,
+                    name,
+                    uses,
+                    entryLabel,
+                    isBroken,
+                    castRank: castRank,
+                    isPrepared: isPrepared && !isFlexible && !isCantrip,
+                    cost: getCost(spell.system.time.value),
+                } satisfies SpellShortcut as T;
             }
 
             case "consumable": {
                 const isGeneric = "slug" in shortcut;
                 const item = isGeneric
                     ? actor.itemTypes.consumable.find((item) => itemSlug(item) === shortcut.slug)
-                    : actor.items.get<ConsumablePF2e<ActorPF2e>>(shortcut.itemId);
+                    : actor.items.get<ConsumablePF2e<CreaturePF2e>>(shortcut.itemId);
 
                 if (item && !item.isOfType("consumable")) return throwError();
 
@@ -536,7 +632,28 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     item,
                     name,
                     img,
+                    cost: getCost(item?.system.spell?.system.time.value),
                 } satisfies ConsumableShortcut as T;
+            }
+
+            case "action": {
+                const item = actor.items.get(shortcut.itemId);
+                if (item && !item.isOfType("action", "feat")) return throwError();
+
+                const name = item?.name ?? shortcut.name;
+                const frequency = item ? getActionFrequency(item) : undefined;
+                const disabled = !item || frequency?.value === 0;
+
+                return {
+                    ...shortcut,
+                    isDisabled: disabled,
+                    isFadedOut: disabled,
+                    item,
+                    img: item ? getActionImg(item) : shortcut.img,
+                    name: frequency ? `${name} - ${frequency.label}` : name,
+                    frequency,
+                    cost: getCost(item?.actionCost?.value),
+                } satisfies ActionShortcut as T;
             }
 
             case "attack": {
@@ -559,12 +676,17 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     const strike = await getStrikeData(actor, { id: itemId, slug });
                     const disabled = !strike;
 
+                    const img =
+                        actor.isOfType("npc") && strike?.item.range
+                            ? imagePath("npc-range", "svg")
+                            : strike?.item.img;
+
                     return {
                         ...shortcut,
                         isDisabled: disabled,
                         isFadedOut: disabled,
                         strike,
-                        img: strike?.item.img ?? shortcut.img,
+                        img: img ?? shortcut.img,
                         name: strike
                             ? `${game.i18n.localize("PF2E.WeaponStrikeLabel")}: ${strike.label}`
                             : shortcut.name,
@@ -753,13 +875,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = this.actor;
         if (!actor) return context;
 
+        const cached = {};
         const shortcutGroups: ShortcutGroup[] = [];
 
         for (const groupIndex of R.range(0, 4)) {
             const shortcuts: (Shortcut | EmptyShortcut)[] = [];
 
             for (const index of R.range(0, 4)) {
-                const shortcut = await this.getShortcut(groupIndex, index);
+                const shortcut = await this.getShortcut(groupIndex, index, cached);
                 shortcuts.push(shortcut);
             }
 
@@ -843,31 +966,31 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         const actor = this.actor!;
 
+        function confimUse(name: string) {
+            return confirmDialog({
+                title: localize("persistent.main.shortcut.confirm.title", {
+                    name,
+                }),
+                content: localize("persistent.main.shortcut.confirm.message", {
+                    name,
+                }),
+            });
+        }
+
         switch (shortcut.type) {
             case "consumable": {
-                if (!shortcut.item) return;
+                const item = shortcut.item;
+                if (!item) return;
 
                 const setting = this.getSetting("consumableShortcut");
 
                 if (setting === "chat") {
-                    return shortcut.item.toMessage(event);
+                    return item.toMessage(event);
                 }
 
-                if (setting === "confirm") {
-                    const name = shortcut.item.name;
-                    const confirm = await confirmDialog({
-                        title: localize("persistent.main.shortcut.consumable.confirm.title", {
-                            name,
-                        }),
-                        content: localize("persistent.main.shortcut.consumable.confirm.message", {
-                            name,
-                        }),
-                    });
+                if (setting === "confirm" && !(await confimUse(item.name))) return;
 
-                    if (!confirm) return;
-                }
-
-                return consumeItem(event, shortcut.item);
+                return consumeItem(event, item);
             }
 
             case "toggle": {
@@ -876,23 +999,24 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             }
 
             case "action": {
-                if (!shortcut.item) return;
+                const item = shortcut.item;
+                if (!item) return;
 
-                if (this.getSetting("confirmShortcut")) {
-                    const name = shortcut.item.name;
-                    const confirm = await confirmDialog({
-                        title: localize("persistent.main.shortcut.confirm.title", {
-                            name,
-                        }),
-                        content: localize("persistent.main.shortcut.confirm.message", {
-                            name,
-                        }),
-                    });
+                if (this.getSetting("confirmShortcut") && !(await confimUse(item.name))) return;
 
-                    if (!confirm) return;
-                }
+                return useAction(item);
+            }
 
-                return useAction(shortcut.item);
+            case "spell": {
+                const { castRank: rank, slotId, collection, item: spell } = shortcut;
+                if (!spell) return;
+
+                if (this.getSetting("confirmShortcut") && !(await confimUse(spell.name))) return;
+
+                return (
+                    spell.parentItem?.consume() ??
+                    collection.entry.cast(spell, { rank, slotId: Number(slotId) })
+                );
             }
         }
     }
@@ -957,11 +1081,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     async #onShortcutDrop(event: DragEvent, el: HTMLElement) {
-        const dropData: HotbarDropData = TextEditor.getDragEventData(event);
+        const dropData: DropData = TextEditor.getDragEventData(event);
         const wrongType = () => warn("persistent.main.shortcut.wrongType");
         const wrongActor = () => warn("persistent.main.shortcut.wrongActor");
-
-        console.log(dropData);
+        const wrongOrigin = () => warn("persistent.main.shortcut.wrongOrigin");
 
         if (!["Item", "RollOption", "Action"].includes(dropData.type ?? "")) {
             return wrongType();
@@ -1013,9 +1136,15 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             }
 
             case "Item": {
-                if (!dropData.uuid || !dropData.itemType) return wrongType();
+                if ((!dropData.uuid && !dropData.entryId) || !dropData.itemType) {
+                    return wrongType();
+                }
 
-                const item = await fromUuid<ItemPF2e>(dropData.uuid);
+                const item: Maybe<ItemPF2e> = dropData.entryId
+                    ? (actor as CreaturePF2e).spellcasting.collections
+                          .get(dropData.entryId)
+                          ?.get(dropData.itemId as string)
+                    : await fromUuid<ItemPF2e>(dropData.uuid as string);
 
                 if (!item?.isOfType("consumable", "spell", "action", "feat")) return wrongType();
                 if (!this.isCurrentActor(item.actor)) return wrongActor();
@@ -1047,6 +1176,28 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         name: item.name,
                         img: getActionImg(item),
                     } satisfies ActionShortcutFlag;
+                } else if (item.isOfType("spell")) {
+                    const { fromSidebar, itemType, entryId, slotId } = dropData;
+                    const castRank = Number(dropData.castRank);
+                    const groupId =
+                        dropData.groupId === "cantrips" ? "cantrips" : Number(dropData.groupId);
+
+                    if (!fromSidebar) return wrongOrigin();
+                    if (!entryId || (groupId !== "cantrips" && isNaN(groupId)) || isNaN(castRank)) {
+                        return wrongType();
+                    }
+
+                    newShortcut = {
+                        type: "spell",
+                        index,
+                        groupIndex,
+                        itemType,
+                        itemId: item.id,
+                        castRank,
+                        entryId,
+                        slotId: Number(slotId),
+                        groupId,
+                    } satisfies SpellShortcutFlag;
                 }
 
                 break;
@@ -1141,6 +1292,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 }
 
+function getCost(cost: Maybe<string | number>) {
+    const costValue = Number(cost);
+    return isNaN(costValue) ? (cost ? "extra" : undefined) : costValue;
+}
+
 function consumableRank(item: Maybe<ConsumablePF2e>, roman: true): RomanRank | undefined;
 function consumableRank(item: Maybe<ConsumablePF2e>, roman?: false): OneToTen | undefined;
 function consumableRank(
@@ -1181,6 +1337,15 @@ type ShortcutFlagBase<T extends ShortcutType> = {
     groupIndex: string;
 };
 
+type SpellShortcutFlag = ShortcutFlagBase<"spell"> & {
+    itemType: string;
+    itemId: string;
+    castRank: number;
+    entryId: string;
+    slotId: number | undefined;
+    groupId: "cantrips" | number;
+};
+
 type ToggleShortcutFlag = ShortcutFlagBase<"toggle"> & {
     itemId: string;
     domain: string;
@@ -1219,7 +1384,8 @@ type ShortcutFlag =
     | ConsumableShortcutFlag
     | AttackShortcutFlag
     | ToggleShortcutFlag
-    | ActionShortcutFlag;
+    | ActionShortcutFlag
+    | SpellShortcutFlag;
 
 type BaseShortCut<T extends ShortcutType> = ShortcutFlagBase<T> & {
     name: string;
@@ -1229,9 +1395,26 @@ type BaseShortCut<T extends ShortcutType> = ShortcutFlagBase<T> & {
     isFadedOut: boolean;
 };
 
+type SpellShortcut = BaseShortCut<"spell"> &
+    SpellShortcutFlag & {
+        categoryIcon: string | undefined;
+        collection: SpellCollection<CreaturePF2e>;
+        item: SpellPF2e<CreaturePF2e>;
+        rank: string;
+        uses: ValueAndMax | undefined;
+        entryLabel: string;
+        isBroken: boolean;
+        isPrepared: boolean;
+        cost: CostValue;
+        castRank: OneToTen;
+    };
+
+type CostValue = number | "extra" | undefined;
+
 type ActionShortcut = BaseShortCut<"action"> &
     ActionShortcutFlag & {
         item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e> | undefined;
+        cost: CostValue;
         frequency: Maybe<{
             max: number;
             value: number;
@@ -1248,6 +1431,7 @@ type ToggleShortcut = BaseShortCut<"toggle"> &
 type ConsumableShortcut = BaseShortCut<"consumable"> &
     ConsumableShortcutFlag & {
         item: ConsumablePF2e<ActorPF2e> | undefined;
+        cost: CostValue;
         quantity: number;
         uses: number | undefined;
         isGeneric: boolean;
@@ -1271,7 +1455,12 @@ type StrikeShortcut = BaseAttackShortcut & {
 
 type AttackShortcut = BlastShortcut | StrikeShortcut;
 
-type Shortcut = ConsumableShortcut | AttackShortcut | ToggleShortcut | ActionShortcut;
+type Shortcut =
+    | ConsumableShortcut
+    | AttackShortcut
+    | ToggleShortcut
+    | ActionShortcut
+    | SpellShortcut;
 
 type EmptyShortcut = { index: string; groupIndex: string; isEmpty: true };
 
@@ -1352,5 +1541,14 @@ type PersistentSettings = BaseActorSettings &
         confirmShortcut: boolean;
         consumableShortcut: "use" | "confirm" | "chat";
     };
+
+type DropData = HotbarDropData & {
+    fromSidebar?: boolean;
+    entryId?: string;
+    castRank?: StringNumber;
+    slotId?: StringNumber;
+    groupId?: StringNumber | "cantrips";
+    itemId?: string;
+};
 
 export { PF2eHudPersistent };

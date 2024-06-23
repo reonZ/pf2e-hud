@@ -159,9 +159,15 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
         const placement = ROLLOPTIONS_PLACEMENT[this.key];
         if (placement) {
+            const actor = this.actor;
             const toggles = R.pipe(
                 R.values(this.actor.synthetics.toggles).flatMap((domain) => Object.values(domain)),
-                R.filter((option) => option.placement === placement)
+                R.filter((option) => option.placement === placement),
+                R.map((toggle) => ({
+                    ...toggle,
+                    label: game.i18n.localize(toggle.label),
+                    img: actor.items.get(toggle.itemId)?.img,
+                }))
             );
 
             if (toggles.length) {
@@ -305,6 +311,46 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         addDragoverListener(this.element);
         addSendItemToChatListeners(this.actor, html);
 
+        addListenerAll(html, "[draggable='true']", "dragstart", async (event, el) => {
+            if (!event.dataTransfer) return;
+
+            const { itemId, actionIndex, element, label, domain, option, placement } = el.dataset;
+            const item = await getItemFromElement(this.actor, el);
+
+            const img = new Image();
+            img.src = el.querySelector<HTMLImageElement>(".drag-img")?.src ?? item?.img ?? "";
+            img.style.width = "32px";
+            img.style.height = "32px";
+            img.style.borderRadius = "4px";
+            img.style.position = "absolute";
+            img.style.left = "-1000px";
+            document.body.append(img);
+
+            event.dataTransfer.setDragImage(img, 16, 16);
+
+            const baseDragData: Record<string, JSONValue> = {
+                actorId: this.actor.id,
+                actorUUID: this.actor.uuid,
+                sceneId: canvas.scene?.id ?? null,
+                tokenId: this.actor.token?.id ?? null,
+                fromSidebar: true,
+                ...item?.toDragData(),
+            };
+
+            const extraDragData = this._getDragData?.(el.dataset, baseDragData, item);
+            const toggleDragData =
+                item && label && domain && option
+                    ? { type: "RollOption", ...el.dataset }
+                    : undefined;
+
+            event.dataTransfer.setData(
+                "text/plain",
+                JSON.stringify({ ...baseDragData, ...extraDragData, ...toggleDragData })
+            );
+
+            el.addEventListener("dragend", () => img.remove(), { once: true });
+        });
+
         addListenerAll(html, "[data-action='item-description']", async (event, el) => {
             const actor = this.actor;
             const item = await getItemFromElement(actor, el);
@@ -369,6 +415,14 @@ function getSidebars(actor: ActorPF2e, active?: SidebarName) {
             active: active === type,
         })
     );
+}
+
+interface PF2eHudSidebar {
+    _getDragData?(
+        dataset: DOMStringMap,
+        baseDragData: Record<string, JSONValue>,
+        item: Maybe<ItemPF2e<ActorPF2e>>
+    ): Record<string, JSONValue> | undefined;
 }
 
 type SidebarContext = {
