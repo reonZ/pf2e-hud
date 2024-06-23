@@ -1,6 +1,6 @@
 # 0.8.0
 
--   this release requires you to update `PF2e DAilies` to version `3.5.1` if use in your world
+-   this release requires you to update `PF2e Dailies` to version `3.5.1` if used in your world
 -   localized keybinds
 -   made "everything" draggable in the sidebars
 -   fixed not being able to toggle few `Token HUD` and `Persistent HUD` settings
