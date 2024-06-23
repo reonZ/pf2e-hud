@@ -13,6 +13,12 @@ import {
 } from "foundry-pf2e";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 
+function getAnnotationTooltip(annotation: NonNullable<AuxiliaryActionPurpose>) {
+    const label = localize("sidebars.spells.action", annotation);
+    const icon = `<span class='action-glyph'>${annotation === "retrieve" ? 2 : 1}</span>`;
+    return `${label} ${icon}`;
+}
+
 class PF2eHudSidebarSpells extends PF2eHudSidebar {
     get key(): SidebarName {
         return "spells";
@@ -28,13 +34,7 @@ class PF2eHudSidebarSpells extends PF2eHudSidebar {
         const data: SpellsContext = {
             ...parentData,
             ...summarizedData,
-            annotationTooltip: (annotation: NonNullable<AuxiliaryActionPurpose>) => {
-                const label = localize("sidebars.spells.action", annotation);
-                const icon = `<span class='action-glyph'>${
-                    annotation === "retrieve" ? 2 : 1
-                }</span>`;
-                return `${label} ${icon}`;
-            },
+            annotationTooltip: getAnnotationTooltip,
         };
 
         return data;
@@ -149,4 +149,4 @@ type SpellsContext = SidebarContext &
         annotationTooltip: (annotation: NonNullable<AuxiliaryActionPurpose>) => string;
     };
 
-export { PF2eHudSidebarSpells };
+export { PF2eHudSidebarSpells, getAnnotationTooltip };

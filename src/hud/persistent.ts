@@ -4,11 +4,13 @@ import {
     addListener,
     addListenerAll,
     arrayIncludes,
+    changeCarryType,
     confirmDialog,
     consumeItem,
     createHTMLElement,
     createHook,
     elementDataset,
+    getActionAnnotation,
     getActionImg,
     getActiveModule,
     getFlag,
@@ -58,6 +60,7 @@ import {
     variantLabel,
 } from "./sidebar/actions";
 import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
+import { getAnnotationTooltip } from "./sidebar/spells";
 
 const ROMAN_RANKS = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"] as const;
 
@@ -577,12 +580,25 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     isCantrip || isConsumable
                         ? false
                         : isStaff
-                        ? canCastRank
+                        ? !canCastRank
                         : uses
                         ? isCharges
                             ? uses.value < castRank
                             : uses.value === 0
                         : !!active?.expended;
+
+                const notCarried = isConsumable
+                    ? spell.parentItem?.carryType !== "held"
+                    : isStaff
+                    ? (entry as dailies.StaffSpellcasting).staff.carryType !== "held"
+                    : false;
+
+                const parentItem = isStaff
+                    ? dailiesModule?.api.getStaffItem(actor as CharacterPF2e)
+                    : spell.parentItem;
+
+                const annotation =
+                    notCarried && parentItem ? getActionAnnotation(parentItem) : undefined;
 
                 return {
                     ...shortcut,
@@ -593,13 +609,17 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     categoryIcon,
                     collection,
                     item: spell,
-                    name,
+                    name: annotation ? `${getAnnotationTooltip(annotation)} - ${name}` : name,
                     uses,
                     entryLabel,
                     isBroken,
                     castRank: castRank,
                     isPrepared: isPrepared && !isFlexible && !isCantrip,
                     cost: getCost(spell.system.time.value),
+                    notCarried,
+                    isStaff,
+                    parentItem,
+                    annotation,
                 } satisfies SpellShortcut as T;
             }
 
@@ -978,7 +998,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         const actor = this.actor!;
 
-        function confimUse(name: string) {
+        function confirmUse(name: string) {
             return confirmDialog({
                 title: localize("persistent.main.shortcut.confirm.title", {
                     name,
@@ -1000,7 +1020,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     return item.toMessage(event);
                 }
 
-                if (setting === "confirm" && !(await confimUse(item.name))) return;
+                if (setting === "confirm" && !(await confirmUse(item.name))) return;
 
                 return consumeItem(event, item);
             }
@@ -1014,16 +1034,51 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 const item = shortcut.item;
                 if (!item) return;
 
-                if (this.getSetting("confirmShortcut") && !(await confimUse(item.name))) return;
+                if (this.getSetting("confirmShortcut") && !(await confirmUse(item.name))) return;
 
                 return useAction(item);
             }
 
             case "spell": {
-                const { castRank: rank, slotId, collection, item: spell } = shortcut;
+                const {
+                    castRank: rank,
+                    slotId,
+                    collection,
+                    item: spell,
+                    notCarried,
+                    annotation,
+                    parentItem,
+                } = shortcut;
+
                 if (!spell) return;
 
-                if (this.getSetting("confirmShortcut") && !(await confimUse(spell.name))) return;
+                const setting = this.getSetting("confirmShortcut");
+
+                if (notCarried) {
+                    if (!annotation || !parentItem) return;
+
+                    if (setting) {
+                        const type = localize("sidebars.spells.action", annotation);
+                        const name = parentItem.name;
+
+                        const confirm = await confirmDialog({
+                            title: localize("persistent.main.shortcut.draw.title", {
+                                type,
+                                name,
+                            }),
+                            content: localize("persistent.main.shortcut.draw.message", {
+                                type,
+                                name,
+                            }),
+                        });
+
+                        if (!confirm) return;
+                    }
+
+                    return changeCarryType(actor, parentItem, 1, annotation);
+                }
+
+                if (setting && !(await confirmUse(spell.name))) return;
 
                 return (
                     spell.parentItem?.consume() ?? collection.entry.cast(spell, { rank, slotId })
@@ -1418,6 +1473,10 @@ type SpellShortcut = BaseShortCut<"spell"> &
         isPrepared: boolean;
         cost: CostValue;
         castRank: OneToTen;
+        notCarried: boolean;
+        isStaff: boolean;
+        parentItem: Maybe<ConsumablePF2e<CreaturePF2e> | PhysicalItemPF2e<CreaturePF2e>>;
+        annotation: AuxiliaryActionPurpose;
     };
 
 type CostValue = number | "extra" | undefined;

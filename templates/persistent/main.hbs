@@ -50,7 +50,7 @@
 
 {{#*inline 'shortcut'}}
 <img src="{{shortcut.img}}">
-<div class="name app">{{shortcut.name}}</div>
+<div class="name app">{{{shortcut.name}}}</div>
 {{#if (eq shortcut.type 'consumable')}}
 {{> consumable consumable=shortcut}}
 {{else if (eq shortcut.type 'attack')}}
@@ -72,7 +72,13 @@
     <i class="fa-solid fa-link-slash broken"></i>
     <i class="fa-solid fa-link-slash broken"></i>
 </div>
-{{!-- not broken --}}
+{{!-- is unequipped --}}
+{{else if spell.notCarried}}
+<div class="equip">
+    <i class="fa-solid fa-hand-back-fist"></i>
+    <i class="fa-solid fa-hand-back-fist"></i>
+</div>
+{{!-- not broken nor unequipped --}}
 {{else}}
 <div class="rank boxed">
     <span>

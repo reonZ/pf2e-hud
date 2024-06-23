@@ -251,9 +251,9 @@ $bottom-width: 542px;
                                 display: flex;
                             }
 
-                            .broken {
+                            .broken,
+                            .equip {
                                 inset: 0;
-                                font-size: 1.2em;
 
                                 i {
                                     position: absolute;
@@ -272,6 +272,14 @@ $bottom-width: 542px;
                                         color: black;
                                     }
                                 }
+                            }
+
+                            .broken {
+                                font-size: 1.2em;
+                            }
+
+                            .equip {
+                                font-size: 1.5em;
                             }
 
                             .quantity {

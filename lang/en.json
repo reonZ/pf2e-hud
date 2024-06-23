@@ -213,6 +213,10 @@
                     "confirm": {
                         "title": "Use - {name}",
                         "message": "Are you sure you want to use <strong>{name}</strong>?"
+                    },
+                    "draw": {
+                        "title": "{type} - {name}",
+                        "message": "Are you sure you want to {type} <strong>{name}</strong>?"
                     }
                 }
             }
