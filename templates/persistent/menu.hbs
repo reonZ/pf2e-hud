@@ -1,10 +1,12 @@
 <a data-action="toggle-users" data-tooltip="PLAYERS.Title">
     <i class="fa-solid fa-users"></i>
 </a>
+{{#if canSelectActor}}
 <a data-action="select-actor" data-tooltip-class="pf2e-hud-left pf2e-hud-width"
     data-tooltip="{{setActorTooltip}}">
     <i class="fa-solid fa-user-vneck"></i>
 </a>
+{{/if}}
 <a data-action="toggle-clean"
     data-tooltip="{{#if cleaned}}{{i18n.path 'clean.always'}}{{else}}{{i18n.path 'clean.hover'}}{{/if}}">
     {{#if cleaned}}

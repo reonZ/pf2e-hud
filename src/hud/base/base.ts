@@ -51,7 +51,7 @@ abstract class PF2eHudBase<TSettings extends BaseSettings = BaseSettings> extend
         ];
     }
 
-    get enabled() {
+    get enabled(): boolean {
         return this.getSetting("enabled");
     }
 
