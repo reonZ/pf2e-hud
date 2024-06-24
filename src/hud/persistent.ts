@@ -82,6 +82,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #isUserCharacter: boolean = false;
     #actor: PersistentHudActor | null = null;
     #shortcuts: Record<string, Shortcut | EmptyShortcut> = {};
+    #shortcutData: Record<string, Record<string, ShortcutData>> = {};
 
     #elements: Record<PartName | "left", HTMLElement | null> = {
         left: null,
@@ -704,6 +705,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             this.getSetting("autoFill");
 
         this.#shortcuts = {};
+        this.#shortcutData = {};
         this.#isVirtual = autoFill && autoFill !== "disabled";
 
         const cached = {};
@@ -773,8 +775,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             });
 
             shortcutElement.addEventListener("contextmenu", () => {
-                const { groupIndex, index } = elementDataset(shortcutElement);
-                unsetFlag(actor, "persistent.shortcuts", game.user.id, groupIndex, index);
+                this.#onDeleteShortcut(shortcutElement);
             });
 
             if (!arrayIncludes(["empty", "disabled", "attack"], classList)) {
@@ -797,6 +798,20 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             for (const auxilaryElement of auxilaryElements) {
                 auxilaryElement.dataset.tooltip = auxilaryElement.innerHTML.trim();
             }
+        }
+    }
+
+    #onDeleteShortcut(shortcutElement: HTMLElement) {
+        const actor = this.actor!;
+        const { groupIndex, index } = elementDataset(shortcutElement);
+
+        if (this.isVirtual) {
+            if (this.#shortcutData[groupIndex]?.[index]) {
+                delete this.#shortcutData[groupIndex][index];
+            }
+            setFlag(actor, "persistent.shortcuts", game.user.id, this.#shortcutData);
+        } else {
+            unsetFlag(actor, "persistent.shortcuts", game.user.id, groupIndex, index);
         }
     }
 
@@ -1046,14 +1061,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                             img: item.system.spell?.img ?? item.img,
                             name: item.name,
                             slug: itemSlug(item),
-                        } satisfies ConsumableShortcutData;
+                        } satisfies GenericConsumableShortcutData;
                     } else {
                         newShortcut = {
                             type: "consumable",
                             itemId: item.id,
                             index,
                             groupIndex,
-                        } satisfies ConsumableShortcutData;
+                        } satisfies TemporaryConsumableShortcutData;
                     }
                 } else if (item.isOfType("action", "feat")) {
                     newShortcut = {
@@ -1131,15 +1146,16 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         if (!newShortcut) return;
 
-        const group =
-            foundry.utils.deepClone(
-                getFlag<Record<string, any>>(
-                    actor,
-                    "persistent.shortcuts",
-                    game.user.id,
-                    groupIndex
-                )
-            ) ?? {};
+        const group = this.isVirtual
+            ? this.#shortcutData[groupIndex]
+            : foundry.utils.deepClone(
+                  getFlag<Record<string, any>>(
+                      actor,
+                      "persistent.shortcuts",
+                      game.user.id,
+                      groupIndex
+                  )
+              ) ?? {};
 
         if (newShortcut.type === "attack") {
             const wasSplit =
@@ -1168,7 +1184,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         group[index] = newShortcut;
 
-        setFlag(actor, "persistent.shortcuts", game.user.id, groupIndex, group);
+        if (this.isVirtual) {
+            setFlag(actor, "persistent.shortcuts", game.user.id, this.#shortcutData);
+        } else {
+            setFlag(actor, "persistent.shortcuts", game.user.id, groupIndex, group);
+        }
     }
 
     async #fillShortcut(
@@ -1188,10 +1208,24 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         const actor = this.actor as NPCPF2e;
 
+        const returnShortcut = async (shortcutData: ShortcutData) => {
+            const shortcut = await this.#createShortcut(shortcutData, cached);
+
+            if (!shortcut.isEmpty) {
+                foundry.utils.setProperty(
+                    this.#shortcutData,
+                    `${groupIndex}.${index}`,
+                    shortcutData
+                );
+            }
+
+            return shortcut;
+        };
+
         const strike = actor.system.actions[Number(groupIndex)];
         if (strike) {
             const shortcutData = createStrikeShortcutData(groupIndex, index, strike);
-            return this.#createShortcut(shortcutData, cached);
+            return returnShortcut(shortcutData);
         }
 
         const checkSpells = async () => {
@@ -1226,7 +1260,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         active.spell.rank,
                 } satisfies SpellShortcutData;
 
-                return this.#createShortcut(shortcutData, cached);
+                return returnShortcut(shortcutData);
             }
         };
 
@@ -1240,9 +1274,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 itemId: consumable.id,
                 index,
                 groupIndex,
-            } satisfies ConsumableShortcutData;
+            } satisfies TemporaryConsumableShortcutData;
 
-            return this.#createShortcut(shortcutData, cached);
+            return returnShortcut(shortcutData);
         };
 
         const checks =
@@ -1671,15 +1705,19 @@ type ActionShortcutData = ShortcutDataBase<"action"> & {
     img: string;
 };
 
-type ConsumableShortcutData = ShortcutDataBase<"consumable"> &
-    (
-        | {
-              slug: string;
-              img: string;
-              name: string;
-          }
-        | { itemId: string }
-    );
+type ConsumableShortcutDataBase = ShortcutDataBase<"consumable">;
+
+type GenericConsumableShortcutData = ConsumableShortcutDataBase & {
+    slug: string;
+    img: string;
+    name: string;
+};
+
+type TemporaryConsumableShortcutData = ConsumableShortcutDataBase & {
+    itemId: string;
+};
+
+type ConsumableShortcutData = GenericConsumableShortcutData | TemporaryConsumableShortcutData;
 
 type ShortcutData =
     | ConsumableShortcutData
