@@ -590,7 +590,7 @@ async function useAction(item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>)
     }
 }
 
-type ActionStrikeUsage = StrikeData & {
+type ActionStrikeUsage<T extends StrikeData = StrikeData> = T & {
     damageFormula: string;
     criticalFormula: string;
     category: Maybe<{
@@ -599,11 +599,10 @@ type ActionStrikeUsage = StrikeData & {
     }>;
 };
 
-type ActionStrike = ActionStrikeUsage & {
+type ActionStrike<T extends StrikeData = StrikeData> = ActionStrikeUsage<T> & {
     index: number;
     visible: boolean;
     description: string;
-    altUsages: ActionStrikeUsage[];
 };
 
 type ActionBlast = ElementalBlastSheetConfig & {

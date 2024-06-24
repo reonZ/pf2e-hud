@@ -1559,11 +1559,25 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     const { itemId, slug } = shortcutData;
                     const strike = await getStrikeData(actor, { id: itemId, slug });
                     const disabled = !strike;
+                    const isNPC = actor.isOfType("npc");
 
                     const img =
-                        actor.isOfType("npc") && strike?.item.range
+                        isNPC && strike?.item.range
                             ? imagePath("npc-range", "svg")
                             : strike?.item.img;
+
+                    const additionalEffects =
+                        strike && isNPC
+                            ? (strike as ActionStrike<NPCStrike>).additionalEffects
+                            : [];
+
+                    const nameExtra = additionalEffects
+                        .map((x) => game.i18n.localize(x.label))
+                        .join(", ");
+
+                    const name = strike
+                        ? `${game.i18n.localize("PF2E.WeaponStrikeLabel")}: ${strike.label}`
+                        : shortcutData.name;
 
                     return {
                         ...shortcutData,
@@ -1571,9 +1585,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         isFadedOut: disabled || !strike.ready,
                         strike,
                         img: img ?? shortcutData.img,
-                        name: strike
-                            ? `${game.i18n.localize("PF2E.WeaponStrikeLabel")}: ${strike.label}`
-                            : shortcutData.name,
+                        name: nameExtra ? `${name} (${nameExtra})` : name,
                     } satisfies AttackShortcut as T;
                 }
             }
