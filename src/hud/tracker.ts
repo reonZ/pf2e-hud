@@ -107,7 +107,11 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
 
     get contextMenus() {
         if (this.#contextMenus.length) return this.#contextMenus;
-        return (this.#contextMenus = ui.combat._getEntryContextOptions());
+
+        const menuItems = ui.combat._getEntryContextOptions();
+        ui.combat._callHooks((className) => `get${className}EntryContext`, menuItems);
+
+        return (this.#contextMenus = menuItems);
     }
 
     _onClose(options: ApplicationClosingOptions) {
@@ -332,9 +336,6 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
     }
 
     #toggleMenu(enabled: boolean) {
-        this.#toggled = enabled;
-        this.element?.classList.toggle("toggle-menu", enabled);
-
         if (enabled && this.combatantsElement) {
             const menus = this.contextMenus;
             const combatantElements =
@@ -360,6 +361,9 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
                 }
             }
         }
+
+        this.#toggled = enabled;
+        this.element?.classList.toggle("toggle-menu", enabled);
     }
 
     #updateEffectsPanel(effectsPanel = document.getElementById("effects-panel")) {
