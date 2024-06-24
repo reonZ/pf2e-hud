@@ -1579,6 +1579,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         ? `${game.i18n.localize("PF2E.WeaponStrikeLabel")}: ${strike.label}`
                         : shortcutData.name;
 
+                    const traits =
+                        strike && isNPC
+                            ? strike.traits.filter((x) => x.name !== "attack").map((x) => x.label)
+                            : [];
+
                     return {
                         ...shortcutData,
                         isDisabled: disabled,
@@ -1586,6 +1591,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         strike,
                         img: img ?? shortcutData.img,
                         name: nameExtra ? `${name} (${nameExtra})` : name,
+                        subtitle: traits.length ? traits.join(", ") : undefined,
                     } satisfies AttackShortcut as T;
                 }
             }
@@ -1807,6 +1813,7 @@ type BlastShortcut = BaseAttackShortcut & {
 
 type StrikeShortcut = BaseAttackShortcut & {
     strike: ActionStrike | undefined;
+    subtitle: string | undefined;
 };
 
 type AttackShortcut = BlastShortcut | StrikeShortcut;
