@@ -78,6 +78,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #updateUserHook = createHook("updateUser", this.#onUpdateUser.bind(this));
     #combatTurnHook = createHook("combatTurnChange", this.#onCombatTurnChange.bind(this));
 
+    #isVirtual: boolean = false;
     #isUserCharacter: boolean = false;
     #actor: PersistentHudActor | null = null;
     #shortcuts: Record<string, Shortcut | EmptyShortcut> = {};
@@ -123,6 +124,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             "sidebarFontSize",
             "sidebarHeight",
             "multiColumns",
+            "autoFill",
             "noflash",
             "confirmShortcut",
             "consumableShortcut",
@@ -140,6 +142,16 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: "disabled",
                 scope: "client",
                 requiresReload: true,
+            },
+            {
+                key: "autoFill",
+                type: String,
+                choices: ["disabled", "one", "two"],
+                default: "one",
+                scope: "client",
+                onChange: () => {
+                    this.render();
+                },
             },
             {
                 key: "noflash",
@@ -243,6 +255,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
     get sidebars() {
         return this.mainElement?.querySelector<HTMLElement>(".sidebars") ?? null;
+    }
+
+    get isVirtual() {
+        return this.#isVirtual;
     }
 
     get anchor(): AdvancedHudAnchor {
@@ -411,8 +427,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     _actorCleanup() {
+        this.toggleSidebar(null);
+
         this.#actor = null;
         this.#isUserCharacter = false;
+
         super._actorCleanup();
     }
 
@@ -679,19 +698,34 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = this.actor;
         if (!actor) return context;
 
+        const autoFill =
+            actor.isOfType("npc") &&
+            !getFlag(actor, "persistent.shortcuts", game.user.id) &&
+            this.getSetting("autoFill");
+
         this.#shortcuts = {};
+        this.#isVirtual = autoFill && autoFill !== "disabled";
 
         const cached = {};
         const shortcutGroups: ShortcutGroup[] = [];
 
         for (const groupIndex of R.range(0, 4)) {
+            let isAttack = false;
             const shortcuts: (Shortcut | EmptyShortcut)[] = [];
 
             for (const index of R.range(0, 4)) {
-                const shortcut = await this.#createShortcut(groupIndex, index, cached);
+                const shortcut: Shortcut | EmptyShortcut = isAttack
+                    ? { index: String(index), groupIndex: String(groupIndex), isEmpty: true }
+                    : autoFill && autoFill !== "disabled"
+                    ? await this.#fillShortcut(groupIndex, index, autoFill, cached)
+                    : await this.#createShortcutFromFlag(groupIndex, index, cached);
 
                 shortcuts.push(shortcut);
                 this.#shortcuts[`${groupIndex}-${index}`] = shortcut;
+
+                if (index === 0 && !shortcut.isEmpty && shortcut.type === "attack") {
+                    isAttack = true;
+                }
             }
 
             const firstShortcut = shortcuts.find(
@@ -954,9 +988,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = this.actor!;
 
         let { index, groupIndex } = elementDataset(el);
-        const shortcut = await this.#createShortcut(groupIndex, index);
+        const shortcut = this.getShortcut(groupIndex, index);
 
-        let newShortcut: ShortcutFlag | undefined;
+        let newShortcut: ShortcutData | undefined;
 
         switch (dropData.type) {
             case "RollOption": {
@@ -984,7 +1018,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     img: item.img,
                     itemId: item.id,
                     name: label,
-                } satisfies ToggleShortcutFlag;
+                } satisfies ToggleShortcutData;
 
                 break;
             }
@@ -1012,14 +1046,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                             img: item.system.spell?.img ?? item.img,
                             name: item.name,
                             slug: itemSlug(item),
-                        } satisfies ConsumableShortcutFlag;
+                        } satisfies ConsumableShortcutData;
                     } else {
                         newShortcut = {
                             type: "consumable",
                             itemId: item.id,
                             index,
                             groupIndex,
-                        } satisfies ConsumableShortcutFlag;
+                        } satisfies ConsumableShortcutData;
                     }
                 } else if (item.isOfType("action", "feat")) {
                     newShortcut = {
@@ -1029,7 +1063,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         itemId: item.id,
                         name: item.name,
                         img: getActionImg(item),
-                    } satisfies ActionShortcutFlag;
+                    } satisfies ActionShortcutData;
                 } else if (item.isOfType("spell")) {
                     const { fromSidebar, itemType, entryId, slotId } = dropData;
                     const castRank = Number(dropData.castRank);
@@ -1051,7 +1085,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         entryId,
                         slotId: Number(slotId),
                         groupId,
-                    } satisfies SpellShortcutFlag;
+                    } satisfies SpellShortcutData;
                 }
 
                 break;
@@ -1083,20 +1117,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         elementTrait,
                         img: config.img,
                         name: game.i18n.localize(config.label),
-                    } satisfies AttackShortcutFlag;
+                    } satisfies BlastShortcutData;
                 } else if (actionIndex !== undefined) {
                     const action = actor.system.actions[actionIndex];
                     if (!action) return wrongType();
 
-                    newShortcut = {
-                        type: "attack",
-                        index,
-                        groupIndex,
-                        itemId: action.item.id,
-                        slug: action.slug,
-                        img: action.item.img,
-                        name: `${game.i18n.localize("PF2E.WeaponStrikeLabel")}: ${action.label}`,
-                    } satisfies AttackShortcutFlag;
+                    newShortcut = createStrikeShortcutData(groupIndex, index, action);
                 }
 
                 break;
@@ -1117,7 +1143,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         if (newShortcut.type === "attack") {
             const wasSplit =
-                (!shortcut.isEmpty && shortcut.type !== "attack") ||
+                (shortcut && !shortcut.isEmpty && shortcut.type !== "attack") ||
                 Object.values(group).some((x) => "type" in x && x.type !== "attack");
 
             if (wasSplit) {
@@ -1145,30 +1171,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         setFlag(actor, "persistent.shortcuts", game.user.id, groupIndex, group);
     }
 
-    async #createShortcut<T extends Shortcut>(
+    async #fillShortcut(
         groupIndex: Maybe<number | string>,
         index: Maybe<number | string>,
+        fillType: Exclude<AutoFillSetting, "disabled">,
         cached: Record<string, any> = {}
-    ): Promise<T | EmptyShortcut> {
+    ): Promise<Shortcut | EmptyShortcut> {
         index = String(index);
         groupIndex = String(groupIndex);
-
-        const throwError = () => {
-            MODULE.throwError("an error occured while trying to access the shortcut");
-        };
-
-        const actor = this.actor as ActorPF2e;
-        if (!actor || !groupIndex || isNaN(Number(groupIndex)) || !index || isNaN(Number(index))) {
-            return throwError();
-        }
-
-        const shortcut = getFlag<ShortcutFlag>(
-            actor,
-            "persistent.shortcuts",
-            game.user.id,
-            groupIndex,
-            index
-        );
 
         const emptyData: EmptyShortcut = {
             index,
@@ -1176,11 +1186,120 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             isEmpty: true,
         };
 
-        if (!shortcut) return emptyData;
+        const actor = this.actor as NPCPF2e;
 
-        switch (shortcut.type) {
+        const strike = actor.system.actions[Number(groupIndex)];
+        if (strike) {
+            const shortcutData = createStrikeShortcutData(groupIndex, index, strike);
+            return this.#createShortcut(shortcutData, cached);
+        }
+
+        const checkSpells = async () => {
+            const entryData = await actor.spellcasting.regular.at(0)?.getSheetData();
+            if (!entryData) return emptyData;
+
+            cached.spells ??= { groupIndex: 0, index: 0 };
+
+            let spellGroup = entryData.groups.at(cached.spells.groupIndex);
+
+            while (spellGroup && cached.spells.index >= spellGroup.active.length) {
+                cached.spells.index = 0;
+                spellGroup = entryData.groups.at(++cached.spells.groupIndex);
+            }
+
+            if (spellGroup) {
+                const slotIndex = cached.spells.index++;
+                const active = spellGroup.active[slotIndex]!;
+
+                const shortcutData = {
+                    type: "spell",
+                    index,
+                    groupIndex,
+                    itemType: "spell",
+                    entryId: entryData.id,
+                    groupId: spellGroup.id,
+                    itemId: active.spell.id,
+                    slotId: entryData.isPrepared ? slotIndex : undefined,
+                    castRank:
+                        active.castRank ??
+                        active.spell.system.location.heightenedLevel ??
+                        active.spell.rank,
+                } satisfies SpellShortcutData;
+
+                return this.#createShortcut(shortcutData, cached);
+            }
+        };
+
+        const checkConsumables = () => {
+            cached.consumables ??= 0;
+            const consumable = actor.itemTypes.consumable.at(cached.consumables++);
+            if (!consumable) return emptyData;
+
+            const shortcutData = {
+                type: "consumable",
+                itemId: consumable.id,
+                index,
+                groupIndex,
+            } satisfies ConsumableShortcutData;
+
+            return this.#createShortcut(shortcutData, cached);
+        };
+
+        const checks =
+            fillType === "one" ? [checkSpells, checkConsumables] : [checkConsumables, checkSpells];
+
+        for (const checkFn of checks) {
+            const result = await checkFn();
+            if (result && "type" in result) return result;
+        }
+
+        return emptyData;
+    }
+
+    async #createShortcutFromFlag<T extends Shortcut>(
+        groupIndex: number,
+        index: number,
+        cached: Record<string, any> = {}
+    ) {
+        const flag = getFlag<ShortcutData>(
+            this.actor!,
+            "persistent.shortcuts",
+            game.user.id,
+            String(groupIndex),
+            String(index)
+        );
+
+        return this.#createShortcut<T>(
+            flag ?? { groupIndex: String(groupIndex), index: String(index) },
+            cached
+        );
+    }
+
+    async #createShortcut<T extends Shortcut>(
+        shortcutData: ShortcutData | { groupIndex: string; index: string },
+        cached: Record<string, any> = {}
+    ): Promise<T | EmptyShortcut> {
+        const throwError = () => {
+            MODULE.throwError("an error occured while trying to access the shortcut");
+        };
+
+        const { groupIndex, index } = shortcutData;
+        const actor = this.actor as ActorPF2e;
+        if (!actor || !groupIndex || isNaN(Number(groupIndex)) || !index || isNaN(Number(index))) {
+            return throwError();
+        }
+
+        const emptyData: EmptyShortcut = {
+            index,
+            groupIndex,
+            isEmpty: true,
+        };
+
+        if (!("type" in shortcutData)) return emptyData;
+
+        switch (shortcutData.type) {
             case "spell": {
-                const { itemId, entryId, groupId, slotId } = shortcut;
+                const { itemId, entryId, groupId, slotId } = shortcutData;
                 const collection = (actor as CreaturePF2e).spellcasting.collections.get(entryId);
                 const spell = collection?.get(itemId);
                 const entry = collection?.entry;
@@ -1189,13 +1308,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     !spell ||
                     !entry ||
                     !collection ||
-                    isNaN(shortcut.castRank) ||
-                    !shortcut.castRank.between(1, 10)
+                    isNaN(shortcutData.castRank) ||
+                    !shortcutData.castRank.between(1, 10)
                 ) {
                     return emptyData;
                 }
 
-                const castRank = shortcut.castRank as OneToTen;
+                const castRank = shortcutData.castRank as OneToTen;
 
                 cached.rankLabel ??= {};
                 cached.rankLabel[castRank] ??= getRankLabel(castRank);
@@ -1297,7 +1416,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     notCarried && parentItem ? getActionAnnotation(parentItem) : undefined;
 
                 return {
-                    ...shortcut,
+                    ...shortcutData,
                     isDisabled: expended || isBroken,
                     isFadedOut: expended || isBroken || notCarried,
                     rank: ROMAN_RANKS[castRank],
@@ -1320,10 +1439,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             }
 
             case "consumable": {
-                const isGeneric = "slug" in shortcut;
+                const isGeneric = "slug" in shortcutData;
                 const item = isGeneric
-                    ? actor.itemTypes.consumable.find((item) => itemSlug(item) === shortcut.slug)
-                    : actor.items.get<ConsumablePF2e<CreaturePF2e>>(shortcut.itemId);
+                    ? actor.itemTypes.consumable.find(
+                          (item) => itemSlug(item) === shortcutData.slug
+                      )
+                    : actor.items.get<ConsumablePF2e<CreaturePF2e>>(shortcutData.itemId);
 
                 if (item && !item.isOfType("consumable")) return throwError();
 
@@ -1343,13 +1464,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         : undefined;
 
                 const img =
-                    item?.system.spell?.img ?? item?.img ?? (shortcut as { img: string }).img;
+                    item?.system.spell?.img ?? item?.img ?? (shortcutData as { img: string }).img;
 
-                let name = item?.name ?? (shortcut as { name: string }).name;
+                let name = item?.name ?? (shortcutData as { name: string }).name;
                 if (uses !== undefined && quantity > 1) name += ` x ${quantity}`;
 
                 return {
-                    ...shortcut,
+                    ...shortcutData,
                     isDisabled: item?.isAmmo || isOutOfStock,
                     rank: consumableRank(item, true),
                     quantity: uses ?? quantity,
@@ -1365,19 +1486,19 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             }
 
             case "action": {
-                const item = actor.items.get(shortcut.itemId);
+                const item = actor.items.get(shortcutData.itemId);
                 if (item && !item.isOfType("action", "feat")) return throwError();
 
-                const name = item?.name ?? shortcut.name;
+                const name = item?.name ?? shortcutData.name;
                 const frequency = item ? getActionFrequency(item) : undefined;
                 const disabled = !item || frequency?.value === 0;
 
                 return {
-                    ...shortcut,
+                    ...shortcutData,
                     isDisabled: disabled,
                     isFadedOut: disabled,
                     item,
-                    img: item ? getActionImg(item) : shortcut.img,
+                    img: item ? getActionImg(item) : shortcutData.img,
                     name: frequency ? `${name} - ${frequency.label}` : name,
                     frequency,
                     cost: getCost(item?.actionCost?.value),
@@ -1385,23 +1506,23 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             }
 
             case "attack": {
-                const isBlast = "elementTrait" in shortcut;
+                const isBlast = "elementTrait" in shortcutData;
 
                 if (isBlast) {
                     if (!actor.isOfType("character")) return throwError();
 
-                    const blast = await getBlastData(actor, shortcut.elementTrait);
+                    const blast = await getBlastData(actor, shortcutData.elementTrait);
                     const disabled = !blast;
 
                     return {
-                        ...shortcut,
+                        ...shortcutData,
                         isDisabled: disabled,
                         isFadedOut: disabled,
                         isBlast: true,
                         blast,
                     } satisfies AttackShortcut as T;
                 } else {
-                    const { itemId, slug } = shortcut;
+                    const { itemId, slug } = shortcutData;
                     const strike = await getStrikeData(actor, { id: itemId, slug });
                     const disabled = !strike;
 
@@ -1411,21 +1532,21 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                             : strike?.item.img;
 
                     return {
-                        ...shortcut,
+                        ...shortcutData,
                         isDisabled: disabled,
                         isFadedOut: disabled || !strike.ready,
                         strike,
-                        img: img ?? shortcut.img,
+                        img: img ?? shortcutData.img,
                         name: strike
                             ? `${game.i18n.localize("PF2E.WeaponStrikeLabel")}: ${strike.label}`
-                            : shortcut.name,
+                            : shortcutData.name,
                     } satisfies AttackShortcut as T;
                 }
             }
 
             case "toggle": {
-                const { domain, option } = shortcut;
-                const item = actor.items.get(shortcut.itemId);
+                const { domain, option } = shortcutData;
+                const item = actor.items.get(shortcutData.itemId);
                 const toggle = foundry.utils.getProperty<RollOptionToggle>(
                     actor,
                     `synthetics.toggles.${domain}.${option}`
@@ -1437,19 +1558,35 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 );
 
                 return {
-                    ...shortcut,
+                    ...shortcutData,
                     isDisabled: disabled,
                     isFadedOut: disabled,
                     checked,
                     item,
-                    img: item?.img ?? shortcut.img,
-                    name: item ? `${item.name} (${label})` : shortcut.name,
+                    img: item?.img ?? shortcutData.img,
+                    name: item ? `${item.name} (${label})` : shortcutData.name,
                 } satisfies ToggleShortcut as T;
             }
         }
 
         return emptyData;
     }
+}
+
+function createStrikeShortcutData(
+    groupIndex: string,
+    index: string,
+    strike: NPCStrike | CharacterStrike
+): StrikeShortcutData {
+    return {
+        type: "attack",
+        index,
+        groupIndex,
+        itemId: strike.item.id,
+        slug: strike.slug,
+        img: strike.item.img,
+        name: `${game.i18n.localize("PF2E.WeaponStrikeLabel")}: ${strike.label}`,
+    };
 }
 
 function getCost(cost: Maybe<string | number>) {
@@ -1492,13 +1629,13 @@ type ShortcutActionEvent =
 
 type ShortcutType = "action" | "attack" | "consumable" | "spell" | "toggle";
 
-type ShortcutFlagBase<T extends ShortcutType> = {
+type ShortcutDataBase<T extends ShortcutType> = {
     type: T;
     index: string;
     groupIndex: string;
 };
 
-type SpellShortcutFlag = ShortcutFlagBase<"spell"> & {
+type SpellShortcutData = ShortcutDataBase<"spell"> & {
     itemType: string;
     itemId: string;
     castRank: number;
@@ -1507,7 +1644,7 @@ type SpellShortcutFlag = ShortcutFlagBase<"spell"> & {
     groupId: "cantrips" | number;
 };
 
-type ToggleShortcutFlag = ShortcutFlagBase<"toggle"> & {
+type ToggleShortcutData = ShortcutDataBase<"toggle"> & {
     itemId: string;
     domain: string;
     option: string;
@@ -1515,23 +1652,26 @@ type ToggleShortcutFlag = ShortcutFlagBase<"toggle"> & {
     img: string;
 };
 
-type AttackShortcutFlag = ShortcutFlagBase<"attack"> & { img: string; name: string } & (
-        | {
-              elementTrait: ElementTrait;
-          }
-        | {
-              itemId: string;
-              slug: string;
-          }
-    );
+type AttackShortcutDataBase = ShortcutDataBase<"attack"> & { img: string; name: string };
 
-type ActionShortcutFlag = ShortcutFlagBase<"action"> & {
+type StrikeShortcutData = AttackShortcutDataBase & {
+    itemId: string;
+    slug: string;
+};
+
+type BlastShortcutData = AttackShortcutDataBase & {
+    elementTrait: ElementTrait;
+};
+
+type AttackShortcutData = BlastShortcutData | StrikeShortcutData;
+
+type ActionShortcutData = ShortcutDataBase<"action"> & {
     itemId: string;
     name: string;
     img: string;
 };
 
-type ConsumableShortcutFlag = ShortcutFlagBase<"consumable"> &
+type ConsumableShortcutData = ShortcutDataBase<"consumable"> &
     (
         | {
               slug: string;
@@ -1541,14 +1681,14 @@ type ConsumableShortcutFlag = ShortcutFlagBase<"consumable"> &
         | { itemId: string }
     );
 
-type ShortcutFlag =
-    | ConsumableShortcutFlag
-    | AttackShortcutFlag
-    | ToggleShortcutFlag
-    | ActionShortcutFlag
-    | SpellShortcutFlag;
+type ShortcutData =
+    | ConsumableShortcutData
+    | AttackShortcutData
+    | ToggleShortcutData
+    | ActionShortcutData
+    | SpellShortcutData;
 
-type BaseShortCut<T extends ShortcutType> = ShortcutFlagBase<T> & {
+type BaseShortCut<T extends ShortcutType> = ShortcutDataBase<T> & {
     name: string;
     isEmpty?: false;
     img: string;
@@ -1557,7 +1697,7 @@ type BaseShortCut<T extends ShortcutType> = ShortcutFlagBase<T> & {
 };
 
 type SpellShortcut = BaseShortCut<"spell"> &
-    SpellShortcutFlag & {
+    SpellShortcutData & {
         categoryIcon: string | undefined;
         collection: SpellCollection<CreaturePF2e>;
         item: SpellPF2e<CreaturePF2e>;
@@ -1577,7 +1717,7 @@ type SpellShortcut = BaseShortCut<"spell"> &
 type CostValue = number | "extra" | undefined;
 
 type ActionShortcut = BaseShortCut<"action"> &
-    ActionShortcutFlag & {
+    ActionShortcutData & {
         item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e> | undefined;
         cost: CostValue;
         frequency: Maybe<{
@@ -1588,13 +1728,13 @@ type ActionShortcut = BaseShortCut<"action"> &
     };
 
 type ToggleShortcut = BaseShortCut<"toggle"> &
-    ToggleShortcutFlag & {
+    ToggleShortcutData & {
         item: ItemPF2e | undefined;
         checked: boolean;
     };
 
 type ConsumableShortcut = BaseShortCut<"consumable"> &
-    ConsumableShortcutFlag & {
+    ConsumableShortcutData & {
         item: ConsumablePF2e<ActorPF2e> | undefined;
         cost: CostValue;
         quantity: number;
@@ -1605,7 +1745,7 @@ type ConsumableShortcut = BaseShortCut<"consumable"> &
     };
 
 type BaseAttackShortcut = BaseShortCut<"attack"> &
-    AttackShortcutFlag & {
+    AttackShortcutData & {
         img: string;
         name: string;
     };
@@ -1711,6 +1851,7 @@ type DropData = HotbarDropData & {
 };
 
 type AutoSetSetting = "disabled" | "select" | "combat";
+type AutoFillSetting = "disabled" | "one" | "two";
 
 type PersistentSettings = BaseActorSettings &
     SidebarSettings &
@@ -1721,7 +1862,8 @@ type PersistentSettings = BaseActorSettings &
         consumableShortcut: "use" | "confirm" | "chat";
         showUsers: boolean;
         autoSet: AutoSetSetting;
+        autoFill: AutoFillSetting;
     };
 
-export type { AutoSetSetting };
 export { PF2eHudPersistent };
+export type { AutoSetSetting };

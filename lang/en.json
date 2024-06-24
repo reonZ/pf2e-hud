@@ -159,12 +159,21 @@
                     "hint": "Should spell and action shortcuts require confirmation before being used."
                 },
                 "autoSet": {
-                    "name": "Auto Set Actor",
+                    "name": "Auto-Set Actor",
                     "hint": "This option will automatically set the persistent actor superseding any manual operation. Will completely disable the 'Token HUD' feature if set to 'On Token Selection'.",
                     "choices": {
                         "disabled": "Disabled",
                         "select": "On Token Selection",
                         "combat": "Current Combatant"
+                    }
+                },
+                "autoFill": {
+                    "name": "Auto-Fill NPCs",
+                    "hint": "If you don't haven't made any manual changes, the shortcut slots will automatically be filled.",
+                    "choices": {
+                        "disabled": "Disabled",
+                        "one": "Strikes -> Spells -> Consumables",
+                        "two": "Strikes -> Consumables -> Spells"
                     }
                 }
             },
