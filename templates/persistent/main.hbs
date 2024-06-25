@@ -19,6 +19,23 @@
         <div class="panel app sidebars">
             {{> (partial 'sidebars')}}
         </div>
+        {{#if (and hasActor isGM)}}
+        <div class="panel app shotcut-menus">
+            <a {{#if (or isAutoFill isCharacter)}}class="disabled" {{/if}}
+                data-action="fill-shortcuts" data-tooltip="{{i18n.path 'shortcut.fill.title'}}">
+                <i class="fa-solid fa-fill-drip"></i>
+            </a>
+            <a {{#if (or isOwnerShortcuts isNPC)}}class="disabled" {{/if}}
+                data-action="copy-owner-shortcuts"
+                data-tooltip="{{i18n.path 'shortcut.owner.title'}}">
+                <i class="fa-solid fa-user-pen"></i>
+            </a>
+            <a {{#if noShortcuts}}class="disabled" {{/if}} data-action="delete-shortcuts"
+                data-tooltip="{{i18n.path 'shortcut.delete.title'}}">
+                <i class="fa-solid fa-circle-x"></i>
+            </a>
+        </div>
+        {{/if}}
     </div>
     <div class="bottom">
         {{#if isCharacter}}
@@ -179,10 +196,12 @@
 {{/if}}
 {{!-- strike --}}
 {{else}}
+{{#if @root.isCharacter}}
 <div class="range boxed">
     {{> (@root.partial 'strike_category') category=attack.strike.category}}
     {{attack.strike.category.value}}
 </div>
+{{/if}}
 {{!-- strike ready --}}
 {{#if attack.subtitle}}
 <div class="subtitle app">{{attack.subtitle}}</div>

@@ -169,11 +169,14 @@
                         "combat": "Current Combatant"
                     }
                 },
-                "autoFill": {
+                "autoFillNpc": {
                     "name": "Auto-Fill NPCs",
-                    "hint": "If you haven't made any manual changes, the shortcut slots will automatically be filled.",
+                    "hint": "If you haven't made any manual changes, the shortcut slots will automatically be filled."
+                },
+                "autoFillType": {
+                    "name": "Auto-Fill Preference",
+                    "hint": "The order of priority the auto-fill will use.",
                     "choices": {
-                        "disabled": "Disabled",
                         "one": "Strikes -> Spells -> Consumables",
                         "two": "Strikes -> Consumables -> Spells"
                     }
@@ -242,7 +245,20 @@
                         "title": "{type} - {name}",
                         "message": "Are you sure you want to {type} <strong>{name}</strong>?"
                     },
-                    "noChannelElements": "Could not find the <strong>Channel Elements</strong> action on this character."
+                    "noChannelElements": "Could not find the <strong>Channel Elements</strong> action on this character.",
+                    "delete": {
+                        "title": "Delete Shortcuts",
+                        "message": "Are you sure you want to delete all your shortcuts for <strong>{name}</strong>?"
+                    },
+                    "fill": {
+                        "title": "Auto-Fill Shortcuts",
+                        "message": "Are you sure you want to automatically fill all the shortcuts for <strong>{name}</strong>?"
+                    },
+                    "owner": {
+                        "title": "Copy Owner Shortcuts",
+                        "message": "Are you sure you want to copy the shortcuts from <strong>{name}</strong>'s owner?",
+                        "none": "This Character doesn't have any owner with shortcuts set."
+                    }
                 }
             }
         },

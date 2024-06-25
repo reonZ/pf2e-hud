@@ -164,12 +164,23 @@ $bottom-width: 542px;
                 display: flex;
                 gap: var(--panel-gap);
 
-                .sidebars {
-                    grid-row: 1;
+                .sidebars,
+                .shotcut-menus {
                     grid-auto-flow: column;
                     justify-content: start;
                     width: fit-content;
+                }
+
+                .sidebars {
                     min-width: 9.438em;
+                }
+
+                .shotcut-menus {
+                    a {
+                        &.disabled {
+                            color: var(--color-disabled);
+                        }
+                    }
                 }
             }
 

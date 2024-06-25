@@ -83,7 +83,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #isUserCharacter: boolean = false;
     #actor: PersistentHudActor | null = null;
     #shortcuts: Record<string, Shortcut | EmptyShortcut> = {};
-    #shortcutData: Record<string, Record<string, ShortcutData>> = {};
+    #shortcutData: UserShortcutsData = {};
 
     #elements: Record<PartName | "left", HTMLElement | null> = {
         left: null,
@@ -127,7 +127,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             "sidebarHeight",
             "multiColumns",
             "ownerShortcuts",
-            "autoFill",
+            "autoFillNpc",
+            "autoFillType",
             "noflash",
             "confirmShortcut",
             "consumableShortcut",
@@ -147,9 +148,19 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 requiresReload: true,
             },
             {
-                key: "autoFill",
+                key: "autoFillNpc",
+                type: Boolean,
+                default: true,
+                scope: "client",
+                gmOnly: true,
+                onChange: () => {
+                    this.render();
+                },
+            },
+            {
+                key: "autoFillType",
                 type: String,
-                choices: ["disabled", "one", "two"],
+                choices: ["one", "two"],
                 default: "one",
                 scope: "client",
                 gmOnly: true,
@@ -362,6 +373,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = parentData.actor;
         return {
             ...parentData,
+            isGM: game.user.isGM,
             isNPC: actor.isOfType("npc"),
             isCharacter: actor.isOfType("character"),
         };
@@ -716,7 +728,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         const isNPC = actor.isOfType("npc");
         const noShortcuts = !getFlag(actor, "persistent.shortcuts", game.user.id);
-        const autoFill = isGM && isNPC && noShortcuts && this.getSetting("autoFill");
+        const autoFill = isGM && isNPC && noShortcuts && this.getSetting("autoFillNpc");
         const shortcutsOwner = (() => {
             if (!isGM || isNPC || !noShortcuts || !this.getSetting("ownerShortcuts")) return;
             const owner = getOwner(actor, false)?.id;
@@ -725,9 +737,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         this.#shortcuts = {};
         this.#shortcutData = {};
-        this.#isVirtual = !!shortcutsOwner || (autoFill && autoFill !== "disabled");
+        this.#isVirtual = !!shortcutsOwner || autoFill;
 
-        const cached = {};
+        const cached: ShortcutCache = {};
         const shortcutGroups: ShortcutGroup[] = [];
 
         for (const groupIndex of R.range(0, 4)) {
@@ -737,8 +749,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             for (const index of R.range(0, 4)) {
                 const shortcut: Shortcut | EmptyShortcut = isAttack
                     ? { index: String(index), groupIndex: String(groupIndex), isEmpty: true }
-                    : autoFill && autoFill !== "disabled"
-                    ? await this.#fillShortcut(groupIndex, index, autoFill, cached)
+                    : autoFill
+                    ? await this.#fillShortcut(groupIndex, index, cached)
                     : await this.#createShortcutFromFlag(groupIndex, index, cached, shortcutsOwner);
 
                 shortcuts.push(shortcut);
@@ -765,6 +777,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             ...getAdvancedStats(actor),
             sidebars: getSidebars(actor, this.sidebar?.key),
             shortcutGroups,
+            noShortcuts,
+            isVirtual: this.isVirtual,
+            isAutoFill: autoFill,
+            isOwnerShortcuts: !!shortcutsOwner,
             variantLabel,
         };
 
@@ -777,6 +793,78 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         addStatsAdvancedListeners(this.actor, html);
         addSidebarsListeners(this, html);
+
+        addListenerAll(html, ".stretch .shotcut-menus [data-action]", async (event, el) => {
+            const action = el.dataset.action as ShortcutMenusAction;
+
+            const confirmAction = (key: string) => {
+                const name = actor.name;
+                const title = localize("persistent.main.shortcut", key, "title");
+
+                return confirmDialog({
+                    title: `${name} - ${title}`,
+                    content: localize("persistent.main.shortcut", key, "message", { name }),
+                });
+            };
+
+            switch (action) {
+                case "delete-shortcuts": {
+                    const confirm = await confirmAction("delete");
+                    if (!confirm) return;
+
+                    return unsetFlag(actor, "persistent.shortcuts", game.user.id);
+                }
+
+                case "fill-shortcuts": {
+                    const confirm = await confirmAction("fill");
+                    if (!confirm) return;
+
+                    this.#shortcutData = {};
+                    const cached: ShortcutCache = {};
+
+                    for (const groupIndex of R.range(0, 4)) {
+                        let isAttack = false;
+
+                        for (const index of R.range(0, 4)) {
+                            const shortcut: Shortcut | EmptyShortcut = isAttack
+                                ? {
+                                      index: String(index),
+                                      groupIndex: String(groupIndex),
+                                      isEmpty: true,
+                                  }
+                                : await this.#fillShortcut(groupIndex, index, cached);
+
+                            if (index === 0 && !shortcut.isEmpty && shortcut.type === "attack") {
+                                isAttack = true;
+                            }
+                        }
+                    }
+
+                    return this.#overrideShortcutData();
+                }
+
+                case "copy-owner-shortcuts": {
+                    const owner = getOwner(actor, false)?.id;
+                    const userShortcuts = owner
+                        ? getFlag<UserShortcutsData>(actor, "persistent.shortcuts", owner)
+                        : undefined;
+
+                    if (!userShortcuts || foundry.utils.isEmpty(userShortcuts)) {
+                        return warn("persistent.main.shortcut.owner.none");
+                    }
+
+                    const confirm = await confirmAction("owner");
+                    if (!confirm) return;
+
+                    return setFlag(
+                        actor,
+                        "persistent.shortcuts",
+                        game.user.id,
+                        foundry.utils.deepClone(userShortcuts)
+                    );
+                }
+            }
+        });
 
         const shortcutElements = html.querySelectorAll<HTMLElement>(
             ".stretch .shortcuts .shortcut"
@@ -828,7 +916,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             if (this.#shortcutData[groupIndex]?.[index]) {
                 delete this.#shortcutData[groupIndex][index];
             }
-            setFlag(actor, "persistent.shortcuts", game.user.id, this.#shortcutData);
+            this.#overrideShortcutData();
         } else {
             unsetFlag(actor, "persistent.shortcuts", game.user.id, groupIndex, index);
         }
@@ -841,15 +929,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         const actor = this.actor!;
 
-        function confirmUse(name: string) {
-            return confirmDialog({
-                title: localize("persistent.main.shortcut.confirm.title", {
-                    name,
-                }),
-                content: localize("persistent.main.shortcut.confirm.message", {
-                    name,
-                }),
-            });
+        function confirmUse(item: ItemPF2e) {
+            return confirmShortcut("confirm", { name: item.name });
         }
 
         switch (shortcut.type) {
@@ -863,7 +944,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     return item.toMessage(event);
                 }
 
-                if (setting === "confirm" && !(await confirmUse(item.name))) return;
+                if (setting === "confirm" && !(await confirmUse(item))) return;
 
                 return consumeItem(event, item);
             }
@@ -877,7 +958,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 const item = shortcut.item;
                 if (!item) return;
 
-                if (this.getSetting("confirmShortcut") && !(await confirmUse(item.name))) return;
+                if (this.getSetting("confirmShortcut") && !(await confirmUse(item))) return;
 
                 return useAction(item);
             }
@@ -903,17 +984,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     if (setting) {
                         const type = localize("sidebars.spells.action", annotation);
                         const name = parentItem.name;
-
-                        const confirm = await confirmDialog({
-                            title: localize("persistent.main.shortcut.draw.title", {
-                                type,
-                                name,
-                            }),
-                            content: localize("persistent.main.shortcut.draw.message", {
-                                type,
-                                name,
-                            }),
-                        });
+                        const confirm = await confirmShortcut("draw", { type, name });
 
                         if (!confirm) return;
                     }
@@ -921,7 +992,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     return changeCarryType(actor, parentItem, 1, annotation);
                 }
 
-                if (setting && !(await confirmUse(spell.name))) return;
+                if (setting && !(await confirmUse(spell))) return;
 
                 return (
                     spell.parentItem?.consume() ?? collection.entry.cast(spell, { rank, slotId })
@@ -1204,17 +1275,23 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         group[index] = newShortcut;
 
         if (this.isVirtual) {
-            setFlag(actor, "persistent.shortcuts", game.user.id, this.#shortcutData);
+            this.#overrideShortcutData();
         } else {
             setFlag(actor, "persistent.shortcuts", game.user.id, groupIndex, group);
         }
     }
 
+    async #overrideShortcutData() {
+        const actor = this.actor!;
+        const shortcutData = foundry.utils.deepClone(this.#shortcutData);
+        await unsetFlag(actor, "persistent.shortcuts", game.user.id);
+        await setFlag(actor, "persistent.shortcuts", game.user.id, shortcutData);
+    }
+
     async #fillShortcut(
         groupIndex: Maybe<number | string>,
         index: Maybe<number | string>,
-        fillType: Exclude<AutoFillSetting, "disabled">,
-        cached: Record<string, any>
+        cached: ShortcutCache
     ): Promise<Shortcut | EmptyShortcut> {
         index = String(index);
         groupIndex = String(groupIndex);
@@ -1298,8 +1375,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             return returnShortcut(shortcutData);
         };
 
+        cached.autoFillType ??= this.getSetting("autoFillType");
+
         const checks =
-            fillType === "one" ? [checkSpells, checkConsumables] : [checkConsumables, checkSpells];
+            cached.autoFillType === "one"
+                ? [checkSpells, checkConsumables]
+                : [checkConsumables, checkSpells];
 
         for (const checkFn of checks) {
             const result = await checkFn();
@@ -1312,7 +1393,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     async #createShortcutFromFlag<T extends Shortcut>(
         groupIndex: number,
         index: number,
-        cached: Record<string, any>,
+        cached: CreateShortcutCache,
         owner?: string
     ) {
         const flag = getFlag<ShortcutData>(
@@ -1331,7 +1412,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
     async #createShortcut<T extends Shortcut>(
         shortcutData: ShortcutData | { groupIndex: string; index: string },
-        cached: Record<string, any> = {}
+        cached: CreateShortcutCache
     ): Promise<T | EmptyShortcut> {
         const throwError = () => {
             MODULE.throwError("an error occured while trying to access the shortcut");
@@ -1416,7 +1497,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     if (!isStaff || !dailiesModule) return false;
 
                     cached.canCastRank ??= {};
-                    cached.canCastRank[castRank] ??= dailiesModule.api.canCastRank(
+                    cached.canCastRank[castRank] ??= !!dailiesModule.api.canCastRank(
                         actor as CharacterPF2e,
                         castRank
                     );
@@ -1710,6 +1791,13 @@ function itemSlug(item: ItemPF2e) {
     return item.slug ?? game.pf2e.system.sluggify(item.name);
 }
 
+function confirmShortcut(key: string, titleData: object, contentData: object = titleData) {
+    return confirmDialog({
+        title: localize("persistent.main.shortcut", key, "title", titleData),
+        content: localize("persistent.main.shortcut", key, "message", contentData),
+    });
+}
+
 type ShortcutActionEvent =
     | "toggle-damage"
     | "open-attack-popup"
@@ -1721,7 +1809,27 @@ type ShortcutActionEvent =
     | "auxiliary-action"
     | "channel-elements";
 
+type ShortcutMenusAction = "delete-shortcuts" | "fill-shortcuts" | "copy-owner-shortcuts";
+
 type ShortcutType = "action" | "attack" | "consumable" | "spell" | "toggle";
+
+type CreateShortcutCache = {
+    rankLabel?: Partial<Record<OneToTen, string>>;
+    spellcasting?: Record<string, SpellcastingSheetData>;
+    dailiesModule?: Maybe<PF2eDailiesModule>;
+    entryLabel?: Record<string, string>;
+    canCastRank?: Partial<Record<OneToTen, boolean>>;
+};
+
+type FillShortcutCache = {
+    spells?: { groupIndex: number; index: number };
+    consumables?: number;
+    autoFillType?: AutoFillSetting;
+};
+
+type ShortcutCache = CreateShortcutCache & FillShortcutCache;
+
+type UserShortcutsData = Record<string, Record<string, ShortcutData>>;
 
 type ShortcutDataBase<T extends ShortcutType> = {
     type: T;
@@ -1901,6 +2009,10 @@ type MainContext = PersistentContext &
     StatsAdvanced & {
         sidebars: SidebarMenu[];
         shortcutGroups: ShortcutGroup[];
+        noShortcuts: boolean;
+        isVirtual: boolean;
+        isAutoFill: boolean;
+        isOwnerShortcuts: boolean;
         variantLabel: typeof variantLabel;
     };
 
@@ -1938,6 +2050,7 @@ type PersistentContext = Omit<BaseActorContext<PersistentHudActor>, "actor" | "h
     actor: PersistentHudActor;
     isCharacter: boolean;
     isNPC: boolean;
+    isGM: boolean;
 };
 
 type DropData = HotbarDropData & {
@@ -1950,7 +2063,7 @@ type DropData = HotbarDropData & {
 };
 
 type AutoSetSetting = "disabled" | "select" | "combat";
-type AutoFillSetting = "disabled" | "one" | "two";
+type AutoFillSetting = "one" | "two";
 
 type PersistentSettings = BaseActorSettings &
     SidebarSettings &
@@ -1961,7 +2074,8 @@ type PersistentSettings = BaseActorSettings &
         consumableShortcut: "use" | "confirm" | "chat";
         showUsers: boolean;
         autoSet: AutoSetSetting;
-        autoFill: AutoFillSetting;
+        autoFillNpc: boolean;
+        autoFillType: AutoFillSetting;
         ownerShortcuts: boolean;
     };
 
