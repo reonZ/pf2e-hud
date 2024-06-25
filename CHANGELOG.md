@@ -1,3 +1,21 @@
+# 0.9.0
+
+-   `Combat Tracker`:
+    -   now dynamically uses the context menu entries of the combat tracker, allowing the addition of third party options
+-   `Persistent HUD`:
+    -   added `additional effects` to NPC strike shortcut name
+    -   added `traits` to NPC strike shortcut subtitle
+    -   position the `Attack Popup` application closer to the HUD when opening it from an attack shortcut
+    -   now saves the state of the players application across reload
+    -   changed the default highlighted button for the confirm dialogs to `yes`
+    -   added a new `Auto-Set Actor` setting
+        -   when set to anything but `Disabled`, every mean of setting the persistent actor manually will be removed
+        -   when set to `On Token Selection`, it will also completely disable the `Token HUD` feature
+    -   added a new `Auto-Fill NPCs` setting
+        -   the module will try to fill all the shortcut slots with strikes, spells and consumables
+        -   you can select the priority between spells and consumables
+    -   fixed `free` and `reaction` cost icons not showing on shortcuts
+
 # 0.8.0
 
 -   this release requires you to update `PF2e Dailies` to version `3.5.1` if used in your world
@@ -8,7 +26,7 @@
     -   fixed issue with token texture scaling
 -   `Persistent HUD`:
     -   fixed linked sidebars not re-rendering on actor update
-    -   implement the shortcut slots
+    -   implemented the shortcut slots
         -   `consumables`, `strikes`, `elemental blasts`, `actions`, `spells` and `Roll Option` toggles can be dropped in the slots to create a shortcut
         -   only `spells` dragged from a sidebar will be able to be turned into a shortcut
         -   added `Confirm Action/Spell Shortcut` and `Consumable Shortcut` settings to add confirmation dialogs before using them
