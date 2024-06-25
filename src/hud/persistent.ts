@@ -125,6 +125,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             "sidebarFontSize",
             "sidebarHeight",
             "multiColumns",
+            "ownerShortcuts",
             "autoFill",
             "noflash",
             "confirmShortcut",
@@ -150,6 +151,17 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 choices: ["disabled", "one", "two"],
                 default: "one",
                 scope: "client",
+                gmOnly: true,
+                onChange: () => {
+                    this.render();
+                },
+            },
+            {
+                key: "ownerShortcuts",
+                type: Boolean,
+                default: true,
+                scope: "client",
+                gmOnly: true,
                 onChange: () => {
                     this.render();
                 },
@@ -696,13 +708,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         context: PersistentContext,
         options: PersistentRenderOptions
     ): Promise<MainContext | PersistentContext> {
+        const isGM = game.user.isGM;
         const actor = this.actor;
         if (!actor) return context;
 
+        const noShortcuts = !getFlag(actor, "persistent.shortcuts", game.user.id);
+
         const autoFill =
-            actor.isOfType("npc") &&
-            !getFlag(actor, "persistent.shortcuts", game.user.id) &&
-            this.getSetting("autoFill");
+            isGM && actor.isOfType("npc") && noShortcuts && this.getSetting("autoFill");
 
         this.#shortcuts = {};
         this.#shortcutData = {};
@@ -1930,6 +1943,7 @@ type PersistentSettings = BaseActorSettings &
         showUsers: boolean;
         autoSet: AutoSetSetting;
         autoFill: AutoFillSetting;
+        ownerShortcuts: boolean;
     };
 
 export { PF2eHudPersistent };

@@ -1,5 +1,7 @@
 {
     "pf2e-hud": {
+        "gmOnly": "GM Only",
+        "reload": "Requires  Reload",
         "keybindings": {
             "persistent": {
                 "setActor": {
@@ -169,12 +171,16 @@
                 },
                 "autoFill": {
                     "name": "Auto-Fill NPCs",
-                    "hint": "If you don't haven't made any manual changes, the shortcut slots will automatically be filled.",
+                    "hint": "If you haven't made any manual changes, the shortcut slots will automatically be filled.",
                     "choices": {
                         "disabled": "Disabled",
                         "one": "Strikes -> Spells -> Consumables",
                         "two": "Strikes -> Consumables -> Spells"
                     }
+                },
+                "ownerShortcuts": {
+                    "name": "Use Owner Shortcuts",
+                    "hint": "If you haven't made any manual changes to a character owned actor, its owner shortcut will be used."
                 }
             },
             "tracker": {

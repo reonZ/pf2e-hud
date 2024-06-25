@@ -5,6 +5,7 @@ import {
     localize,
     registerKeybind,
     registerSetting,
+    userIsGM,
 } from "foundry-pf2e";
 import { PF2eHudPersistent } from "./hud/persistent";
 import { PF2eHudToken } from "./hud/token";
@@ -27,6 +28,7 @@ Hooks.once("canvasReady", () => {
 });
 
 Hooks.once("setup", () => {
+    const isGM = userIsGM();
     const huds = Object.values(HUDS);
     const settings: SettingOptions[] = [];
 
@@ -86,6 +88,7 @@ Hooks.once("setup", () => {
     }
 
     for (const setting of settings) {
+        if (setting.gmOnly && !isGM) continue;
         registerSetting(setting);
     }
 
@@ -111,6 +114,25 @@ Hooks.on("renderSettingsConfig", (app: SettingsConfig, $html: JQuery) => {
         });
 
         group.before(titleElement);
+
+        //
+
+        for (const setting of hud.getSettings()) {
+            const nameExtras: string[] = [];
+
+            if (setting.gmOnly) nameExtras.push(localize("gmOnly"));
+            if (setting.requiresReload) nameExtras.push(localize("reload"));
+
+            if (!nameExtras.length) continue;
+
+            const key = `${MODULE.id}.${hud.key}.${setting.key}`;
+            const labelElement = htmlQuery(tab, `[data-setting-id="${key}"] > label`);
+            const extraElement = createHTMLElement("span", {
+                innerHTML: ` (${nameExtras.join(", ")})`,
+            });
+
+            labelElement?.append(extraElement);
+        }
     }
 });
 
