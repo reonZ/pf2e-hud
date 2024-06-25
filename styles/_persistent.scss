@@ -162,6 +162,7 @@ $bottom-width: 542px;
 
             .top {
                 display: flex;
+                gap: var(--panel-gap);
 
                 .sidebars {
                     grid-row: 1;
@@ -238,7 +239,9 @@ $bottom-width: 542px;
 
                             .category {
                                 img {
-                                    filter: invert(1);
+                                    filter: brightness(0) saturate(100%) invert(88%) sepia(21%)
+                                        saturate(129%) hue-rotate(21deg) brightness(110%)
+                                        contrast(88%);
                                 }
                             }
 
