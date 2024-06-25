@@ -1,3 +1,19 @@
+# 0.10.0
+
+-   settings can now be `GM Only` and still be client settings
+-   added extra tags to setting names in the "Configure Game Settings" application to indicate which ones are `GM Only` or `Requires Reload`
+-   `Persistent HUD`:
+    -   the `Auto-Fill NPCs` setting is now a checkbox and gm-only (setting was reset)
+    -   added a new `Auto-Fill Preference` gm-only setting
+        -   select menu that was originally in `Auto-Fill NPCs`
+        -   is also used when using the auto-fill shortcut menu (see below)
+    -   added a new `Use Owner Shortcuts` gm-only setting
+        -   it will find the "main" owner of the Character actor and use its shortcuts if you never made any change in yours
+    -   added shortcuts menus for GM above the shortcut slots
+        -   you will find a way to delete, auto-fill or copy owner shortcuts
+    -   added the "default" range of character strikes directly on the shortcut
+-   fixed image size issue on firefox for dragged elements from sidebars
+
 # 0.9.0
 
 -   `Combat Tracker`:
