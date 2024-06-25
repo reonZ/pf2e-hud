@@ -716,10 +716,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const isNPC = actor.isOfType("npc");
         const noShortcuts = !getFlag(actor, "persistent.shortcuts", game.user.id);
         const autoFill = isGM && isNPC && noShortcuts && this.getSetting("autoFill");
-        const shortcutsOwner =
-            isGM && !isNPC && noShortcuts && this.getSetting("ownerShortcuts")
-                ? getOwner(actor)?.id
-                : undefined;
+        const shortcutsOwner = (() => {
+            if (!isGM || isNPC || !noShortcuts || !this.getSetting("ownerShortcuts")) return;
+            const owner = getOwner(actor, false)?.id;
+            return owner && getFlag(actor, "persistent.shortcuts", owner) ? owner : undefined;
+        })();
 
         this.#shortcuts = {};
         this.#shortcutData = {};
@@ -1164,7 +1165,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         if (!newShortcut) return;
 
         const group = this.isVirtual
-            ? this.#shortcutData[groupIndex]
+            ? this.#shortcutData[groupIndex] ?? {}
             : foundry.utils.deepClone(
                   getFlag<Record<string, any>>(
                       actor,
@@ -1349,6 +1350,18 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         if (!("type" in shortcutData)) return emptyData;
 
+        const returnShortcut = async (shortcut: Shortcut) => {
+            if (!shortcut.isEmpty) {
+                foundry.utils.setProperty(
+                    this.#shortcutData,
+                    `${groupIndex}.${index}`,
+                    shortcutData
+                );
+            }
+
+            return shortcut as T;
+        };
+
         switch (shortcutData.type) {
             case "spell": {
                 const { itemId, entryId, groupId, slotId } = shortcutData;
@@ -1467,7 +1480,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 const annotation =
                     notCarried && parentItem ? getActionAnnotation(parentItem) : undefined;
 
-                return {
+                return returnShortcut({
                     ...shortcutData,
                     isDisabled: expended || isBroken,
                     isFadedOut: expended || isBroken || notCarried,
@@ -1487,7 +1500,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     isStaff,
                     parentItem,
                     annotation,
-                } satisfies SpellShortcut as T;
+                } satisfies SpellShortcut as T);
             }
 
             case "consumable": {
@@ -1521,7 +1534,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 let name = item?.name ?? (shortcutData as { name: string }).name;
                 if (uses !== undefined && quantity > 1) name += ` x ${quantity}`;
 
-                return {
+                return returnShortcut({
                     ...shortcutData,
                     isDisabled: item?.isAmmo || isOutOfStock,
                     rank: consumableRank(item, true),
@@ -1534,7 +1547,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     name,
                     img,
                     cost: getCost(item?.system.spell?.system.time),
-                } satisfies ConsumableShortcut as T;
+                } satisfies ConsumableShortcut as T);
             }
 
             case "action": {
@@ -1545,7 +1558,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 const frequency = item ? getActionFrequency(item) : undefined;
                 const disabled = !item || frequency?.value === 0;
 
-                return {
+                return returnShortcut({
                     ...shortcutData,
                     isDisabled: disabled,
                     isFadedOut: disabled,
@@ -1554,7 +1567,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     name: frequency ? `${name} - ${frequency.label}` : name,
                     frequency,
                     cost: getCost(item?.actionCost),
-                } satisfies ActionShortcut as T;
+                } satisfies ActionShortcut as T);
             }
 
             case "attack": {
@@ -1566,13 +1579,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     const blast = await getBlastData(actor, shortcutData.elementTrait);
                     const disabled = !blast;
 
-                    return {
+                    return returnShortcut({
                         ...shortcutData,
                         isDisabled: disabled,
                         isFadedOut: disabled,
                         isBlast: true,
                         blast,
-                    } satisfies AttackShortcut as T;
+                    } satisfies AttackShortcut as T);
                 } else {
                     const { itemId, slug } = shortcutData;
                     const strike = await getStrikeData(actor, { id: itemId, slug });
@@ -1602,7 +1615,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                             ? strike.traits.filter((x) => x.name !== "attack").map((x) => x.label)
                             : [];
 
-                    return {
+                    return returnShortcut({
                         ...shortcutData,
                         isDisabled: disabled,
                         isFadedOut: disabled || !strike.ready,
@@ -1610,7 +1623,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         img: img ?? shortcutData.img,
                         name: nameExtra ? `${name} (${nameExtra})` : name,
                         subtitle: traits.length ? traits.join(", ") : undefined,
-                    } satisfies AttackShortcut as T;
+                    } satisfies AttackShortcut as T);
                 }
             }
 
@@ -1627,7 +1640,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     `PF2E.SETTINGS.EnabledDisabled.${checked ? "Enabled" : "Disabled"}`
                 );
 
-                return {
+                return returnShortcut({
                     ...shortcutData,
                     isDisabled: disabled,
                     isFadedOut: disabled,
@@ -1635,7 +1648,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     item,
                     img: item?.img ?? shortcutData.img,
                     name: item ? `${item.name} (${label})` : shortcutData.name,
-                } satisfies ToggleShortcut as T;
+                } satisfies ToggleShortcut as T);
             }
         }
 
