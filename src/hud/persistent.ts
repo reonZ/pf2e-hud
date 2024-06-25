@@ -14,6 +14,7 @@ import {
     getActionImg,
     getActiveModule,
     getFlag,
+    getOwner,
     getRankLabel,
     imagePath,
     isInstanceOf,
@@ -712,14 +713,17 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = this.actor;
         if (!actor) return context;
 
+        const isNPC = actor.isOfType("npc");
         const noShortcuts = !getFlag(actor, "persistent.shortcuts", game.user.id);
-
-        const autoFill =
-            isGM && actor.isOfType("npc") && noShortcuts && this.getSetting("autoFill");
+        const autoFill = isGM && isNPC && noShortcuts && this.getSetting("autoFill");
+        const shortcutsOwner =
+            isGM && !isNPC && noShortcuts && this.getSetting("ownerShortcuts")
+                ? getOwner(actor)?.id
+                : undefined;
 
         this.#shortcuts = {};
         this.#shortcutData = {};
-        this.#isVirtual = autoFill && autoFill !== "disabled";
+        this.#isVirtual = !!shortcutsOwner || (autoFill && autoFill !== "disabled");
 
         const cached = {};
         const shortcutGroups: ShortcutGroup[] = [];
@@ -733,7 +737,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     ? { index: String(index), groupIndex: String(groupIndex), isEmpty: true }
                     : autoFill && autoFill !== "disabled"
                     ? await this.#fillShortcut(groupIndex, index, autoFill, cached)
-                    : await this.#createShortcutFromFlag(groupIndex, index, cached);
+                    : await this.#createShortcutFromFlag(groupIndex, index, cached, shortcutsOwner);
 
                 shortcuts.push(shortcut);
                 this.#shortcuts[`${groupIndex}-${index}`] = shortcut;
@@ -1208,7 +1212,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         groupIndex: Maybe<number | string>,
         index: Maybe<number | string>,
         fillType: Exclude<AutoFillSetting, "disabled">,
-        cached: Record<string, any> = {}
+        cached: Record<string, any>
     ): Promise<Shortcut | EmptyShortcut> {
         index = String(index);
         groupIndex = String(groupIndex);
@@ -1306,12 +1310,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     async #createShortcutFromFlag<T extends Shortcut>(
         groupIndex: number,
         index: number,
-        cached: Record<string, any> = {}
+        cached: Record<string, any>,
+        owner?: string
     ) {
         const flag = getFlag<ShortcutData>(
             this.actor!,
             "persistent.shortcuts",
-            game.user.id,
+            owner ?? game.user.id,
             String(groupIndex),
             String(index)
         );
