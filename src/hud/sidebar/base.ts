@@ -317,16 +317,14 @@ abstract class PF2eHudSidebar extends foundry.applications.api
             const { itemId, actionIndex, element, label, domain, option, placement } = el.dataset;
             const item = await getItemFromElement(this.actor, el);
 
-            const img = new Image();
-            img.src = el.querySelector<HTMLImageElement>(".drag-img")?.src ?? item?.img ?? "";
-            img.style.width = "32px";
-            img.style.height = "32px";
-            img.style.borderRadius = "4px";
-            img.style.position = "absolute";
-            img.style.left = "-1000px";
-            document.body.append(img);
+            const imgSrc = el.querySelector<HTMLImageElement>(".drag-img")?.src ?? item?.img ?? "";
+            const draggable = createHTMLElement("div", {
+                classes: ["pf2e-hud-draggable"],
+                innerHTML: `<img src="${imgSrc}">`,
+            });
 
-            event.dataTransfer.setDragImage(img, 16, 16);
+            document.body.append(draggable);
+            event.dataTransfer.setDragImage(draggable, 16, 16);
 
             const baseDragData: Record<string, JSONValue> = {
                 actorId: this.actor.id,
@@ -348,7 +346,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
                 JSON.stringify({ ...baseDragData, ...extraDragData, ...toggleDragData })
             );
 
-            el.addEventListener("dragend", () => img.remove(), { once: true });
+            el.addEventListener("dragend", () => draggable.remove(), { once: true });
         });
 
         addListenerAll(html, "[data-action='item-description']", async (event, el) => {
