@@ -1464,7 +1464,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     isBroken,
                     castRank: castRank,
                     isPrepared: isPrepared && !isFlexible && !isCantrip,
-                    cost: getCost(spell.system.time.value),
+                    cost: getCost(spell.system.time),
                     notCarried,
                     isStaff,
                     parentItem,
@@ -1515,7 +1515,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     item,
                     name,
                     img,
-                    cost: getCost(item?.system.spell?.system.time.value),
+                    cost: getCost(item?.system.spell?.system.time),
                 } satisfies ConsumableShortcut as T;
             }
 
@@ -1535,7 +1535,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     img: item ? getActionImg(item) : shortcutData.img,
                     name: frequency ? `${name} - ${frequency.label}` : name,
                     frequency,
-                    cost: getCost(item?.actionCost?.value),
+                    cost: getCost(item?.actionCost),
                 } satisfies ActionShortcut as T;
             }
 
@@ -1641,7 +1641,17 @@ function createStrikeShortcutData(
     };
 }
 
-function getCost(cost: Maybe<string | number>) {
+function getCost(costAction: { value: string | number } | ActionCost | undefined | null) {
+    if (costAction == null) return undefined;
+
+    const value = costAction.value;
+    const type = "type" in costAction ? costAction.type : undefined;
+    const cost = type && type !== "action" ? type : value;
+
+    if (cost === null) return;
+    if (typeof cost === "number") return cost;
+    if (["reaction", "free"].includes(cost)) return cost;
+
     const costValue = Number(cost);
     return isNaN(costValue) ? (cost ? "extra" : undefined) : costValue;
 }
@@ -1770,7 +1780,7 @@ type SpellShortcut = BaseShortCut<"spell"> &
         annotation: AuxiliaryActionPurpose;
     };
 
-type CostValue = number | "extra" | undefined;
+type CostValue = number | string | undefined;
 
 type ActionShortcut = BaseShortCut<"action"> &
     ActionShortcutData & {
