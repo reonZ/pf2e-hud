@@ -160,12 +160,16 @@ $bottom-width: 542px;
         &.stretch {
             flex: 1;
 
-            .sidebars {
-                grid-row: 1;
-                grid-auto-flow: column;
-                justify-content: start;
-                width: fit-content;
-                min-width: 9.438em;
+            .top {
+                display: flex;
+
+                .sidebars {
+                    grid-row: 1;
+                    grid-auto-flow: column;
+                    justify-content: start;
+                    width: fit-content;
+                    min-width: 9.438em;
+                }
             }
 
             .bottom {
@@ -190,6 +194,26 @@ $bottom-width: 542px;
                             --name-offset: 0.35em;
                             --subtitle-offset: calc(var(--name-offset) + 2em);
 
+                            @mixin top-left {
+                                top: var(--offset);
+                                left: var(--offset);
+                            }
+
+                            @mixin top-right {
+                                top: var(--offset);
+                                right: var(--offset);
+                            }
+
+                            @mixin bottom-left {
+                                bottom: var(--offset);
+                                left: var(--offset);
+                            }
+
+                            @mixin bottom-right {
+                                bottom: var(--offset);
+                                right: var(--offset);
+                            }
+
                             position: relative;
                             height: 100%;
 
@@ -210,6 +234,35 @@ $bottom-width: 542px;
                                 height: 100%;
                                 inset: 0;
                                 border-radius: 4px;
+                            }
+
+                            .category {
+                                img {
+                                    filter: invert(1);
+                                }
+                            }
+
+                            .range {
+                                @include top-left();
+
+                                font-size: 0.9em;
+                                max-width: 100%;
+                                flex-wrap: wrap-reverse;
+
+                                .category {
+                                    height: 1.15em;
+                                    display: flex;
+                                    align-items: center;
+
+                                    i {
+                                        font-size: 0.9em;
+                                    }
+
+                                    img {
+                                        height: 100%;
+                                        aspect-ratio: 1.1;
+                                    }
+                                }
                             }
 
                             .check {
@@ -286,8 +339,7 @@ $bottom-width: 542px;
                             }
 
                             .quantity {
-                                right: var(--offset);
-                                bottom: var(--offset);
+                                @include bottom-right();
 
                                 span {
                                     font-size: 0.9em;
@@ -295,8 +347,7 @@ $bottom-width: 542px;
                             }
 
                             .prepared {
-                                right: var(--offset);
-                                bottom: var(--offset);
+                                @include bottom-right();
 
                                 span {
                                     width: 1ch;
@@ -306,8 +357,7 @@ $bottom-width: 542px;
                             }
 
                             .cost {
-                                top: var(--offset);
-                                left: var(--offset);
+                                @include top-left();
 
                                 white-space: nowrap;
                                 overflow: hidden;
@@ -319,8 +369,7 @@ $bottom-width: 542px;
                             }
 
                             .category-icon {
-                                bottom: var(--offset);
-                                left: var(--offset);
+                                @include bottom-left();
                                 text-shadow: 0 0 0px white;
                                 color: black;
 
@@ -330,8 +379,7 @@ $bottom-width: 542px;
                             }
 
                             .rank {
-                                top: var(--offset);
-                                right: var(--offset);
+                                @include top-right();
 
                                 span {
                                     font-size: 0.75em;
@@ -399,7 +447,6 @@ $bottom-width: 542px;
                                     img {
                                         top: 0.1em;
                                         height: 1.3em;
-                                        filter: invert(1);
                                     }
 
                                     i {
@@ -476,7 +523,7 @@ $bottom-width: 542px;
                                 }
 
                                 &.attack {
-                                    :not(img, .quantity) {
+                                    > :not(img, .quantity, .range) {
                                         display: none;
                                     }
                                 }
@@ -487,6 +534,10 @@ $bottom-width: 542px;
                                     .quantity {
                                         display: none;
                                     }
+                                }
+
+                                > .range {
+                                    display: none;
                                 }
                             }
 
@@ -506,7 +557,7 @@ $bottom-width: 542px;
                             }
 
                             &.faded-out {
-                                img {
+                                > img {
                                     filter: grayscale(1);
                                 }
                             }

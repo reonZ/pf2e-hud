@@ -1,0 +1,11 @@
+<span class="category">
+    {{#if (eq category.type 'melee')}}
+    <img class="alt-usage-icon" src="systems/pf2e/icons/mdi/sword.svg"
+        data-tooltip="{{category.tooltip}}">
+    {{else if (eq category.type 'thrown')}}
+    <img class="alt-usage-icon" src="systems/pf2e/icons/mdi/thrown.svg"
+        data-tooltip="{{category.tooltip}}">
+    {{else }}
+    <i class="fa-regular fa-bow-arrow" data-tooltip="{{category.tooltip}}"></i>
+    {{/if}}
+</span>

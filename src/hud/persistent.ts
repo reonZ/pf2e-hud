@@ -229,6 +229,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
     get partials(): string[] {
         return super.partials.concat([
+            "strike_category",
             "action_blast-row",
             "action_strike-row",
             "action_auxiliaries",

@@ -510,6 +510,7 @@ function getActionCategory(actor: ActorPF2e, item: WeaponPF2e<ActorPF2e> | Melee
 
         return {
             type: "melee",
+            value: String(reach),
             tooltip: localize("sidebars.actions.reach", { reach }),
         };
     }
@@ -520,6 +521,7 @@ function getActionCategory(actor: ActorPF2e, item: WeaponPF2e<ActorPF2e> | Melee
 
     return {
         type: isThrown ? "thrown" : "ranged",
+        value: isThrown || range.increment ? `${range.increment}/${range.max}` : String(range.max),
         tooltip: localize("sidebars.actions", key, range),
     };
 }
