@@ -113,6 +113,8 @@ $bottom-width: 542px;
     --damage-border-color: #a41414;
     --variant-background: #4f4732;
     --variant-border-color: #9f916e;
+    --shortcut-title-border-color: #999999;
+    --shortcut-title-background: #121212;
 
     // width: calc($bottom-width - 3px);
     width: fit-content;
@@ -232,8 +234,9 @@ $bottom-width: 542px;
                                 white-space: nowrap;
                                 left: 50%;
                                 transform: translateX(-50%);
-                                background: var(--outer-background);
                                 padding: 0.4em 0.5em;
+                                background: var(--shortcut-title-background);
+                                border-color: var(--shortcut-title-border-color);
                             }
 
                             .name {
