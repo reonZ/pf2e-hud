@@ -196,6 +196,11 @@
 {{#if attack.blast}}
 {{> (@root.partial 'action_blast-row') blast=attack.blast melee=true}}
 {{> (@root.partial 'action_blast-row') blast=attack.blast melee=false}}
+{{#if attack.versatile}}
+<div class="versatile boxed">
+    <i class="fa-solid fa-fw fa-{{attack.versatile}}"></i>
+</div>
+{{/if}}
 {{else}}
 <div class="variants">
     <div class="variant wrap" data-action="channel-elements">Channel Elements</div>
@@ -217,6 +222,11 @@
 {{> (@root.partial 'action_strike-row') attack.strike}}
 {{#if attack.strike.altUsages}}
 {{> (@root.partial 'action_strike-row') attack.strike.altUsages.[0] isAltUsage=true}}
+{{/if}}
+{{#if (and attack.versatile attack.strike.item.dealsDamage)}}
+<div class="versatile boxed">
+    <i class="fa-solid fa-{{attack.versatile}} fa-fw"></i>
+</div>
 {{/if}}
 {{!-- strike not ready --}}
 {{else}}

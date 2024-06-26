@@ -356,6 +356,11 @@ $bottom-width: 542px;
                                 }
                             }
 
+                            .versatile {
+                                @include bottom-left();
+                                padding-block: 0.2em;
+                            }
+
                             .broken {
                                 font-size: 1.2em;
                             }
@@ -556,7 +561,7 @@ $bottom-width: 542px;
                                 }
 
                                 &.attack {
-                                    > :not(img, .quantity, .range) {
+                                    > :not(img, .quantity, .range, .versatile) {
                                         display: none;
                                     }
                                 }
@@ -569,7 +574,8 @@ $bottom-width: 542px;
                                     }
                                 }
 
-                                > .range {
+                                .range,
+                                .versatile {
                                     display: none;
                                 }
                             }

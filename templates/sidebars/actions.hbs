@@ -125,7 +125,7 @@
         {{!-- auxiliaries --}}
         {{> (@root.partial 'action_auxiliaries') strike=strike}}
         {{!-- damage types --}}
-        {{#if (and item.dealsDamage (or doubleBarrel versatileOptions))}}
+        {{#if (and strike.item.dealsDamage (or doubleBarrel versatileOptions))}}
         <div class="versatiles">
             {{#if doubleBarrel}}
             <div class="variant double-barrel physical{{#if doubleBarrel.selected}} selected{{/if}}"
@@ -139,8 +139,8 @@
             {{/if}}
             {{#each versatileOptions as |option|}}
             <div class="variant {{option.value}}{{#if option.selected}} selected{{/if}}"
-                data-value="{{option.value}}" {{disabled option.selected}} {{#if ../isAltUsage}}
-                data-alt-usage="{{#if ../item.isThrown}}thrown{{else}}melee{{/if}}" {{/if}}
+                data-value="{{option.value}}" {{#if ../isAltUsage}}
+                data-alt-usage="{{#if ../strike.item.isThrown}}thrown{{else}}melee{{/if}}" {{/if}}
                 data-action="toggle-weapon-trait" data-trait="versatile"
                 data-tooltip="{{localize option.label}}">
                 <i class="fa-solid fa-{{option.glyph}} fa-fw icon"></i>

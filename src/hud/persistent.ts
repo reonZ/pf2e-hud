@@ -1218,7 +1218,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             case "open-attack-popup": {
                 if (actor.isOfType("character")) {
                     const { left, top, height } = this.mainElement!.getBoundingClientRect();
-                    openAttackpopup(actor, el.dataset, { left, top: top - height - 100 });
+                    openAttackpopup(actor, el.dataset, { left, top: top - height - 150 });
                 }
                 break;
             }
@@ -1859,11 +1859,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     const blast = await getBlastData(actor, shortcutData.elementTrait);
                     const disabled = !blast;
 
+                    const versatile = blast?.damageTypes.find((x) => x.selected)?.icon;
+
                     return returnShortcut({
                         ...shortcutData,
                         isDisabled: disabled,
                         isFadedOut: disabled,
                         isBlast: true,
+                        versatile,
                         blast,
                     } satisfies AttackShortcut as T);
                 } else {
@@ -1895,11 +1898,17 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                             ? strike.traits.filter((x) => x.name !== "attack").map((x) => x.label)
                             : [];
 
+                    const versatile =
+                        strike && !isNPC
+                            ? (strike as ActionStrike<CharacterStrike>).versatileOptions
+                            : undefined;
+
                     return returnShortcut({
                         ...shortcutData,
                         isDisabled: disabled,
                         isFadedOut: disabled || !strike.ready,
                         strike,
+                        versatile: versatile?.find((x) => x.selected)?.glyph,
                         img: img ?? shortcutData.img,
                         name: nameExtra ? `${name} (${nameExtra})` : name,
                         subtitle: traits.length ? traits.join(", ") : undefined,
@@ -2152,6 +2161,7 @@ type BaseAttackShortcut = BaseShortCut<"attack"> &
     AttackShortcutData & {
         img: string;
         name: string;
+        versatile: Maybe<string>;
     };
 
 type BlastShortcut = BaseAttackShortcut & {
