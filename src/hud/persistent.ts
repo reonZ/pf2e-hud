@@ -13,9 +13,11 @@ import {
     getActionAnnotation,
     getActionImg,
     getActiveModule,
+    getEnrichedDescriptions,
     getFlag,
     getOwner,
     getRankLabel,
+    getRemainingDurationLabel,
     imagePath,
     isInstanceOf,
     localize,
@@ -90,6 +92,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         menu: null,
         portrait: null,
         main: null,
+        effects: null,
     };
 
     #parts: Parts = {
@@ -109,6 +112,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             tooltipDirection: "UP",
             prepareContext: this.#preparePortraitContext.bind(this),
             activateListeners: this.#activatePortraitListeners.bind(this),
+        },
+        effects: {
+            tooltipDirection: "UP",
+            prepareContext: this.#prepareEffectsContext.bind(this),
+            activateListeners: this.#activateEffectsListeners.bind(this),
         },
     };
 
@@ -208,6 +216,15 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 scope: "client",
             },
             {
+                key: "showEffects",
+                type: Boolean,
+                default: true,
+                scope: "client",
+                onChange: () => {
+                    this.render();
+                },
+            },
+            {
                 key: "cleanPortrait",
                 type: Boolean,
                 default: false,
@@ -248,7 +265,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     get templates(): PartName[] {
-        return ["portrait", "main", "menu"];
+        return ["portrait", "main", "menu", "effects"];
     }
 
     get key(): "persistent" {
@@ -359,9 +376,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         options.cleaned = this.getSetting("cleanPortrait");
         options.autoSet = this.getSetting("autoSet");
 
-        const allowedParts = this.templates;
-        if (!options.parts) options.parts = allowedParts;
-        else options.parts?.filter((part) => allowedParts.includes(part));
+        /**
+         * we either only render "menu" or everything
+         * we also make sure that "main" is before "effects"
+         */
+        if (!options.parts?.length || options.parts.length > 1 || options.parts[0] !== "menu") {
+            options.parts = this.templates;
+        }
     }
 
     async _prepareContext(
@@ -394,7 +415,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 });
 
                 const classes = part.classes?.slice() ?? [];
-                if (partName !== "main" && options.cleaned) {
+                if (options.cleaned && ["menu", "portrait"].includes(partName)) {
                     classes.push("cleaned");
                 }
 
@@ -434,6 +455,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 document.getElementById("ui-bottom")?.prepend(element);
             } else if (name === "menu") {
                 this.#elements.left.prepend(element);
+            } else if (name === "effects") {
+                document.getElementById("ui-bottom")?.prepend(element);
             } else {
                 this.#elements.left.append(element);
             }
@@ -691,6 +714,64 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 }
             }
         });
+    }
+
+    async #prepareEffectsContext(
+        context: PersistentContext,
+        options: PersistentRenderOptions
+    ): Promise<PersistentContext | EffectsContext> {
+        const actor = this.actor;
+        if (!actor) return context;
+
+        const effects = actor.itemTypes.effect.map((effect) => {
+            const duration = effect.totalDuration;
+            const { system } = effect;
+            if (duration === Infinity) {
+                if (system.duration.unit === "encounter") {
+                    system.remaining = system.expired
+                        ? game.i18n.localize("PF2E.EffectPanel.Expired")
+                        : game.i18n.localize("PF2E.EffectPanel.UntilEncounterEnds");
+                } else {
+                    system.remaining = game.i18n.localize("PF2E.EffectPanel.UnlimitedDuration");
+                }
+            } else {
+                const duration = effect.remainingDuration;
+                system.remaining = system.expired
+                    ? game.i18n.localize("PF2E.EffectPanel.Expired")
+                    : getRemainingDurationLabel(
+                          duration.remaining,
+                          system.start.initiative ?? 0,
+                          system.duration.expiry
+                      );
+            }
+            return effect;
+        });
+
+        const conditions = actor.conditions.active;
+        const afflictions = actor.itemTypes.affliction ?? [];
+
+        const descriptions = {
+            afflictions: await getEnrichedDescriptions(afflictions),
+            conditions: await getEnrichedDescriptions(conditions),
+            effects: await getEnrichedDescriptions(effects),
+        };
+
+        const data: EffectsContext = {
+            ...context,
+            afflictions,
+            conditions,
+            descriptions,
+            effects,
+            actor,
+            user: { isGM: context.isGM },
+        };
+
+        return data;
+    }
+
+    #activateEffectsListeners(html: HTMLElement) {
+        const actor = this.actor;
+        if (!actor) return;
     }
 
     #preparePortraitContext(
@@ -1984,6 +2065,18 @@ type ShortcutGroup = {
 
 type RomanRank = (typeof ROMAN_RANKS)[number];
 
+type EffectsContext = PersistentContext & {
+    afflictions: AfflictionPF2e[];
+    conditions: ConditionPF2e[];
+    effects: EffectPF2e[];
+    descriptions: {
+        afflictions: string[];
+        conditions: string[];
+        effects: string[];
+    };
+    user: { isGM: boolean };
+};
+
 type MenuActionEvent =
     | "toggle-users"
     | "open-macros"
@@ -2005,6 +2098,8 @@ type PortraitContext = PersistentContext &
         name: string;
     };
 
+type ActorEffect = EffectPF2e;
+
 type MainContext = PersistentContext &
     StatsAdvanced & {
         sidebars: SidebarMenu[];
@@ -2018,7 +2113,7 @@ type MainContext = PersistentContext &
 
 type PersistentTemplates = { name: PartName; element: HTMLElement }[];
 
-type PartName = "menu" | "main" | "portrait";
+type PartName = "menu" | "main" | "portrait" | "effects";
 
 type PersistentHudActor = CharacterPF2e | NPCPF2e;
 
@@ -2043,6 +2138,7 @@ type Parts = {
     menu: Part<MenuContext>;
     portrait: Part<PortraitContext>;
     main: Part<MainContext>;
+    effects: Part<EffectsContext>;
 };
 
 type PersistentContext = Omit<BaseActorContext<PersistentHudActor>, "actor" | "hasActor"> & {
@@ -2077,6 +2173,7 @@ type PersistentSettings = BaseActorSettings &
         autoFillNpc: boolean;
         autoFillType: AutoFillSetting;
         ownerShortcuts: boolean;
+        showEffects: boolean;
     };
 
 export { PF2eHudPersistent };

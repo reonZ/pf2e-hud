@@ -184,6 +184,10 @@
                 "ownerShortcuts": {
                     "name": "Use Owner Shortcuts",
                     "hint": "If you haven't made any manual changes to a character owned actor, its owner shortcut will be used."
+                },
+                "showEffects": {
+                    "name": "Show Effects",
+                    "hint": "Should the effects currently affecting the persistent actor be displayed next to the persistent HUD."
                 }
             },
             "tracker": {

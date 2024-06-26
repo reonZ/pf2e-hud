@@ -633,6 +633,127 @@ $bottom-width: 542px;
     }
 }
 
+#ui-bottom > #pf2e-hud-persistent-effects {
+    --icon-size: 2.2em;
+    --border-color: #141414;
+
+    pointer-events: auto;
+    justify-content: unset;
+    align-items: end;
+    max-width: calc($bottom-width + 3px);
+    margin-bottom: var(--panel-gap);
+    gap: 0.2em;
+    flex-wrap: wrap-reverse;
+
+    hr {
+        border-left: 1px solid var(--border-color);
+        margin-inline: 0.1em;
+        height: var(--icon-size);
+    }
+
+    .effect-item {
+        display: flex;
+        justify-content: end;
+        width: var(--icon-size);
+        flex-direction: column;
+
+        > .icon {
+            position: relative;
+            background-repeat: no-repeat;
+            background-size: contain;
+            position: relative;
+            width: var(--icon-size);
+            aspect-ratio: 1 / 1;
+            border-radius: 4px;
+            box-shadow: inset 0 0 0px 1px var(--border-color);
+
+            > * {
+                position: absolute;
+            }
+
+            .expired {
+                inset: 0;
+                display: flex;
+                color: black;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.4em;
+                text-shadow: 0 0 2px white;
+            }
+
+            .value-wrapper {
+                color: var(--color);
+                background: #000000a3;
+                left: -0.1em;
+                bottom: -0.1em;
+                padding-inline: 0.2em;
+                border-radius: 4px;
+            }
+
+            &.expired {
+                filter: grayscale(1);
+            }
+        }
+
+        .effect-info {
+            background-color: rgba(0, 0, 0, 0.75);
+            color: var(--color-text-light-2);
+            display: none;
+            gap: 3px;
+            margin-bottom: 0.5em;
+            padding: 0.25em 0.5rem;
+            width: max-content;
+            max-width: 350px;
+            z-index: 1;
+            transform: translateX(-50%);
+            margin-left: 50%;
+
+            h1 {
+                margin: 0;
+                padding: 0;
+                border: none;
+                display: flex;
+                font-size: var(--font-size-14);
+                padding-top: 0.25em;
+                text-align: right;
+            }
+
+            .instructions,
+            .description {
+                font-size: var(--font-size-12);
+            }
+
+            .instructions {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+                text-align: right;
+            }
+
+            .description {
+                background: rgba(0, 0, 0, 0.7);
+                max-height: 16em;
+                overflow-y: auto;
+                padding: 0 0.5em;
+                text-align: left;
+
+                a,
+                span[data-pf2-effect-area] {
+                    color: var(--color-text-dark-primary);
+                }
+            }
+        }
+
+        &:hover {
+            .effect-info {
+                display: flex;
+                align-items: end;
+                flex-direction: column;
+            }
+        }
+    }
+}
+
 #ui-bottom > #pf2e-hud-persistent-main {
     justify-content: start;
 }
