@@ -7,7 +7,9 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig> extends foundry.applica
 
     constructor(config: TConfig, options?: PartialApplicationConfiguration) {
         super(options);
+
         this.#config = config;
+        config.actor.apps[this.id] = this;
     }
 
     static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
@@ -30,6 +32,10 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig> extends foundry.applica
 
     get event() {
         return this.config.event;
+    }
+
+    _onClose(options?: ApplicationClosingOptions) {
+        delete this.actor?.apps[this.id];
     }
 
     _replaceHTML(result: HTMLElement, content: HTMLElement, options: ApplicationRenderOptions) {
