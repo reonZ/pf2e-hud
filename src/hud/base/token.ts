@@ -71,7 +71,7 @@ abstract class PF2eHudBaseToken<
     }
 
     setToken(token: TokenPF2e | null) {
-        if (token === this.token || (token && !this.isValidToken(token))) return;
+        if (token && !this.isValidToken(token)) return;
 
         this._tokenCleanup();
 
