@@ -12,7 +12,6 @@
     --color-rarity-uncommon: #cb8470;
     --color-rarity-rare: #5996f7;
     --color-rarity-unique: #d05fff;
-    --color-active: #616bed;
     --variant-background: #ffffff09;
     --variant-background-reversed: #ffffffad;
     --variant-border: 1px solid #ffffff24;
@@ -86,7 +85,7 @@
                 position: absolute;
                 top: 100%;
                 left: 50%;
-                transform: translateX(calc(-50% + var(--icon-offset) * 1.8em));
+                transform: translateX(calc(-50% - 1.2em + var(--icon-offset) * 1.8em));
 
                 border-left: var(--arrow-width) solid transparent;
                 border-right: var(--arrow-width) solid transparent;
@@ -130,6 +129,8 @@
     }
 
     .item-list {
+        --color-active: #616bed;
+
         white-space: nowrap;
         column-gap: 0.5em;
         columns: var(--nb-columns);
