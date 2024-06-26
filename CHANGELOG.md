@@ -5,10 +5,10 @@
 -   added action traits (`mindsmith`) to the actions sidebar
 -   the `Popup` is now linked to its originating actor and will be re-rendered on update
 -   `Persistent HUD`:
-    -   added a new effects section that display the effects currently present on the persistent actor evben when not selected
+    -   added a new effects section that display the effects currently present on the persistent actor even when not selected
     -   added a new `Hold Shift for Effects` setting
-        -   this is a failsafe preventing misclicks on effects, when enabled, you are forced to hold `shift` to interact with the effect icons
--   `Token Toolip`:
+        -   this is a fail-safe preventing misclicks on effects, when enabled, you are forced to hold `shift` to interact with the effect icons
+-   `Token Tooltip`:
     -   fixed health status not selecting the right string to display
     -   fixed the tooltip not always showing up when moving too fast in, out and in again on a token that wasn't previously hovered
 
