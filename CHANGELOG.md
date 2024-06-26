@@ -1,3 +1,17 @@
+# 0.11.0
+
+-   added toggles to the exploration actions
+-   now properly disable attack buttons in the sidebars and shortcuts if they can't be used
+-   added action traits (`mindsmith`) to the actions sidebar
+-   the `Popup` is now linked to its originating actor and will be re-rendered on update
+-   `Persistent HUD`:
+    -   added a new effects section that display the effects currently present on the persistent actor evben when not selected
+    -   added a new `Hold Shift for Effects` setting
+        -   this is a failsafe preventing misclicks on effects, when enabled, you are forced to hold `shift` to interact with the effect icons
+-   `Token Toolip`:
+    -   fixed health status not selecting the right string to display
+    -   fixed the tooltip not always showing up when moving too fast in, out and in again on a token that wasn't previously hovered
+
 # 0.10.0
 
 -   settings can now be `GM Only` and still be client settings
