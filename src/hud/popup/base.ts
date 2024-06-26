@@ -46,7 +46,7 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig> extends foundry.applica
 
         options.position ??= {};
         options.position.left = event.clientX - bounds.width / 2;
-        options.position.top = event.clientY - bounds.height / 2;
+        options.position.top = event.clientY - bounds.height / 2 - 50;
     }
 
     close(options: ApplicationClosingOptions = {}): Promise<this> {
