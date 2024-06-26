@@ -68,7 +68,7 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
                 {
                     key: "multiColumns",
                     type: Number,
-                    default: 3,
+                    default: 5,
                     scope: "client",
                     range: {
                         min: 1,

@@ -4,7 +4,7 @@
 
     .inventory-wealth,
     .inventory-bulk {
-        max-width: var(--max-width);
+        max-width: var(--max-column-width);
         display: flex;
         align-items: center;
         margin-bottom: 0.3em;
