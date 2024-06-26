@@ -55,7 +55,7 @@
         <div class="instructions">
             {{#if (nor effect.isLocked effect.inMemoryOnly)}}
             {{#if (eq effect.badge.type "formula")}}
-            <div>{{@root.instructions.damage}}</div>
+            <div>{{@root.instructions.rollDamage}}</div>
             {{/if}}
 
             {{#if (eq effect.badge.type "counter")}}

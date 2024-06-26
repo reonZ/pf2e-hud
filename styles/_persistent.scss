@@ -738,6 +738,13 @@ $bottom-width: 542px;
                 font-size: var(--font-size-14);
                 padding-top: 0.25em;
                 text-align: right;
+
+                [data-action="send-to-chat"] {
+                    i {
+                        font-size: var(--font-size-13);
+                        margin-left: 2px;
+                    }
+                }
             }
 
             .instructions,
@@ -776,7 +783,13 @@ $bottom-width: 542px;
 
         &[data-badge-type="formula"] {
             .icon {
+                cursor: pointer;
+
                 &:hover {
+                    .value-wrapper {
+                        display: none;
+                    }
+
                     &::before {
                         content: "\f6cf";
                         background: rgba(0, 0, 0, 0.5);
@@ -785,12 +798,12 @@ $bottom-width: 542px;
                         font-size: var(--font-size-26);
                         color: var(--text-light);
                         position: absolute;
-                        width: 100%;
-                        height: 100%;
+                        inset: 0;
+                        font-size: 1.4em;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        padding-bottom: 4px;
+                        padding-bottom: 0.1em;
                     }
                 }
             }

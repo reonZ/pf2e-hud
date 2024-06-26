@@ -66,6 +66,7 @@ import {
 } from "./sidebar/actions";
 import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
 import { getAnnotationTooltip } from "./sidebar/spells";
+import { PersistentDialog } from "foundry-pf2e/src/pf2e";
 
 const ROMAN_RANKS = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"] as const;
 
@@ -831,11 +832,15 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = this.actor as ActorPF2e;
         if (!actor) return;
 
+        const getEffect = (el: HTMLElement) => {
+            const itemId = htmlClosest(el, "[data-item-id]")!.dataset.itemId ?? "";
+            return actor.conditions.get(itemId) ?? actor?.items.get(itemId);
+        };
+
         addListenerAll(html, ".effect-item[data-item-id] .icon", "mousedown", (event, el) => {
             if (!event.shiftKey && this.getSetting("shiftEffects")) return;
 
-            const itemId = htmlClosest(el, "[data-item-id]")!.dataset.itemId ?? "";
-            const effect = actor.conditions.get(itemId) ?? actor?.items.get(itemId);
+            const effect = getEffect(el);
             if (!effect) return;
 
             const isAbstract = isInstanceOf(effect, "AbstractEffectPF2e");
@@ -855,6 +860,29 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     this.render();
                 }
             }
+        });
+
+        addListenerAll(html, "[data-action=recover-persistent-damage]", (event, el) => {
+            const effect = getEffect(el);
+            if (effect?.isOfType("condition")) {
+                effect.rollRecovery();
+            }
+        });
+
+        addListenerAll(html, "[data-action=edit]", (event, el) => {
+            const effect = getEffect(el);
+            if (!effect) return;
+
+            if (effect.isOfType("condition") && effect.slug === "persistent-damage") {
+                new PersistentDialog(actor, { editing: effect.id }).render(true);
+            } else {
+                effect.sheet.render(true);
+            }
+        });
+
+        addListenerAll(html, "[data-action=send-to-chat]", (event, el) => {
+            const effect = getEffect(el);
+            effect?.toMessage();
         });
     }
 
