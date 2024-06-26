@@ -324,7 +324,10 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
                 return statuses.at(-1)!;
             }
 
-            const pick = Math.ceil(ratio * (statuses.length - 2));
+            statuses.shift();
+            statuses.pop();
+
+            const pick = Math.ceil(ratio * statuses.length);
             return statuses.at(pick - 1);
         })();
 
