@@ -347,6 +347,9 @@
                 background: var(--variant-background);
                 padding-inline: 0.1em;
                 text-transform: uppercase;
+                display: flex;
+                align-items: center;
+                gap: 0.2em;
 
                 &:not(:empty) {
                     margin-top: var(--item-gap);
@@ -358,6 +361,13 @@
                     &:hover {
                         color: var(--color-highlight);
                     }
+                }
+
+                &[data-disabled] {
+                    pointer-events: none;
+                    cursor: default;
+                    color: var(--color-disabled);
+                    filter: grayscale(1);
                 }
             }
         }

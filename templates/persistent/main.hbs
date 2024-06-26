@@ -207,10 +207,10 @@
     {{attack.strike.category.value}}
 </div>
 {{/if}}
-{{!-- strike ready --}}
 {{#if attack.subtitle}}
 <div class="subtitle app">{{attack.subtitle}}</div>
 {{/if}}
+{{!-- strike ready --}}
 {{#if attack.strike.ready}}
 {{> (@root.partial 'action_strike-row') attack.strike}}
 {{#if attack.strike.altUsages}}

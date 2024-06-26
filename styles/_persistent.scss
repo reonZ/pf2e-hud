@@ -520,6 +520,13 @@ $bottom-width: 542px;
                                     &:hover {
                                         filter: brightness(1.5);
                                     }
+
+                                    &[data-disabled] {
+                                        pointer-events: none;
+                                        cursor: default;
+                                        color: var(--color-disabled);
+                                        filter: grayscale(1);
+                                    }
                                 }
 
                                 + .variants,
