@@ -228,6 +228,12 @@
             <i class="fa-solid fa-play"></i>
         </a>
     </div>
+    {{else if (and @root.inParty action.isExploration)}}
+    <div class="controls">
+        <a data-action="toggle-exploration">
+            <i class="fa-solid fa-toggle-{{ifThen action.isActive 'large-on' 'off'}}"></i>
+        </a>
+    </div>
     {{/if}}
     <img src="{{action.dragImg}}" class="drag-img">
 </div>

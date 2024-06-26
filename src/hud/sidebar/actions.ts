@@ -73,6 +73,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             };
         })();
 
+        const inParty = isCharacter ? actor.parties.size > 0 : false;
         const actionSections = await (async () => {
             const abilityTypes: ("action" | "feat")[] = ["action"];
             if (isCharacter) abilityTypes.push("feat");
@@ -84,7 +85,6 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                 actor.flags.pf2e.kineticist &&
                 !!actor.itemTypes.effect.find((x) => x.slug === "effect-kinetic-aura");
 
-            const inParty = isCharacter ? actor.parties.size > 0 : false;
             const explorations = isCharacter ? actor.system.exploration : [];
             const sections = {} as Record<
                 ActionType | "exploration",
@@ -144,6 +144,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                     id,
                     usage,
                     frequency,
+                    isExploration,
                     name: ability.name,
                     img: getActionIcon(actionCost),
                     dragImg: getActionImg(ability),
@@ -161,6 +162,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
 
         const data: ActionsContext = {
             ...parentData,
+            inParty,
             stances,
             heroActions,
             actionSections,
@@ -229,6 +231,20 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             const action = button.dataset.action as Action;
 
             switch (action) {
+                case "toggle-exploration": {
+                    const actionId = htmlClosest(button, "[data-item-id]")?.dataset.itemId;
+                    if (!actionId) return;
+
+                    const exploration = (actor as CharacterPF2e).system.exploration.filter((id) =>
+                        actor.items.has(id)
+                    );
+                    if (!exploration.findSplice((id) => id === actionId)) {
+                        exploration.push(actionId);
+                    }
+
+                    return actor.update({ "system.exploration": exploration });
+                }
+
                 case "blast-attack": {
                     const [blast, data] = getBlast(button, itemRow);
                     const mapIncreases = Math.clamp(Number(button.dataset.mapIncreases), 0, 2);
@@ -633,7 +649,8 @@ type Action =
     | "hero-action-description"
     | "hero-action-use"
     | "hero-action-discard"
-    | "use-action";
+    | "use-action"
+    | "toggle-exploration";
 
 type ActionData = {
     id: string;
@@ -641,6 +658,7 @@ type ActionData = {
     dragImg: string;
     name: string;
     isActive: boolean;
+    isExploration: boolean;
     usage: Maybe<{
         disabled: boolean;
         label: string;
@@ -662,6 +680,7 @@ type ActionsContext = SidebarContext & {
         label: string;
         actions: ActionData[];
     }[];
+    inParty: boolean;
     stances: Maybe<{
         actions: toolbelt.stances.StanceData[];
         canUse: boolean;
