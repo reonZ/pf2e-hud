@@ -55,14 +55,14 @@
         <div class="instructions">
             {{#if (nor effect.isLocked effect.inMemoryOnly)}}
             {{#if (eq effect.badge.type "formula")}}
-            <div>{{localize "PF2E.EffectPanel.RollDamageToolTip"}}</div>
+            <div>{{@root.instructions.damage}}</div>
             {{/if}}
 
             {{#if (eq effect.badge.type "counter")}}
-            <div>{{localize "PF2E.EffectPanel.IncrementToolTip"}}</div>
-            <div>{{localize "PF2E.EffectPanel.DecrementToolTip"}}</div>
+            <div>{{@root.instructions.increment}}</div>
+            <div>{{@root.instructions.decrement}}</div>
             {{else}}
-            <div>{{localize "PF2E.EffectPanel.RemoveToolTip"}}</div>
+            <div>{{@root.instructions.remove}}</div>
             {{/if}}
             {{/if}}
         </div>
@@ -80,7 +80,8 @@
         </span>
         {{else if effect.badge.value}}
         <div class="value-wrapper">
-            <div class="value"><strong>{{effect.badge.value}}</strong>
+            <div class="value">
+                <strong>{{effect.badge.value}}</strong>
             </div>
         </div>
         {{/if}}

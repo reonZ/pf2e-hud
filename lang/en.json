@@ -188,6 +188,10 @@
                 "showEffects": {
                     "name": "Show Effects",
                     "hint": "Should the effects currently affecting the persistent actor be displayed next to the persistent HUD."
+                },
+                "shiftEffects": {
+                    "name": "Hold Shift for Effects",
+                    "hint": "Requires holding the shift key to interact with effect icons."
                 }
             },
             "tracker": {
@@ -263,6 +267,10 @@
                         "message": "Are you sure you want to copy the shortcuts from <strong>{name}</strong>'s owner?",
                         "none": "This Character doesn't have any owner with shortcuts set."
                     }
+                },
+                "effects": {
+                    "shift": "Shift",
+                    "toggle": "Toggle Effects"
                 }
             }
         },

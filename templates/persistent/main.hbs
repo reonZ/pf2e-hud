@@ -18,6 +18,11 @@
     <div class="top">
         <div class="panel app sidebars">
             {{> (partial 'sidebars')}}
+            <hr>
+            <a class="effects-toggle{{#unless showEffects}} greyed{{/unless}}"
+                data-action="toggle-effects" data-tooltip="{{i18n.path 'effects.toggle'}}">
+                <i class="fa-solid fa-bolt"></i>
+            </a>
         </div>
         {{#if (and hasActor isGM)}}
         <div class="panel app shotcut-menus">

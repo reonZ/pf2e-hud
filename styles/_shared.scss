@@ -81,6 +81,10 @@ $panel-gap: 5px;
                 text-shadow: none;
             }
         }
+
+        &.greyed {
+            color: var(--color-disabled);
+        }
     }
 
     i {

@@ -173,6 +173,18 @@ $bottom-width: 542px;
 
                 .sidebars {
                     min-width: 9.438em;
+
+                    hr {
+                        height: calc(100% - 1px);
+                        border: 0;
+                        margin: 0;
+                        border-right: 1px solid var(--hr-color);
+                    }
+
+                    .effects-toggle {
+                        display: grid;
+                        align-items: center;
+                    }
                 }
 
                 .shotcut-menus {
@@ -658,6 +670,8 @@ $bottom-width: 542px;
         flex-direction: column;
 
         > .icon {
+            --offset: -0.1em;
+
             position: relative;
             background-repeat: no-repeat;
             background-size: contain;
@@ -684,10 +698,11 @@ $bottom-width: 542px;
             .value-wrapper {
                 color: var(--color);
                 background: #000000a3;
-                left: -0.1em;
-                bottom: -0.1em;
                 padding-inline: 0.2em;
                 border-radius: 4px;
+                left: var(--offset);
+                bottom: var(--offset);
+                font-size: 0.9em;
             }
 
             &.expired {
@@ -749,6 +764,28 @@ $bottom-width: 542px;
                 display: flex;
                 align-items: end;
                 flex-direction: column;
+            }
+        }
+
+        &[data-badge-type="formula"] {
+            .icon {
+                &:hover {
+                    &::before {
+                        content: "\f6cf";
+                        background: rgba(0, 0, 0, 0.5);
+                        font-family: "Font Awesome 5 Free";
+                        font-weight: 900;
+                        font-size: var(--font-size-26);
+                        color: var(--text-light);
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding-bottom: 4px;
+                    }
+                }
             }
         }
     }

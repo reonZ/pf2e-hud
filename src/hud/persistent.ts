@@ -14,10 +14,12 @@ import {
     getActionImg,
     getActiveModule,
     getEnrichedDescriptions,
+    getFirstActiveToken,
     getFlag,
     getOwner,
     getRankLabel,
     getRemainingDurationLabel,
+    htmlClosest,
     imagePath,
     isInstanceOf,
     localize,
@@ -86,6 +88,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #actor: PersistentHudActor | null = null;
     #shortcuts: Record<string, Shortcut | EmptyShortcut> = {};
     #shortcutData: UserShortcutsData = {};
+    #effectsInstructions: Record<string, string> | null = null;
+    #effectsShiftInstructions: Record<string, string> | null = null;
 
     #elements: Record<PartName | "left", HTMLElement | null> = {
         left: null,
@@ -142,6 +146,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             "consumableShortcut",
             "closeOnSendToChat",
             "closeOnSpell",
+            "shiftEffects",
         ];
     }
 
@@ -217,6 +222,16 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             },
             {
                 key: "showEffects",
+                type: Boolean,
+                default: true,
+                scope: "client",
+                config: false,
+                onChange: () => {
+                    this.render();
+                },
+            },
+            {
+                key: "shiftEffects",
                 type: Boolean,
                 default: true,
                 scope: "client",
@@ -323,6 +338,31 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         return getFlag<string>(game.user, "persistent.selected") ?? "";
     }
 
+    get effectsInstructions() {
+        this.#effectsInstructions ??= R.pipe(
+            {
+                rollDamage: "PF2E.EffectPanel.RollDamageToolTip",
+                increment: "PF2E.EffectPanel.IncrementToolTip",
+                decrement: "PF2E.EffectPanel.DecrementToolTip",
+                remove: "PF2E.EffectPanel.RemoveToolTip",
+            },
+            R.mapValues((value) => game.i18n.localize(value))
+        );
+
+        return this.#effectsInstructions;
+    }
+
+    get effectsShiftInstructions() {
+        if (this.#effectsShiftInstructions) return this.#effectsShiftInstructions;
+
+        const shiftLabel = localize("persistent.main.effects.shift");
+        this.#effectsShiftInstructions ??= R.mapValues(this.effectsInstructions, (value) =>
+            value.replace(/^\[/, `[${shiftLabel} + `)
+        );
+
+        return this.#effectsShiftInstructions;
+    }
+
     _onEnable(enabled: boolean = this.enabled) {
         const autoSet = this.getSetting("autoSet");
 
@@ -375,6 +415,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         options.hasSavedActor = !!this.selected;
         options.cleaned = this.getSetting("cleanPortrait");
         options.autoSet = this.getSetting("autoSet");
+        options.showEffects = this.getSetting("showEffects");
 
         /**
          * we either only render "menu" or everything
@@ -382,6 +423,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
          */
         if (!options.parts?.length || options.parts.length > 1 || options.parts[0] !== "menu") {
             options.parts = this.templates;
+        }
+
+        if (!options.showEffects) {
+            options.parts.findSplice((partName) => partName === "effects");
         }
     }
 
@@ -392,12 +437,15 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         if (!parentData.hasActor) return parentData;
 
         const actor = parentData.actor;
-        return {
+
+        const data: PersistentContext = {
             ...parentData,
             isGM: game.user.isGM,
             isNPC: actor.isOfType("npc"),
             isCharacter: actor.isOfType("character"),
         };
+
+        return data;
     }
 
     async _renderHTML(
@@ -467,6 +515,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
             this.#elements[name] = element;
             this.#parts[name].activateListeners(element);
+        }
+
+        if (!options.showEffects) {
+            this.#elements.effects?.remove();
+            this.#elements.effects = null;
         }
     }
 
@@ -756,6 +809,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             effects: await getEnrichedDescriptions(effects),
         };
 
+        const instructions = this.getSetting("shiftEffects")
+            ? this.effectsShiftInstructions
+            : this.effectsInstructions;
+
         const data: EffectsContext = {
             ...context,
             afflictions,
@@ -763,6 +820,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             descriptions,
             effects,
             actor,
+            instructions,
             user: { isGM: context.isGM },
         };
 
@@ -770,8 +828,34 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     #activateEffectsListeners(html: HTMLElement) {
-        const actor = this.actor;
+        const actor = this.actor as ActorPF2e;
         if (!actor) return;
+
+        addListenerAll(html, ".effect-item[data-item-id] .icon", "mousedown", (event, el) => {
+            if (!event.shiftKey && this.getSetting("shiftEffects")) return;
+
+            const itemId = htmlClosest(el, "[data-item-id]")!.dataset.itemId ?? "";
+            const effect = actor.conditions.get(itemId) ?? actor?.items.get(itemId);
+            if (!effect) return;
+
+            const isAbstract = isInstanceOf(effect, "AbstractEffectPF2e");
+
+            if (event.button === 0) {
+                if (effect.isOfType("condition") && effect.slug === "persistent-damage") {
+                    const token = getFirstActiveToken(actor, false, true);
+                    effect.onEndTurn({ token });
+                } else if (isAbstract) {
+                    effect.increase();
+                }
+            } else if (event.button === 2) {
+                if (isAbstract) {
+                    effect.decrease();
+                } else {
+                    // Failover in case of a stale effect
+                    this.render();
+                }
+            }
+        });
     }
 
     #preparePortraitContext(
@@ -862,6 +946,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             isVirtual: this.isVirtual,
             isAutoFill: autoFill,
             isOwnerShortcuts: !!shortcutsOwner,
+            showEffects: options.showEffects,
             variantLabel,
         };
 
@@ -874,6 +959,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         addStatsAdvancedListeners(this.actor, html);
         addSidebarsListeners(this, html);
+
+        addListener(html, "[data-action='toggle-effects']", () => {
+            this.setSetting("showEffects", !this.getSetting("showEffects"));
+        });
 
         addListenerAll(html, ".stretch .shotcut-menus [data-action]", async (event, el) => {
             const action = el.dataset.action as ShortcutMenusAction;
@@ -1422,7 +1511,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 const slotIndex = cached.spells.index++;
                 const active = spellGroup.active[slotIndex]!;
 
-                const shortcutData = {
+                const shortcutData: SpellShortcutData = {
                     type: "spell",
                     index,
                     groupIndex,
@@ -1435,7 +1524,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         active.castRank ??
                         active.spell.system.location.heightenedLevel ??
                         active.spell.rank,
-                } satisfies SpellShortcutData;
+                };
 
                 return returnShortcut(shortcutData);
             }
@@ -1446,12 +1535,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             const consumable = actor.itemTypes.consumable.at(cached.consumables++);
             if (!consumable) return emptyData;
 
-            const shortcutData = {
+            const shortcutData: TemporaryConsumableShortcutData = {
                 type: "consumable",
                 itemId: consumable.id,
                 index,
                 groupIndex,
-            } satisfies TemporaryConsumableShortcutData;
+            };
 
             return returnShortcut(shortcutData);
         };
@@ -2074,6 +2163,7 @@ type EffectsContext = PersistentContext & {
         conditions: string[];
         effects: string[];
     };
+    instructions: Record<string, string>;
     user: { isGM: boolean };
 };
 
@@ -2098,8 +2188,6 @@ type PortraitContext = PersistentContext &
         name: string;
     };
 
-type ActorEffect = EffectPF2e;
-
 type MainContext = PersistentContext &
     StatsAdvanced & {
         sidebars: SidebarMenu[];
@@ -2108,6 +2196,7 @@ type MainContext = PersistentContext &
         isVirtual: boolean;
         isAutoFill: boolean;
         isOwnerShortcuts: boolean;
+        showEffects: boolean;
         variantLabel: typeof variantLabel;
     };
 
@@ -2122,6 +2211,7 @@ type PersistentRenderOptions = Omit<BaseActorRenderOptions, "parts"> & {
     hasSavedActor: boolean;
     cleaned: boolean;
     autoSet: AutoSetSetting;
+    showEffects: boolean;
 };
 
 type Part<TContext extends PersistentContext> = {
@@ -2174,6 +2264,7 @@ type PersistentSettings = BaseActorSettings &
         autoFillType: AutoFillSetting;
         ownerShortcuts: boolean;
         showEffects: boolean;
+        shiftEffects: boolean;
     };
 
 export { PF2eHudPersistent };
