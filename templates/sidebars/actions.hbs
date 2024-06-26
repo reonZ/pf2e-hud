@@ -216,8 +216,13 @@
     <div class="name">
         <a data-action="item-description">{{action.name}}</a>
     </div>
-    {{#if action.usage}}
     <div class="controls">
+        {{#each action.toggles as |toggle|}}
+        <a {{#if toggle.selected}}class="active" {{/if}} data-tooltip="{{toggle.tooltip}}"
+            data-action="toggle-trait" data-trait="{{toggle.trait}}"><i
+                class="fa-solid fa-fw fa-{{toggle.icon}}"></i></a>
+        {{/each}}
+        {{#if action.usage}}
         {{#if action.frequency}}
         <input type="number" class="small" data-item-id="{{action.id}}"
             data-item-property="system.frequency.value" value="{{action.frequency.value}}" min="0"
@@ -227,14 +232,12 @@
             data-tooltip="{{action.usage.label}}">
             <i class="fa-solid fa-play"></i>
         </a>
-    </div>
-    {{else if (and @root.inParty action.isExploration)}}
-    <div class="controls">
+        {{else if (and @root.inParty action.isExploration)}}
         <a data-action="toggle-exploration">
             <i class="fa-solid fa-toggle-{{ifThen action.isActive 'large-on' 'off'}}"></i>
         </a>
+        {{/if}}
     </div>
-    {{/if}}
     <img src="{{action.dragImg}}" class="drag-img">
 </div>
 {{/each}}

@@ -17,6 +17,7 @@ import {
 import { eventToRollMode, getActionIcon } from "foundry-pf2e/src/pf2e";
 import { PF2eHudTextPopup } from "../popup/text";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
+import { getItemFromElement } from "../shared/base";
 
 const ACTION_TYPES = {
     action: { sort: 0, label: "PF2E.ActionsActionsHeader" },
@@ -149,6 +150,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                     img: getActionIcon(actionCost),
                     dragImg: getActionImg(ability),
                     isActive: isExploration && explorations.includes(id),
+                    toggles: ability.system.traits.toggles.getSheetData(),
                 });
             }
 
@@ -231,6 +233,17 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             const action = button.dataset.action as Action;
 
             switch (action) {
+                case "toggle-trait": {
+                    const item = await getItemFromElement(actor, button);
+                    if (!item?.isOfType("action", "feat")) return;
+
+                    const trait = button.dataset.trait as "mindshift";
+                    const toggle = item.system.traits.toggles[trait];
+                    if (!toggle) return;
+
+                    return item.system.traits.toggles.update({ trait, selected: !toggle.selected });
+                }
+
                 case "toggle-exploration": {
                     const actionId = htmlClosest(button, "[data-item-id]")?.dataset.itemId;
                     if (!actionId) return;
@@ -650,7 +663,8 @@ type Action =
     | "hero-action-use"
     | "hero-action-discard"
     | "use-action"
-    | "toggle-exploration";
+    | "toggle-exploration"
+    | "toggle-trait";
 
 type ActionData = {
     id: string;
@@ -658,6 +672,7 @@ type ActionData = {
     dragImg: string;
     name: string;
     isActive: boolean;
+    toggles: TraitToggleViewData[];
     isExploration: boolean;
     usage: Maybe<{
         disabled: boolean;

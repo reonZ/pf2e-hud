@@ -131,6 +131,10 @@
         }
 
         .controls {
+            a.active {
+                color: var(--color-active);
+            }
+
             [data-action="toggle-stance"] {
                 font-size: 1.1em;
 
