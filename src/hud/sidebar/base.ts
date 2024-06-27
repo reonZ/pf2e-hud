@@ -225,6 +225,10 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         this._activateListeners(this.#innerElement);
     }
 
+    _onFirstRender(context: ApplicationRenderContext, options: SidebarRenderOptions) {
+        this.bringToFront();
+    }
+
     _onRender(context: ApplicationRenderContext, options: SidebarRenderOptions) {
         const innerElement = this.innerElement;
         const multiColumns = this.getSetting("multiColumns");
