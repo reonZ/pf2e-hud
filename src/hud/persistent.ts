@@ -1926,7 +1926,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     return returnShortcut({
                         ...shortcutData,
                         isDisabled: disabled,
-                        isFadedOut: disabled || !strike.ready,
+                        isFadedOut: disabled || !strike.ready || strike.quantity === 0,
                         strike,
                         versatile: versatile?.find((x) => x.selected)?.glyph,
                         img: img ?? shortcutData.img,
