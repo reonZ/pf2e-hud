@@ -1225,7 +1225,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             case "open-attack-popup": {
                 if (actor.isOfType("character")) {
                     const { left, top, height } = this.mainElement!.getBoundingClientRect();
-                    openAttackpopup(actor, el.dataset, { left, top: top - height - 150 });
+                    openAttackpopup(actor, el.dataset, { left, top: top - height - 100 });
                 }
                 break;
             }

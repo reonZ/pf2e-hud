@@ -203,17 +203,17 @@
 {{/if}}
 {{!-- strike --}}
 {{else}}
+{{#if attack.subtitle}}
+<div class="subtitle app">{{attack.subtitle}}</div>
+{{/if}}
+{{!-- strike ready --}}
+{{#if attack.strike.ready}}
 {{#if @root.isCharacter}}
 <div class="range boxed">
     {{> (@root.partial 'strike_category') category=attack.strike.category}}
     {{attack.strike.category.value}}
 </div>
 {{/if}}
-{{#if attack.subtitle}}
-<div class="subtitle app">{{attack.subtitle}}</div>
-{{/if}}
-{{!-- strike ready --}}
-{{#if attack.strike.ready}}
 {{> (@root.partial 'action_strike-row') attack.strike}}
 {{#if attack.strike.altUsages}}
 {{> (@root.partial 'action_strike-row') attack.strike.altUsages.[0] isAltUsage=true}}
