@@ -509,10 +509,7 @@ async function getStrikeData(
     const actorStrikes = actor.system.actions ?? [];
     const actions = options
         ? R.filter(
-              [
-                  actorStrikes.find((s) => s.item.id === options.id && s.slug === options.slug) ??
-                      actorStrikes.find((s) => s.slug === options.slug),
-              ],
+              [actorStrikes.find((s) => s.item.id === options.id && s.slug === options.slug)],
               R.isTruthy
           )
         : actorStrikes;
