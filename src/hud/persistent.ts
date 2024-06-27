@@ -655,8 +655,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = sheet.actor;
         if (!this.isValidActor(actor)) return;
 
-        this.closeSidebar();
-
         if (this.getSetting("autoSet") !== "disabled") return;
 
         const html = $html[0];
