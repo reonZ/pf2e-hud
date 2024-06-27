@@ -163,6 +163,9 @@
 {{/inline}}
 
 {{#*inline 'action'}}
+{{#if (ne action.isActive null)}}
+{{> check checked=action.isActive}}
+{{/if}}
 {{> cost cost=action.cost}}
 {{#if action.frequency}}
 <div class="quantity boxed">
@@ -175,15 +178,7 @@
 
 {{#*inline 'toggle'}}
 {{#unless toggle.isDisabled}}
-<div class="check{{#if toggle.checked}} active{{/if}}">
-    {{#if toggle.checked}}
-    <i class="fa-regular fa-square-check"></i>
-    <i class="fa-solid fa-square-check"></i>
-    {{else}}
-    <i class="fa-regular fa-square"></i>
-    <i class="fa-solid fa-square"></i>
-    {{/if}}
-</div>
+{{> check checked=toggle.checked}}
 {{/unless}}
 {{/inline}}
 
@@ -274,4 +269,16 @@
     </span>
 </div>
 {{/if}}
+{{/inline}}
+
+{{#*inline 'check'}}
+<div class="check{{#if checked}} active{{/if}}">
+    {{#if checked}}
+    <i class="fa-regular fa-square-check"></i>
+    <i class="fa-solid fa-square-check"></i>
+    {{else}}
+    <i class="fa-regular fa-square"></i>
+    <i class="fa-solid fa-square"></i>
+    {{/if}}
+</div>
 {{/inline}}

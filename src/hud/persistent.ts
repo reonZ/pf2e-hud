@@ -19,6 +19,7 @@ import {
     getOwner,
     getRankLabel,
     getRemainingDurationLabel,
+    hasItemWithSourceId,
     htmlClosest,
     imagePath,
     isInstanceOf,
@@ -31,6 +32,7 @@ import {
     unsetFlag,
     warn,
 } from "foundry-pf2e";
+import { PersistentDialog } from "foundry-pf2e/src/pf2e";
 import { hud } from "../main";
 import {
     BaseActorContext,
@@ -66,7 +68,6 @@ import {
 } from "./sidebar/actions";
 import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
 import { getAnnotationTooltip } from "./sidebar/spells";
-import { PersistentDialog } from "foundry-pf2e/src/pf2e";
 
 const ROMAN_RANKS = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"] as const;
 
@@ -1158,7 +1159,15 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
                 if (this.getSetting("confirmShortcut") && !(await confirmUse(item))) return;
 
-                return useAction(item);
+                const toolbelt = getActiveModule("pf2e-toolbelt");
+                if (!shortcut.effectUuid || !toolbelt?.api.stances.isValidStance(item)) {
+                    return useAction(item);
+                }
+
+                return toolbelt.api.stances.toggleStance(
+                    actor as CharacterPF2e,
+                    shortcut.effectUuid
+                );
             }
 
             case "spell": {
@@ -1366,6 +1375,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         itemId: item.id,
                         name: item.name,
                         img: getActionImg(item),
+                        effectUuid: dropData.effectUuid,
                     } satisfies ActionShortcutData;
                 } else if (item.isOfType("spell")) {
                     const { fromSidebar, itemType, entryId, slotId } = dropData;
@@ -1837,12 +1847,22 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 const name = item?.name ?? shortcutData.name;
                 const frequency = item ? getActionFrequency(item) : undefined;
                 const disabled = !item || frequency?.value === 0;
+                const isActive = (() => {
+                    const effectUUID = shortcutData.effectUuid;
+                    if (!item || !effectUUID) return null;
+
+                    const toolbelt = getActiveModule("pf2e-toolbelt");
+                    if (!toolbelt?.api.stances.isValidStance(item)) return null;
+
+                    return hasItemWithSourceId(actor, effectUUID, "effect");
+                })();
 
                 return returnShortcut({
                     ...shortcutData,
                     isDisabled: disabled,
                     isFadedOut: disabled,
                     item,
+                    isActive,
                     img: item ? getActionImg(item) : shortcutData.img,
                     name: frequency ? `${name} - ${frequency.label}` : name,
                     frequency,
@@ -2078,6 +2098,7 @@ type ActionShortcutData = ShortcutDataBase<"action"> & {
     itemId: string;
     name: string;
     img: string;
+    effectUuid: string | undefined;
 };
 
 type ConsumableShortcutDataBase = ShortcutDataBase<"consumable">;
@@ -2133,6 +2154,7 @@ type ActionShortcut = BaseShortCut<"action"> &
     ActionShortcutData & {
         item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e> | undefined;
         cost: CostValue;
+        isActive: boolean | null;
         frequency: Maybe<{
             max: number;
             value: number;
@@ -2284,6 +2306,7 @@ type DropData = HotbarDropData & {
     slotId?: StringNumber;
     groupId?: StringNumber | "cantrips";
     itemId?: string;
+    effectUuid?: string;
 };
 
 type AutoSetSetting = "disabled" | "select" | "combat";

@@ -179,7 +179,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
     }
 
     _getDragData(
-        { actionIndex, element }: DOMStringMap,
+        { actionIndex, element, effectUuid }: DOMStringMap,
         baseDragData: Record<string, JSONValue>,
         item: Maybe<ItemPF2e<ActorPF2e>>
     ) {
@@ -191,6 +191,10 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             return {
                 type: "Action",
                 elementTrait: element,
+            };
+        } else if (effectUuid) {
+            return {
+                effectUuid,
             };
         }
     }
@@ -329,7 +333,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                 }
 
                 case "toggle-stance": {
-                    const uuid = elementDataset(button).effectUuid;
+                    const uuid = elementDataset(htmlClosest(button, ".item")!).effectUuid;
                     getActiveModule("pf2e-toolbelt")?.api.stances.toggleStance(
                         actor as CharacterPF2e,
                         uuid,

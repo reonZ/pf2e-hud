@@ -4,7 +4,8 @@
 </header>
 {{/if}}
 {{#each stances.actions as |stance|}}
-<div class="item action" data-item-id="{{stance.actionID}}" draggable="true">
+<div class="item action" data-item-id="{{stance.actionID}}" draggable="true"
+    data-effect-uuid="{{stance.effectUUID}}">
     <div class="image" data-action="send-to-chat">
         <img src="systems/pf2e/icons/actions/OneAction.webp">
         <i class="fa-solid fa-message chat"></i>
@@ -13,8 +14,7 @@
         <a data-action="item-description">{{stance.name}}</a>
     </div>
     <div class="controls">
-        <a {{#unless ../stances.canUse}}class="disabled" {{/unless}} data-action="toggle-stance"
-            data-effect-uuid="{{stance.effectUUID}}">
+        <a {{#unless ../stances.canUse}}class="disabled" {{/unless}} data-action="toggle-stance">
             <i class="fa-solid fa-toggle-{{ifThen stance.effectID 'large-on' 'off'}}"></i>
         </a>
     </div>

@@ -320,7 +320,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         addListenerAll(html, "[draggable='true']", "dragstart", async (event, el) => {
             if (!event.dataTransfer) return;
 
-            const { itemId, actionIndex, element, label, domain, option, placement } = el.dataset;
+            const { label, domain, option } = el.dataset;
             const item = await getItemFromElement(this.actor, el);
 
             const imgSrc = el.querySelector<HTMLImageElement>(".drag-img")?.src ?? item?.img ?? "";
