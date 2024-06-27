@@ -83,6 +83,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #deleteTokenHook = createHook("deleteToken", this.#onDeleteActor.bind(this));
     #deleteActorHook = createHook("deleteActor", this.#onDeleteActor.bind(this));
     #updateUserHook = createHook("updateUser", this.#onUpdateUser.bind(this));
+    #combatDeleteHook = createHook("deleteCombat", this.#onCombatTurnChange.bind(this));
     #combatTurnHook = createHook("combatTurnChange", this.#onCombatTurnChange.bind(this));
 
     #isVirtual: boolean = false;
@@ -376,6 +377,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         this.#updateUserHook.toggle(enabled);
 
         this.#controlTokenHook.toggle(enabled && autoSet === "select");
+        this.#combatDeleteHook.toggle(enabled && autoSet === "combat");
         this.#combatTurnHook.toggle(enabled && autoSet === "combat");
 
         if (enabled) {
