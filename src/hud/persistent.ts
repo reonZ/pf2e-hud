@@ -362,8 +362,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         };
     }
 
-    get selected() {
-        return getFlag<string>(game.user, "persistent.selected") ?? "";
+    get savedActor() {
+        const uuid = getFlag<string>(game.user, "persistent.selected") ?? "";
+        const actor = fromUuidSync<ActorPF2e>(uuid);
+        return this.isValidActor(actor) ? actor : null;
     }
 
     get effectsInstructions() {
@@ -406,14 +408,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         this.#combatTurnHook.toggle(enabled && autoSet === "combat");
 
         if (enabled) {
+            let actor = this.savedActor;
+            if (actor) {
+                return this.setActor(actor, { skipSave: true });
+            }
+
             if (autoSet === "disabled") {
-                const selected = this.selected;
-
-                let actor = fromUuidSync<ActorPF2e>(selected);
-
-                if (!this.isValidActor(actor)) {
-                    actor = game.user.character;
-                }
+                actor = game.user.character;
 
                 if (actor) {
                     this.setActor(actor, { skipSave: true });
@@ -441,9 +442,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     _configureRenderOptions(options: PersistentRenderOptions) {
         super._configureRenderOptions(options);
 
-        options.hasSavedActor = !!this.selected;
         options.cleaned = this.getSetting("cleanPortrait");
-        options.autoSet = this.getSetting("autoSet");
         options.showEffects = this.getSetting("showEffects");
 
         /**
@@ -601,9 +600,20 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const savedActor = actor;
         this._actorCleanup();
 
-        if (!actor && this.getSetting("autoSet") === "disabled") {
-            const userActor = game.user.character;
-            if (this.isValidActor(userActor)) actor = userActor;
+        if (!actor) {
+            const autoSet = this.getSetting("autoSet");
+            let potentialActor = null;
+
+            if (autoSet === "disabled") {
+                potentialActor = game.user.character;
+            } else if (autoSet === "combat") {
+                const combatantId = game.combat?.current.combatantId ?? "";
+                potentialActor = game.combat?.combatants.get(combatantId)?.actor;
+            } else {
+                potentialActor = R.only(canvas.tokens.controlled)?.actor;
+            }
+
+            if (this.isValidActor(potentialActor)) actor = potentialActor;
         }
 
         if (actor) {
@@ -682,8 +692,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = sheet.actor;
         if (!this.isValidActor(actor)) return;
 
-        if (this.getSetting("autoSet") !== "disabled") return;
-
         const html = $html[0];
         const titleElement = html
             .closest(".window-app")
@@ -707,13 +715,19 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     #onCombatTurnChange() {
+        if (this.savedActor) return;
+
         const combatant = game.combat?.combatants.get(game.combat?.current.combatantId ?? "");
         const actor = this.isValidActor(combatant?.actor) ? combatant.actor : null;
+
         this.setActor(actor, { skipSave: true });
     }
 
     #onControlToken() {
+        if (this.savedActor) return;
+
         const token = R.only(canvas.tokens.controlled);
+
         if (this.isValidActor(token?.actor)) {
             this.setActor(token.actor, { token, skipSave: true });
         } else {
@@ -726,34 +740,34 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     #setSelectedToken() {
-        if (this.getSetting("autoSet") !== "disabled") return;
-
         const tokens = canvas.tokens.controlled;
         const token = tokens[0];
 
         if (tokens.length !== 1 || !this.isValidActor(token.actor)) {
             return warn("persistent.error.selectOne");
         }
+
         this.setActor(token.actor, { token });
     }
 
     #prepareMenuContext(context: PersistentContext, options: PersistentRenderOptions): MenuContext {
         const setTooltipParts = [["setActor", "leftClick"]];
-        if (options.hasSavedActor) setTooltipParts.push(["unsetActor", "rightClick"]);
+        const hasSavedActor = !!this.savedActor;
+        if (hasSavedActor) setTooltipParts.push(["unsetActor", "rightClick"]);
 
         const setActorTooltip = setTooltipParts
             .map(([key, click]) => {
                 let msg = localize("persistent.menu", key);
-                if (options.hasSavedActor) msg = `${localize(click)} ${msg}`;
+                if (hasSavedActor) msg = `${localize(click)} ${msg}`;
                 return `<div>${msg}</div>`;
             })
             .join("");
 
         return {
             ...context,
+            hasSavedActor,
             setActorTooltip,
             hotbarLocked: ui.hotbar.locked,
-            canSelectActor: options.autoSet === "disabled",
         };
     }
 
@@ -2300,8 +2314,8 @@ type MenuActionEvent =
 
 type MenuContext = PersistentContext & {
     hotbarLocked: boolean;
+    hasSavedActor: boolean;
     setActorTooltip: string;
-    canSelectActor: boolean;
 };
 
 type PortraitContext = PersistentContext &
@@ -2331,9 +2345,7 @@ type PersistentHudActor = CharacterPF2e | NPCPF2e;
 
 type PersistentRenderOptions = Omit<BaseActorRenderOptions, "parts"> & {
     parts: PartName[];
-    hasSavedActor: boolean;
     cleaned: boolean;
-    autoSet: AutoSetSetting;
     showEffects: boolean;
 };
 
