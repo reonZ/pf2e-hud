@@ -2,6 +2,16 @@ import { addListener, createHTMLElement, getRankLabel, htmlClosest } from "found
 import { PF2eHudPopup, PopupConfig } from "./base";
 
 class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
+    static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
+        actions: {
+            sendToChat: this.#sendToChat,
+        },
+    };
+
+    static #sendToChat(this: PF2eHudItemPopup, event: PointerEvent, target: HTMLElement) {
+        this.item.toMessage(event);
+    }
+
     get title() {
         let title = `${this.actor.name} - ${this.item.name}`;
 
@@ -24,6 +34,18 @@ class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
     get castRank() {
         const castRank = this.dataset?.castRank;
         return castRank ? (Number(castRank) as ZeroToTen) : undefined;
+    }
+
+    async _renderFrame(options: ApplicationRenderOptions) {
+        const frame = await super._renderFrame(options);
+
+        const label = "PF2E.NPC.SendToChat";
+        const configBtn = `<button type="button" class="header-control fa-solid fa-message" 
+        data-action="sendToChat" data-tooltip="${label}" aria-label="${label}"></button>`;
+
+        this.window.close.insertAdjacentHTML("beforebegin", configBtn);
+
+        return frame;
     }
 
     async _renderHTML(context: never, options: ApplicationRenderOptions): Promise<HTMLElement> {
