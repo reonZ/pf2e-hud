@@ -68,6 +68,7 @@ import {
 } from "./sidebar/actions";
 import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
 import { getAnnotationTooltip } from "./sidebar/spells";
+import { PF2eHudItemPopup } from "./popup/item";
 
 const ROMAN_RANKS = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"] as const;
 
@@ -1158,6 +1159,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 const item = shortcut.item;
                 if (!item) return;
 
+                if (!isUsableAction(item)) {
+                    return new PF2eHudItemPopup({ actor, item, event }).render(true);
+                }
+
                 if (this.getSetting("confirmShortcut") && !(await confirmUse(item))) return;
 
                 const toolbelt = getActiveModule("pf2e-toolbelt");
@@ -1964,6 +1969,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         return emptyData;
     }
+}
+
+function isUsableAction(item: FeatPF2e | AbilityItemPF2e) {
+    return item.system.selfEffect || item.frequency?.max || item.flags["pf2e-toolbelt"]?.macro;
 }
 
 function createStrikeShortcutData(
