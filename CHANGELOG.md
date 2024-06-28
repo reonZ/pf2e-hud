@@ -1,3 +1,27 @@
+# 0.12.0
+
+-   raised minimum foundry version to `12.328`
+-   newly opened sidebars are now always displayed on top of everything
+-   started working on the `Skills` sidebar, only contains base skill rolls for now
+-   `Persistent HUD`:
+    -   added versatile icons to attack shortcuts
+    -   added `autoFillActions` and `autoFillReactions` gm-only settings
+        -   respectively add actions and reactions after strikes when auto filling NPC shortcuts
+    -   now creates a `PF2e Toolbelt` stance shortcut when dropping a stance from the sidebar
+        -   toolbelt stances refer to actions in the `Stances` section of the `Actions` sidebar
+    -   now fades out strike shortcuts with item quantity of 0
+    -   changed the way action shortcuts work if they aren't "usable"
+        -   instead of simply sending it to chat, it will open its description popup
+        -   usable refers to actions that have:
+            -   a self-applied effect
+            -   a macro when using `PF2e Toolbelt`
+            -   a frequency use (e.g. 1/day)
+    -   fixed sidebar arrow offset
+    -   fixed sidebar closing on update if a character sheet was also open
+    -   fixed issue when more than one instance of an item linked to a strike exist
+    -   fixed actor not being unset when the encounter ends while using the `Current Combatant` option of the `Auto-Set Actor` setting
+-   fixed styling issue of confirm dialogs introduced with foundry version `12.328`
+
 # 0.11.0
 
 -   added toggles to the exploration actions
