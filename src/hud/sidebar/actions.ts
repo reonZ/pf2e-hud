@@ -506,13 +506,21 @@ async function getStrikeData(
     const rollData = actor.getRollData();
     const isCharacter = actor.isOfType("character");
 
-    const actorStrikes = actor.system.actions ?? [];
-    const actions = options
-        ? R.filter(
-              [actorStrikes.find((s) => s.item.id === options.id && s.slug === options.slug)],
-              R.isTruthy
-          )
-        : actorStrikes;
+    const actions = (() => {
+        const actorStrikes = actor.system.actions ?? [];
+        if (!options) return actorStrikes;
+
+        const exactMatch = actorStrikes.find(
+            (s) => s.item.id === options.id && s.slug === options.slug
+        );
+        if (exactMatch) return [exactMatch];
+
+        const match = actorStrikes.find((s) => s.slug === options.slug);
+        if (!match) return [];
+
+        const realItem = actor.items.get(match.item.id);
+        return realItem && realItem.type !== match.item.type ? [match] : [];
+    })();
 
     const strikes = await Promise.all(
         actions.map(
