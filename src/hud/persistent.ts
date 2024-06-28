@@ -1162,7 +1162,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
                 const toolbelt = getActiveModule("pf2e-toolbelt");
                 if (!shortcut.effectUuid || !toolbelt?.api.stances.isValidStance(item)) {
-                    return useAction(item);
+                    return useAction(event, item);
                 }
 
                 return toolbelt.api.stances.toggleStance(
@@ -1275,7 +1275,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     return;
                 }
 
-                return useAction(action);
+                return useAction(event, action);
             }
         }
     }

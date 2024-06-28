@@ -397,7 +397,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                 case "use-action": {
                     const itemId = elementDataset(htmlClosest(button, ".item")!).itemId;
                     const item = actor.items.get(itemId);
-                    return item?.isOfType("feat", "action") && useAction(item);
+                    return item?.isOfType("feat", "action") && useAction(event, item);
                 }
             }
         });
@@ -600,7 +600,7 @@ function getActionFrequency(action: FeatPF2e | AbilityItemPF2e) {
     };
 }
 
-async function useAction(item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>) {
+async function useAction(event: Event, item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>) {
     const frequency = item.frequency;
     if (frequency?.max && frequency.value) {
         item.update({ "system.frequency.value": frequency.value - 1 });
