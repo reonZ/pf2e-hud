@@ -144,6 +144,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             "multiColumns",
             "ownerShortcuts",
             "autoFillNpc",
+            "autoFillActions",
+            "autoFillReactions",
             "autoFillType",
             "noflash",
             "confirmShortcut",
@@ -167,6 +169,26 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             },
             {
                 key: "autoFillNpc",
+                type: Boolean,
+                default: true,
+                scope: "client",
+                gmOnly: true,
+                onChange: () => {
+                    this.render();
+                },
+            },
+            {
+                key: "autoFillActions",
+                type: Boolean,
+                default: true,
+                scope: "client",
+                gmOnly: true,
+                onChange: () => {
+                    this.render();
+                },
+            },
+            {
+                key: "autoFillReactions",
                 type: Boolean,
                 default: true,
                 scope: "client",
@@ -1538,6 +1560,34 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             return returnShortcut(shortcutData);
         }
 
+        const actions = [
+            ["action", "autoFillActions"],
+            ["reaction", "autoFillReactions"],
+        ] as const;
+        for (const [type, setting] of actions) {
+            cached.fillActions ??= {};
+            cached.fillActions[type] ??= { setting: this.getSetting(setting), index: 0 };
+            if (!cached.fillActions[type]!.setting) continue;
+
+            const action = actor.itemTypes.action
+                .filter((x) => x.system.actionType.value === type)
+                .at(cached.fillActions[type]!.index++);
+
+            if (action) {
+                const shortcutData: ActionShortcutData = {
+                    type: "action",
+                    index,
+                    groupIndex,
+                    itemId: action.id,
+                    name: action.name,
+                    img: getActionImg(action),
+                    effectUuid: undefined,
+                };
+
+                return returnShortcut(shortcutData);
+            }
+        }
+
         const checkSpells = async () => {
             const entryData = await actor.spellcasting.regular.at(0)?.getSheetData();
             if (!entryData) return emptyData;
@@ -1575,8 +1625,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         };
 
         const checkConsumables = () => {
-            cached.consumables ??= 0;
-            const consumable = actor.itemTypes.consumable.at(cached.consumables++);
+            cached.consumable ??= 0;
+
+            const consumable = actor.itemTypes.consumable.at(cached.consumable++);
             if (!consumable) return emptyData;
 
             const shortcutData: TemporaryConsumableShortcutData = {
@@ -2060,8 +2111,9 @@ type CreateShortcutCache = {
 
 type FillShortcutCache = {
     spells?: { groupIndex: number; index: number };
-    consumables?: number;
+    consumable?: number;
     autoFillType?: AutoFillSetting;
+    fillActions?: Record<string, Maybe<{ index: number; setting: boolean }>>;
 };
 
 type ShortcutCache = CreateShortcutCache & FillShortcutCache;
@@ -2336,6 +2388,8 @@ type PersistentSettings = BaseActorSettings &
         ownerShortcuts: boolean;
         showEffects: boolean;
         shiftEffects: boolean;
+        autoFillActions: boolean;
+        autoFillReactions: boolean;
     };
 
 export { PF2eHudPersistent };

@@ -181,12 +181,20 @@
                     "name": "Auto-Fill NPCs",
                     "hint": "If you haven't made any manual changes, the shortcut slots will automatically be filled."
                 },
+                "autoFillActions": {
+                    "name": "Auto-fill Actions",
+                    "hint": "Should NPC actions that cost 1 to 3 actions be added after the attacks."
+                },
+                "autoFillReactions": {
+                    "name": "Auto-fill Reactions",
+                    "hint": "Should NPC reactions be added after the attacks."
+                },
                 "autoFillType": {
                     "name": "Auto-Fill Preference",
-                    "hint": "The order of priority the auto-fill will use.",
+                    "hint": "The priority order for the remaining slots.",
                     "choices": {
-                        "one": "Strikes -> Spells -> Consumables",
-                        "two": "Strikes -> Consumables -> Spells"
+                        "one": "Actions -> Spells -> Consumables",
+                        "two": "Actions -> Consumables -> Spells"
                     }
                 },
                 "ownerShortcuts": {
