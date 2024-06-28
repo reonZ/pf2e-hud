@@ -667,14 +667,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             "character" in updates &&
             (!this.actor || this.#isUserCharacter)
         ) {
-            this.setActor(user.character);
+            this.setActor(user.character, { skipSave: true });
         }
     }
 
     #onDeleteActor(doc: ActorPF2e | TokenDocumentPF2e) {
         const actor = doc instanceof Actor ? doc : doc.actor;
         if (this.isCurrentActor(actor)) {
-            this.setActor(null);
+            this.setActor(null, { skipSave: true });
         }
     }
 
@@ -715,9 +715,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #onControlToken() {
         const token = R.only(canvas.tokens.controlled);
         if (this.isValidActor(token?.actor)) {
-            this.setActor(token.actor, { token });
+            this.setActor(token.actor, { token, skipSave: true });
         } else {
-            this.setActor(null);
+            this.setActor(null, { skipSave: true });
         }
     }
 
