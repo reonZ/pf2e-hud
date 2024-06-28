@@ -8,7 +8,7 @@ import { PF2eHudSidebarSkills } from "../sidebar/skills";
 import { PF2eHudSidebarSpells } from "../sidebar/spells";
 import { BaseActorContext, BaseActorRenderOptions, PF2eHudBaseActor } from "./actor";
 
-const CLOSE_SETTINGS = ["closeOnSendToChat", "closeOnSpell"] as const;
+const CLOSE_SETTINGS = ["closeOnSendToChat", "closeOnSpell", "closeOnSkill"] as const;
 
 function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(constructor: C) {
     abstract class PF2eHudAdvanced extends constructor {
@@ -129,6 +129,8 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
                     return "closeOnSpell";
                 case "send-to-chat":
                     return "closeOnSendToChat";
+                case "roll-skill":
+                    return "closeOnSkill";
             }
         }
 

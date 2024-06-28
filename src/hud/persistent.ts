@@ -149,6 +149,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             "consumableShortcut",
             "closeOnSendToChat",
             "closeOnSpell",
+            "closeOnSkill",
             "shiftEffects",
         ];
     }

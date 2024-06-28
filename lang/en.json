@@ -131,6 +131,10 @@
                 "closeOnSendToChat": {
                     "name": "Close on Send to Chat",
                     "hint": "Should the HUD/sidebar be closed when sending an item to chat."
+                },
+                "closeOnSkill": {
+                    "name": "Close on Skill Roll",
+                    "hint": "Should the HUD/sidebar be closed when rolling a skill."
                 }
             },
             "persistent": {
@@ -138,6 +142,10 @@
                 "noflash": {
                     "name": "Disable Flash",
                     "hint": "Disables the portrait flash effect when selecting a token linked to the currently set persistent actor."
+                },
+                "closeOnSkill": {
+                    "name": "Close Sidebar on Skill Roll",
+                    "hint": "Should the sidebar be closed when rolling a skill."
                 },
                 "closeOnSpell": {
                     "name": "Close Sidebar on Spell Cast",

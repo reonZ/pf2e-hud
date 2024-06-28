@@ -1,0 +1,7 @@
+{{#each skills as |skill|}}
+<header>
+    <a data-action="roll-skill" data-slug="{{skill.slug}}">
+        {{signedInteger skill.mod}} {{skill.label}}
+    </a>
+</header>
+{{/each}}

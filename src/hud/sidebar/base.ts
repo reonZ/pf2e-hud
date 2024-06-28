@@ -444,7 +444,7 @@ type SidebarRenderOptions = ApplicationRenderOptions & {
 
 type SidebarName = (typeof SIDEBARS)[number]["type"];
 
-type SidebarEvent = "cast-spell";
+type SidebarEvent = "cast-spell" | "roll-skill";
 
 type SidebarMenu = {
     type: SidebarName;

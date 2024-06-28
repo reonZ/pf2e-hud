@@ -65,6 +65,7 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
             "closeAllOnCLick",
             "closeOnSendToChat",
             "closeOnSpell",
+            "closeOnSkill",
         ];
     }
 
@@ -455,7 +456,6 @@ type TokenSettings = BaseTokenSettings &
     SidebarSettings & {
         scaleDimensions: boolean;
         mode: "exploded" | "left" | "right";
-        multiColumns: boolean;
         closeAllOnCLick: boolean;
     };
 
