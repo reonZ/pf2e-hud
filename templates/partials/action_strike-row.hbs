@@ -49,3 +49,7 @@
     {{!-- end if damage --}}
     {{/if}}
 </div>
+{{!-- damage types --}}
+{{#if (and item.dealsDamage (or doubleBarrel versatileOptions))}}
+{{> (@root.partial 'strike_versatiles') this=this}}
+{{/if}}

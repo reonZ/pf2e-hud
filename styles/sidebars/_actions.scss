@@ -38,7 +38,8 @@
         }
 
         .variants {
-            &.controls {
+            &.controls,
+            &.versatiles {
                 margin-left: calc(var(--category-width) + var(--variant-gap));
             }
         }

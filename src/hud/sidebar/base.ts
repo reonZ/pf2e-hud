@@ -94,9 +94,10 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         return [
             "item_image",
             "strike_category",
+            "strike_versatiles",
+            "strike_auxiliaries",
             "action_blast-row",
             "action_strike-row",
-            "action_auxiliaries",
         ];
     }
 
