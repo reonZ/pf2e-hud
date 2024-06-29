@@ -1,31 +1,37 @@
 $panel-gap: 5px;
 
 [id^="pf2e-hud"] {
+    --icon-width: 1.4em;
+    --inline-gap: 0.2em;
+    --section-gap: 0.1em 0.4em;
+    --interface-margin: var(--panel-gap);
+
     --outer-background: url("../../../ui/denim075.png") repeat #4d4d4d;
     --outer-box-shadow: 0 0 20px var(--color-shadow-dark);
     --outer-border-width: 1px;
     --outer-border: var(--outer-border-width) solid var(--color-border-dark);
     --outer-border-radius: 4px;
+
+    --panel-gap: #{$panel-gap};
+    --panel-padding-block: 0.2em;
+    --panel-padding-inline: 0.3em;
+
+    --hr-color: #ffffff4a;
+    --hr-margin: 0.2em;
+    --hr-spacing: 0;
+
     --input-width: 2.4em;
     --input-width-small: 1.8em;
     --input-equivalent-width: 2.2em;
     --input-background: rgb(255 255 255 / 8%);
-    --icon-width: 1.4em;
+
     --color: #f1f1f1;
     --color-alt: #cbcbc3;
+    --color-accent: #c54c4c;
     --color-highlight: #ffffff;
     --color-active: #db2828;
     --color-reversed: black;
     --color-disabled: var(--color-text-dark-5);
-    --inline-gap: 0.2em;
-    --hr-color: #ffffff4a;
-    --hr-margin: 0.2em;
-    --section-gap: 0.1em 0.4em;
-    --panel-gap: #{$panel-gap};
-    --panel-padding-block: 0.2em;
-    --panel-padding-inline: 0.3em;
-    --interface-margin: var(--panel-gap);
-    --hr-spacing: 0;
 
     &.app,
     .app {

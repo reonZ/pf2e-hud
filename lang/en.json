@@ -323,13 +323,17 @@
                 }
             },
             "skills": {
-                "title": "Skills"
+                "title": "Skills",
+                "roll": "Roll: {name}"
             },
             "extras": {
                 "title": "Extras"
             }
         },
         "leftClick": "[Left Click]",
-        "rightClick": "[Right Click]"
+        "rightClick": "[Right Click]",
+        "actions": {
+            "borrowArcaneSpell": "Borrow an Arcane Spell"
+        }
     }
 }

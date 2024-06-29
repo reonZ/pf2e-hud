@@ -1,4 +1,12 @@
-import { addListenerAll, elementDataset, hasItemWithSourceId } from "foundry-pf2e";
+import {
+    dataToDatasetString,
+    elementDataset,
+    hasItemWithSourceId,
+    htmlClosest,
+    isInstanceOf,
+    unownedItemtoMessage,
+} from "foundry-pf2e";
+import { PF2eHudItemPopup } from "../popup/item";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 
 const BON_MOT_UUID = "Compendium.pf2e.feats-srd.Item.0GF2j54roPFIDmXf";
@@ -10,21 +18,25 @@ const SHARED = {
         uuid: "Compendium.pf2e.actionspf2e.Item.1OagaWtBpVXExToo",
     },
     "decipher-writing": {
+        trained: true,
         uuid: "Compendium.pf2e.actionspf2e.Item.d9gbpiQjChYDYA2L",
     },
     "identify-magic": {
+        trained: true,
         uuid: "Compendium.pf2e.actionspf2e.Item.eReSHVEPCsdkSL4G",
     },
     "learn-a-spell": {
+        trained: true,
         uuid: "Compendium.pf2e.actionspf2e.Item.Q5iIYCFdqJFM31GW",
     },
     earnIncome: {
+        trained: true,
         uuid: "Compendium.pf2e.actionspf2e.Item.QyzlsLrqM0EEwd7j",
     },
     subsist: {
         uuid: "Compendium.pf2e.actionspf2e.Item.49y9Ec4bDii8pcD3",
     },
-};
+} satisfies Record<string, Omit<RawSkillAction, "id">>;
 
 const SKILLS: RawSkill[] = [
     {
@@ -40,25 +52,27 @@ const SKILLS: RawSkill[] = [
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.21WIfSu7Xd7uKqV8",
             },
-        ],
-        trained: [
             {
                 id: "maneuver-in-flight",
+                trained: true,
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.Qf1ylAbdVi1rkc8M",
             },
             {
                 id: "squeeze",
+                trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.kMcV8e5EZUxa6evt",
             },
         ],
     },
     {
         slug: "arcana",
-        actions: ["recall-knowledge"],
-        trained: [
+        actions: [
+            "recall-knowledge",
             {
                 id: "borrow-arcane-spell",
+                trained: true,
+                label: "pf2e-hud.actions.borrowArcaneSpell",
                 uuid: "Compendium.pf2e.actionspf2e.Item.OizxuPb44g3eHPFh",
             },
             "decipher-writing",
@@ -123,13 +137,12 @@ const SKILLS: RawSkill[] = [
                 agile: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.ge56Lu1xXVFYUnLP",
             },
-        ],
-        trained: [
             {
                 id: "disarm",
                 cost: 1,
                 map: true,
                 agile: true,
+                trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.Dt6B1slsBy8ipJu9",
             },
         ],
@@ -142,15 +155,15 @@ const SKILLS: RawSkill[] = [
                 id: "repair",
                 uuid: "Compendium.pf2e.actionspf2e.Item.bT3skovyLUtP22ME",
             },
-        ],
-        trained: [
             {
                 id: "craft",
+                trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.rmwa3OyhTZ2i2AHl",
             },
             "earnIncome",
             {
                 id: "identify-alchemy",
+                trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.Q4kdWVOf2ztIBFg1",
             },
         ],
@@ -172,11 +185,10 @@ const SKILLS: RawSkill[] = [
                 id: "lie",
                 uuid: "Compendium.pf2e.actionspf2e.Item.ewwCglB7XOPLUz72",
             },
-        ],
-        trained: [
             {
                 id: "feint",
                 cost: 1,
+                trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.QNAVeNKtHA0EUw4X",
             },
         ],
@@ -230,19 +242,21 @@ const SKILLS: RawSkill[] = [
                 uuid: "Compendium.pf2e.actionspf2e.Item.MHLuKy4nQO2Z4Am1",
             },
             "recall-knowledge",
-        ],
-        trained: [
             {
                 id: "treat-disease",
+                trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.TC7OcDa7JlWbqMaN",
             },
             {
                 id: "treat-poison",
                 cost: 1,
+                trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.KjoCEEmPGTeFE4hh",
             },
             {
                 id: "treatWounds",
+                label: "PF2E.Actions.TreatWounds.Label",
+                trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.1kGNdIIhuglAjIp9",
             },
         ],
@@ -256,10 +270,10 @@ const SKILLS: RawSkill[] = [
                 uuid: "Compendium.pf2e.actionspf2e.Item.q9nbyIF0PEBqMtYe",
             },
             "recall-knowledge",
-        ],
-        trained: [
             {
                 id: "treatWounds",
+                trained: true,
+                label: "PF2E.Actions.TreatWounds.Label",
                 condition: (actor) => hasItemWithSourceId(actor, NATURAL_MEDICINE_UUID, "feat"),
                 uuid: "Compendium.pf2e.feats-srd.Item.WC4xLBGmBsdOdHWu",
             },
@@ -269,8 +283,7 @@ const SKILLS: RawSkill[] = [
     },
     {
         slug: "occultism",
-        actions: ["recall-knowledge"],
-        trained: ["decipher-writing", "identify-magic", "learn-a-spell"],
+        actions: ["recall-knowledge", "decipher-writing", "identify-magic", "learn-a-spell"],
     },
     {
         slug: "performance",
@@ -282,29 +295,30 @@ const SKILLS: RawSkill[] = [
                     "acting",
                     "comedy",
                     "dance",
-                    "keyboards",
                     "oratory",
-                    "percussion",
                     "singing",
+                    "keyboards",
+                    "percussion",
                     "strings",
                     "winds",
                 ],
                 uuid: "Compendium.pf2e.actionspf2e.Item.EEDElIyin4z60PXx",
             },
+            "earnIncome",
         ],
-        trained: ["earnIncome"],
     },
     {
         slug: "religion",
-        actions: ["recall-knowledge"],
-        trained: ["decipher-writing", "identify-magic", "learn-a-spell"],
+        actions: ["recall-knowledge", "decipher-writing", "identify-magic", "learn-a-spell"],
     },
     {
         slug: "society",
-        actions: ["recall-knowledge", "subsist"],
-        trained: [
+        actions: [
+            "recall-knowledge",
+            "subsist",
             {
                 id: "create-forgery",
+                trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.ftG89SjTSa9DYDOD",
             },
             "decipher-writing",
@@ -338,14 +352,14 @@ const SKILLS: RawSkill[] = [
                 uuid: "Compendium.pf2e.actionspf2e.Item.fJImDBQfqfjKJOhk",
             },
             "subsist",
-        ],
-        trained: [
             {
                 id: "cover-tracks",
+                trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.SB7cMECVtE06kByk",
             },
             {
                 id: "track",
+                trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.EA5vuSgJfiHH7plD",
             },
         ],
@@ -363,21 +377,119 @@ const SKILLS: RawSkill[] = [
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.RDXXE7wMrSPCLv5k",
             },
-        ],
-        trained: [
             {
                 id: "disable-device",
                 cost: 2,
+                trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.cYdz2grcOcRt4jk6",
             },
             {
                 id: "pick-a-lock",
                 cost: 2,
+                trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.2EE4aF4SZpYf0R6H",
             },
         ],
     },
 ];
+
+let skillsCache: PreparedSkill[] | null = null;
+function getSkills(actor: ActorPF2e): FinalizedSkill[] {
+    skillsCache ??= SKILLS.map((raw) => {
+        const actions = raw.actions.map((rawAction) => {
+            const [id, action]: [string, Omit<RawSkillAction, "id">] =
+                typeof rawAction === "string"
+                    ? [rawAction, SHARED[rawAction]]
+                    : [rawAction.id, rawAction];
+
+            const actionKey = game.pf2e.system.sluggify(id, { camel: "bactrian" });
+            const label = game.i18n.localize(action.label ?? `PF2E.Actions.${actionKey}.Title`);
+
+            const variants: ActionVariant[] | MapVariant[] | undefined = (() => {
+                if (action.map) {
+                    return [
+                        {
+                            label: game.i18n.localize("PF2E.Roll.Normal"),
+                        },
+                        {
+                            map: 1,
+                            agile: action.agile,
+                            label: game.i18n.format("PF2E.MAPAbbreviationLabel", {
+                                penalty: action.agile ? -4 : -5,
+                            }),
+                        },
+                        {
+                            map: 2,
+                            agile: !!action.agile,
+                            label: game.i18n.format("PF2E.MAPAbbreviationLabel", {
+                                penalty: action.agile ? -8 : -10,
+                            }),
+                        },
+                    ] satisfies MapVariant[];
+                }
+
+                return action.variants?.map((slug) => {
+                    const variantKey = game.pf2e.system.sluggify(slug, { camel: "bactrian" });
+                    const label = game.i18n.localize(
+                        `PF2E.Actions.${actionKey}.${variantKey}.Title`
+                    );
+
+                    return {
+                        slug,
+                        label,
+                    } satisfies ActionVariant;
+                });
+            })();
+
+            const dataset = dataToDatasetString({
+                id,
+                skillSlug: raw.slug,
+                uuid: action.uuid,
+                option: action.rollOption,
+            });
+
+            return {
+                ...action,
+                variants,
+                id,
+                label,
+                dataset,
+            } satisfies PreparedSkillAction;
+        });
+
+        const label = game.i18n.localize(CONFIG.PF2E.skillList[raw.slug]);
+
+        return {
+            actions,
+            slug: raw.slug,
+            label,
+        } satisfies PreparedSkill;
+    });
+
+    return skillsCache.map((skill) => {
+        const { mod, rank, proficient } = actor.getStatistic(skill.slug)!;
+        const rankLabel = game.i18n.localize(`PF2E.ProficiencyLevel${rank ?? 0}`);
+
+        const actions = skill.actions
+            .filter((action) =>
+                typeof action.condition === "function" ? action.condition(actor) : true
+            )
+            .map((action) => {
+                return {
+                    ...action,
+                    proficient: proficient || !action.trained,
+                } satisfies FinalizedSkillAction;
+            });
+
+        return {
+            ...skill,
+            actions,
+            mod,
+            rankLabel,
+            rank: rank ?? 0,
+        } satisfies FinalizedSkill;
+    });
+}
 
 class PF2eHudSidebarSkills extends PF2eHudSidebar {
     get key(): SidebarName {
@@ -395,17 +507,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
     async _prepareContext(options: SidebarRenderOptions): Promise<SkillsContext> {
         const actor = this.actor;
         const parentData = await super._prepareContext(options);
-
-        const skills = SKILLS.map(({ slug, actions, trained }) => {
-            const { label, mod, rank } = actor.getStatistic(slug)!;
-
-            return {
-                mod,
-                rank: rank ?? 1,
-                slug,
-                label,
-            };
-        });
+        const skills = getSkills(actor);
 
         const data: SkillsContext = {
             ...parentData,
@@ -415,22 +517,156 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
         return data;
     }
 
-    _activateListeners(html: HTMLElement) {
+    async _onClickAction(event: PointerEvent, target: HTMLElement) {
         const actor = this.actor;
+        const action = target.dataset.action as ActionType;
 
-        addListenerAll(html, "[data-action='roll-skill']", (event, el) => {
-            const { slug } = elementDataset<SkillDataset>(el);
-            actor.getStatistic(slug)?.roll({ event });
-            this.parentHUD.closeIf("roll-skill");
-        });
+        const getActionData = () => {
+            const actionElement = htmlClosest(target, "[data-skillslug]")!;
+            return actionElement.dataset as SkillActionDataset;
+        };
+
+        const getActionItem = () => {
+            const { uuid } = getActionData();
+            return fromUuid(uuid);
+        };
+
+        switch (action) {
+            case "roll-skill": {
+                const { slug } = elementDataset<{ slug: SkillSlug }>(target);
+                actor.getStatistic(slug)?.roll({ event });
+                this.parentHUD.closeIf("roll-skill");
+                break;
+            }
+
+            case "action-description": {
+                const item = await getActionItem();
+                if (!isInstanceOf<ItemPF2e<ActorPF2e>>(item, "ItemPF2e")) return;
+
+                new PF2eHudItemPopup({
+                    actor,
+                    item,
+                    event,
+                }).render(true);
+
+                break;
+            }
+
+            case "send-action-to-chat": {
+                const item = await getActionItem();
+                if (!isInstanceOf(item, "ItemPF2e")) return;
+
+                unownedItemtoMessage(actor, item, event);
+                break;
+            }
+
+            case "roll-skill-action": {
+                const { id, skillslug, option } = getActionData();
+
+                rollSkillAction(actor, event, skillslug, id, {
+                    ...(target.dataset as SkillVariantDataset),
+                    option,
+                });
+
+                break;
+            }
+        }
     }
 }
 
-type SkillDataset = {
-    slug: SkillSlug;
+function rollSkillAction(
+    actor: ActorPF2e,
+    event: PointerEvent,
+    skillSlug: SkillSlug,
+    actionId: string,
+    { variant, agile, map, option }: SkillVariantDataset & { option?: string }
+) {
+    const action = game.pf2e.actions.get(actionId) ?? game.pf2e.actions[actionId];
+
+    const rollOptions = option ? [`action:${option}`] : undefined;
+    if (rollOptions && variant) rollOptions.push(`action:${option}:${variant}`);
+
+    const options = {
+        event,
+        actors: [actor],
+        variant,
+        rollOptions,
+        modifiers: [] as ModifierPF2e[],
+    } satisfies Partial<ActionVariantUseOptions>;
+
+    if (map) {
+        const isAgile = agile === "true";
+        const modifier = new game.pf2e.Modifier({
+            label: "PF2E.MultipleAttackPenalty",
+            modifier: map === "1" ? (isAgile ? -4 : -5) : isAgile ? -8 : -10,
+        });
+        options.modifiers.push(modifier);
+    }
+
+    if (!action) {
+        actor.getStatistic(skillSlug)?.roll(options);
+        return;
+    }
+
+    if (isInstanceOf<BaseAction>(action, "BaseAction")) {
+        (options as SingleCheckActionVariantData).statistic = skillSlug;
+        action.use(options);
+    } else if (action) {
+        (options as SkillActionOptions).skill = skillSlug;
+        action(options);
+    }
+}
+
+type ActionType = "roll-skill" | "roll-skill-action" | "action-description" | "send-action-to-chat";
+
+type SkillActionDataset = {
+    id: string;
+    uuid: string;
+    skillslug: SkillSlug;
+    option?: string;
+};
+
+type SkillVariantDataset = {
+    variant?: string;
+    map?: StringNumber;
+    agile?: StringBoolean;
 };
 
 type ShareSkill = keyof typeof SHARED;
+
+type FinalizedSkill = Omit<PreparedSkill, "actions"> & {
+    mod: number;
+    rank: ZeroToFour;
+    rankLabel: string;
+    actions: FinalizedSkillAction[];
+};
+
+type FinalizedSkillAction = PreparedSkillAction & {
+    proficient: boolean;
+};
+
+type PreparedSkill = {
+    slug: string;
+    label: string;
+    actions: PreparedSkillAction[];
+};
+
+type MapVariant = {
+    label: string;
+    map?: number;
+    agile?: boolean;
+};
+
+type ActionVariant = {
+    slug: string;
+    label: string;
+};
+
+type PreparedSkillAction = Omit<RawSkillAction, "variants"> & {
+    label: string;
+    variants: (MapVariant | ActionVariant)[] | undefined;
+    dataset: string;
+};
 
 type RawSkillAction = {
     id: string;
@@ -438,6 +674,8 @@ type RawSkillAction = {
     cost?: 1 | 2;
     map?: true;
     agile?: true;
+    label?: string;
+    trained?: true;
     variants?: string[];
     rollOption?: string;
     condition?: (actor: ActorPF2e) => boolean;
@@ -446,16 +684,10 @@ type RawSkillAction = {
 type RawSkill = {
     slug: SkillSlug;
     actions: (ShareSkill | RawSkillAction)[];
-    trained?: (ShareSkill | RawSkillAction)[];
 };
 
 type SkillsContext = SidebarContext & {
-    skills: {
-        slug: SkillSlug;
-        label: string;
-        mod: number;
-        rank: ZeroToFour;
-    }[];
+    skills: FinalizedSkill[];
 };
 
 export { PF2eHudSidebarSkills };

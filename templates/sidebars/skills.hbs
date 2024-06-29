@@ -1,7 +1,40 @@
 {{#each skills as |skill|}}
 <header>
     <a data-action="roll-skill" data-slug="{{skill.slug}}">
-        {{signedInteger skill.mod}} {{skill.label}}
+        <span>{{signedInteger skill.mod}}</span> {{skill.label}}
     </a>
+    <div class="rank {{skill.rank}}">
+        {{skill.rankLabel}}
+    </div>
 </header>
+{{#each skill.actions as |action|}}
+<div class="item{{#if action.proficient}} proficient{{/if}}" {{{action.dataset}}}>
+    <div class="skill">
+        <div class="name">
+            <a data-action="action-description">{{action.label}}</a>
+        </div>
+        <div class="controls">
+            {{#unless (or action.variants (not action.proficient))}}
+            <a data-action="roll-skill-action">
+                <i class="fa-solid fa-dice-d20"></i>
+            </a>
+            {{/unless}}
+            <a data-action="send-action-to-chat">
+                <i class="fa-solid fa-message"></i>
+            </a>
+        </div>
+    </div>
+    {{#if (and action.proficient action.variants)}}
+    <div class="variants">
+        {{#each action.variants as |variant|}}
+        <div class="variant" data-action="roll-skill-action" {{#if variant.slug}}
+            data-variant="{{variant.slug}}" {{/if}} {{#if variant.map}} data-map="{{variant.map}}"
+            {{/if}} {{#if variant.agile}} data-agile="{{variant.agile}}" {{/if}}>
+            {{variant.label}}
+        </div>
+        {{/each}}
+    </div>
+    {{/if}}
+</div>
+{{/each}}
 {{/each}}

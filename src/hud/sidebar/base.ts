@@ -117,8 +117,6 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         return htmlQuery(this.innerElement, ".item-list");
     }
 
-    abstract _activateListeners(html: HTMLElement): void;
-
     async _preFirstRender(
         context: ApplicationRenderContext,
         options: ApplicationRenderOptions
@@ -223,7 +221,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         }
 
         this.#activateListeners(this.#innerElement);
-        this._activateListeners(this.#innerElement);
+        this._activateListeners?.(this.#innerElement);
     }
 
     _onFirstRender(context: ApplicationRenderContext, options: SidebarRenderOptions) {
@@ -432,6 +430,7 @@ interface PF2eHudSidebar {
         baseDragData: Record<string, JSONValue>,
         item: Maybe<ItemPF2e<ActorPF2e>>
     ): Record<string, JSONValue> | undefined;
+    _activateListeners?(html: HTMLElement): void;
 }
 
 type SidebarContext = {

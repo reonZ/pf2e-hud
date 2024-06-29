@@ -1,4 +1,10 @@
-import { addListener, createHTMLElement, getRankLabel, htmlClosest } from "foundry-pf2e";
+import {
+    addListener,
+    createHTMLElement,
+    getRankLabel,
+    htmlClosest,
+    unownedItemtoMessage,
+} from "foundry-pf2e";
 import { PF2eHudPopup, PopupConfig } from "./base";
 
 class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
@@ -9,7 +15,9 @@ class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
     };
 
     static #sendToChat(this: PF2eHudItemPopup, event: PointerEvent, target: HTMLElement) {
-        this.item.toMessage(event);
+        this.item.actor
+            ? this.item.toMessage(event)
+            : unownedItemtoMessage(this.actor, this.item, event);
     }
 
     get title() {
