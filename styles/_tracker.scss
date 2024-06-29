@@ -181,12 +181,12 @@ $threat-extreme: red;
                     margin-right: -0.2em;
                     background-position: center;
                     background-repeat: no-repeat;
-                    background-image: url(../../../icons/svg/d20.svg);
+                    background-image: url("../../../icons/svg/d20.svg");
                 }
 
                 a.roll {
                     &:hover {
-                        background-image: url(../../../icons/svg/d20-highlight.svg);
+                        background-image: url("../../../icons/svg/d20-highlight.svg");
                     }
                 }
 

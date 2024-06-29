@@ -1,7 +1,7 @@
 $panel-gap: 5px;
 
 [id^="pf2e-hud"] {
-    --outer-background: url(../../../ui/denim075.png) repeat #4d4d4d;
+    --outer-background: url("../../../ui/denim075.png") repeat #4d4d4d;
     --outer-box-shadow: 0 0 20px var(--color-shadow-dark);
     --outer-border-width: 1px;
     --outer-border: var(--outer-border-width) solid var(--color-border-dark);
