@@ -1,3 +1,17 @@
+<div class="item action" data-item-uuid="{{follow.uuid}}">
+    <div class="image" data-action="send-to-chat">
+        <img src="systems/pf2e/icons/actions/Passive.webp">
+        <i class="fa-solid fa-message chat"></i>
+    </div>
+    <div class="name">
+        <a data-action="item-description">{{i18n 'follow'}}</a>
+    </div>
+    <div class="controls">
+        <a class="use" data-action="follow-the-expert">
+            <i class="fa-solid {{ifThen follow.active 'fa-xmark' 'fa-play'}}"></i>
+        </a>
+    </div>
+</div>
 {{#each skills as |skill|}}
 <header>
     <a data-action="roll-skill" data-slug="{{skill.slug}}">

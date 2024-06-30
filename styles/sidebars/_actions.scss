@@ -151,34 +151,6 @@
             }
         }
 
-        &.action {
-            --image-border-color: transparent;
-            --chat-icon-size: 1em;
-
-            height: 1.5em;
-            align-items: center;
-
-            .image {
-                img {
-                    background: var(--action-img-background);
-                }
-            }
-
-            .name {
-                flex: 1;
-            }
-
-            .controls {
-                display: flex;
-                align-items: center;
-                gap: 0.2em;
-            }
-
-            &:hover {
-                background: var(--action-highlight);
-            }
-        }
-
         &.attack {
             flex-direction: column;
         }

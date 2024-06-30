@@ -19,7 +19,7 @@
         }
     }
 
-    .item {
+    .item:not(.action) {
         flex-direction: column;
         height: unset;
 

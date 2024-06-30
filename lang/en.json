@@ -329,7 +329,8 @@
             "skills": {
                 "title": "Skills",
                 "roll": "Roll: {name}",
-                "proficient": "Proficient"
+                "proficient": "Proficient",
+                "follow": "Follow the Expert"
             },
             "extras": {
                 "title": "Extras"

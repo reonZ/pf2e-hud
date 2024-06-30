@@ -1,6 +1,7 @@
 import {
     dataToDatasetString,
     elementDataset,
+    getItemWithSourceId,
     getSetting,
     hasItemWithSourceId,
     htmlClosest,
@@ -8,8 +9,10 @@ import {
 } from "foundry-pf2e";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 
-const BON_MOT_UUID = "Compendium.pf2e.feats-srd.Item.0GF2j54roPFIDmXf";
-const NATURAL_MEDICINE_UUID = "Compendium.pf2e.feats-srd.Item.WC4xLBGmBsdOdHWu";
+const BON_MOT = "Compendium.pf2e.feats-srd.Item.0GF2j54roPFIDmXf";
+const NATURAL_MEDICINE = "Compendium.pf2e.feats-srd.Item.WC4xLBGmBsdOdHWu";
+const FOLLOW_THE_EXPERT = "Compendium.pf2e.actionspf2e.Item.tfa4Sh7wcxCEqL29";
+const FOLLOW_THE_EXPERT_EFFECT = "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3XWMkd3";
 
 const SHARED = {
     "recall-knowledge": {
@@ -198,7 +201,7 @@ const SKILLS: RawSkill[] = [
             {
                 id: "bonMot",
                 cost: 1,
-                condition: (actor) => hasItemWithSourceId(actor, BON_MOT_UUID, "feat"),
+                condition: (actor) => hasItemWithSourceId(actor, BON_MOT, "feat"),
                 uuid: "Compendium.pf2e.feats-srd.Item.0GF2j54roPFIDmXf",
             },
             {
@@ -273,7 +276,7 @@ const SKILLS: RawSkill[] = [
                 id: "treatWounds",
                 trained: true,
                 label: "PF2E.Actions.TreatWounds.Label",
-                condition: (actor) => hasItemWithSourceId(actor, NATURAL_MEDICINE_UUID, "feat"),
+                condition: (actor) => hasItemWithSourceId(actor, NATURAL_MEDICINE, "feat"),
                 uuid: "Compendium.pf2e.feats-srd.Item.WC4xLBGmBsdOdHWu",
             },
             "identify-magic",
@@ -518,10 +521,15 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
         const actor = this.actor;
         const parentData = await super._prepareContext(options);
         const skills = getSkills(actor);
+        const follow = {
+            uuid: FOLLOW_THE_EXPERT,
+            active: hasItemWithSourceId(actor, FOLLOW_THE_EXPERT_EFFECT, "effect"),
+        };
 
         const data: SkillsContext = {
             ...parentData,
             isCharacter: actor.isOfType("character"),
+            follow,
             skills,
         };
 
@@ -552,6 +560,20 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
                     ...(target.dataset as SkillVariantDataset),
                     option,
                 });
+
+                break;
+            }
+
+            case "follow-the-expert": {
+                const exist = getItemWithSourceId(actor, FOLLOW_THE_EXPERT_EFFECT, "effect");
+                if (exist) {
+                    return exist.delete();
+                }
+
+                const source = (await fromUuid<EffectPF2e>(FOLLOW_THE_EXPERT_EFFECT))?.toObject();
+                if (!source) return;
+
+                actor.createEmbeddedDocuments("Item", [source]);
 
                 break;
             }
@@ -602,7 +624,7 @@ function rollSkillAction(
     }
 }
 
-type ActionType = "roll-skill" | "roll-skill-action";
+type ActionType = "roll-skill" | "roll-skill-action" | "follow-the-expert";
 
 type SkillActionDataset = {
     id: string;
@@ -675,6 +697,10 @@ type RawSkill = {
 type SkillsContext = SidebarContext & {
     isCharacter: boolean;
     skills: FinalizedSkill[];
+    follow: {
+        uuid: string;
+        active: boolean;
+    };
 };
 
 export { PF2eHudSidebarSkills };
