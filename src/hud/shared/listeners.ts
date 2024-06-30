@@ -1,4 +1,13 @@
-import { R, addListener, addListenerAll, elementDataset, htmlClosest, setFlag } from "foundry-pf2e";
+import {
+    R,
+    addListener,
+    addListenerAll,
+    elementDataset,
+    htmlClosest,
+    isOwnedItem,
+    setFlag,
+    unownedItemtoMessage,
+} from "foundry-pf2e";
 import { getCoverEffect } from "./advanced";
 import { getItemFromElement } from "./base";
 
@@ -144,10 +153,12 @@ function addSendItemToChatListeners(
     onSendToChat?: () => void
 ) {
     addListenerAll(html, "[data-action='send-to-chat']", async (event, el) => {
-        const item = await getItemFromElement(actor, el);
+        const item = await getItemFromElement(el, actor);
         if (!item) return;
 
-        if (item.isOfType("spell")) {
+        if (!isOwnedItem(item)) {
+            unownedItemtoMessage(actor, item, event);
+        } else if (item.isOfType("spell")) {
             const castRank = Number(htmlClosest(el, "[data-cast-rank]")?.dataset.castRank ?? NaN);
             item.toMessage(event, { data: { castRank } });
         } else {

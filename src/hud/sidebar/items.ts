@@ -53,7 +53,7 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
 
         addListenerAll(html, "[data-action]:not(disabled)", async (event, el) => {
             const action = el.dataset.action as ItemsActionEvent;
-            const item = await getItemFromElement(actor, el);
+            const item = await getItemFromElement(el, actor);
             if (!item?.isOfType("physical")) return;
 
             switch (action) {

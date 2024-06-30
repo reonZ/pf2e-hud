@@ -3,6 +3,7 @@ import {
     createHTMLElement,
     getRankLabel,
     htmlClosest,
+    isOwnedItem,
     unownedItemtoMessage,
 } from "foundry-pf2e";
 import { PF2eHudPopup, PopupConfig } from "./base";
@@ -78,7 +79,7 @@ class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
     _activateListeners(html: HTMLElement): void {
         const item = this.item;
 
-        if (item.isOfType("consumable")) {
+        if (isOwnedItem(item) && item.isOfType("consumable")) {
             addListener(html, "[data-action='consume-item'", () => {
                 item.consume();
                 this.close();
@@ -88,7 +89,7 @@ class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
 }
 
 type ItemPopupConfig = PopupConfig & {
-    item: ItemPF2e<ActorPF2e>;
+    item: ItemPF2e;
 };
 
 export { PF2eHudItemPopup };

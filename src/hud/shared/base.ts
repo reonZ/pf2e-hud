@@ -1,4 +1,4 @@
-import { R, getSetting, htmlClosest, signedInteger } from "foundry-pf2e";
+import { R, getSetting, htmlClosest, isInstanceOf, signedInteger } from "foundry-pf2e";
 
 const IWR_DATA = [
     { type: "immunities", icon: "fa-solid fa-ankh", label: "PF2E.ImmunitiesLabel" },
@@ -120,19 +120,15 @@ function getStatistics(actor: ActorPF2e) {
     );
 }
 
-async function getItemFromElement(
-    actor: ActorPF2e,
-    el: HTMLElement
-): Promise<ItemPF2e<ActorPF2e> | null> {
+async function getItemFromElement(el: HTMLElement, actor: ActorPF2e): Promise<ItemPF2e | null> {
     const element = htmlClosest(el, ".item");
     if (!element) return null;
 
     const { parentId, itemId, itemUuid, itemType, actionIndex, entryId } = element.dataset;
-    const isFormula = !!itemUuid && "isFormula" in element.dataset;
 
     const item = parentId
         ? actor.inventory.get(parentId, { strict: true }).subitems.get(itemId, { strict: true })
-        : isFormula
+        : itemUuid
         ? await fromUuid<ItemPF2e>(itemUuid)
         : entryId
         ? actor.spellcasting?.collections
@@ -144,7 +140,7 @@ async function getItemFromElement(
         ? actor.system.actions?.[Number(actionIndex)].item ?? null
         : actor.items.get(itemId ?? "") ?? null;
 
-    return item instanceof Item && item.actor ? (item as ItemPF2e<ActorPF2e>) : null;
+    return isInstanceOf(item, "ItemPF2e") ? item : null;
 }
 
 type StatsStatistic = {

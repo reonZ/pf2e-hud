@@ -7,7 +7,6 @@ import {
     hasSpells,
     htmlClosest,
     htmlQuery,
-    isOwnedItem,
     render,
     templateLocalize,
     templatePath,
@@ -44,7 +43,7 @@ const SIDEBARS = [
     {
         type: "skills",
         icon: "fa-solid fa-hand",
-        disabled: (actor: ActorPF2e) => !actor.isOfType("character", "npc"),
+        disabled: (actor: ActorPF2e) => !actor.isOfType("creature"),
     },
     {
         type: "extras",
@@ -324,7 +323,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
             if (!event.dataTransfer) return;
 
             const { label, domain, option } = el.dataset;
-            const item = await getItemFromElement(this.actor, el);
+            const item = await getItemFromElement(el, this.actor);
 
             const imgSrc = el.querySelector<HTMLImageElement>(".drag-img")?.src ?? item?.img ?? "";
             const draggable = createHTMLElement("div", {
@@ -360,8 +359,8 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
         addListenerAll(html, "[data-action='item-description']", async (event, el) => {
             const actor = this.actor;
-            const item = await getItemFromElement(actor, el);
-            if (!isOwnedItem(item)) return;
+            const item = await getItemFromElement(el, actor);
+            if (!item) return;
             new PF2eHudItemPopup({ actor, item, event }).render(true);
         });
 
@@ -428,7 +427,7 @@ interface PF2eHudSidebar {
     _getDragData?(
         dataset: DOMStringMap,
         baseDragData: Record<string, JSONValue>,
-        item: Maybe<ItemPF2e<ActorPF2e>>
+        item: Maybe<ItemPF2e>
     ): Record<string, JSONValue> | undefined;
     _activateListeners?(html: HTMLElement): void;
 }

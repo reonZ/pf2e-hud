@@ -17,7 +17,7 @@
 <div class="item{{#if action.proficient}} proficient{{/if}}" {{{action.dataset}}}>
     <div class="skill">
         <div class="name">
-            <a data-action="action-description">{{action.label}}</a>
+            <a data-action="item-description">{{action.label}}</a>
         </div>
         <div class="controls">
             {{#unless (or action.variants (not action.proficient))}}
@@ -25,7 +25,7 @@
                 <i class="fa-solid fa-dice-d20"></i>
             </a>
             {{/unless}}
-            <a data-action="send-action-to-chat">
+            <a data-action="send-to-chat">
                 <i class="fa-solid fa-message"></i>
             </a>
         </div>

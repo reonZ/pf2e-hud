@@ -5,9 +5,7 @@ import {
     hasItemWithSourceId,
     htmlClosest,
     isInstanceOf,
-    unownedItemtoMessage,
 } from "foundry-pf2e";
-import { PF2eHudItemPopup } from "../popup/item";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 
 const BON_MOT_UUID = "Compendium.pf2e.feats-srd.Item.0GF2j54roPFIDmXf";
@@ -442,10 +440,10 @@ function getSkills(actor: ActorPF2e): FinalizedSkill[] {
                 });
             })();
 
-            const dataset = dataToDatasetString({
+            const dataset = dataToDatasetString<keyof SkillActionDataset>({
                 id,
                 skillSlug: raw.slug,
-                uuid: action.uuid,
+                itemUuid: action.uuid,
                 option: action.rollOption,
             });
 
@@ -535,13 +533,8 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
         const action = target.dataset.action as ActionType;
 
         const getActionData = () => {
-            const actionElement = htmlClosest(target, "[data-skillslug]")!;
+            const actionElement = htmlClosest(target, "[data-skill-slug]")!;
             return actionElement.dataset as SkillActionDataset;
-        };
-
-        const getActionItem = () => {
-            const { uuid } = getActionData();
-            return fromUuid(uuid);
         };
 
         switch (action) {
@@ -552,31 +545,10 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
                 break;
             }
 
-            case "action-description": {
-                const item = await getActionItem();
-                if (!isInstanceOf<ItemPF2e<ActorPF2e>>(item, "ItemPF2e")) return;
-
-                new PF2eHudItemPopup({
-                    actor,
-                    item,
-                    event,
-                }).render(true);
-
-                break;
-            }
-
-            case "send-action-to-chat": {
-                const item = await getActionItem();
-                if (!isInstanceOf(item, "ItemPF2e")) return;
-
-                unownedItemtoMessage(actor, item, event);
-                break;
-            }
-
             case "roll-skill-action": {
-                const { id, skillslug, option } = getActionData();
+                const { id, skillSlug, option } = getActionData();
 
-                rollSkillAction(actor, event, skillslug, id, {
+                rollSkillAction(actor, event, skillSlug, id, {
                     ...(target.dataset as SkillVariantDataset),
                     option,
                 });
@@ -630,12 +602,12 @@ function rollSkillAction(
     }
 }
 
-type ActionType = "roll-skill" | "roll-skill-action" | "action-description" | "send-action-to-chat";
+type ActionType = "roll-skill" | "roll-skill-action";
 
 type SkillActionDataset = {
     id: string;
-    uuid: string;
-    skillslug: SkillSlug;
+    itemUuid: string;
+    skillSlug: SkillSlug;
     option?: string;
 };
 

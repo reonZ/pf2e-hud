@@ -10,6 +10,7 @@ import {
     getActiveModule,
     htmlClosest,
     htmlQuery,
+    isOwnedItem,
     localize,
     objectHasKey,
     tupleHasValue,
@@ -238,8 +239,8 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
 
             switch (action) {
                 case "toggle-trait": {
-                    const item = await getItemFromElement(actor, button);
-                    if (!item?.isOfType("action", "feat")) return;
+                    const item = await getItemFromElement(button, actor);
+                    if (!isOwnedItem(item) || !item.isOfType("action", "feat")) return;
 
                     const trait = button.dataset.trait as "mindshift";
                     const toggle = item.system.traits.toggles[trait];
