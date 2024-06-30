@@ -29,6 +29,10 @@
                 "name": "Popup on Cursor",
                 "hint": "The module popup will be centered on the position of the cursor when it is first rendered (instead of showing up in the center of the viewport)."
             },
+            "hideUntrained": {
+                "name": "Hide Untrained",
+                "hint": "Should skill actions be hidden from the sidebar if the character isn't proficient with them."
+            },
             "shared": {
                 "enabled": {
                     "name": "Enabled",
@@ -214,7 +218,7 @@
                 },
                 "textureScaling": {
                     "name": "Texture Scaling",
-                    "hint": "Inverts scale the combatant's image based on the token texture scaling."
+                    "hint": "Invert scales the combatant's image based on the token texture scaling."
                 }
             }
         },

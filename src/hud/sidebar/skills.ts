@@ -1,6 +1,7 @@
 import {
     dataToDatasetString,
     elementDataset,
+    getSetting,
     hasItemWithSourceId,
     htmlClosest,
     isInstanceOf,
@@ -466,13 +467,17 @@ function getSkills(actor: ActorPF2e): FinalizedSkill[] {
         } satisfies PreparedSkill;
     });
 
+    const hideUntrained = getSetting("hideUntrained");
+
     return skillsCache.map((skill) => {
         const { mod, rank, proficient } = actor.getStatistic(skill.slug)!;
         const rankLabel = game.i18n.localize(`PF2E.ProficiencyLevel${rank ?? 0}`);
 
         const actions = skill.actions
-            .filter((action) =>
-                typeof action.condition === "function" ? action.condition(actor) : true
+            .filter(
+                (action) =>
+                    (!action.trained || !hideUntrained) &&
+                    (typeof action.condition === "function" ? action.condition(actor) : true)
             )
             .map((action) => {
                 return {

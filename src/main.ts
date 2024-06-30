@@ -61,6 +61,17 @@ Hooks.once("setup", () => {
         scope: "client",
     });
 
+    registerSetting({
+        key: "hideUntrained",
+        type: Boolean,
+        default: false,
+        scope: "client",
+        onChange: () => {
+            HUDS.token.sidebar?.render();
+            HUDS.persistent.sidebar?.render();
+        },
+    });
+
     for (const hud of huds) {
         const currentOffset = settings.length;
         const orphanSettings: SettingOptions[] = [];
