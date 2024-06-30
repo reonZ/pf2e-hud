@@ -507,7 +507,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
         baseDragData: Record<string, JSONValue>,
         item: Maybe<ItemPF2e<ActorPF2e>>
     ) {
-        const { itemUuid, id, skillSlug } = elementDataset<SkillActionDataset>(
+        const { itemUuid, id, skillSlug, option } = elementDataset<SkillActionDataset>(
             htmlClosest(target, ".item")!
         );
 
@@ -519,6 +519,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
             actorLess: true,
             actionId: id,
             skillSlug,
+            option,
         };
     }
 
@@ -560,10 +561,13 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
 
             case "roll-skill-action": {
                 const { id, skillSlug, option } = getActionData();
+                const { agile, map, variant } = target.dataset as SkillVariantDataset;
 
                 rollSkillAction(actor, event, skillSlug, id, {
-                    ...(target.dataset as SkillVariantDataset),
                     option,
+                    variant,
+                    map: map ? (Number(map) as 1 | 2) : undefined,
+                    agile: agile === "true",
                 });
 
                 break;
@@ -588,10 +592,15 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
 
 function rollSkillAction(
     actor: ActorPF2e,
-    event: PointerEvent,
+    event: MouseEvent,
     skillSlug: SkillSlug,
     actionId: string,
-    { variant, agile, map, option }: SkillVariantDataset & { option?: string }
+    {
+        variant,
+        agile = false,
+        map,
+        option,
+    }: { option?: string; map?: 1 | 2; variant?: string; agile?: boolean }
 ) {
     const action = game.pf2e.actions.get(actionId) ?? game.pf2e.actions[actionId];
 
@@ -609,7 +618,7 @@ function rollSkillAction(
     if (map) {
         const modifier = new game.pf2e.Modifier({
             label: "PF2E.MultipleAttackPenalty",
-            modifier: getMapValue(map, agile === "true"),
+            modifier: getMapValue(map, agile),
         });
         options.modifiers.push(modifier);
     }
@@ -634,7 +643,7 @@ function getSkillVariantName(actionId: string, variant: string) {
     return game.i18n.localize(`PF2E.Actions.${actionKey}.${variantKey}.Title`);
 }
 
-function getMapValue(map: 1 | 2 | "1" | "2", agile: boolean) {
+function getMapValue(map: 1 | 2, agile: boolean) {
     map = Number(map) as 1 | 2;
     return map === 1 ? (agile ? -4 : -5) : agile ? -8 : -10;
 }
@@ -725,5 +734,5 @@ type SkillsContext = SidebarContext & {
     };
 };
 
-export { PF2eHudSidebarSkills, getMapLabel, getSkillVariantName };
+export { PF2eHudSidebarSkills, getMapLabel, getSkillVariantName, rollSkillAction };
 export type { SkillVariantDataset };

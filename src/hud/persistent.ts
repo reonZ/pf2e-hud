@@ -68,7 +68,12 @@ import {
     variantLabel,
 } from "./sidebar/actions";
 import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
-import { SkillVariantDataset, getMapLabel, getSkillVariantName } from "./sidebar/skills";
+import {
+    SkillVariantDataset,
+    getMapLabel,
+    getSkillVariantName,
+    rollSkillAction,
+} from "./sidebar/skills";
 import { getAnnotationTooltip } from "./sidebar/spells";
 
 const ROMAN_RANKS = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"] as const;
@@ -1173,6 +1178,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         }
 
         switch (shortcut.type) {
+            case "skill": {
+                if (!shortcut.item) return;
+                rollSkillAction(actor, event, shortcut.skillSlug, shortcut.actionId, shortcut);
+                break;
+            }
+
             case "consumable": {
                 const item = shortcut.item;
                 if (!item) return;
@@ -1430,9 +1441,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         itemUuid: dropData.uuid,
                         actionId: dropData.actionId,
                         skillSlug: dropData.skillSlug,
-                        map: dropData.map ? (Number(dropData.map) as 1 | 2) : null,
+                        map: dropData.map ? (Number(dropData.map) as 1 | 2) : undefined,
                         agile: dropData.agile === "true",
-                        variant: dropData.variant ?? null,
+                        variant: dropData.variant ?? undefined,
+                        option: dropData.option,
                     } satisfies SkillShortcutData;
                 } else if (item.isOfType("action", "feat")) {
                     newShortcut = {
@@ -2244,9 +2256,10 @@ type SkillShortcutData = ShortcutDataBase<"skill"> & {
     actionId: string;
     skillSlug: SkillSlug;
     itemUuid: string;
-    variant: string | null;
-    map: 1 | 2 | null;
+    variant: string | undefined;
+    map: 1 | 2 | undefined;
     agile: boolean;
+    option: string | undefined;
 };
 
 type ActionShortcutData = ShortcutDataBase<"action"> & {
@@ -2475,6 +2488,7 @@ type SkillDropData = Partial<SkillVariantDataset> & {
     actionId?: string;
     skillSlug?: SkillSlug;
     actorLess?: StringBoolean;
+    option?: string;
 };
 
 type AutoSetSetting = "disabled" | "select" | "combat";
