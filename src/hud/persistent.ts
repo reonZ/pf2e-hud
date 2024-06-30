@@ -1793,6 +1793,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 const name = item?.name ?? shortcutData.name;
                 const frequency = item ? getActionFrequency(item) : undefined;
                 const disabled = !item || frequency?.value === 0;
+
                 const isActive = (() => {
                     const effectUUID = shortcutData.effectUuid;
                     if (!item || !effectUUID) return null;
@@ -1801,6 +1802,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     if (!toolbelt?.api.stances.isValidStance(item)) return null;
 
                     return hasItemWithSourceId(actor, effectUUID, "effect");
+                })();
+
+                const hasEffect = (() => {
+                    if (!item || isActive !== null || !item.system.selfEffect) return false;
+                    return hasItemWithSourceId(actor, item.system.selfEffect.uuid, "effect");
                 })();
 
                 return returnShortcut({
@@ -1812,6 +1818,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     img: item ? getActionImg(item) : shortcutData.img,
                     name: frequency ? `${name} - ${frequency.label}` : name,
                     frequency,
+                    hasEffect,
                     cost: getCost(item?.actionCost),
                 } satisfies ActionShortcut as T);
             }
@@ -2310,6 +2317,7 @@ type ActionShortcut = BaseShortCut<"action"> &
         item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e> | undefined;
         cost: CostValue;
         isActive: boolean | null;
+        hasEffect: boolean;
         frequency: Maybe<{
             max: number;
             value: number;

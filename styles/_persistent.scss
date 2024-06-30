@@ -402,9 +402,19 @@ $bottom-width: 542px;
                 white-space: nowrap;
                 overflow: hidden;
 
-                span {
+                > span {
                     font-size: 0.8em;
                     margin-top: -0.1em;
+                }
+            }
+
+            .effect {
+                @include bottom-left();
+
+                padding: 0.1em;
+
+                i {
+                    font-size: 0.7em;
                 }
             }
 
