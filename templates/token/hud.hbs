@@ -45,7 +45,9 @@
 {{#unless isArmy}}
 <div class="panel bottom">
     {{> (partial 'stats_infos')}}
+    {{#unless isHazard}}
     <hr>
     {{> (partial 'sidebars')}}
+    {{/unless}}
 </div>
 {{/unless}}
