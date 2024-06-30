@@ -5,12 +5,17 @@
     {{#unless isCombatant}}
     <div class="double extras">
         {{> (partial 'stats_level')}}
-        {{#if (or isVehicle isHazard)}}
+        {{#if isVehicle}}
         {{> (partial 'stats_statistics')}}
         {{else if isFamiliar}}
         {{> (partial 'stats_speed')}}
         {{/if}}
     </div>
+    {{#if isHazard}}
+    <div class="triple">
+        {{> (partial 'stats_statistics')}}
+    </div>
+    {{/if}}
     {{/unless}}
 </div>
 
@@ -37,10 +42,10 @@
 </div>
 {{/if}}
 
+{{#unless isArmy}}
 <div class="panel bottom">
-    {{#unless isArmy}}
     {{> (partial 'stats_infos')}}
     <hr>
-    {{/unless}}
     {{> (partial 'sidebars')}}
 </div>
+{{/unless}}
