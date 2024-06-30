@@ -9,6 +9,8 @@
         {{> (partial 'stats_statistics')}}
         {{else if isFamiliar}}
         {{> (partial 'stats_speed')}}
+        {{else if (or isHazard isArmy)}}
+        {{> (partial 'sidebars')}}
         {{/if}}
     </div>
     {{#if isHazard}}

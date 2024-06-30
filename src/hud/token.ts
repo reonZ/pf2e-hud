@@ -223,12 +223,16 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
         const statsHeader = getStatsHeader(actor);
         if (!statsHeader.health) return parentData;
 
+        const sidebars = actor.isOfType("hazard", "army")
+            ? getSidebars(actor).slice(0, 1)
+            : getSidebars(actor);
+
         const data: TokenContext = {
             ...parentData,
             ...statsHeader,
             ...getAdvancedStats(actor),
             ...getStatsHeaderExtras(actor),
-            sidebars: getSidebars(actor),
+            sidebars,
             name: this.token.document.name,
         };
 
@@ -339,6 +343,8 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
     }
 
     async _renderSidebarHTML(innerElement: HTMLElement, sidebar: SidebarName) {
+        if (this.actor.isOfType("hazard", "army")) return;
+
         const sidebarsElement = createHTMLElement("div", {
             classes: ["sidebars"],
             innerHTML: await render("partials/sidebars", {
