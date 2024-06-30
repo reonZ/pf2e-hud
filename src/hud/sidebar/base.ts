@@ -44,7 +44,7 @@ const SIDEBARS = [
     {
         type: "skills",
         icon: "fa-solid fa-hand",
-        disabled: (actor: ActorPF2e) => false,
+        disabled: (actor: ActorPF2e) => !actor.isOfType("character", "npc"),
     },
     {
         type: "extras",
