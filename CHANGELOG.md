@@ -1,3 +1,28 @@
+# 0.13.0
+
+-   added a `Send to Chat` button to the item popup
+-   the `Skills` sidebar icon is now disabled for non-creature actors
+-   the `perception` and `stealth` rolls from the main HUD parts now have the `secret` roll option
+-   strike versatile damage icons are now displayed directly bellow the variant row they are associated with
+    -   this also fixes not seeing versatile damage types for anything but the first variant
+-   `Persistent HUD`:
+    -   added support for skill action shortcuts
+    -   shortcuts are now filled by columns instead of by rows
+    -   you can now manually set a persistent actor even when using the `Auto-Set Actor` setting (description of the setting was updated)
+    -   removed the sidebars arrow
+    -   fixed strike shortcuts linked to virtual items (e.g. strikes from stances) not being retrieved when re-created
+    -   fixed issue with portrait url using escapable characters
+-   `Sidebars`:
+    -   added a new `Hide Untrained` setting to hide skill actions that require a character to be proficient when they are not
+    -   added skill actions and their variants to the skills sidebar (lore skills are on standby for now)
+    -   added `Follow the Expert` to the skills sidebar
+    -   improved the margins of the differnt headers and items
+-   `Token HUD`:
+    -   added the attack sidebar icon to the `Hazard` and `Army` HUD next to level (though the army one is unusable for now)
+    -   removed sidebars panel from `Hazard` actors
+    -   disabled the skill sidebar icon for non-creature actors
+    -   fixed styling the hazard HUD
+
 # 0.12.0
 
 -   raised minimum foundry version to `12.328`
