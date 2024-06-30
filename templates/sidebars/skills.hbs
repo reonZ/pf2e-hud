@@ -3,9 +3,15 @@
     <a data-action="roll-skill" data-slug="{{skill.slug}}">
         <span>{{signedInteger skill.mod}}</span> {{skill.label}}
     </a>
+    {{#if @root.isCharacter}}
     <div class="rank {{skill.rank}}">
         {{skill.rankLabel}}
     </div>
+    {{else if skill.proficient}}
+    <div class="rank 1">
+        {{@root.i18n 'proficient'}}
+    </div>
+    {{/if}}
 </header>
 {{#each skill.actions as |action|}}
 <div class="item{{#if action.proficient}} proficient{{/if}}" {{{action.dataset}}}>

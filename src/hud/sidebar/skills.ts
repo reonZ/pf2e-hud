@@ -467,6 +467,7 @@ function getSkills(actor: ActorPF2e): FinalizedSkill[] {
         } satisfies PreparedSkill;
     });
 
+    const isCharacter = actor.isOfType("character");
     const hideUntrained = getSetting("hideUntrained");
 
     return skillsCache.map((skill) => {
@@ -474,15 +475,20 @@ function getSkills(actor: ActorPF2e): FinalizedSkill[] {
         const rankLabel = game.i18n.localize(`PF2E.ProficiencyLevel${rank ?? 0}`);
 
         const actions = skill.actions
-            .filter(
-                (action) =>
+            .filter((action) => {
+                if (!isCharacter) {
+                    return typeof action.condition !== "function";
+                }
+
+                return (
                     (!action.trained || !hideUntrained) &&
                     (typeof action.condition === "function" ? action.condition(actor) : true)
-            )
+                );
+            })
             .map((action) => {
                 return {
                     ...action,
-                    proficient: proficient || !action.trained,
+                    proficient: !isCharacter || proficient || !action.trained,
                 } satisfies FinalizedSkillAction;
             });
 
@@ -491,6 +497,7 @@ function getSkills(actor: ActorPF2e): FinalizedSkill[] {
             actions,
             mod,
             rankLabel,
+            proficient,
             rank: rank ?? 0,
         } satisfies FinalizedSkill;
     });
@@ -516,6 +523,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
 
         const data: SkillsContext = {
             ...parentData,
+            isCharacter: actor.isOfType("character"),
             skills,
         };
 
@@ -643,6 +651,7 @@ type FinalizedSkill = Omit<PreparedSkill, "actions"> & {
     mod: number;
     rank: ZeroToFour;
     rankLabel: string;
+    proficient: boolean;
     actions: FinalizedSkillAction[];
 };
 
@@ -692,6 +701,7 @@ type RawSkill = {
 };
 
 type SkillsContext = SidebarContext & {
+    isCharacter: boolean;
     skills: FinalizedSkill[];
 };
 

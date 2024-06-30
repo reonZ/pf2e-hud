@@ -328,7 +328,8 @@
             },
             "skills": {
                 "title": "Skills",
-                "roll": "Roll: {name}"
+                "roll": "Roll: {name}",
+                "proficient": "Proficient"
             },
             "extras": {
                 "title": "Extras"
