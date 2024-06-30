@@ -7,7 +7,6 @@
         max-width: var(--max-column-width);
         display: flex;
         align-items: center;
-        margin-bottom: 0.3em;
     }
 
     .inventory-wealth {
@@ -22,6 +21,8 @@
     }
 
     .inventory-bulk {
+        margin-top: 0.5em;
+
         .encumbrance {
             flex: 1;
             position: relative;

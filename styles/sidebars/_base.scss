@@ -179,7 +179,6 @@
         display: flex;
         flex-wrap: wrap;
         width: 100%;
-        margin-bottom: 0.3em;
 
         label {
             display: flex;
@@ -230,7 +229,7 @@
             gap: 0.3em;
         }
 
-        &:not(:first-of-type) {
+        &:not(:first-child) {
             margin-top: 0.6em;
         }
     }
@@ -242,7 +241,10 @@
     .item {
         display: flex;
         max-width: var(--max-column-width);
-        margin-top: var(--item-spacing);
+
+        &:not(:first-child) {
+            margin-top: var(--item-spacing);
+        }
 
         &:has(.image) {
             height: 2.5em;
@@ -252,6 +254,34 @@
         &.action,
         &.option-toggle {
             --name-background: transparent;
+        }
+
+        &.action {
+            --image-border-color: transparent;
+            --chat-icon-size: 1em;
+
+            height: 1.5em;
+            align-items: center;
+
+            .image {
+                img {
+                    background: var(--action-img-background);
+                }
+            }
+
+            .name {
+                flex: 1;
+            }
+
+            .controls {
+                display: flex;
+                align-items: center;
+                gap: 0.2em;
+            }
+
+            &:hover {
+                background: var(--action-highlight);
+            }
         }
 
         .image {
