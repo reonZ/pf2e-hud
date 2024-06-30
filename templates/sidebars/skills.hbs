@@ -31,7 +31,10 @@
 <div class="item{{#if action.proficient}} proficient{{/if}}" {{{action.dataset}}}>
     <div class="skill">
         <div class="name">
-            <a data-action="item-description">{{action.label}}</a>
+            <a data-action="item-description">
+                {{action.label}}
+                {{{actionGlyph action.cost}}}
+            </a>
         </div>
         <div class="controls">
             {{#unless (or action.variants (not action.proficient))}}
