@@ -84,7 +84,11 @@ function addStatsAdvancedListeners(actor: ActorPF2e, html: HTMLElement) {
         switch (action) {
             case "roll-statistic": {
                 const { statistic } = elementDataset(el);
-                actor.getStatistic(statistic)?.roll({ event });
+                const extraRollOptions = ["perception", "stealth"].includes(statistic)
+                    ? ["secret"]
+                    : [];
+
+                actor.getStatistic(statistic)?.roll({ event, extraRollOptions });
                 break;
             }
             case "change-speed": {
