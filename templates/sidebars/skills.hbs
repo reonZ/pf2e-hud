@@ -28,7 +28,8 @@
     {{/if}}
 </header>
 {{#each skill.actions as |action|}}
-<div class="item{{#if action.proficient}} proficient{{/if}}" {{{action.dataset}}}>
+<div class="item{{#if action.proficient}} proficient{{/if}}" {{{action.dataset}}} {{#if (and
+    action.proficient (not action.variants))}} draggable="true" {{/if}}>
     <div class="skill">
         <div class="name">
             <a data-action="item-description">
@@ -52,12 +53,14 @@
         {{#each action.variants as |variant|}}
         <div class="variant" data-action="roll-skill-action" {{#if variant.slug}}
             data-variant="{{variant.slug}}" {{/if}} {{#if variant.map}} data-map="{{variant.map}}"
-            {{/if}} {{#if variant.agile}} data-agile="{{variant.agile}}" {{/if}}>
+            {{/if}} {{#if variant.agile}} data-agile="{{variant.agile}}" {{/if}} draggable="true"
+            data-drag-parent=".item">
             {{variant.label}}
         </div>
         {{/each}}
     </div>
     {{/if}}
+    <img src="{{action.dragImg}}" class="drag-img">
 </div>
 {{/each}}
 {{/each}}

@@ -1,6 +1,7 @@
 import {
     dataToDatasetString,
     elementDataset,
+    getActionIcon,
     getItemWithSourceId,
     getSetting,
     hasItemWithSourceId,
@@ -416,29 +417,20 @@ function getSkills(actor: ActorPF2e): FinalizedSkill[] {
                         {
                             map: 1,
                             agile: action.agile,
-                            label: game.i18n.format("PF2E.MAPAbbreviationLabel", {
-                                penalty: action.agile ? -4 : -5,
-                            }),
+                            label: getMapLabel(1, !!action.agile),
                         },
                         {
                             map: 2,
                             agile: !!action.agile,
-                            label: game.i18n.format("PF2E.MAPAbbreviationLabel", {
-                                penalty: action.agile ? -8 : -10,
-                            }),
+                            label: getMapLabel(2, !!action.agile),
                         },
                     ] satisfies MapVariant[];
                 }
 
                 return action.variants?.map((slug) => {
-                    const variantKey = game.pf2e.system.sluggify(slug, { camel: "bactrian" });
-                    const label = game.i18n.localize(
-                        `PF2E.Actions.${actionKey}.${variantKey}.Title`
-                    );
-
                     return {
                         slug,
-                        label,
+                        label: getSkillVariantName(id, slug),
                     } satisfies ActionVariant;
                 });
             })();
@@ -456,6 +448,7 @@ function getSkills(actor: ActorPF2e): FinalizedSkill[] {
                 id,
                 label,
                 dataset,
+                dragImg: getActionIcon(action.cost ?? null),
             } satisfies PreparedSkillAction;
         });
 
@@ -509,13 +502,25 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
         return "skills";
     }
 
-    // _getDragData(
-    //     { actionIndex, element }: DOMStringMap,
-    //     baseDragData: Record<string, JSONValue>,
-    //     item: Maybe<ItemPF2e<ActorPF2e>>
-    // ) {
-    //     return { frominventory: true };
-    // }
+    _getDragData(
+        target: HTMLElement,
+        baseDragData: Record<string, JSONValue>,
+        item: Maybe<ItemPF2e<ActorPF2e>>
+    ) {
+        const { itemUuid, id, skillSlug } = elementDataset<SkillActionDataset>(
+            htmlClosest(target, ".item")!
+        );
+
+        return {
+            ...target.dataset,
+            type: "Item",
+            uuid: itemUuid,
+            itemType: "action",
+            actorLess: true,
+            actionId: id,
+            skillSlug,
+        };
+    }
 
     async _prepareContext(options: SidebarRenderOptions): Promise<SkillsContext> {
         const actor = this.actor;
@@ -602,10 +607,9 @@ function rollSkillAction(
     } satisfies Partial<ActionVariantUseOptions>;
 
     if (map) {
-        const isAgile = agile === "true";
         const modifier = new game.pf2e.Modifier({
             label: "PF2E.MultipleAttackPenalty",
-            modifier: map === "1" ? (isAgile ? -4 : -5) : isAgile ? -8 : -10,
+            modifier: getMapValue(map, agile === "true"),
         });
         options.modifiers.push(modifier);
     }
@@ -624,6 +628,23 @@ function rollSkillAction(
     }
 }
 
+function getSkillVariantName(actionId: string, variant: string) {
+    const actionKey = game.pf2e.system.sluggify(actionId, { camel: "bactrian" });
+    const variantKey = game.pf2e.system.sluggify(variant, { camel: "bactrian" });
+    return game.i18n.localize(`PF2E.Actions.${actionKey}.${variantKey}.Title`);
+}
+
+function getMapValue(map: 1 | 2 | "1" | "2", agile: boolean) {
+    map = Number(map) as 1 | 2;
+    return map === 1 ? (agile ? -4 : -5) : agile ? -8 : -10;
+}
+
+function getMapLabel(map: 1 | 2, agile: boolean) {
+    return game.i18n.format("PF2E.MAPAbbreviationLabel", {
+        penalty: getMapValue(map, agile),
+    });
+}
+
 type ActionType = "roll-skill" | "roll-skill-action" | "follow-the-expert";
 
 type SkillActionDataset = {
@@ -635,7 +656,7 @@ type SkillActionDataset = {
 
 type SkillVariantDataset = {
     variant?: string;
-    map?: StringNumber;
+    map?: "1" | "2";
     agile?: StringBoolean;
 };
 
@@ -674,6 +695,7 @@ type PreparedSkillAction = Omit<RawSkillAction, "variants"> & {
     label: string;
     variants: (MapVariant | ActionVariant)[] | undefined;
     dataset: string;
+    dragImg: string;
 };
 
 type RawSkillAction = {
@@ -703,4 +725,5 @@ type SkillsContext = SidebarContext & {
     };
 };
 
-export { PF2eHudSidebarSkills };
+export { PF2eHudSidebarSkills, getMapLabel, getSkillVariantName };
+export type { SkillVariantDataset };

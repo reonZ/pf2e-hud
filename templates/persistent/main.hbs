@@ -87,7 +87,13 @@
 {{> action action=shortcut}}
 {{else if (eq shortcut.type 'spell')}}
 {{> spell spell=shortcut}}
+{{else if (eq shortcut.type 'skill')}}
+{{> skill skill=shortcut}}
 {{/if}}
+{{/inline}}
+
+{{#*inline 'skill'}}
+{{> cost cost=skill.cost}}
 {{/inline}}
 
 {{#*inline 'spell'}}
@@ -133,8 +139,6 @@
 {{!-- end if broken --}}
 {{/if}}
 {{/inline}}
-
-
 
 {{#*inline 'consumable'}}
 <div class="quantity boxed">

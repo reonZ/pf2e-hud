@@ -561,6 +561,10 @@ $bottom-width: 542px;
                         }
                     }
                 }
+
+                &.versatiles {
+                    display: none;
+                }
             }
 
             &:not(:hover) {
@@ -625,13 +629,13 @@ $bottom-width: 542px;
             }
 
             &:not(.use-variant) {
-                .variants + .variants {
+                .variants:not(.versatiles) ~ .variants:not(.versatiles) {
                     display: none;
                 }
             }
 
             &.use-variant {
-                .variants:has(+ .variants) {
+                .variants:not(.versatiles):has(~ .variants:not(.versatiles)) {
                     display: none;
                 }
             }

@@ -41,11 +41,11 @@ class PF2eHudSidebarSpells extends PF2eHudSidebar {
     }
 
     _getDragData(
-        dataset: DOMStringMap,
+        target: HTMLElement,
         baseDragData: Record<string, JSONValue>,
         item: Maybe<ItemPF2e<ActorPF2e>>
     ) {
-        return dataset;
+        return target.dataset;
     }
 
     _activateListeners(html: HTMLElement) {

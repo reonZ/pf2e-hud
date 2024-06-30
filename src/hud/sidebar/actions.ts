@@ -180,10 +180,12 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
     }
 
     _getDragData(
-        { actionIndex, element, effectUuid }: DOMStringMap,
+        target: HTMLElement,
         baseDragData: Record<string, JSONValue>,
         item: Maybe<ItemPF2e<ActorPF2e>>
     ) {
+        const { actionIndex, element, effectUuid } = target.dataset;
+
         if (actionIndex) {
             return "itemType" in baseDragData && baseDragData.itemType === "melee"
                 ? { index: Number(actionIndex) }

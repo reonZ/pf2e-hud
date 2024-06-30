@@ -319,11 +319,17 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         addDragoverListener(this.element);
         addSendItemToChatListeners(this.actor, html);
 
-        addListenerAll(html, "[draggable='true']", "dragstart", async (event, el) => {
+        addListenerAll(html, "[draggable='true']", "dragstart", async (event, target) => {
             if (!event.dataTransfer) return;
 
+            const el = target.dataset.dragParent
+                ? htmlClosest(target, target.dataset.dragParent)!
+                : target;
             const { label, domain, option } = el.dataset;
-            const item = await getItemFromElement(el, this.actor);
+            const item = (() => {
+                const item = getItemFromElement(el, this.actor);
+                return item instanceof Item ? item : null;
+            })();
 
             const imgSrc = el.querySelector<HTMLImageElement>(".drag-img")?.src ?? item?.img ?? "";
             const draggable = createHTMLElement("div", {
@@ -343,7 +349,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
                 ...item?.toDragData(),
             };
 
-            const extraDragData = this._getDragData?.(el.dataset, baseDragData, item);
+            const extraDragData = this._getDragData?.(target, baseDragData, item);
             const toggleDragData =
                 item && label && domain && option
                     ? { type: "RollOption", ...el.dataset }
@@ -354,7 +360,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
                 JSON.stringify({ ...baseDragData, ...extraDragData, ...toggleDragData })
             );
 
-            el.addEventListener("dragend", () => draggable.remove(), { once: true });
+            target.addEventListener("dragend", () => draggable.remove(), { once: true });
         });
 
         addListenerAll(html, "[data-action='item-description']", async (event, el) => {
@@ -425,7 +431,7 @@ function getSidebars(actor: ActorPF2e, active?: SidebarName) {
 
 interface PF2eHudSidebar {
     _getDragData?(
-        dataset: DOMStringMap,
+        target: HTMLElement,
         baseDragData: Record<string, JSONValue>,
         item: Maybe<ItemPF2e>
     ): Record<string, JSONValue> | undefined;

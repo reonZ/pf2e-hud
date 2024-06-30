@@ -48,6 +48,7 @@ import {
     addSidebarsListeners,
     makeAdvancedHUD,
 } from "./base/advanced";
+import { PF2eHudItemPopup } from "./popup/item";
 import {
     StatsAdvanced,
     StatsHeaderExtras,
@@ -67,8 +68,8 @@ import {
     variantLabel,
 } from "./sidebar/actions";
 import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
+import { SkillVariantDataset, getMapLabel, getSkillVariantName } from "./sidebar/skills";
 import { getAnnotationTooltip } from "./sidebar/spells";
-import { PF2eHudItemPopup } from "./popup/item";
 
 const ROMAN_RANKS = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"] as const;
 
@@ -1390,7 +1391,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     : await fromUuid<ItemPF2e>(dropData.uuid as string);
 
                 if (!item?.isOfType("consumable", "spell", "action", "feat")) return wrongType();
-                if (!this.isCurrentActor(item.actor)) return wrongActor();
+
+                if (
+                    (dropData.actorLess && dropData.actorUUID !== actor.uuid) ||
+                    (!dropData.actorLess && !this.isCurrentActor(item.actor))
+                )
+                    return wrongActor();
 
                 if (item.isOfType("consumable")) {
                     if (event.ctrlKey && item.system.uses.autoDestroy) {
@@ -1410,6 +1416,24 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                             groupIndex,
                         } satisfies TemporaryConsumableShortcutData;
                     }
+                } else if (
+                    item.isOfType("action") &&
+                    dropData.actorLess &&
+                    typeof dropData.uuid === "string" &&
+                    typeof dropData.skillSlug === "string" &&
+                    typeof dropData.actionId === "string"
+                ) {
+                    newShortcut = {
+                        type: "skill",
+                        index,
+                        groupIndex,
+                        itemUuid: dropData.uuid,
+                        actionId: dropData.actionId,
+                        skillSlug: dropData.skillSlug,
+                        map: dropData.map ? (Number(dropData.map) as 1 | 2) : null,
+                        agile: dropData.agile === "true",
+                        variant: dropData.variant ?? null,
+                    } satisfies SkillShortcutData;
                 } else if (item.isOfType("action", "feat")) {
                     newShortcut = {
                         type: "action",
@@ -1725,6 +1749,73 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         };
 
         switch (shortcutData.type) {
+            case "skill": {
+                const item = await fromUuid(shortcutData.itemUuid);
+                if (!item || !isInstanceOf(item, "ItemPF2e") || !item.isOfType("action")) {
+                    return throwError();
+                }
+
+                const skillLabel = game.i18n.localize(
+                    CONFIG.PF2E.skillList[shortcutData.skillSlug]
+                );
+                let name = `${skillLabel}: `;
+
+                if (shortcutData.variant) {
+                    const variant = getSkillVariantName(
+                        shortcutData.actionId,
+                        shortcutData.variant
+                    );
+                    name += `${variant} (${item.name})`;
+                } else {
+                    name += item.name;
+                }
+
+                if (shortcutData.map) {
+                    const mapLabel = getMapLabel(shortcutData.map, shortcutData.agile);
+                    name += ` (${mapLabel})`;
+                }
+
+                return {
+                    ...shortcutData,
+                    isDisabled: false,
+                    isFadedOut: false,
+                    item,
+                    name,
+                    img: getActionImg(item),
+                    cost: getCost(item?.actionCost),
+                } satisfies SkillShortcut as T;
+            }
+
+            case "action": {
+                const item = actor.items.get(shortcutData.itemId);
+                if (item && !item.isOfType("action", "feat")) return throwError();
+
+                const name = item?.name ?? shortcutData.name;
+                const frequency = item ? getActionFrequency(item) : undefined;
+                const disabled = !item || frequency?.value === 0;
+                const isActive = (() => {
+                    const effectUUID = shortcutData.effectUuid;
+                    if (!item || !effectUUID) return null;
+
+                    const toolbelt = getActiveModule("pf2e-toolbelt");
+                    if (!toolbelt?.api.stances.isValidStance(item)) return null;
+
+                    return hasItemWithSourceId(actor, effectUUID, "effect");
+                })();
+
+                return returnShortcut({
+                    ...shortcutData,
+                    isDisabled: disabled,
+                    isFadedOut: disabled,
+                    item,
+                    isActive,
+                    img: item ? getActionImg(item) : shortcutData.img,
+                    name: frequency ? `${name} - ${frequency.label}` : name,
+                    frequency,
+                    cost: getCost(item?.actionCost),
+                } satisfies ActionShortcut as T);
+            }
+
             case "spell": {
                 const { itemId, entryId, groupId, slotId } = shortcutData;
                 const collection = (actor as CreaturePF2e).spellcasting.collections.get(entryId);
@@ -1912,36 +2003,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 } satisfies ConsumableShortcut as T);
             }
 
-            case "action": {
-                const item = actor.items.get(shortcutData.itemId);
-                if (item && !item.isOfType("action", "feat")) return throwError();
-
-                const name = item?.name ?? shortcutData.name;
-                const frequency = item ? getActionFrequency(item) : undefined;
-                const disabled = !item || frequency?.value === 0;
-                const isActive = (() => {
-                    const effectUUID = shortcutData.effectUuid;
-                    if (!item || !effectUUID) return null;
-
-                    const toolbelt = getActiveModule("pf2e-toolbelt");
-                    if (!toolbelt?.api.stances.isValidStance(item)) return null;
-
-                    return hasItemWithSourceId(actor, effectUUID, "effect");
-                })();
-
-                return returnShortcut({
-                    ...shortcutData,
-                    isDisabled: disabled,
-                    isFadedOut: disabled,
-                    item,
-                    isActive,
-                    img: item ? getActionImg(item) : shortcutData.img,
-                    name: frequency ? `${name} - ${frequency.label}` : name,
-                    frequency,
-                    cost: getCost(item?.actionCost),
-                } satisfies ActionShortcut as T);
-            }
-
             case "attack": {
                 const isBlast = "elementTrait" in shortcutData;
 
@@ -2114,7 +2175,7 @@ type ShortcutActionEvent =
 
 type ShortcutMenusAction = "delete-shortcuts" | "fill-shortcuts" | "copy-owner-shortcuts";
 
-type ShortcutType = "action" | "attack" | "consumable" | "spell" | "toggle";
+type ShortcutType = "action" | "attack" | "consumable" | "spell" | "toggle" | "skill";
 
 type CreateShortcutCache = {
     rankLabel?: Partial<Record<OneToTen, string>>;
@@ -2171,6 +2232,16 @@ type BlastShortcutData = AttackShortcutDataBase & {
 
 type AttackShortcutData = BlastShortcutData | StrikeShortcutData;
 
+type SkillShortcutData = ShortcutDataBase<"skill"> & {
+    type: "skill";
+    actionId: string;
+    skillSlug: SkillSlug;
+    itemUuid: string;
+    variant: string | null;
+    map: 1 | 2 | null;
+    agile: boolean;
+};
+
 type ActionShortcutData = ShortcutDataBase<"action"> & {
     itemId: string;
     name: string;
@@ -2197,7 +2268,8 @@ type ShortcutData =
     | AttackShortcutData
     | ToggleShortcutData
     | ActionShortcutData
-    | SpellShortcutData;
+    | SpellShortcutData
+    | SkillShortcutData;
 
 type BaseShortCut<T extends ShortcutType> = ShortcutDataBase<T> & {
     name: string;
@@ -2226,6 +2298,12 @@ type SpellShortcut = BaseShortCut<"spell"> &
     };
 
 type CostValue = number | string | undefined;
+
+type SkillShortcut = BaseShortCut<"skill"> &
+    SkillShortcutData & {
+        item: AbilityItemPF2e;
+        cost: CostValue;
+    };
 
 type ActionShortcut = BaseShortCut<"action"> &
     ActionShortcutData & {
@@ -2280,7 +2358,8 @@ type Shortcut =
     | AttackShortcut
     | ToggleShortcut
     | ActionShortcut
-    | SpellShortcut;
+    | SpellShortcut
+    | SkillShortcut;
 
 type EmptyShortcut = { index: string; groupIndex: string; isEmpty: true };
 
@@ -2382,6 +2461,12 @@ type DropData = HotbarDropData & {
     groupId?: StringNumber | "cantrips";
     itemId?: string;
     effectUuid?: string;
+} & SkillDropData;
+
+type SkillDropData = Partial<SkillVariantDataset> & {
+    actionId?: string;
+    skillSlug?: SkillSlug;
+    actorLess?: StringBoolean;
 };
 
 type AutoSetSetting = "disabled" | "select" | "combat";
