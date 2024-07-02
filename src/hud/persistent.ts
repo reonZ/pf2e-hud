@@ -2131,7 +2131,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 }
 
 function isUsableAction(item: FeatPF2e | AbilityItemPF2e) {
-    return item.system.selfEffect || item.frequency?.max || item.flags["pf2e-toolbelt"]?.macro;
+    return (
+        item.system.selfEffect ||
+        item.frequency?.max ||
+        foundry.utils.getProperty(item, "flags.pf2e-toolbelt.actionable.macro")
+    );
 }
 
 function createStrikeShortcutData(

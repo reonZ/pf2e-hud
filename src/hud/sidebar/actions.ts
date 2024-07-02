@@ -623,7 +623,9 @@ async function useAction(event: Event, item: FeatPF2e<ActorPF2e> | AbilityItemPF
     }
 
     const toolbelt = getActiveModule("pf2e-toolbelt");
-    const macro = await toolbelt?.api.actionable.getActionMacro(item);
+    const macro = toolbelt?.getSetting("actionable.enabled")
+        ? await toolbelt.api.actionable.getActionMacro(item)
+        : undefined;
     if (macro) {
         macro?.execute({ actor: item.actor });
     }
