@@ -1,12 +1,19 @@
 import {
+    R,
     dataToDatasetString,
     elementDataset,
     getActionIcon,
     getItemWithSourceId,
     getSetting,
+    getTranslatedSkills,
     hasItemWithSourceId,
     htmlClosest,
+    htmlQuery,
     isInstanceOf,
+    localize,
+    promptDialog,
+    render,
+    templateLocalize,
 } from "foundry-pf2e";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 
@@ -397,6 +404,7 @@ const SKILLS: RawSkill[] = [
 ];
 
 let skillsCache: PreparedSkill[] | null = null;
+const actionLabels: Record<string, string> = {};
 function getSkills(actor: ActorPF2e): FinalizedSkill[] {
     skillsCache ??= SKILLS.map((raw) => {
         const actions = raw.actions.map((rawAction) => {
@@ -407,6 +415,7 @@ function getSkills(actor: ActorPF2e): FinalizedSkill[] {
 
             const actionKey = game.pf2e.system.sluggify(id, { camel: "bactrian" });
             const label = game.i18n.localize(action.label ?? `PF2E.Actions.${actionKey}.Title`);
+            actionLabels[id] = label;
 
             const variants: ActionVariant[] | MapVariant[] | undefined = (() => {
                 if (action.map) {
@@ -563,12 +572,19 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
                 const { id, skillSlug, option } = getActionData();
                 const { agile, map, variant } = target.dataset as SkillVariantDataset;
 
-                rollSkillAction(actor, event, skillSlug, id, {
-                    option,
-                    variant,
-                    map: map ? (Number(map) as 1 | 2) : undefined,
-                    agile: agile === "true",
-                });
+                rollStatistic(
+                    actor,
+                    event,
+                    skillSlug,
+                    id,
+                    {
+                        option,
+                        variant,
+                        map: map ? (Number(map) as 1 | 2) : undefined,
+                        agile: agile === "true",
+                    },
+                    event.button === 2
+                );
 
                 break;
             }
@@ -590,17 +606,18 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
     }
 }
 
-function rollSkillAction(
+async function rollStatistic(
     actor: ActorPF2e,
     event: MouseEvent,
-    skillSlug: SkillSlug,
+    statistic: string,
     actionId: string,
     {
         variant,
-        agile = false,
+        agile,
         map,
         option,
-    }: { option?: string; map?: 1 | 2; variant?: string; agile?: boolean }
+    }: { option?: string; map?: 1 | 2; variant?: string; agile?: boolean },
+    requireVariants = false
 ) {
     const action = game.pf2e.actions.get(actionId) ?? game.pf2e.actions[actionId];
 
@@ -615,6 +632,17 @@ function rollSkillAction(
         modifiers: [] as ModifierPF2e[],
     } satisfies Partial<ActionVariantUseOptions>;
 
+    if (requireVariants) {
+        const variants = await getStatisticVariants(actor, actionId, {
+            statistic,
+            agile: map ? agile : undefined,
+        });
+        if (!variants) return;
+
+        agile = variants.agile;
+        statistic = variants.statistic;
+    }
+
     if (map) {
         const modifier = new game.pf2e.Modifier({
             label: "PF2E.MultipleAttackPenalty",
@@ -624,17 +652,70 @@ function rollSkillAction(
     }
 
     if (!action) {
-        actor.getStatistic(skillSlug)?.roll(options);
+        actor.getStatistic(statistic)?.roll(options);
         return;
     }
 
     if (isInstanceOf<BaseAction>(action, "BaseAction")) {
-        (options as SingleCheckActionVariantData).statistic = skillSlug;
+        (options as SingleCheckActionVariantData).statistic = statistic;
         action.use(options);
     } else if (action) {
-        (options as SkillActionOptions).skill = skillSlug;
+        (options as SkillActionOptions).skill = statistic;
         action(options);
     }
+}
+
+let STATISTICS: { value: string; label: string }[] | undefined;
+async function getStatisticVariants(
+    actor: ActorPF2e,
+    actionId: string,
+    { dc, statistic, agile }: { dc?: number; statistic?: string; agile?: boolean }
+) {
+    STATISTICS ??= (() => {
+        const obj = getTranslatedSkills() as Record<SkillSlug | "perception", string>;
+        // @ts-ignore
+        delete obj.lore;
+
+        const arr = R.pipe(
+            R.entries(obj),
+            R.map(([slug, label]) => ({ value: slug, label }))
+        );
+
+        arr.push({ value: "perception", label: game.i18n.localize("PF2E.PerceptionLabel") });
+
+        return arr;
+    })();
+
+    const statistics = STATISTICS.slice();
+
+    for (const lore of actor.itemTypes.lore) {
+        const slug = lore.slug ?? game.pf2e.system.sluggify(lore.name);
+        statistics.push({ value: slug, label: lore.name });
+    }
+
+    const content = await render("dialogs/variants", {
+        i18n: templateLocalize("dialogs.variants"),
+        statistics: R.sortBy(statistics, R.prop("label")),
+        statistic,
+        agile,
+        dc,
+    });
+
+    const result = await promptDialog(
+        {
+            title: actionLabels[actionId] ?? localize("dialogs.variants.title"),
+            content,
+        },
+        { width: 280 }
+    );
+
+    if (!result) return;
+
+    return {
+        dc: htmlQuery<HTMLInputElement>(result, "[name='dc']")?.value,
+        agile: htmlQuery<HTMLInputElement>(result, "[name='agile']")?.checked,
+        statistic: htmlQuery<HTMLSelectElement>(result, "[name='statistic']")!.value,
+    };
 }
 
 function getSkillVariantName(actionId: string, variant: string) {
@@ -643,7 +724,7 @@ function getSkillVariantName(actionId: string, variant: string) {
     return game.i18n.localize(`PF2E.Actions.${actionKey}.${variantKey}.Title`);
 }
 
-function getMapValue(map: 1 | 2, agile: boolean) {
+function getMapValue(map: 1 | 2, agile = false) {
     map = Number(map) as 1 | 2;
     return map === 1 ? (agile ? -4 : -5) : agile ? -8 : -10;
 }
@@ -734,5 +815,5 @@ type SkillsContext = SidebarContext & {
     };
 };
 
-export { PF2eHudSidebarSkills, getMapLabel, getSkillVariantName, rollSkillAction };
+export { PF2eHudSidebarSkills, getMapLabel, getSkillVariantName, rollStatistic };
 export type { SkillVariantDataset };

@@ -340,6 +340,12 @@
         "rightClick": "[Right Click]",
         "actions": {
             "borrowArcaneSpell": "Borrow an Arcane Spell"
+        },
+        "dialogs": {
+            "variants": {
+                "title": "Action Variants",
+                "statistic": "Statistic"
+            }
         }
     }
 }

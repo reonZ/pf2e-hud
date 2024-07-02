@@ -1,0 +1,18 @@
+<div class="form-group">
+    <strong>{{i18n 'statistic'}}</strong>
+    <select name="statistic">
+        {{selectOptions statistics selected=statistic }}
+    </select>
+</div>
+{{#if dc inclueZero=true}}
+<div class="form-group">
+    <strong>{{i18n 'dc'}}</strong>
+    <input type="number" name="dc" value="{{dc}}" min="0">
+</div>
+{{/if}}
+{{#if (ne agile undefined)}}
+<div class="form-group">
+    <strong>{{localize 'PF2E.TraitAgile'}}</strong>
+    <input type="checkbox" name="agile" {{checked agile}}>
+</div>
+{{/if}}
