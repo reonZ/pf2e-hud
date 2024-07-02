@@ -14,6 +14,7 @@ import {
     unownedItemtoMessage,
     warn,
 } from "foundry-pf2e";
+import { PF2eHudTextPopup } from "../popup/text";
 import { getCoverEffect } from "./advanced";
 import { getItemFromElement } from "./base";
 
@@ -60,6 +61,37 @@ function addStatsHeaderListeners(actor: ActorPF2e, html: HTMLElement, token?: To
 
         switch (action) {
             case "show-notes": {
+                const rollData = actor.getRollData();
+                const system = (actor as NPCPF2e).system;
+                const title = `${actor.name} - ${game.i18n.localize("PF2E.NPC.NotesTab")}`;
+                const whitelist = Object.keys(CONFIG.PF2E.creatureTraits);
+
+                const publicNotes = await TextEditor.enrichHTML(system.details.publicNotes, {
+                    rollData,
+                    secrets: actor.isOwner,
+                });
+                const privateNotes = await TextEditor.enrichHTML(system.details.privateNotes, {
+                    rollData,
+                });
+
+                const traits = R.pipe(
+                    system.traits.value,
+                    R.filter((trait) => whitelist.includes(trait)),
+                    R.map((trait) => ({
+                        label: game.i18n.localize(CONFIG.PF2E.creatureTraits[trait]) ?? trait,
+                        description:
+                            game.i18n.localize(CONFIG.PF2E.traitsDescriptions[trait]) ?? "",
+                    }))
+                );
+
+                const content = await render("popup/show-notes", {
+                    traits,
+                    blurb: system.details.blurb.trim(),
+                    publicNotes: publicNotes.trim(),
+                    privateNotes: actor.isOwner && privateNotes.trim(),
+                });
+
+                new PF2eHudTextPopup({ actor, content, event, title }).render(true);
                 break;
             }
 
