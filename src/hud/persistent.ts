@@ -72,7 +72,7 @@ import {
     SkillVariantDataset,
     getMapLabel,
     getSkillVariantName,
-    rollSkillAction,
+    rollStatistic,
 } from "./sidebar/skills";
 import { getAnnotationTooltip } from "./sidebar/spells";
 
@@ -90,7 +90,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #deleteTokenHook = createHook("deleteToken", this.#onDeleteActor.bind(this));
     #deleteActorHook = createHook("deleteActor", this.#onDeleteActor.bind(this));
     #updateUserHook = createHook("updateUser", this.#onUpdateUser.bind(this));
-    #combatDeleteHook = createHook("deleteCombat", this.#onCombatTurnChange.bind(this));
+    #combatDeleteHook = createHook("deleteCombat", this.#onDeleteCombat.bind(this));
     #combatTurnHook = createHook("combatTurnChange", this.#onCombatTurnChange.bind(this));
 
     #isVirtual: boolean = false;
@@ -419,24 +419,21 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 return this.setActor(actor, { skipSave: true });
             }
 
-            if (autoSet === "disabled") {
-                actor = game.user.character;
-
-                if (actor) {
-                    this.setActor(actor, { skipSave: true });
-                } else {
-                    this.render(true);
-                }
-            } else if (autoSet === "combat") {
+            if (autoSet === "combat") {
                 const combatant = game.combat?.combatants.get(
                     game.combat?.current.combatantId ?? ""
                 );
 
                 if (this.isValidActor(combatant?.actor)) {
                     this.setActor(combatant.actor, { skipSave: true });
-                } else {
-                    this.render(true);
+                    return;
                 }
+            }
+
+            actor = game.user.character;
+
+            if (actor) {
+                this.setActor(actor, { skipSave: true });
             } else {
                 this.render(true);
             }
@@ -603,23 +600,31 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     ) {
         if (actor && !this.isValidActor(actor)) return;
 
+        const user = game.user;
+        const userActor = user.character;
+        const autoSet = this.getSetting("autoSet");
+        if (!actor && autoSet === "select" && !userActor) return;
+
         const savedActor = actor;
         this._actorCleanup();
 
         if (!actor) {
-            const autoSet = this.getSetting("autoSet");
             let potentialActor = null;
 
-            if (autoSet === "disabled") {
-                potentialActor = game.user.character;
-            } else if (autoSet === "combat") {
+            if (autoSet === "combat") {
                 const combatantId = game.combat?.current.combatantId ?? "";
                 potentialActor = game.combat?.combatants.get(combatantId)?.actor;
-            } else {
+            } else if (autoSet === "select") {
                 potentialActor = R.only(canvas.tokens.controlled)?.actor;
             }
 
-            if (this.isValidActor(potentialActor)) actor = potentialActor;
+            if (!this.isValidActor(potentialActor)) {
+                potentialActor = userActor;
+            }
+
+            if (this.isValidActor(potentialActor)) {
+                actor = potentialActor;
+            }
         }
 
         if (actor) {
@@ -636,7 +641,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         this.#isUserCharacter = actor === game.user.character;
         this.#actor = actor as PersistentHudActor;
 
-        if (!skipSave) await setFlag(game.user, "persistent.selected", savedActor?.uuid ?? "");
+        if (!skipSave) await setFlag(user, "persistent.selected", savedActor?.uuid ?? "");
         this.render(!!actor);
     }
 
@@ -720,13 +725,21 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         else titleElement.append(btnElement);
     }
 
+    #onDeleteCombat() {
+        if (this.savedActor) return;
+
+        this.setActor(null, { skipSave: true });
+    }
+
     #onCombatTurnChange() {
         if (this.savedActor) return;
 
         const combatant = game.combat?.combatants.get(game.combat?.current.combatantId ?? "");
         const actor = this.isValidActor(combatant?.actor) ? combatant.actor : null;
 
-        this.setActor(actor, { skipSave: true });
+        if (actor) {
+            this.setActor(actor, { skipSave: true });
+        }
     }
 
     #onControlToken() {
@@ -737,7 +750,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         if (this.isValidActor(token?.actor)) {
             this.setActor(token.actor, { token, skipSave: true });
         } else {
-            this.setActor(null, { skipSave: true });
+            this.setActor(null, { token, skipSave: true });
         }
     }
 
@@ -1180,7 +1193,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         switch (shortcut.type) {
             case "skill": {
                 if (!shortcut.item) return;
-                rollSkillAction(actor, event, shortcut.skillSlug, shortcut.actionId, shortcut);
+                rollStatistic(actor, event, shortcut.skillSlug, shortcut.actionId, shortcut);
                 break;
             }
 
