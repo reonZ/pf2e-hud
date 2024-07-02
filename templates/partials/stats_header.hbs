@@ -1,11 +1,11 @@
 {{!-- stamina --}}
 {{#if health.useStamina}}
-<div data-section="resolve" data-tooltip="PF2E.ResolvePointsShortLabel">
-    <a data-action="use-resolve">
+<div data-section="resolve">
+    <a data-action="use-resolve" data-tooltip="pf2e-hud.hud.resolve.title">
         <i class="fa-solid fa-circle-r"></i>
     </a>
     <input class="small" type="number" name="system.resources.resolve" value="{{resolve.value}}"
-        min="0" max="{{resolve.max}}">
+        min="0" max="{{resolve.max}}" data-tooltip="PF2E.ResolvePointsShortLabel">
 </div>
 <div class="double" data-section="stamina" data-tooltip="PF2E.StaminaPointsShortLabel">
     <span><i class="fa-solid fa-heart-pulse"></i></span>

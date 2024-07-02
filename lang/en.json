@@ -226,6 +226,7 @@
             "toggleAdjustment": "Toggle Adjustment",
             "tempHP": "Temporary Hit Points",
             "resolve": {
+                "title": "Use Resolve Point",
                 "full": "{name} is full of stamina and doesn't need to rest.",
                 "breather": {
                     "used": "{name} has {ratio} SP and spends a resolve point, taking a 10 minute breather. Stamina Refreshed."
@@ -353,7 +354,6 @@
                 "statistic": "Statistic"
             },
             "resolve": {
-                "title": "Use Resolve Point",
                 "full": "{name} is full of stamina and doesn't need to rest.",
                 "breather": {
                     "label": "Take a Breather",

@@ -218,7 +218,7 @@ async function useResolve(actor: CharacterPF2e) {
     if (!checkCurrentData()) return;
 
     const data = await promptDialog<{ pick: "breather" | "steel" }>({
-        title: localize("dialogs.resolve.title"),
+        title: localize("hud.resolve.title"),
         content: await render("dialogs/resolve", {
             i18n: templateLocalize("dialogs.resolve"),
             hasSteel: hasItemWithSourceId(actor, RESOLVE_UUID, "feat"),
