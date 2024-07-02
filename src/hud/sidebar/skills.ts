@@ -8,7 +8,6 @@ import {
     getTranslatedSkills,
     hasItemWithSourceId,
     htmlClosest,
-    htmlQuery,
     isInstanceOf,
     localize,
     promptDialog,
@@ -49,6 +48,21 @@ const SHARED = {
 } satisfies Record<string, Omit<RawSkillAction, "id">>;
 
 const SKILLS: RawSkill[] = [
+    {
+        slug: "perception",
+        actions: [
+            {
+                id: "seek",
+                cost: 1,
+                uuid: "Compendium.pf2e.actionspf2e.Item.BlAOM2X92SI6HMtJ",
+            },
+            {
+                id: "sense-motive",
+                cost: 1,
+                uuid: "Compendium.pf2e.actionspf2e.Item.1xRFPTFtWtGJ9ELw",
+            },
+        ],
+    },
     {
         slug: "acrobatics",
         actions: [
@@ -403,65 +417,66 @@ const SKILLS: RawSkill[] = [
     },
 ];
 
+function prepareStatisticAction(statistic: string, rawAction: ShareSkill | RawSkillAction) {
+    const [id, action]: [string, Omit<RawSkillAction, "id">] =
+        typeof rawAction === "string" ? [rawAction, SHARED[rawAction]] : [rawAction.id, rawAction];
+
+    const actionKey = game.pf2e.system.sluggify(id, { camel: "bactrian" });
+    const label = game.i18n.localize(action.label ?? `PF2E.Actions.${actionKey}.Title`);
+    actionLabels[id] = label;
+
+    const variants: ActionVariant[] | MapVariant[] | undefined = (() => {
+        if (action.map) {
+            return [
+                {
+                    label: game.i18n.localize("PF2E.Roll.Normal"),
+                },
+                {
+                    map: 1,
+                    agile: action.agile,
+                    label: getMapLabel(1, !!action.agile),
+                },
+                {
+                    map: 2,
+                    agile: !!action.agile,
+                    label: getMapLabel(2, !!action.agile),
+                },
+            ] satisfies MapVariant[];
+        }
+
+        return action.variants?.map((slug) => {
+            return {
+                slug,
+                label: getSkillVariantName(id, slug),
+            } satisfies ActionVariant;
+        });
+    })();
+
+    const dataset = dataToDatasetString<keyof SkillActionDataset>({
+        id,
+        skillSlug: statistic,
+        itemUuid: action.uuid,
+        option: action.rollOption,
+    });
+
+    return {
+        ...action,
+        variants,
+        id,
+        label,
+        dataset,
+        dragImg: getActionIcon(action.cost ?? null),
+    } satisfies PreparedSkillAction;
+}
+
 let skillsCache: PreparedSkill[] | null = null;
 const actionLabels: Record<string, string> = {};
-function getSkills(actor: ActorPF2e): FinalizedSkill[] {
+function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
     skillsCache ??= SKILLS.map((raw) => {
-        const actions = raw.actions.map((rawAction) => {
-            const [id, action]: [string, Omit<RawSkillAction, "id">] =
-                typeof rawAction === "string"
-                    ? [rawAction, SHARED[rawAction]]
-                    : [rawAction.id, rawAction];
-
-            const actionKey = game.pf2e.system.sluggify(id, { camel: "bactrian" });
-            const label = game.i18n.localize(action.label ?? `PF2E.Actions.${actionKey}.Title`);
-            actionLabels[id] = label;
-
-            const variants: ActionVariant[] | MapVariant[] | undefined = (() => {
-                if (action.map) {
-                    return [
-                        {
-                            label: game.i18n.localize("PF2E.Roll.Normal"),
-                        },
-                        {
-                            map: 1,
-                            agile: action.agile,
-                            label: getMapLabel(1, !!action.agile),
-                        },
-                        {
-                            map: 2,
-                            agile: !!action.agile,
-                            label: getMapLabel(2, !!action.agile),
-                        },
-                    ] satisfies MapVariant[];
-                }
-
-                return action.variants?.map((slug) => {
-                    return {
-                        slug,
-                        label: getSkillVariantName(id, slug),
-                    } satisfies ActionVariant;
-                });
-            })();
-
-            const dataset = dataToDatasetString<keyof SkillActionDataset>({
-                id,
-                skillSlug: raw.slug,
-                itemUuid: action.uuid,
-                option: action.rollOption,
-            });
-
-            return {
-                ...action,
-                variants,
-                id,
-                label,
-                dataset,
-                dragImg: getActionIcon(action.cost ?? null),
-            } satisfies PreparedSkillAction;
-        });
-
-        const label = game.i18n.localize(CONFIG.PF2E.skillList[raw.slug]);
+        const actions = raw.actions.map((rawAction) => prepareStatisticAction(raw.slug, rawAction));
+        const label = game.i18n.localize(
+            raw.slug === "perception" ? "PF2E.PerceptionLabel" : CONFIG.PF2E.skillList[raw.slug]
+        );
 
         return {
             actions,
@@ -535,7 +550,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
     async _prepareContext(options: SidebarRenderOptions): Promise<SkillsContext> {
         const actor = this.actor;
         const parentData = await super._prepareContext(options);
-        const skills = getSkills(actor);
+        const skills = finalizeSkills(actor);
         const follow = {
             uuid: FOLLOW_THE_EXPERT,
             active: hasItemWithSourceId(actor, FOLLOW_THE_EXPERT_EFFECT, "effect"),
@@ -553,7 +568,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
 
     async _onClickAction(event: PointerEvent, target: HTMLElement) {
         const actor = this.actor;
-        const action = target.dataset.action as ActionType;
+        const action = target.dataset.action as SkillActionEvent;
 
         const getActionData = () => {
             const actionElement = htmlClosest(target, "[data-skill-slug]")!;
@@ -666,11 +681,7 @@ async function rollStatistic(
 }
 
 let STATISTICS: { value: string; label: string }[] | undefined;
-async function getStatisticVariants(
-    actor: ActorPF2e,
-    actionId: string,
-    { dc, statistic, agile }: { dc?: number; statistic?: string; agile?: boolean }
-) {
+function getStatistics(actor: ActorPF2e) {
     STATISTICS ??= (() => {
         const obj = getTranslatedSkills() as Record<SkillSlug | "perception", string>;
         // @ts-ignore
@@ -694,9 +705,17 @@ async function getStatisticVariants(
         statistics.push({ value: slug, label: lore.name });
     }
 
+    return R.sortBy(statistics, R.prop("label"));
+}
+
+async function getStatisticVariants(
+    actor: ActorPF2e,
+    actionId: string,
+    { dc, statistic, agile }: { dc?: number; statistic?: string; agile?: boolean }
+) {
     const content = await render("dialogs/variants", {
         i18n: templateLocalize("dialogs.variants"),
-        statistics: R.sortBy(statistics, R.prop("label")),
+        statistics: getStatistics(actor),
         statistic,
         agile,
         dc,
@@ -728,7 +747,7 @@ function getMapLabel(map: 1 | 2, agile: boolean) {
     });
 }
 
-type ActionType = "roll-skill" | "roll-skill-action" | "follow-the-expert";
+type SkillActionEvent = "roll-skill" | "roll-skill-action" | "follow-the-expert";
 
 type SkillActionDataset = {
     id: string;
@@ -795,7 +814,7 @@ type RawSkillAction = {
 };
 
 type RawSkill = {
-    slug: SkillSlug;
+    slug: SkillSlug | "perception";
     actions: (ShareSkill | RawSkillAction)[];
 };
 
@@ -808,5 +827,12 @@ type SkillsContext = SidebarContext & {
     };
 };
 
-export { PF2eHudSidebarSkills, getMapLabel, getSkillVariantName, rollStatistic };
-export type { SkillVariantDataset };
+export {
+    PF2eHudSidebarSkills,
+    getMapLabel,
+    getSkillVariantName,
+    getStatistics,
+    prepareStatisticAction,
+    rollStatistic,
+};
+export type { FinalizedSkillAction, SkillVariantDataset };
