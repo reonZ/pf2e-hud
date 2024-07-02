@@ -224,7 +224,13 @@
         },
         "hud": {
             "toggleAdjustment": "Toggle Adjustment",
-            "tempHP": "Temporary Hit Points"
+            "tempHP": "Temporary Hit Points",
+            "resolve": {
+                "full": "{name} is full of stamina and doesn't need to rest.",
+                "breather": {
+                    "used": "{name} has {ratio} SP and spends a resolve point, taking a 10 minute breather. Stamina Refreshed."
+                }
+            }
         },
         "tooltip": {
             "distance": {
@@ -345,6 +351,17 @@
             "variants": {
                 "title": "Action Variants",
                 "statistic": "Statistic"
+            },
+            "resolve": {
+                "title": "Use Resolve Point",
+                "full": "{name} is full of stamina and doesn't need to rest.",
+                "breather": {
+                    "label": "Take a Breather",
+                    "hint": "Rest for 10 minutes, spend a resolve point and regain all your stamina."
+                },
+                "steel": {
+                    "hint": "Use an action, spend a resolve point and regain half your stamina."
+                }
             }
         }
     }

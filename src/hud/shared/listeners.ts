@@ -3,14 +3,21 @@ import {
     addListener,
     addListenerAll,
     elementDataset,
+    hasItemWithSourceId,
     htmlClosest,
     isOwnedItem,
+    localize,
+    promptDialog,
+    render,
     setFlag,
+    templateLocalize,
     unownedItemtoMessage,
+    warn,
 } from "foundry-pf2e";
 import { getCoverEffect } from "./advanced";
 import { getItemFromElement } from "./base";
 
+const RESOLVE_UUID = "Compendium.pf2e.feats-srd.Item.jFmdevE4nKevovzo";
 const ADJUSTMENTS_INDEX = ["weak", null, "elite"] as const;
 
 function addEnterKeyListeners(html: HTMLElement) {
@@ -48,10 +55,19 @@ function addStatsHeaderListeners(actor: ActorPF2e, html: HTMLElement, token?: To
         }
     });
 
-    addListenerAll(html, "[data-action]:not(.disabled)", (event, el) => {
+    addListenerAll(html, "[data-action]:not(.disabled)", async (event, el) => {
         const action = el.dataset.action as StatsHeaderActionEvent;
 
         switch (action) {
+            case "show-notes": {
+                break;
+            }
+
+            case "use-resolve": {
+                useResolve(actor as CharacterPF2e);
+                break;
+            }
+
             case "raise-shield": {
                 game.pf2e.actions.raiseAShield({ actors: [actor], event });
                 break;
@@ -147,6 +163,73 @@ function addStatsAdvancedListeners(actor: ActorPF2e, html: HTMLElement) {
     }
 }
 
+async function useResolve(actor: CharacterPF2e) {
+    const name = actor.name;
+
+    const checkCurrentData = () => {
+        const stamina = actor.attributes.hp.sp;
+        if (!stamina || stamina.value >= stamina.max) {
+            warn("hud.resolve.full", { name });
+            return null;
+        }
+
+        const resolve = actor.system.resources.resolve;
+        if (!resolve || resolve.value < 1) {
+            const warning = game.i18n.format("PF2E.Actions.SteelYourResolve.NoStamina", { name });
+            ui.notifications.warn(warning);
+            return null;
+        }
+
+        return { stamina, resolve };
+    };
+
+    if (!checkCurrentData()) return;
+
+    const data = await promptDialog<{ pick: "breather" | "steel" }>({
+        title: localize("dialogs.resolve.title"),
+        content: await render("dialogs/resolve", {
+            i18n: templateLocalize("dialogs.resolve"),
+            hasSteel: hasItemWithSourceId(actor, RESOLVE_UUID, "feat"),
+        }),
+    });
+    if (!data) return;
+
+    const stats = checkCurrentData();
+    if (!stats) return;
+
+    const ratio = `${stats.stamina.value}/${stats.stamina.max}`;
+
+    const [updates, message] = (() => {
+        if (data.pick === "breather") {
+            return [
+                {
+                    "system.attributes.hp.sp.value": stats.stamina.max,
+                    "system.resources.resolve.value": stats.resolve.value - 1,
+                },
+                localize("hud.resolve.breather.used", { name, ratio }),
+            ];
+        } else {
+            const newSP = stats.stamina.value + Math.floor(stats.stamina.max / 2);
+            return [
+                {
+                    "system.attributes.hp.sp.value": Math.min(newSP, stats.stamina.max),
+                    "system.resources.resolve.value": stats.resolve.value - 1,
+                },
+                game.i18n.format("PF2E.Actions.SteelYourResolve.RecoverStamina", { name, ratio }),
+            ];
+        }
+    })();
+
+    const ChatMessagePF2e = getDocumentClass("ChatMessage");
+    ChatMessagePF2e.create({
+        content: message,
+        author: game.user.id,
+        speaker: ChatMessagePF2e.getSpeaker({ actor }),
+    });
+
+    actor.update(updates);
+}
+
 function addSendItemToChatListeners(
     actor: ActorPF2e,
     html: HTMLElement,
@@ -169,16 +252,9 @@ function addSendItemToChatListeners(
     });
 }
 
-type StatsHeaderActionEvent = "take-cover" | "raise-shield";
+type StatsHeaderActionEvent = "take-cover" | "raise-shield" | "show-notes" | "use-resolve";
 
-type StatsAdvancedActionEvent =
-    | "use-resolve"
-    | "show-notes"
-    | "recovery-chec"
-    | "recall-knowledge"
-    | "roll-statistic"
-    | "open-sidebar"
-    | "change-speed";
+type StatsAdvancedActionEvent = "roll-statistic" | "change-speed";
 
 type StatsAdvancedSliderEvent = "hero" | "wounded" | "dying";
 

@@ -688,6 +688,7 @@ async function getStatisticVariants(
 
     const statistics = STATISTICS.slice();
 
+    // TODO revisite that when we know more about the new lore system
     for (const lore of actor.itemTypes.lore) {
         const slug = lore.slug ?? game.pf2e.system.sluggify(lore.name);
         statistics.push({ value: slug, label: lore.name });
@@ -701,21 +702,13 @@ async function getStatisticVariants(
         dc,
     });
 
-    const result = await promptDialog(
+    return promptDialog<{ statistic: string; agile?: boolean; dc?: number }>(
         {
             title: actionLabels[actionId] ?? localize("dialogs.variants.title"),
             content,
         },
         { width: 280 }
     );
-
-    if (!result) return;
-
-    return {
-        dc: htmlQuery<HTMLInputElement>(result, "[name='dc']")?.value,
-        agile: htmlQuery<HTMLInputElement>(result, "[name='agile']")?.checked,
-        statistic: htmlQuery<HTMLSelectElement>(result, "[name='statistic']")!.value,
-    };
 }
 
 function getSkillVariantName(actionId: string, variant: string) {
