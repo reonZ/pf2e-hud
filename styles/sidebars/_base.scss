@@ -43,6 +43,10 @@
     font-size: var(--font-size);
     pointer-events: none;
 
+    select {
+        height: 1.4em;
+    }
+
     .rank {
         &.\30 {
             color: var(--color-rank-0);
@@ -205,7 +209,6 @@
         select {
             margin-left: var(--toggle-margin-left);
             max-width: calc(100% - var(--toggle-margin-left));
-            height: 1.4em;
         }
     }
 
@@ -281,6 +284,55 @@
 
             &:hover {
                 background: var(--action-highlight);
+            }
+        }
+
+        &.statistic {
+            flex-direction: column;
+            height: unset;
+
+            .skill {
+                flex: 0 0 1.5em;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                .name {
+                    background: none;
+
+                    .action-glyph {
+                        font-size: 0.9em;
+                    }
+                }
+
+                .controls {
+                    [data-action="roll-statistic-action"] {
+                        font-size: 0.9em;
+                    }
+
+                    [data-action="send-action-to-chat"] {
+                        font-size: 0.85em;
+                        margin-bottom: -1px;
+                    }
+                }
+            }
+
+            &:hover {
+                .skill {
+                    background: var(--action-highlight);
+                }
+            }
+
+            &:not(:hover) {
+                .controls {
+                    visibility: hidden;
+                }
+            }
+
+            &:not(.proficient) {
+                .name {
+                    color: var(--color-disabled);
+                }
             }
         }
 

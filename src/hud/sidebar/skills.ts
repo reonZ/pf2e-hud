@@ -21,7 +21,7 @@ const NATURAL_MEDICINE = "Compendium.pf2e.feats-srd.Item.WC4xLBGmBsdOdHWu";
 const FOLLOW_THE_EXPERT = "Compendium.pf2e.actionspf2e.Item.tfa4Sh7wcxCEqL29";
 const FOLLOW_THE_EXPERT_EFFECT = "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3XWMkd3";
 
-const SHARED = {
+const SHARED_SKILLS = {
     "recall-knowledge": {
         cost: 1,
         uuid: "Compendium.pf2e.actionspf2e.Item.1OagaWtBpVXExToo",
@@ -45,19 +45,19 @@ const SHARED = {
     subsist: {
         uuid: "Compendium.pf2e.actionspf2e.Item.49y9Ec4bDii8pcD3",
     },
-} satisfies Record<string, Omit<RawSkillAction, "id">>;
+} satisfies Record<string, Omit<RawSkillAction, "actionId">>;
 
 const SKILLS: RawSkill[] = [
     {
         slug: "perception",
         actions: [
             {
-                id: "seek",
+                actionId: "seek",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.BlAOM2X92SI6HMtJ",
             },
             {
-                id: "sense-motive",
+                actionId: "sense-motive",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.1xRFPTFtWtGJ9ELw",
             },
@@ -67,23 +67,23 @@ const SKILLS: RawSkill[] = [
         slug: "acrobatics",
         actions: [
             {
-                id: "balance",
+                actionId: "balance",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.M76ycLAqHoAgbcej",
             },
             {
-                id: "tumble-through",
+                actionId: "tumble-through",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.21WIfSu7Xd7uKqV8",
             },
             {
-                id: "maneuver-in-flight",
+                actionId: "maneuver-in-flight",
                 trained: true,
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.Qf1ylAbdVi1rkc8M",
             },
             {
-                id: "squeeze",
+                actionId: "squeeze",
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.kMcV8e5EZUxa6evt",
             },
@@ -94,7 +94,7 @@ const SKILLS: RawSkill[] = [
         actions: [
             "recall-knowledge",
             {
-                id: "borrow-arcane-spell",
+                actionId: "borrow-arcane-spell",
                 trained: true,
                 label: "pf2e-hud.actions.borrowArcaneSpell",
                 uuid: "Compendium.pf2e.actionspf2e.Item.OizxuPb44g3eHPFh",
@@ -108,61 +108,61 @@ const SKILLS: RawSkill[] = [
         slug: "athletics",
         actions: [
             {
-                id: "climb",
+                actionId: "climb",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.pprgrYQ1QnIDGZiy",
             },
             {
-                id: "force-open",
+                actionId: "force-open",
                 cost: 1,
                 map: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.SjmKHgI7a5Z9JzBx",
             },
             {
-                id: "grapple",
+                actionId: "grapple",
                 cost: 1,
                 map: true,
                 agile: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.PMbdMWc2QroouFGD",
             },
             {
-                id: "high-jump",
+                actionId: "high-jump",
                 cost: 2,
                 uuid: "Compendium.pf2e.actionspf2e.Item.2HJ4yuEFY1Cast4h",
             },
             {
-                id: "long-jump",
+                actionId: "long-jump",
                 cost: 2,
                 uuid: "Compendium.pf2e.actionspf2e.Item.JUvAvruz7yRQXfz2",
             },
             {
-                id: "reposition",
+                actionId: "reposition",
                 cost: 1,
                 map: true,
                 agile: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.lOE4yjUnETTdaf2T",
             },
             {
-                id: "shove",
+                actionId: "shove",
                 cost: 1,
                 map: true,
                 agile: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.7blmbDrQFNfdT731",
             },
             {
-                id: "swim",
+                actionId: "swim",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.c8TGiZ48ygoSPofx",
             },
             {
-                id: "trip",
+                actionId: "trip",
                 cost: 1,
                 map: true,
                 agile: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.ge56Lu1xXVFYUnLP",
             },
             {
-                id: "disarm",
+                actionId: "disarm",
                 cost: 1,
                 map: true,
                 agile: true,
@@ -176,17 +176,17 @@ const SKILLS: RawSkill[] = [
         actions: [
             "recall-knowledge",
             {
-                id: "repair",
+                actionId: "repair",
                 uuid: "Compendium.pf2e.actionspf2e.Item.bT3skovyLUtP22ME",
             },
             {
-                id: "craft",
+                actionId: "craft",
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.rmwa3OyhTZ2i2AHl",
             },
             "earnIncome",
             {
-                id: "identify-alchemy",
+                actionId: "identify-alchemy",
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.Q4kdWVOf2ztIBFg1",
             },
@@ -196,21 +196,21 @@ const SKILLS: RawSkill[] = [
         slug: "deception",
         actions: [
             {
-                id: "create-a-diversion",
+                actionId: "create-a-diversion",
                 cost: 1,
                 variants: ["distracting-words", "gesture", "trick"],
                 uuid: "Compendium.pf2e.actionspf2e.Item.GkmbTGfg8KcgynOA",
             },
             {
-                id: "impersonate",
+                actionId: "impersonate",
                 uuid: "Compendium.pf2e.actionspf2e.Item.AJstokjdG6iDjVjE",
             },
             {
-                id: "lie",
+                actionId: "lie",
                 uuid: "Compendium.pf2e.actionspf2e.Item.ewwCglB7XOPLUz72",
             },
             {
-                id: "feint",
+                actionId: "feint",
                 cost: 1,
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.QNAVeNKtHA0EUw4X",
@@ -221,21 +221,21 @@ const SKILLS: RawSkill[] = [
         slug: "diplomacy",
         actions: [
             {
-                id: "bonMot",
+                actionId: "bonMot",
                 cost: 1,
                 condition: (actor) => hasItemWithSourceId(actor, BON_MOT, "feat"),
                 uuid: "Compendium.pf2e.feats-srd.Item.0GF2j54roPFIDmXf",
             },
             {
-                id: "gather-information",
+                actionId: "gather-information",
                 uuid: "Compendium.pf2e.actionspf2e.Item.plBGdZhqq5JBl1D8",
             },
             {
-                id: "make-an-impression",
+                actionId: "make-an-impression",
                 uuid: "Compendium.pf2e.actionspf2e.Item.OX4fy22hQgUHDr0q",
             },
             {
-                id: "request",
+                actionId: "request",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.DCb62iCBrJXy0Ik6",
             },
@@ -245,11 +245,11 @@ const SKILLS: RawSkill[] = [
         slug: "intimidation",
         actions: [
             {
-                id: "coerce",
+                actionId: "coerce",
                 uuid: "Compendium.pf2e.actionspf2e.Item.tHCqgwjtQtzNqVvd",
             },
             {
-                id: "demoralize",
+                actionId: "demoralize",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.2u915NdUyQan6uKF",
             },
@@ -259,7 +259,7 @@ const SKILLS: RawSkill[] = [
         slug: "medicine",
         actions: [
             {
-                id: "administer-first-aid",
+                actionId: "administer-first-aid",
                 cost: 2,
                 variants: ["stabilize", "stop-bleeding"],
                 rollOption: "administer-first-aid",
@@ -267,18 +267,18 @@ const SKILLS: RawSkill[] = [
             },
             "recall-knowledge",
             {
-                id: "treat-disease",
+                actionId: "treat-disease",
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.TC7OcDa7JlWbqMaN",
             },
             {
-                id: "treat-poison",
+                actionId: "treat-poison",
                 cost: 1,
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.KjoCEEmPGTeFE4hh",
             },
             {
-                id: "treatWounds",
+                actionId: "treatWounds",
                 label: "PF2E.Actions.TreatWounds.Label",
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.1kGNdIIhuglAjIp9",
@@ -289,13 +289,13 @@ const SKILLS: RawSkill[] = [
         slug: "nature",
         actions: [
             {
-                id: "command-an-animal",
+                actionId: "command-an-animal",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.q9nbyIF0PEBqMtYe",
             },
             "recall-knowledge",
             {
-                id: "treatWounds",
+                actionId: "treatWounds",
                 trained: true,
                 label: "PF2E.Actions.TreatWounds.Label",
                 condition: (actor) => hasItemWithSourceId(actor, NATURAL_MEDICINE, "feat"),
@@ -313,7 +313,7 @@ const SKILLS: RawSkill[] = [
         slug: "performance",
         actions: [
             {
-                id: "perform",
+                actionId: "perform",
                 cost: 1,
                 variants: [
                     "acting",
@@ -341,7 +341,7 @@ const SKILLS: RawSkill[] = [
             "recall-knowledge",
             "subsist",
             {
-                id: "create-forgery",
+                actionId: "create-forgery",
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.ftG89SjTSa9DYDOD",
             },
@@ -352,17 +352,17 @@ const SKILLS: RawSkill[] = [
         slug: "stealth",
         actions: [
             {
-                id: "conceal-an-object",
+                actionId: "conceal-an-object",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.qVNVSmsgpKFGk9hV",
             },
             {
-                id: "hide",
+                actionId: "hide",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.XMcnh4cSI32tljXa",
             },
             {
-                id: "sneak",
+                actionId: "sneak",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.VMozDqMMuK5kpoX4",
             },
@@ -372,17 +372,17 @@ const SKILLS: RawSkill[] = [
         slug: "survival",
         actions: [
             {
-                id: "sense-direction",
+                actionId: "sense-direction",
                 uuid: "Compendium.pf2e.actionspf2e.Item.fJImDBQfqfjKJOhk",
             },
             "subsist",
             {
-                id: "cover-tracks",
+                actionId: "cover-tracks",
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.SB7cMECVtE06kByk",
             },
             {
-                id: "track",
+                actionId: "track",
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.EA5vuSgJfiHH7plD",
             },
@@ -392,23 +392,23 @@ const SKILLS: RawSkill[] = [
         slug: "thievery",
         actions: [
             {
-                id: "palm-an-object",
+                actionId: "palm-an-object",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.ijZ0DDFpMkWqaShd",
             },
             {
-                id: "steal",
+                actionId: "steal",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.RDXXE7wMrSPCLv5k",
             },
             {
-                id: "disable-device",
+                actionId: "disable-device",
                 cost: 2,
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.cYdz2grcOcRt4jk6",
             },
             {
-                id: "pick-a-lock",
+                actionId: "pick-a-lock",
                 cost: 2,
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.2EE4aF4SZpYf0R6H",
@@ -417,13 +417,18 @@ const SKILLS: RawSkill[] = [
     },
 ];
 
-function prepareStatisticAction(statistic: string, rawAction: ShareSkill | RawSkillAction) {
-    const [id, action]: [string, Omit<RawSkillAction, "id">] =
-        typeof rawAction === "string" ? [rawAction, SHARED[rawAction]] : [rawAction.id, rawAction];
+function prepareStatisticAction(
+    statistic: string | undefined,
+    rawAction: ShareSkill | RawSkillAction
+) {
+    const [actionId, action]: [string, Omit<RawSkillAction, "actionId">] =
+        typeof rawAction === "string"
+            ? [rawAction, SHARED_SKILLS[rawAction]]
+            : [rawAction.actionId, rawAction];
 
-    const actionKey = game.pf2e.system.sluggify(id, { camel: "bactrian" });
+    const actionKey = game.pf2e.system.sluggify(actionId, { camel: "bactrian" });
     const label = game.i18n.localize(action.label ?? `PF2E.Actions.${actionKey}.Title`);
-    actionLabels[id] = label;
+    actionLabels[actionId] = label;
 
     const variants: ActionVariant[] | MapVariant[] | undefined = (() => {
         if (action.map) {
@@ -447,14 +452,14 @@ function prepareStatisticAction(statistic: string, rawAction: ShareSkill | RawSk
         return action.variants?.map((slug) => {
             return {
                 slug,
-                label: getSkillVariantName(id, slug),
+                label: getSkillVariantName(actionId, slug),
             } satisfies ActionVariant;
         });
     })();
 
     const dataset = dataToDatasetString<keyof SkillActionDataset>({
-        id,
-        skillSlug: statistic,
+        actionId,
+        statistic: statistic,
         itemUuid: action.uuid,
         option: action.rollOption,
     });
@@ -462,7 +467,7 @@ function prepareStatisticAction(statistic: string, rawAction: ShareSkill | RawSk
     return {
         ...action,
         variants,
-        id,
+        actionId,
         label,
         dataset,
         dragImg: getActionIcon(action.cost ?? null),
@@ -531,7 +536,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
         baseDragData: Record<string, JSONValue>,
         item: Maybe<ItemPF2e<ActorPF2e>>
     ) {
-        const { itemUuid, id, skillSlug, option } = elementDataset<SkillActionDataset>(
+        const { itemUuid, actionId, statistic, option } = elementDataset<SkillActionDataset>(
             htmlClosest(target, ".item")!
         );
 
@@ -541,8 +546,8 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
             uuid: itemUuid,
             itemType: "action",
             actorLess: true,
-            actionId: id,
-            skillSlug,
+            actionId,
+            statistic,
             option,
         };
     }
@@ -570,10 +575,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
         const actor = this.actor;
         const action = target.dataset.action as SkillActionEvent;
 
-        const getActionData = () => {
-            const actionElement = htmlClosest(target, "[data-skill-slug]")!;
-            return actionElement.dataset as SkillActionDataset;
-        };
+        if (event.button === 2 && action !== "roll-statistic-action") return;
 
         switch (action) {
             case "roll-skill": {
@@ -583,24 +585,13 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
                 break;
             }
 
-            case "roll-skill-action": {
-                const { id, skillSlug, option } = getActionData();
-                const { agile, map, variant } = target.dataset as SkillVariantDataset;
-
-                rollStatistic(
-                    actor,
-                    event,
-                    skillSlug,
-                    id,
-                    {
-                        option,
-                        variant,
-                        map: map ? (Number(map) as 1 | 2) : undefined,
-                        agile: agile === "true",
+            case "roll-statistic-action": {
+                rollStatistic(actor, event, getStatisticDataFromElement(target), {
+                    requireVariants: event.button === 2,
+                    onRoll: () => {
+                        this.parentHUD.closeIf("roll-skill");
                     },
-                    event.button === 2
-                );
-
+                });
                 break;
             }
 
@@ -624,20 +615,26 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
 async function rollStatistic(
     actor: ActorPF2e,
     event: MouseEvent,
-    statistic: string,
-    actionId: string,
-    {
-        variant,
-        agile,
-        map,
-        option,
-    }: { option?: string; map?: 1 | 2; variant?: string; agile?: boolean },
-    requireVariants = false
+    { variant, agile, map, option, actionId, statistic, dc }: StatisticData,
+    { requireVariants = false, onRoll }: { requireVariants?: boolean; onRoll?: Function } = {}
 ) {
     const action = game.pf2e.actions.get(actionId) ?? game.pf2e.actions[actionId];
 
     const rollOptions = option ? [`action:${option}`] : undefined;
     if (rollOptions && variant) rollOptions.push(`action:${option}:${variant}`);
+
+    if (requireVariants) {
+        const variants = await getStatisticVariants(actor, actionId, {
+            dc,
+            statistic,
+            agile: map ? agile : undefined,
+        });
+        if (!variants) return;
+
+        dc = variants.dc;
+        agile = variants.agile;
+        statistic = variants.statistic;
+    }
 
     const options = {
         event,
@@ -645,18 +642,9 @@ async function rollStatistic(
         variant,
         rollOptions,
         modifiers: [] as ModifierPF2e[],
-    } satisfies Partial<ActionVariantUseOptions>;
-
-    if (requireVariants) {
-        const variants = await getStatisticVariants(actor, actionId, {
-            statistic,
-            agile: map ? agile : undefined,
-        });
-        if (!variants) return;
-
-        agile = variants.agile;
-        statistic = variants.statistic;
-    }
+        difficultyClass: dc ? { value: dc } : undefined,
+    } satisfies Partial<ActionVariantUseOptions> &
+        (SingleCheckActionVariantData | SkillActionOptions);
 
     if (map) {
         const modifier = new game.pf2e.Modifier({
@@ -667,7 +655,7 @@ async function rollStatistic(
     }
 
     if (!action) {
-        actor.getStatistic(statistic)?.roll(options);
+        actor.getStatistic(statistic ?? "")?.roll(options);
         return;
     }
 
@@ -678,6 +666,8 @@ async function rollStatistic(
         (options as SkillActionOptions).skill = statistic;
         action(options);
     }
+
+    onRoll?.();
 }
 
 let STATISTICS: { value: string; label: string }[] | undefined;
@@ -747,12 +737,31 @@ function getMapLabel(map: 1 | 2, agile: boolean) {
     });
 }
 
-type SkillActionEvent = "roll-skill" | "roll-skill-action" | "follow-the-expert";
+function getStatisticDataFromElement(el: HTMLElement): StatisticData {
+    const actionElement = htmlClosest(el, ".item.statistic");
+    const { agile, map, variant } = el.dataset as SkillVariantDataset;
+
+    return {
+        ...(actionElement?.dataset as SkillActionDataset),
+        map: map ? (Number(map) as 1 | 2) : undefined,
+        agile: agile === "true",
+        variant,
+    };
+}
+
+type StatisticData = SkillActionDataset & {
+    map?: 1 | 2;
+    variant?: string;
+    agile?: boolean;
+    dc?: number;
+};
+
+type SkillActionEvent = "roll-skill" | "roll-statistic-action" | "follow-the-expert";
 
 type SkillActionDataset = {
-    id: string;
+    actionId: string;
     itemUuid: string;
-    skillSlug: SkillSlug;
+    statistic?: SkillSlug | string;
     option?: string;
 };
 
@@ -762,7 +771,7 @@ type SkillVariantDataset = {
     agile?: StringBoolean;
 };
 
-type ShareSkill = keyof typeof SHARED;
+type ShareSkill = keyof typeof SHARED_SKILLS;
 
 type FinalizedSkill = Omit<PreparedSkill, "actions"> & {
     mod: number;
@@ -801,9 +810,9 @@ type PreparedSkillAction = Omit<RawSkillAction, "variants"> & {
 };
 
 type RawSkillAction = {
-    id: string;
+    actionId: string;
     uuid: string;
-    cost?: 1 | 2;
+    cost?: ActionCost["type"] | ActionCost["value"];
     map?: true;
     agile?: true;
     label?: string;
@@ -828,11 +837,13 @@ type SkillsContext = SidebarContext & {
 };
 
 export {
+    SHARED_SKILLS,
     PF2eHudSidebarSkills,
     getMapLabel,
     getSkillVariantName,
+    getStatisticDataFromElement,
     getStatistics,
     prepareStatisticAction,
     rollStatistic,
 };
-export type { FinalizedSkillAction, SkillVariantDataset };
+export type { FinalizedSkillAction, PreparedSkillAction, RawSkillAction, SkillVariantDataset };

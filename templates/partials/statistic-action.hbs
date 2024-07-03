@@ -1,0 +1,34 @@
+<div class="item statistic{{#if action.proficient}} proficient{{/if}}" {{{action.dataset}}} {{#if
+    (and action.proficient (not action.variants))}} draggable="true" {{/if}}>
+    <div class="skill">
+        <div class="name">
+            <a data-action="item-description">
+                {{action.label}}
+                {{{actionGlyph action.cost}}}
+            </a>
+        </div>
+        <div class="controls">
+            {{#unless (or action.variants (not action.proficient))}}
+            <a data-action="roll-statistic-action">
+                <i class="fa-solid fa-dice-d20"></i>
+            </a>
+            {{/unless}}
+            <a data-action="send-to-chat">
+                <i class="fa-solid fa-message"></i>
+            </a>
+        </div>
+    </div>
+    {{#if (and action.proficient action.variants)}}
+    <div class="variants">
+        {{#each action.variants as |variant|}}
+        <div class="variant" data-action="roll-statistic-action" {{#if variant.slug}}
+            data-variant="{{variant.slug}}" {{/if}} {{#if variant.map}} data-map="{{variant.map}}"
+            {{/if}} {{#if variant.agile}} data-agile="{{variant.agile}}" {{/if}} draggable="true"
+            data-drag-parent=".item">
+            {{variant.label}}
+        </div>
+        {{/each}}
+    </div>
+    {{/if}}
+    <img src="{{action.dragImg}}" class="drag-img">
+</div>

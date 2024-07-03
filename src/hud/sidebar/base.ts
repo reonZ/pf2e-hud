@@ -97,6 +97,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
             "strike_auxiliaries",
             "action_blast-row",
             "action_strike-row",
+            "statistic-action",
         ];
     }
 
@@ -316,8 +317,11 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
     #activateListeners(html: HTMLElement) {
         addEnterKeyListeners(html);
-        addDragoverListener(this.element);
         addSendItemToChatListeners(this.actor, html);
+
+        if (this.key !== "extras") {
+            addDragoverListener(this.element);
+        }
 
         addListenerAll(html, "[draggable='true']", "dragstart", async (event, target) => {
             if (!event.dataTransfer) return;

@@ -19,55 +19,6 @@
         }
     }
 
-    .item:not(.action) {
-        flex-direction: column;
-        height: unset;
-
-        .skill {
-            flex: 0 0 1.5em;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            .name {
-                background: none;
-
-                .action-glyph {
-                    font-size: 0.9em;
-                }
-            }
-
-            .controls {
-                [data-action="roll-skill-action"] {
-                    font-size: 0.9em;
-                }
-
-                [data-action="send-action-to-chat"] {
-                    font-size: 0.85em;
-                    margin-bottom: -1px;
-                }
-            }
-        }
-
-        &:hover {
-            .skill {
-                background: var(--action-highlight);
-            }
-        }
-
-        &:not(:hover) {
-            .controls {
-                visibility: hidden;
-            }
-        }
-
-        &:not(.proficient) {
-            .name {
-                color: var(--color-disabled);
-            }
-        }
-    }
-
     .variants {
         max-width: var(--max-column-width);
     }

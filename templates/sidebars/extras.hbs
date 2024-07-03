@@ -1,0 +1,68 @@
+{{#if initiative}}
+<div class="initiative">
+    <a data-action="roll-initiative">
+        <i class="fa-solid fa-dice-d20"></i>
+        {{localize 'PF2E.InitiativeLabel'}}
+    </a>
+    <select name="system.initiative.statistic">
+        {{selectOptions statistics selected='perception'}}
+    </select>
+</div>
+<hr>
+{{/if}}
+{{#if isCharacter}}
+<div class="row">
+    <a data-action="rest-for-the-night">
+        <i class="fa-solid fa-bed"></i>
+        {{localize 'PF2E.Actor.Character.Rest.Label'}}
+    </a>
+</div>
+{{#if dailies}}
+<div class="row dailies">
+    {{#if dailies.canPrep}}
+    <a data-action="prepare-dailies">
+        <i class="fa-solid fa-mug-saucer"></i>
+        {{localize 'pf2e-dailies.sheet.title'}}
+    </a>
+    {{else}}
+    <span data-tooltip="{{dailies.tooltip}}" data-tooltip-class="pf2e">
+        <i class="fa-solid fa-mug-saucer"></i>
+        {{localize 'pf2e-dailies.sheet.title'}}
+    </span>
+    {{/if}}
+</div>
+{{/if}}
+<hr>
+{{/if}}
+{{#each actions as |action|}}
+{{> (@root.partial 'statistic-action') action=action}}
+{{/each}}
+<hr>
+{{#if macros.length}}
+{{#each macros as |macro|}}
+<div class="item macro" data-uuid="{{macro.uuid}}">
+    <div class="image">
+        <img src="{{macro.img}}">
+
+    </div>
+    <div class="details">
+        <div class="name">{{macro.name}}</div>
+        <div class="extras">
+            <div class="actions">
+                <a data-action="use-macro" data-tooltip="{{@root.i18n.path 'use.title'}}">
+                    <i class="fa-duotone fa-play"></i>
+                </a>
+                <a data-action="edit-macro" data-tooltip="{{@root.i18n.path 'edit.title'}}">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </a>
+                <a data-action="delete-macro" data-tooltip="{{@root.i18n.path 'delete.title'}}">
+                    <i class="fa-solid fa-trash"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{{/each}}
+{{else}}
+<div class="no-macro">{{i18n 'noMacro'}}</div>
+{{/if}}

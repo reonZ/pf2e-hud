@@ -1193,7 +1193,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         switch (shortcut.type) {
             case "skill": {
                 if (!shortcut.item) return;
-                rollStatistic(actor, event, shortcut.skillSlug, shortcut.actionId, shortcut);
+                rollStatistic(actor, event, shortcut);
                 break;
             }
 
@@ -1444,7 +1444,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     item.isOfType("action") &&
                     dropData.actorLess &&
                     typeof dropData.uuid === "string" &&
-                    typeof dropData.skillSlug === "string" &&
+                    typeof dropData.statistic === "string" &&
                     typeof dropData.actionId === "string"
                 ) {
                     newShortcut = {
@@ -1453,7 +1453,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         groupIndex,
                         itemUuid: dropData.uuid,
                         actionId: dropData.actionId,
-                        skillSlug: dropData.skillSlug,
+                        statistic: dropData.statistic,
                         map: dropData.map ? (Number(dropData.map) as 1 | 2) : undefined,
                         agile: dropData.agile === "true",
                         variant: dropData.variant ?? undefined,
@@ -1582,10 +1582,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     async #overrideShortcutData() {
+        const userId = game.user.id;
         const actor = this.actor!;
         const shortcutData = foundry.utils.deepClone(this.#shortcutData);
-        await unsetFlag(actor, "persistent.shortcuts", game.user.id);
-        await setFlag(actor, "persistent.shortcuts", game.user.id, shortcutData);
+        await unsetFlag(actor, "persistent.shortcuts", userId);
+        await setFlag(actor, "persistent.shortcuts", userId, shortcutData);
     }
 
     async #fillShortcut(
@@ -1781,7 +1782,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 }
 
                 const skillLabel = game.i18n.localize(
-                    CONFIG.PF2E.skillList[shortcutData.skillSlug]
+                    CONFIG.PF2E.skillList[shortcutData.statistic]
                 );
                 let name = `${skillLabel}: `;
 
@@ -2271,7 +2272,7 @@ type AttackShortcutData = BlastShortcutData | StrikeShortcutData;
 type SkillShortcutData = ShortcutDataBase<"skill"> & {
     type: "skill";
     actionId: string;
-    skillSlug: SkillSlug;
+    statistic: SkillSlug;
     itemUuid: string;
     variant: string | undefined;
     map: 1 | 2 | undefined;
@@ -2503,7 +2504,7 @@ type DropData = HotbarDropData & {
 
 type SkillDropData = Partial<SkillVariantDataset> & {
     actionId?: string;
-    skillSlug?: SkillSlug;
+    statistic?: SkillSlug;
     actorLess?: StringBoolean;
     option?: string;
 };

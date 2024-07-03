@@ -340,7 +340,18 @@
                 "follow": "Follow the Expert"
             },
             "extras": {
-                "title": "Extras"
+                "title": "Extras",
+                "noMacro": "Drop Macros Here",
+                "delete": {
+                    "title": "Delete Macro",
+                    "confirm": "Are you sure you want to delete this macro?"
+                },
+                "use": {
+                    "title": "Run Macro"
+                },
+                "edit": {
+                    "title": "Edit Macro"
+                }
             }
         },
         "leftClick": "[Left Click]",
@@ -351,7 +362,8 @@
         "dialogs": {
             "variants": {
                 "title": "Action Variants",
-                "statistic": "Statistic"
+                "statistic": "Statistic",
+                "dc": "Difficulty Class"
             },
             "resolve": {
                 "full": "{name} is full of stamina and doesn't need to rest.",
