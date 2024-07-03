@@ -195,7 +195,8 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
                 if (index === -1) return;
 
                 macros.splice(index, 1);
-                setFlag(actor, flag, macros);
+                await setFlag(this.worldActor, flag, macros);
+                this.parentHUD.render();
 
                 break;
             }
@@ -215,7 +216,7 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
     }
 
     _activateListeners(html: HTMLElement) {
-        html.addEventListener("drop", (event) => {
+        html.addEventListener("drop", async (event) => {
             const { type, uuid } = TextEditor.getDragEventData(event);
             if (type !== "Macro" || typeof uuid !== "string" || !fromUuidSync(uuid)) return;
 
@@ -225,7 +226,8 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
             if (macros.includes(uuid)) return;
 
             macros.push(uuid);
-            setFlag(actor, flag, macros);
+            await setFlag(actor, flag, macros);
+            this.parentHUD.render();
         });
     }
 }
