@@ -218,6 +218,7 @@ async function useResolve(actor: CharacterPF2e) {
     if (!checkCurrentData()) return;
 
     const data = await promptDialog<{ pick: "breather" | "steel" }>({
+        classes: ["pf2e-hud-resolve"],
         title: localize("hud.resolve.title"),
         content: await render("dialogs/resolve", {
             i18n: templateLocalize("dialogs.resolve"),

@@ -1,14 +1,6 @@
 #pf2e-hud-sidebar .inner.extras {
     --hr-spacing: 0.5em 0;
 
-    input {
-        &[type="number"] {
-            flex: 0 0 2em;
-            text-align: center;
-            padding: 0;
-        }
-    }
-
     .row {
         min-height: 1.8em;
         display: flex;

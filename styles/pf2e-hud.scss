@@ -1,7 +1,9 @@
 @import "shared";
+
+@import "dialog";
 @import "persistent";
+@import "popup";
+@import "sidebars";
 @import "token";
 @import "tooltip";
 @import "tracker";
-@import "sidebars";
-@import "popup";
