@@ -1,3 +1,28 @@
+# 0.14.0
+
+-   IMPORTANT:
+    -   this release requires you to update `PF2e Dailies` to version `3.5.3` if used in your world
+    -   changes have been made to the data-structure of skills shortcuts, you will need to replace the existing ones
+-   added `Show Notes` functionality for NPCs
+-   added `Use Resolve Point` functionality for Characters (added a tooltip for the `R` btn)
+-   added perception and perception actions to the `Skills` sidebar
+-   added implementation for the `Extras` sidebar
+    -   everything is functional except the `Recall Knowledge` action
+    -   the `Initiative` select is not persistent, it doesn't modify the value saved on the actor and is only used for the next initiative roll from the sidebar
+    -   macros are saved on the world actor for unlinked actors and are shared between all tokens
+-   `Persistent HUD`:
+    -   added a variants dialog for skill/statistic actions when right clicking on the roll button
+        -   can change the associated statistic
+        -   can add/remove the agile trait behaviour for rolls that have a MAP
+        -   can change the DC value for rolls with a defined DC
+    -   the `Auto-Set Actor` behaviour has changed, it is now "smarter"
+        -   manually set actor will override any other behaviour (it will never change regardless of the auto-set option)
+        -   if the persistent actor is supposed to change but leads to no actor, it will automatically revert to the user assigned actor
+            -   this can happen for instance when the current combatant/selected token isn't owned or an invalid actor
+            -   it can also happen when un-selecting a token while using the `On Token Selection` option
+        -   similar behaviour will happen when manually un-setting the actor, it will first try to look at the currently selected token/current combatant and then for the user assigned actor.
+    -   fixed action shortcut opening the action popup instead of running the toolbelt macro
+
 # 0.13.0
 
 -   added a `Send to Chat` button to the item popup
@@ -16,7 +41,7 @@
     -   added a new `Hide Untrained` setting to hide skill actions that require a character to be proficient when they are not
     -   added skill actions and their variants to the skills sidebar (lore skills are on standby for now)
     -   added `Follow the Expert` to the skills sidebar
-    -   improved the margins of the differnt headers and items
+    -   improved the margins of the different headers and items
 -   `Token HUD`:
     -   added the attack sidebar icon to the `Hazard` and `Army` HUD next to level (though the army one is unusable for now)
     -   removed sidebars panel from `Hazard` actors
