@@ -526,6 +526,26 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
     });
 }
 
+function getStatisticDragDataFromElement(el: HTMLElement) {
+    const itemElement = htmlClosest(el, ".item");
+    if (!itemElement) return {};
+
+    const { itemUuid, actionId, statistic, option } =
+        elementDataset<SkillActionDataset>(itemElement);
+
+    return {
+        ...el.dataset,
+        type: "Item",
+        uuid: itemUuid,
+        itemType: "action",
+        actorLess: true,
+        actionId,
+        statistic,
+        option,
+        isStatistic: true,
+    };
+}
+
 class PF2eHudSidebarSkills extends PF2eHudSidebar {
     get key(): SidebarName {
         return "skills";
@@ -536,20 +556,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
         baseDragData: Record<string, JSONValue>,
         item: Maybe<ItemPF2e<ActorPF2e>>
     ) {
-        const { itemUuid, actionId, statistic, option } = elementDataset<SkillActionDataset>(
-            htmlClosest(target, ".item")!
-        );
-
-        return {
-            ...target.dataset,
-            type: "Item",
-            uuid: itemUuid,
-            itemType: "action",
-            actorLess: true,
-            actionId,
-            statistic,
-            option,
-        };
+        return getStatisticDragDataFromElement(target);
     }
 
     async _prepareContext(options: SidebarRenderOptions): Promise<SkillsContext> {
@@ -616,12 +623,21 @@ async function rollStatistic(
     actor: ActorPF2e,
     event: MouseEvent,
     { variant, agile, map, option, actionId, statistic, dc }: StatisticData,
-    { requireVariants = false, onRoll }: { requireVariants?: boolean; onRoll?: Function } = {}
+    { requireVariants, onRoll }: { requireVariants?: boolean; onRoll?: Function } = {}
 ) {
+    if (actionId === "recall-knowledge" && !statistic) {
+        return;
+    }
+
     const action = game.pf2e.actions.get(actionId) ?? game.pf2e.actions[actionId];
 
     const rollOptions = option ? [`action:${option}`] : undefined;
     if (rollOptions && variant) rollOptions.push(`action:${option}:${variant}`);
+
+    if (actionId === "aid") {
+        requireVariants = true;
+        dc = 15;
+    }
 
     if (requireVariants) {
         const variants = await getStatisticVariants(actor, actionId, {
@@ -715,6 +731,7 @@ async function getStatisticVariants(
         {
             title: actionLabels[actionId] ?? localize("dialogs.variants.title"),
             content,
+            classes: ["pf2e-hud-skills"],
         },
         { width: 280 }
     );
@@ -842,6 +859,7 @@ export {
     getMapLabel,
     getSkillVariantName,
     getStatisticDataFromElement,
+    getStatisticDragDataFromElement,
     getStatistics,
     prepareStatisticAction,
     rollStatistic,

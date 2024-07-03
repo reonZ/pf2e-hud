@@ -1444,7 +1444,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     item.isOfType("action") &&
                     dropData.actorLess &&
                     typeof dropData.uuid === "string" &&
-                    typeof dropData.statistic === "string" &&
+                    typeof dropData.isStatistic &&
                     typeof dropData.actionId === "string"
                 ) {
                     newShortcut = {
@@ -1781,10 +1781,17 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     return throwError();
                 }
 
-                const skillLabel = game.i18n.localize(
-                    CONFIG.PF2E.skillList[shortcutData.statistic]
-                );
-                let name = `${skillLabel}: `;
+                let name = (() => {
+                    if (!shortcutData.statistic) return "";
+
+                    const statisticLabel = game.i18n.localize(
+                        shortcutData.statistic === "perception"
+                            ? "PF2E.PerceptionLabel"
+                            : CONFIG.PF2E.skillList[shortcutData.statistic]
+                    );
+
+                    return `${statisticLabel}: `;
+                })();
 
                 if (shortcutData.variant) {
                     const variant = getSkillVariantName(
@@ -2272,7 +2279,7 @@ type AttackShortcutData = BlastShortcutData | StrikeShortcutData;
 type SkillShortcutData = ShortcutDataBase<"skill"> & {
     type: "skill";
     actionId: string;
-    statistic: SkillSlug;
+    statistic?: SkillSlug | "perception";
     itemUuid: string;
     variant: string | undefined;
     map: 1 | 2 | undefined;
@@ -2504,7 +2511,8 @@ type DropData = HotbarDropData & {
 
 type SkillDropData = Partial<SkillVariantDataset> & {
     actionId?: string;
-    statistic?: SkillSlug;
+    statistic?: SkillSlug | "perception";
+    isStatistic?: true;
     actorLess?: StringBoolean;
     option?: string;
 };

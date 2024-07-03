@@ -17,6 +17,7 @@ import {
     RawSkillAction,
     SHARED_SKILLS,
     getStatisticDataFromElement,
+    getStatisticDragDataFromElement,
     getStatistics,
     prepareStatisticAction,
     rollStatistic,
@@ -72,13 +73,13 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
         return this.actor.token?.baseActor ?? this.actor;
     }
 
-    // _getDragData(
-    //     target: HTMLElement,
-    //     baseDragData: Record<string, JSONValue>,
-    //     item: Maybe<ItemPF2e<ActorPF2e>>
-    // ) {
-    //     return { fromInventory: true };
-    // }
+    _getDragData(
+        target: HTMLElement,
+        baseDragData: Record<string, JSONValue>,
+        item: Maybe<ItemPF2e<ActorPF2e>>
+    ) {
+        return getStatisticDragDataFromElement(target);
+    }
 
     get macros() {
         return getFlag<string[]>(this.worldActor, `macros.${game.user.id}`)?.slice() ?? [];
@@ -165,12 +166,7 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
                     return;
                 }
 
-                if (data.actionId === "aid") {
-                    data.dc = 15;
-                }
-
                 rollStatistic(actor, event, data, {
-                    requireVariants: data.actionId === "aid",
                     onRoll: () => {
                         this.parentHUD.closeIf("roll-skill");
                     },
