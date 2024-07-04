@@ -2,7 +2,6 @@ import {
     R,
     createHTMLElement,
     createHook,
-    getSetting,
     htmlQuery,
     libWrapper,
     registerWrapper,
@@ -32,7 +31,6 @@ import {
 import { StatsHeader, getStatsHeader } from "./shared/base";
 import { addStatsAdvancedListeners, addStatsHeaderListeners } from "./shared/listeners";
 import { SidebarMenu, SidebarName, SidebarSettings, getSidebars } from "./sidebar/base";
-import { AutoSetSetting } from "./persistent";
 
 const CLOSE_OPTIONS = ["never", "sidebar", "all"] as const;
 const CLOSE_CHOICES = R.mapToObj(CLOSE_OPTIONS, (option) => [
@@ -115,10 +113,7 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
     }
 
     get enabled(): boolean {
-        return (
-            this.getSetting("enabled") &&
-            getSetting<AutoSetSetting>("persistent.autoSet") !== "select"
-        );
+        return this.getSetting("enabled") && hud.persistent.getSetting("autoSet") !== "select";
     }
 
     get key(): "token" {
