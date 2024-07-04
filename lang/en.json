@@ -220,6 +220,12 @@
                     "name": "Texture Scaling",
                     "hint": "Invert scales the combatant's image based on the token texture scaling."
                 }
+            },
+            "resources": {
+                "title": "Resources Tracker",
+                "enabled": {
+                    "hint": "Enables the tracking of custom resources in your world."
+                }
             }
         },
         "hud": {
@@ -305,6 +311,32 @@
                 "secret": "Something Secret is Happening"
             },
             "unknown": "Unknown"
+        },
+        "resources": {
+            "add": "Add new resource",
+            "edit": "[Right-Click] Edit Resource",
+            "menu": {
+                "title": {
+                    "create": "Create New Resource",
+                    "edit": "Edit Resource"
+                },
+                "delete": "Delete Resource?",
+                "min": "Minimum Value",
+                "max": "Maximum Value",
+                "current": "Current Value",
+                "visible": "Visible to players?",
+                "name": {
+                    "label": "Resource Name",
+                    "default": "New Resource"
+                },
+                "button": {
+                    "yes": {
+                        "create": "Create",
+                        "edit": "Edit"
+                    },
+                    "no": "Cancel"
+                }
+            }
         },
         "sidebars": {
             "actions": {

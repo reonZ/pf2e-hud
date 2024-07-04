@@ -11,6 +11,7 @@ import { PF2eHudPersistent } from "./hud/persistent";
 import { PF2eHudToken } from "./hud/token";
 import { PF2eHudTooltip } from "./hud/tooltip";
 import { PF2eHudTracker } from "./hud/tracker";
+import { PF2eHudResources } from "./hud/resources";
 
 MODULE.register("pf2e-hud", "PF2e HUD");
 
@@ -19,6 +20,7 @@ const HUDS = {
     token: new PF2eHudToken(),
     persistent: new PF2eHudPersistent(),
     tracker: new PF2eHudTracker(),
+    resources: new PF2eHudResources(),
 };
 
 Hooks.once("canvasReady", () => {

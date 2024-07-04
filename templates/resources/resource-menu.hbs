@@ -1,0 +1,41 @@
+<input class="hidden" type="text" name="id" value="{{resource.id}}">
+<input class="hidden" type="checkbox" name="world" {{checked resource.world}}>
+<div class="form-group">
+    <label>{{i18n 'name.label'}}</label>
+    <div class="form-fields">
+        <input type="text" name="name" value="{{resource.name}}"
+            placeholder="{{i18n 'name.default'}}">
+    </div>
+</div>
+<div class="form-group">
+    <label>{{i18n 'min'}}</label>
+    <div class="form-fields">
+        <input type="number" name="min" value="{{resource.min}}" min="0" step="1">
+    </div>
+</div>
+<div class="form-group">
+    <label>{{i18n 'max'}}</label>
+    <div class="form-fields">
+        <input type="number" name="max" value="{{resource.max}}" min="0" step="1">
+    </div>
+</div>
+<div class="form-group">
+    <label>{{i18n 'current'}}</label>
+    <div class="form-fields">
+        <input type="number" name="value" value="{{resource.value}}" min="0" step="1">
+    </div>
+</div>
+{{#if resource.world}}
+<div class="form-group">
+    <label>{{i18n 'visible'}}</label>
+    <div class="form-fields">
+        <input type="checkbox" name="visible" {{checked resource.visible}}>
+    </div>
+</div>
+{{/if}}
+{{#if isEdit}}
+<div class="delete">
+    <label>{{i18n 'delete'}}</label>
+    <input type="checkbox" name="delete">
+</div>
+{{/if}}

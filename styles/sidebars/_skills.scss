@@ -23,3 +23,11 @@
         max-width: var(--max-column-width);
     }
 }
+
+.application.dialog .pf2e-hud-skills {
+    input[type="number"] {
+        flex: 0 0 2em;
+        text-align: center;
+        padding: 0;
+    }
+}
