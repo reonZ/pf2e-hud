@@ -11,10 +11,11 @@
 {{#*inline 'resource-row'}}
 <div class="resource" data-resource-id="{{resource.id}}" data-is-world="{{resource.world}}"
     style="--ratio: {{resource.ratio}};">
-    <div class="header">
-        <div class="name">
-            {{resource.name}}
-        </div>
+    <div class="name">
+        {{#if (and @root.isGM resource.world)}}
+        <i class="{{#if resource.visible}}visible {{/if}}fa-solid fa-eye"></i>
+        {{/if}}
+        {{resource.name}}
     </div>
     <div class="stats">
         <div class="filler"></div>
