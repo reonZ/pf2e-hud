@@ -515,6 +515,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         content: HTMLElement,
         options: PersistentRenderOptions
     ) {
+        content.remove();
+
         if (!this.#elements.left) {
             this.#elements.left = createHTMLElement("div", {
                 id: "pf2e-hud-persistent-left",
