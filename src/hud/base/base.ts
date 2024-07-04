@@ -114,7 +114,7 @@ abstract class PF2eHudBase<
     }
 
     getUserSetting<TKey extends keyof TUserSettings & string>(key: TKey) {
-        return getFlag<TUserSettings[TKey]>(game.user, "persistent", key);
+        return getFlag<TUserSettings[TKey]>(game.user, this.key, key);
     }
 
     setUserSetting<TKey extends keyof TUserSettings & string>(
