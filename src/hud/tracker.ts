@@ -11,11 +11,28 @@ import {
     htmlQueryAll,
     localize,
     render,
+    settingPath,
     templateLocalize,
+    toggleControlTool,
 } from "foundry-pf2e";
 import Sortable, { SortableEvent } from "sortablejs";
 import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
 import { HealthData, getHealth } from "./shared/base";
+import { hud } from "../main";
+
+Hooks.on("getSceneControlButtons", (controls) => {
+    controls[0].tools.push({
+        title: settingPath("tracker.title"),
+        name: "pf2e-hud-tracker",
+        icon: "fa-solid fa-swords",
+        toggle: true,
+        visible: true,
+        active: hud.tracker.enabled,
+        onClick: (active) => {
+            hud.tracker.setSetting("enabled", active);
+        },
+    });
+});
 
 class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
@@ -133,6 +150,8 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
 
         if (enabled && this.combat) this.render(true);
         else if (!enabled) this.close();
+
+        toggleControlTool("pf2e-hud-tracker", enabled);
 
         if (!canvas.ready) {
             Hooks.once("canvasReady", () => this.#refreshTargetDisplay());
