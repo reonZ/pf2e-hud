@@ -1,3 +1,16 @@
+# 0.15.0
+
+-   IMPORTANT:
+    -   changes have been made to the data-structure of skills shortcuts, you will need to replace the existing ones (again)
+-   added support for statistic action shortcuts from the `Extras` sidebar
+-   added a new `Resource Tracker` HUD
+    -   a small widget to track arbitrary resources
+    -   GMs resources can be shared with everybody
+    -   players resources only exist on their client (they are saved as user settings, not client)
+    -   the HUD can be shown/hidden via a scene control tool button
+-   `Combat Tracker`
+    -   added a scene control tool button to enable/disable the combat tracker without the need to go to the settings
+
 # 0.14.0
 
 -   IMPORTANT:
