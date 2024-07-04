@@ -79,7 +79,7 @@ import { getAnnotationTooltip } from "./sidebar/spells";
 const ROMAN_RANKS = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"] as const;
 
 class PF2eHudPersistent extends makeAdvancedHUD(
-    PF2eHudBaseActor<PersistentSettings, PersistentHudActor>
+    PF2eHudBaseActor<PersistentSettings, PersistentHudActor, PersistentUserSetting>
 ) {
     #onControlTokenDebounce = foundry.utils.debounce(this.#onControlToken.bind(this), 1);
 
@@ -369,7 +369,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     get savedActor() {
-        const uuid = getFlag<string>(game.user, "persistent.selected") ?? "";
+        const uuid = this.getUserSetting("selected") ?? "";
         const actor = fromUuidSync<ActorPF2e>(uuid);
         return this.isValidActor(actor) ? actor : null;
     }
@@ -641,7 +641,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         this.#isUserCharacter = actor === game.user.character;
         this.#actor = actor as PersistentHudActor;
 
-        if (!skipSave) await setFlag(user, "persistent.selected", savedActor?.uuid ?? "");
+        if (!skipSave) await this.setUserSetting("selected", savedActor?.uuid ?? "");
         this.render(!!actor);
     }
 
@@ -2519,6 +2519,10 @@ type SkillDropData = Partial<SkillVariantDataset> & {
 
 type AutoSetSetting = "disabled" | "select" | "combat";
 type AutoFillSetting = "one" | "two";
+
+type PersistentUserSetting = {
+    selected: string;
+};
 
 type PersistentSettings = BaseActorSettings &
     SidebarSettings &

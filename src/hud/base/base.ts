@@ -1,12 +1,22 @@
-import { getSetting, render, setSetting, settingPath, templatePath } from "foundry-pf2e";
+import {
+    getFlag,
+    getSetting,
+    render,
+    setFlag,
+    setSetting,
+    settingPath,
+    templatePath,
+} from "foundry-pf2e";
 
 const GLOBAL_SETTINGS: ReadonlyArray<keyof GlobalSettings> = [
     "highestSpeed",
     "useModifiers",
 ] as const;
 
-abstract class PF2eHudBase<TSettings extends BaseSettings = BaseSettings> extends foundry
-    .applications.api.ApplicationV2<ApplicationConfiguration> {
+abstract class PF2eHudBase<
+    TSettings extends BaseSettings = BaseSettings,
+    TUserSettings extends Record<string, any> = Record<string, any>
+> extends foundry.applications.api.ApplicationV2<ApplicationConfiguration> {
     static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
         window: {
             resizable: false,
@@ -101,6 +111,17 @@ abstract class PF2eHudBase<TSettings extends BaseSettings = BaseSettings> extend
 
     setSetting<K extends keyof TSettings & string>(key: K, value: TSettings[K]) {
         return setSetting(`${this.key}.${key}`, value);
+    }
+
+    getUserSetting<TKey extends keyof TUserSettings & string>(key: TKey) {
+        return getFlag<TUserSettings[TKey]>(game.user, "persistent", key);
+    }
+
+    setUserSetting<TKey extends keyof TUserSettings & string>(
+        key: TKey,
+        value: TUserSettings[TKey]
+    ) {
+        return setFlag(game.user, this.key, key, value);
     }
 }
 

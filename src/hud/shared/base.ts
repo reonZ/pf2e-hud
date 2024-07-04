@@ -1,4 +1,4 @@
-import { R, getSetting, htmlClosest, isInstanceOf, signedInteger } from "foundry-pf2e";
+import { R, getSetting, htmlClosest, signedInteger } from "foundry-pf2e";
 
 const IWR_DATA = [
     { type: "immunities", icon: "fa-solid fa-ankh", label: "PF2E.ImmunitiesLabel" },
