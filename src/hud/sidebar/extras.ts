@@ -125,7 +125,7 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
     }
 
     async _onClickAction(event: PointerEvent, target: HTMLElement) {
-        if (event.button === 2) return;
+        if (event.button !== 0) return;
 
         const actor = this.actor;
         const action = target.dataset.action as ExtrasActionEvent;

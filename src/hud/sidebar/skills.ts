@@ -582,6 +582,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
         const actor = this.actor;
         const action = target.dataset.action as SkillActionEvent;
 
+        if (![0, 2].includes(event.button)) return;
         if (event.button === 2 && action !== "roll-statistic-action") return;
 
         switch (action) {

@@ -333,7 +333,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
     }
 
     _onClickAction(event: PointerEvent, target: HTMLElement) {
-        if (event.button === 2) return;
+        if (event.button !== 0) return;
 
         const action = target.dataset.action;
 
