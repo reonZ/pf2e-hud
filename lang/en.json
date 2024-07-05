@@ -10,6 +10,10 @@
             "altTracker": {
                 "name": "Toggle Tracker Menu",
                 "hint": "Toggle the combat tracker menu to show additional options."
+            },
+            "filter": {
+                "name": "Use Sidebar Filter",
+                "hint": "Allow filtering the current sidebar content."
             }
         },
         "settings": {
@@ -380,6 +384,9 @@
                 "edit": {
                     "title": "Edit Macro"
                 }
+            },
+            "filter": {
+                "label": "Sidebar Filter"
             }
         },
         "leftClick": "[Left Click]",

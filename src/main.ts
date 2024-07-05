@@ -12,6 +12,7 @@ import { PF2eHudToken } from "./hud/token";
 import { PF2eHudTooltip } from "./hud/tooltip";
 import { PF2eHudTracker } from "./hud/tracker";
 import { PF2eHudResources } from "./hud/resources";
+import { PF2eHudFilter } from "./hud/sidebar/filter";
 
 MODULE.register("pf2e-hud", "PF2e HUD");
 
@@ -76,6 +77,16 @@ Hooks.once("setup", () => {
 
     registerKeybind("setActor", {
         onUp: () => HUDS.persistent.setSelectedToken(),
+    });
+
+    registerKeybind("filter", {
+        onUp: () => {
+            const sidebar = HUDS.persistent.sidebar ?? HUDS.token.sidebar;
+            if (!sidebar?.canUseFilter) return;
+
+            if (sidebar.filter) sidebar.filter = "";
+            else new PF2eHudFilter(sidebar).render(true);
+        },
     });
 
     registerKeybind("altTracker", {

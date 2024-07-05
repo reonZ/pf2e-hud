@@ -93,6 +93,13 @@
 
         border: var(--outer-border);
 
+        &.no-filter,
+        &:has(.filtered) {
+            [data-filter-value]:not(.filtered) {
+                filter: grayscale(1) opacity(0.2);
+            }
+        }
+
         &.persistent {
             --arrow-width: calc(var(--outer-padding) * 0.9);
 

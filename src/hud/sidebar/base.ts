@@ -64,6 +64,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
     .ApplicationV2<ApplicationConfiguration> {
     #innerElement!: HTMLElement;
     #parentHud: IPF2eHudAdvanced & PF2eHudBaseActor;
+    #filter: string = "";
 
     static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
         id: "pf2e-hud-sidebar",
@@ -115,6 +116,44 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
     get scrollElement() {
         return htmlQuery(this.innerElement, ".item-list");
+    }
+
+    get canUseFilter() {
+        return true;
+    }
+
+    get filter() {
+        return this.#filter;
+    }
+
+    set filter(value) {
+        const trimmed = value.trim();
+
+        const filteredElements = this.innerElement.querySelectorAll(".filtered");
+        for (const element of filteredElements) {
+            element.classList.remove("filtered");
+        }
+
+        if (trimmed.length) {
+            const toTest = trimmed.toLowerCase();
+            const toFilterElements =
+                this.innerElement.querySelectorAll<HTMLElement>("[data-filter-value]");
+
+            let hasFilter = false;
+
+            for (const toFilterElement of toFilterElements) {
+                const { filterValue } = elementDataset(toFilterElement);
+
+                if (filterValue.toLowerCase().includes(toTest)) {
+                    hasFilter = true;
+                    toFilterElement.classList.add("filtered");
+                }
+            }
+
+            this.#filter = hasFilter ? trimmed : "";
+        } else {
+            this.#filter = "";
+        }
     }
 
     async _preFirstRender(
