@@ -25,10 +25,12 @@
         {{localize 'pf2e-dailies.sheet.title'}}
     </a>
     {{else}}
-    <span data-tooltip="{{dailies.tooltip}}" data-tooltip-class="pf2e">
+    <span>
         <i class="fa-solid fa-mug-saucer"></i>
         {{localize 'pf2e-dailies.sheet.title'}}
     </span>
+    <i class="end fa-solid fa-circle-info" data-tooltip="{{dailies.tooltip}}"
+        data-tooltip-class="pf2e"></i>
     {{/if}}
 </div>
 {{/if}}
