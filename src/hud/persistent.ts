@@ -304,10 +304,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         ]);
     }
 
-    get templates(): PartName[] {
-        return ["portrait", "main", "menu", "effects"];
-    }
-
     get key(): "persistent" {
         return "persistent";
     }
@@ -444,7 +440,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
          * we also make sure that "main" is before "effects"
          */
         if (!options.parts?.length || options.parts.length > 1 || options.parts[0] !== "menu") {
-            options.parts = this.templates;
+            options.parts = ["main", "menu", "portrait", "effects"];
         }
 
         if (!options.showEffects) {

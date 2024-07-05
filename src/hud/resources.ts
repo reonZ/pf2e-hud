@@ -54,10 +54,6 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
         return "resources";
     }
 
-    get templates() {
-        return ["tracker"];
-    }
-
     get SETTINGS_ORDER(): (keyof ResourcesSettings)[] {
         return ["enabled", "fontSize"];
     }

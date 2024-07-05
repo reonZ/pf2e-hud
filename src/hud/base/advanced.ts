@@ -92,9 +92,6 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
             context: ApplicationRenderContext,
             options: ApplicationRenderOptions
         ): Promise<void> {
-            const thisSuper = constructor.prototype as PF2eHudBaseActor;
-            thisSuper._preFirstRender.call(this, context, options);
-
             const templates: Set<string> = new Set();
 
             for (const partial of this.partials) {

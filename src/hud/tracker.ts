@@ -83,10 +83,6 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
         ]);
     }
 
-    get templates() {
-        return ["tracker", "metrics-tooltip"];
-    }
-
     get key(): "tracker" {
         return "tracker";
     }
