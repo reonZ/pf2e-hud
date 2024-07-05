@@ -1,3 +1,26 @@
+# 0.16.0
+
+-   IMPORTANT:
+    -   keybindings have been reset
+-   added a new `Use Sidebar Filter` keybinding
+    -   using that bind whenever a sidebar is open will display a filter field in the center of the screen
+    -   typing anything in the field will filter the current sidebar content
+    -   the field doesn't care about capital letters
+    -   nothing happens if the typed filter doesn't match anything
+    -   if anything matches the filter, the rest of the sidebar will be darkened to highlight it
+    -   if the matched element is related to another element/section, those parent elements will also remain highlighted
+        -   a variant action skill will highlight the variant, the parent action and the skill they belong to
+        -   an item inside a backpack in the container section will have all 3 highlighted
+    -   the filter field closes as soon as it loses focus
+    -   pressing the `Enter` key will close the filter field was retaining the current filter for the sidebar
+    -   pressing the `Escape` key will close the filter field and revert any filter
+    -   pressing the `Use Sidebar Filter` keybind when there is a filter active on the current sidebar will cancel the filter
+-   changed the default text color across the different HUDs to be the same as the one in the foundry interface
+-   `Combat Tracker`
+    -   removed the previously added scene control tool button for the combat tracker
+-   `Token Tooltip`
+    -   fixed (hopefully) a rare error when switching scene that would prevent the canvas from rendering
+
 # 0.15.0
 
 -   IMPORTANT:
