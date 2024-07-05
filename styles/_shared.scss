@@ -25,13 +25,16 @@ $panel-gap: 5px;
     --input-equivalent-width: 2.2em;
     --input-background: rgb(255 255 255 / 8%);
 
-    --color: #f1f1f1;
+    --color: #efe6d8;
     --color-alt: #cbcbc3;
+    --color-darker: #999;
     --color-accent: #c54c4c;
     --color-highlight: #ffffff;
     --color-active: #db2828;
     --color-reversed: black;
     --color-disabled: var(--color-text-dark-5);
+
+    color: var(--color);
 
     &.app,
     .app {
@@ -40,6 +43,7 @@ $panel-gap: 5px;
         pointer-events: all;
         margin: 0;
         padding: var(--panel-padding-block) var(--panel-padding-inline);
+        color: var(--color);
     }
 
     input,

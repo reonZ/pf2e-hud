@@ -18,7 +18,7 @@
     --variant-background: #ffffff09;
     --variant-background-reversed: #ffffffad;
     --variant-border: 1px solid #ffffff24;
-    --variant-color: #e3e3e3;
+    --variant-color: var(--color);
     --variant-gap: 0.1em;
 
     --action-img-background: #ffffff7a;
@@ -39,7 +39,6 @@
     max-height: 100vh;
     max-width: 100vw;
     z-index: calc(var(--z-index-app) + 30);
-    color: var(--color);
     font-size: var(--font-size);
     pointer-events: none;
 

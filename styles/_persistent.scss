@@ -55,17 +55,6 @@ $bottom-width: 542px;
         background-size: contain;
     }
 
-    .icon {
-        --shadow-color: var(--color-text-dark-1);
-
-        text-shadow: 0 0 3px var(--shadow-color), 0 0 5px var(--shadow-color),
-            0 0 8px var(--shadow-color);
-
-        &:hover {
-            --shadow-color: var(--color-pf-primary);
-        }
-    }
-
     .top {
         top: 0;
         inset-inline: 0;
