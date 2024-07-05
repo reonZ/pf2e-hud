@@ -197,6 +197,10 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
             "WRAPPER"
         );
 
+        Hooks.on("canvasTearDown", () => {
+            this.setToken(null);
+        });
+
         Hooks.on("renderTokenHUD", () => {
             this.close();
         });

@@ -69,6 +69,7 @@ const SETTING_NO_DEAD = ["none", "small", "full"] as const;
 
 class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
+    #canvasTearDownHook = createHook("canvasTearDown", this.#onCanvasTearDown.bind(this));
 
     #tokenRefreshWrapper = createWrapper(
         "CONFIG.Token.objectClass.prototype._refreshVisibility",
@@ -161,7 +162,9 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
                 default: 4,
                 scope: "client",
                 onChange: (value: number) => {
-                    this.#tokenRefreshWrapper.toggle(value > 0 && this.enabled);
+                    const enableDraw = value > 0 && this.enabled;
+                    this.#tokenRefreshWrapper.toggle(enableDraw);
+                    this.#canvasTearDownHook.toggle(enableDraw);
                 },
             },
             {
@@ -238,7 +241,10 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
 
         this.#clickEvent.toggle(enabled);
         this.#hoverTokenHook.toggle(enabled);
-        this.#tokenRefreshWrapper.toggle(enabled && this.getSetting("drawDistance") > 0);
+
+        const enableDraw = enabled && this.getSetting("drawDistance") > 0;
+        this.#tokenRefreshWrapper.toggle(enableDraw);
+        this.#canvasTearDownHook.toggle(enableDraw);
     }
 
     _tokenCleanup() {
@@ -517,6 +523,11 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
     clearDistance() {
         this.#graphics?.destroy({ children: true });
         this.#graphics = null;
+    }
+
+    #onCanvasTearDown() {
+        this.clearDistance();
+        this.setToken(null);
     }
 
     #onHoverToken(token: TokenPF2e, hovered: boolean) {
