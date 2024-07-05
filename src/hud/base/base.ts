@@ -125,11 +125,6 @@ abstract class PF2eHudBase<
     }
 }
 
-interface PF2eHudBase<TSettings extends BaseSettings>
-    extends foundry.applications.api.ApplicationV2<ApplicationConfiguration> {
-    get keybinds(): KeybindingActionConfig[] | undefined;
-}
-
 type GlobalSettings = {
     useModifiers: boolean;
     highestSpeed: boolean;

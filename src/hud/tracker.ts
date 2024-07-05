@@ -107,18 +107,6 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
         return this.#combatantsElement;
     }
 
-    get keybinds(): KeybindingActionConfig[] {
-        return [
-            {
-                name: "toggle",
-                restricted: true,
-                editable: [{ key: "ControlLeft", modifiers: [] }],
-                onUp: () => this.#toggleMenu(false),
-                onDown: () => this.#toggleMenu(true),
-            },
-        ];
-    }
-
     get contextMenus() {
         if (this.#contextMenus.length) return this.#contextMenus;
 
@@ -353,7 +341,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
         }
     }
 
-    #toggleMenu(enabled: boolean) {
+    toggleMenu(enabled: boolean) {
         if (enabled && this.combatantsElement) {
             const menus = this.contextMenus;
             const combatantElements =

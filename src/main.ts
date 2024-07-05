@@ -74,6 +74,17 @@ Hooks.once("setup", () => {
         },
     });
 
+    registerKeybind("setActor", {
+        onUp: () => HUDS.persistent.setSelectedToken(),
+    });
+
+    registerKeybind("altTracker", {
+        restricted: true,
+        editable: [{ key: "ControlLeft", modifiers: [] }],
+        onUp: () => HUDS.tracker.toggleMenu(false),
+        onDown: () => HUDS.tracker.toggleMenu(true),
+    });
+
     for (const hud of huds) {
         const currentOffset = settings.length;
         const orphanSettings: SettingOptions[] = [];
@@ -93,11 +104,6 @@ Hooks.once("setup", () => {
         }
 
         settings.push(...orphanSettings);
-
-        for (const keybind of hud.keybinds ?? []) {
-            keybind.name = `${hud.key}.${keybind.name}`;
-            registerKeybind(keybind.name, keybind);
-        }
     }
 
     for (const setting of settings) {

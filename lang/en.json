@@ -3,17 +3,13 @@
         "gmOnly": "GM Only",
         "reload": "Requires  Reload",
         "keybindings": {
-            "persistent": {
-                "setActor": {
-                    "name": "Set Persistent Actor",
-                    "hint": "Set the selected token's actor as persistent."
-                }
+            "setActor": {
+                "name": "Set Persistent Actor",
+                "hint": "Set the selected token's actor as persistent."
             },
-            "tracker": {
-                "toggle": {
-                    "name": "Toggle Tracker Menu",
-                    "hint": "Toggle the combat tracker menu to show additional options."
-                }
+            "altTracker": {
+                "name": "Toggle Tracker Menu",
+                "hint": "Toggle the combat tracker menu to show additional options."
             }
         },
         "settings": {

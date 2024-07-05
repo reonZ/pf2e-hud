@@ -294,15 +294,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         ]);
     }
 
-    get keybinds(): KeybindingActionConfig[] {
-        return [
-            {
-                name: "setActor",
-                onUp: () => this.#setSelectedToken(),
-            },
-        ];
-    }
-
     get partials(): string[] {
         return super.partials.concat([
             "strike_versatiles",
@@ -760,7 +751,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         this.render({ parts: ["menu"] });
     }
 
-    #setSelectedToken() {
+    setSelectedToken() {
         const tokens = canvas.tokens.controlled;
         const token = tokens[0];
 
@@ -820,7 +811,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     break;
                 }
                 case "select-actor": {
-                    this.#setSelectedToken();
+                    this.setSelectedToken();
                     break;
                 }
                 case "toggle-clean": {
