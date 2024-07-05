@@ -118,10 +118,6 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         return htmlQuery(this.innerElement, ".item-list");
     }
 
-    get canUseFilter() {
-        return true;
-    }
-
     get filter() {
         return this.#filter;
     }

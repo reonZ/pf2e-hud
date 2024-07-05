@@ -1,11 +1,11 @@
 {{#if stances.actions.length}}
-<header>
+<header data-filter-value="{{filterValue stances.actions key='name'}}">
     <div class="name">{{i18n 'stances'}}</div>
 </header>
 {{/if}}
 {{#each stances.actions as |stance|}}
 <div class="item action" data-item-id="{{stance.actionID}}" draggable="true"
-    data-effect-uuid="{{stance.effectUUID}}">
+    data-effect-uuid="{{stance.effectUUID}}" data-filter-value="{{stance.name}}">
     <div class="image" data-action="send-to-chat">
         <img src="systems/pf2e/icons/actions/OneAction.webp">
         <i class="fa-solid fa-message chat"></i>
@@ -23,14 +23,15 @@
 {{/each}}
 
 {{#if blasts}}
-<header>
+<header data-filter-value="{{filterValue blasts key='label' localize=true}}">
     <div class="name">{{i18n 'blasts'}}</div>
 </header>
 {{/if}}
 {{#each blasts as |blast|}}
 <div class="item attack ready" data-element="{{blast.element}}"
     data-damage-type={{blast.damageType}} data-item-id="{{blast.item.id}}"
-    data-item-type="{{blast.item.type}}" draggable="true">
+    data-item-type="{{blast.item.type}}" draggable="true"
+    data-filter-value="{{localize blast.label}}">
     <div class="name">
         <a data-action="item-description">{{localize blast.label}}</a>
     </div>
@@ -54,15 +55,15 @@
 {{/each}}
 
 {{#if strikes.length}}
-<header>
+<header data-filter-value="{{filterValue strikes key='label'}}">
     <div class="name">{{localize 'PF2E.Actor.Attacks'}}</div>
 </header>
 {{/if}}
 {{#each strikes as |strike|}}
 <div class="item attack{{#if strike.ready}} ready{{/if}}{{#unless strike.visible}} hidden{{/unless}}"
     data-action-index="{{strike.index}}" data-item-id="{{strike.item.id}}" {{#if
-    strike.item.parentItem}} data-parent-id="{{strike.item.parentItem.id}}" {{/if}}
-    draggable="true">
+    strike.item.parentItem}} data-parent-id="{{strike.item.parentItem.id}}" {{/if}} draggable="true"
+    data-filter-value="{{strike.label}}">
     {{!-- name --}}
     <div class="name">
         {{#if (and @root.isCharacter (ne strike.item.id 'xxPF2ExUNARMEDxx'))}}
@@ -130,7 +131,7 @@
 {{/each}}
 
 {{#if heroActions}}
-<header>
+<header data-filter-value="{{filterValue heroActions.actions key='name'}}">
     <div class="name">{{localize 'pf2e-toolbelt.heroActions.sheet.label'}}</div>
     <div class="controls">
         {{#if heroActions.usesCount}}
@@ -153,7 +154,7 @@
 </header>
 {{/if}}
 {{#each heroActions.actions as |action|}}
-<div class="item action" data-uuid="{{action.uuid}}">
+<div class="item action" data-uuid="{{action.uuid}}" data-filter-value="{{action.name}}">
     <div class="image" data-action="send-hero-action-to-chat">
         <img src="systems/pf2e/icons/actions/Passive.webp">
         <i class="fa-solid fa-message chat"></i>
@@ -178,11 +179,12 @@
 {{/each}}
 
 {{#each actionSections as |section|}}
-<header>
+<header data-filter-value="{{@root.filterValue section.actions key='name'}}">
     <div class="name">{{localize section.label}}</div>
 </header>
 {{#each section.actions as |action|}}
-<div class="item action" data-item-id="{{action.id}}" draggable="true">
+<div class="item action" data-item-id="{{action.id}}" draggable="true"
+    data-filter-value="{{action.name}}">
     <div class="image" data-action="send-to-chat">
         <img src="{{action.img}}">
         <i class="fa-solid fa-message chat"></i>

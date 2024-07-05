@@ -1,4 +1,4 @@
-<div class="item action" data-item-uuid="{{follow.uuid}}">
+<div class="item action" data-item-uuid="{{follow.uuid}}" data-filter-value="{{i18n 'follow'}}">
     <div class="image" data-action="send-to-chat">
         <img src="systems/pf2e/icons/actions/Passive.webp">
         <i class="fa-solid fa-message chat"></i>
@@ -13,7 +13,7 @@
     </div>
 </div>
 {{#each skills as |skill|}}
-<header>
+<header data-filter-value="{{skill.filterValue}}">
     <a data-action="roll-skill" data-slug="{{skill.slug}}">
         <span>{{signedInteger skill.mod}}</span> {{skill.label}}
     </a>

@@ -23,7 +23,20 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
         const parentData = await super._prepareContext(options);
 
         const inventoryData = actor.sheet.prepareInventory();
-        inventoryData.sections = inventoryData.sections.filter((section) => section.items.length);
+        inventoryData.sections = inventoryData.sections
+            .filter((section): section is ItemList => !!section.items.length)
+            .map((section) => {
+                const sectionFilters: string[] = [];
+
+                section.items = section.items.map((itemData) => {
+                    itemData.filterValue = getItemFilter(itemData);
+                    sectionFilters.push(itemData.filterValue);
+                    return itemData;
+                });
+
+                section.filterValue = sectionFilters.join(" ");
+                return section;
+            });
 
         const data: ItemContext = {
             ...parentData,
@@ -159,6 +172,27 @@ async function openCarryTypeMenu(actor: CharacterPF2e, anchor: HTMLElement): Pro
 
     game.tooltip.activate(anchor, { cssClass: "pf2e-carry-type", content, locked: true });
 }
+
+function getItemFilter(itemData: SidebarItem): string {
+    if (!itemData.heldItems?.length) return itemData.item.name;
+
+    itemData.heldItems = itemData.heldItems.map((x) => {
+        x.filterValue = getItemFilter(x);
+        return x;
+    });
+
+    return itemData.heldItems.map((x) => x.filterValue).join(" ");
+}
+
+type SidebarItem = Omit<InventoryItem, "heldItems"> & {
+    filterValue: string;
+    heldItems?: SidebarItem[];
+};
+
+type ItemList = Omit<SheetItemList, "items"> & {
+    filterValue: string;
+    items: SidebarItem[];
+};
 
 type ItemsActionEvent =
     | "toggle-container"

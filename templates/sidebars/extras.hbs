@@ -1,5 +1,5 @@
 {{#if initiative}}
-<div class="initiative">
+<div class="initiative" data-filter-value="{{localize 'PF2E.InitiativeLabel'}}">
     <a data-action="roll-initiative">
         <i class="fa-solid fa-dice-d20"></i>
         {{localize 'PF2E.InitiativeLabel'}}
@@ -11,14 +11,14 @@
 <hr>
 {{/if}}
 {{#if isCharacter}}
-<div class="row">
+<div class="row" data-filter-value="{{localize 'PF2E.Actor.Character.Rest.Label'}}">
     <a data-action="rest-for-the-night">
         <i class="fa-solid fa-bed"></i>
         {{localize 'PF2E.Actor.Character.Rest.Label'}}
     </a>
 </div>
 {{#if dailies}}
-<div class="row dailies">
+<div class="row dailies" data-filter-value="{{localize 'pf2e-dailies.sheet.title'}}">
     {{#if dailies.canPrep}}
     <a data-action="prepare-dailies">
         <i class="fa-solid fa-mug-saucer"></i>
@@ -30,7 +30,7 @@
         {{localize 'pf2e-dailies.sheet.title'}}
     </span>
     <i class="end fa-solid fa-circle-info" data-tooltip="{{dailies.tooltip}}"
-        data-tooltip-class="pf2e"></i>
+        data-tooltip-class="pf2e pf2e-dailies-summary"></i>
     {{/if}}
 </div>
 {{/if}}
@@ -42,7 +42,7 @@
 <hr>
 {{#if macros.length}}
 {{#each macros as |macro|}}
-<div class="item macro" data-uuid="{{macro.uuid}}">
+<div class="item macro" data-uuid="{{macro.uuid}}" data-filter-value="{{macro.name}}">
     <div class="image">
         <img src="{{macro.img}}">
 

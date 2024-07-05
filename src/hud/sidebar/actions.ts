@@ -163,6 +163,13 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             );
         })();
 
+        const filterValue: ActionsContext["filterValue"] = (
+            list,
+            { hash: { key, localize = false } }
+        ) => {
+            return list.map((x) => (localize ? game.i18n.localize(x[key]) : x[key])).join(" ");
+        };
+
         const data: ActionsContext = {
             ...parentData,
             inParty,
@@ -173,6 +180,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             strikes: strikes.sort((a, b) => a.index - b.index),
             isCharacter,
             variantLabel,
+            filterValue,
             showUnreadyStrikes: !!actor.getFlag("pf2e", "showUnreadyStrikes"),
         };
 
@@ -723,6 +731,10 @@ type ActionsContext = SidebarContext & {
         canTrade: boolean | 0;
         diff: number;
     }>;
+    filterValue: <TKey extends string>(
+        list: Array<{ [k in TKey]: string }>,
+        options: { hash: { key: TKey; localize?: boolean } }
+    ) => string;
 };
 
 export type { ActionBlast, ActionStrike };

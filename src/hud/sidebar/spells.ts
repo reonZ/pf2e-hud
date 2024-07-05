@@ -31,9 +31,14 @@ class PF2eHudSidebarSpells extends PF2eHudSidebar {
             charges: MODULE.path("sidebars.spells.charges"),
         });
 
+        const filterValues = summarizedData.spells.map((spells) =>
+            spells.map((spell) => spell.name).join(" ")
+        );
+
         const data: SpellsContext = {
             ...parentData,
             ...summarizedData,
+            filterValues,
             annotationTooltip: getAnnotationTooltip,
         };
 
@@ -146,6 +151,7 @@ interface PF2eHudSidebarSpells {
 
 type SpellsContext = SidebarContext &
     SummarizedSpellsData & {
+        filterValues: string[];
         annotationTooltip: (annotation: NonNullable<AuxiliaryActionPurpose>) => string;
     };
 

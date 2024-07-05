@@ -92,7 +92,6 @@
 
         border: var(--outer-border);
 
-        &.no-filter,
         &:has(.filtered) {
             [data-filter-value]:not(.filtered) {
                 filter: grayscale(1) opacity(0.2);

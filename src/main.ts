@@ -82,7 +82,7 @@ Hooks.once("setup", () => {
     registerKeybind("filter", {
         onUp: () => {
             const sidebar = HUDS.persistent.sidebar ?? HUDS.token.sidebar;
-            if (!sidebar?.canUseFilter) return;
+            if (!sidebar) return;
 
             if (sidebar.filter) sidebar.filter = "";
             else new PF2eHudFilter(sidebar).render(true);

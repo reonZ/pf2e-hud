@@ -464,12 +464,15 @@ function prepareStatisticAction(
         option: action.rollOption,
     });
 
+    const filterValue = `${label} ${variants?.map((variant) => variant.label).join(" ") ?? ""}`;
+
     return {
         ...action,
         variants,
         actionId,
         label,
         dataset,
+        filterValue,
         dragImg: getActionIcon(action.cost ?? null),
     } satisfies PreparedSkillAction;
 }
@@ -483,10 +486,13 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
             raw.slug === "perception" ? "PF2E.PerceptionLabel" : CONFIG.PF2E.skillList[raw.slug]
         );
 
+        const filterValue = `${label} ${actions.map((action) => action.filterValue).join(" ")}`;
+
         return {
             actions,
             slug: raw.slug,
             label,
+            filterValue,
         } satisfies PreparedSkill;
     });
 
@@ -807,6 +813,7 @@ type PreparedSkill = {
     slug: string;
     label: string;
     actions: PreparedSkillAction[];
+    filterValue: string;
 };
 
 type MapVariant = {
@@ -822,6 +829,7 @@ type ActionVariant = {
 
 type PreparedSkillAction = Omit<RawSkillAction, "variants"> & {
     label: string;
+    filterValue: string;
     variants: (MapVariant | ActionVariant)[] | undefined;
     dataset: string;
     dragImg: string;

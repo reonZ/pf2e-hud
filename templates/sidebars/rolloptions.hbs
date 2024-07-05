@@ -2,7 +2,7 @@
 <div class="option-toggle{{#unless toggle.alwaysActive}} item{{/unless}}"
     data-item-id="{{toggle.itemId}}" data-domain="{{toggle.domain}}" data-option="{{toggle.option}}"
     data-label="{{toggle.label}}" data-placement="{{toggle.placement}}" {{#unless
-    toggle.alwaysActive}} draggable="true" {{/unless}}>
+    toggle.alwaysActive}} draggable="true" {{/unless}} data-filter-value="{{toggle.label}}">
     <label>
         <input type="checkbox" {{#if toggle.alwaysActive}} class="hidden"
             {{/if}}data-action="toggle-roll-option" {{disabled (or toggle.alwaysActive (not
