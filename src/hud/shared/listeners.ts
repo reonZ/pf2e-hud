@@ -220,10 +220,11 @@ async function useResolve(actor: CharacterPF2e) {
     const data = await promptDialog<{ pick: "breather" | "steel" }>({
         classes: ["pf2e-hud-resolve"],
         title: localize("hud.resolve.title"),
-        content: await render("dialogs/resolve", {
+        content: "dialogs/resolve",
+        data: {
             i18n: templateLocalize("dialogs.resolve"),
             hasSteel: hasItemWithSourceId(actor, RESOLVE_UUID, "feat"),
-        }),
+        },
     });
     if (!data) return;
 

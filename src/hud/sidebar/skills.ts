@@ -726,19 +726,18 @@ async function getStatisticVariants(
     actionId: string,
     { dc, statistic, agile }: { dc?: number; statistic?: string; agile?: boolean }
 ) {
-    const content = await render("dialogs/variants", {
-        i18n: templateLocalize("dialogs.variants"),
-        statistics: getStatistics(actor),
-        statistic,
-        agile,
-        dc,
-    });
-
     return promptDialog<{ statistic: string; agile?: boolean; dc?: number }>(
         {
             title: actionLabels[actionId] ?? localize("dialogs.variants.title"),
-            content,
+            content: "dialogs/variants",
             classes: ["pf2e-hud-skills"],
+            data: {
+                i18n: templateLocalize("dialogs.variants"),
+                statistics: getStatistics(actor),
+                statistic,
+                agile,
+                dc,
+            },
         },
         { width: 280 }
     );
