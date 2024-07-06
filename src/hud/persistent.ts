@@ -304,6 +304,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         ]);
     }
 
+    get templates(): PartName[] {
+        return ["portrait", "main", "menu", "effects"];
+    }
+
     get key(): "persistent" {
         return "persistent";
     }

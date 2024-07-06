@@ -120,6 +120,10 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
         return "token";
     }
 
+    get templates(): ["hud"] {
+        return ["hud"];
+    }
+
     get allowedActorTypes(): (ActorType | "creature")[] {
         return ["army", "creature", "hazard", "vehicle"];
     }

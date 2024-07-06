@@ -26,6 +26,7 @@ abstract class PF2eHudBase<
     };
 
     abstract get key(): string;
+    abstract get templates(): string[] | ReadonlyArray<string>;
     abstract get SETTINGS_ORDER(): (keyof TSettings)[];
 
     getSettings(): SettingOptions[] {
@@ -71,6 +72,20 @@ abstract class PF2eHudBase<
         options.fontSize = this.getSetting("fontSize");
     }
 
+    async _preFirstRender(
+        context: ApplicationRenderContext,
+        options: ApplicationRenderOptions
+    ): Promise<void> {
+        const templates: Set<string> = new Set();
+
+        for (const template of this.templates) {
+            const path = templatePath(this.key, template);
+            templates.add(path);
+        }
+
+        await loadTemplates(Array.from(templates));
+    }
+
     enable = foundry.utils.debounce((enabled?: boolean) => {
         this._onEnable?.(enabled);
     }, 1);
@@ -80,7 +95,10 @@ abstract class PF2eHudBase<
         return super.close(options);
     }
 
-    renderTemplate(template: string, context: ApplicationRenderContext) {
+    renderTemplate(
+        template: (typeof this)["templates"][number],
+        context: ApplicationRenderContext
+    ) {
         return render(this.key, template, context);
     }
 
