@@ -50,8 +50,6 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
             },
         };
 
-        console.log(inventoryData);
-
         return data;
     }
 
