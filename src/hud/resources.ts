@@ -241,7 +241,8 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
         const resource = this.getResource(id, isWorld);
         if (!resource) return;
 
-        const newValue = Math.clamp(resource.value + nb, resource.min, resource.max);
+        const currentValue = Math.clamp(resource.value, resource.min, resource.max);
+        const newValue = Math.clamp(currentValue + nb, resource.min, resource.max);
         if (newValue === resource.value) return;
 
         resource.value = newValue;
