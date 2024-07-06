@@ -205,7 +205,8 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
 
     getResource(id: string, isWorld: boolean) {
         const resources = isWorld ? this.worldResources : this.userResources;
-        return resources.find((x) => x.id === id) ?? null;
+        const resource = resources.find((x) => x.id === id);
+        return resource ? this.validateResource(resource) : null;
     }
 
     async createResource(isWorld: boolean) {
@@ -298,8 +299,8 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
 
     validateResource<T extends Resource>(resource: T): T {
         const { id, max = 0, min = 0, name = "", value = 0 } = resource;
-        const validatedMin = Math.max(0, min);
-        const validatedMax = Math.max(validatedMin + 2, max);
+        const validatedMin = Number(min) || 0;
+        const validatedMax = Math.max((Number(validatedMin) || 0) + 2, max);
 
         return {
             ...resource,
@@ -307,7 +308,7 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
             name: name.trim() ?? id,
             min: validatedMin,
             max: validatedMax,
-            value: Math.clamp(value, validatedMin, validatedMax),
+            value: Math.clamp(Number(value) || 0, validatedMin, validatedMax),
         };
     }
 
