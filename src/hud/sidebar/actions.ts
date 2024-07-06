@@ -167,7 +167,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             list,
             { hash: { key, localize = false } }
         ) => {
-            return list.map((x) => (localize ? game.i18n.localize(x[key]) : x[key])).join(" ");
+            return list.map((x) => (localize ? game.i18n.localize(x[key]) : x[key])).join("|");
         };
 
         const data: ActionsContext = {

@@ -34,7 +34,7 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
                     return itemData;
                 });
 
-                section.filterValue = sectionFilters.join(" ");
+                section.filterValue = sectionFilters.join("|");
                 return section;
             });
 
@@ -177,7 +177,7 @@ async function openCarryTypeMenu(actor: CharacterPF2e, anchor: HTMLElement): Pro
 
 function getItemFilter(itemData: SidebarItem): string {
     if (itemData.item.subitems.size) {
-        return `${itemData.item.name} ` + itemData.item.subitems.map((x) => x.name).join(" ");
+        return `${itemData.item.name} ` + itemData.item.subitems.map((x) => x.name).join("|");
     }
 
     if (!itemData.heldItems?.length) return itemData.item.name;
@@ -187,7 +187,7 @@ function getItemFilter(itemData: SidebarItem): string {
         return x;
     });
 
-    return `${itemData.item.name} ` + itemData.heldItems.map((x) => x.filterValue).join(" ");
+    return `${itemData.item.name} ` + itemData.heldItems.map((x) => x.filterValue).join("|");
 }
 
 type SidebarItem = Omit<InventoryItem, "heldItems"> & {

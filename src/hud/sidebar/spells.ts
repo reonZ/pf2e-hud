@@ -32,7 +32,7 @@ class PF2eHudSidebarSpells extends PF2eHudSidebar {
         });
 
         const filterValues = summarizedData.spells.map((spells) =>
-            spells.map((spell) => spell.name).join(" ")
+            spells.map((spell) => spell.name).join("|")
         );
 
         const data: SpellsContext = {

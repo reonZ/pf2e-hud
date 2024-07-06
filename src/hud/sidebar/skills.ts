@@ -464,7 +464,7 @@ function prepareStatisticAction(
         option: action.rollOption,
     });
 
-    const filterValue = `${label} ${variants?.map((variant) => variant.label).join(" ") ?? ""}`;
+    const filterValue = `${label} ${variants?.map((variant) => variant.label).join("|") ?? ""}`;
 
     return {
         ...action,
@@ -486,7 +486,7 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
             raw.slug === "perception" ? "PF2E.PerceptionLabel" : CONFIG.PF2E.skillList[raw.slug]
         );
 
-        const filterValue = `${label} ${actions.map((action) => action.filterValue).join(" ")}`;
+        const filterValue = `${label} ${actions.map((action) => action.filterValue).join("|")}`;
 
         return {
             actions,

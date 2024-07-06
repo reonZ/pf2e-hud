@@ -139,8 +139,10 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
             for (const toFilterElement of toFilterElements) {
                 const { filterValue } = elementDataset(toFilterElement);
+                const filters = filterValue.split("|");
+                const isMatch = filters.some((filter) => filter.toLowerCase().includes(toTest));
 
-                if (filterValue.toLowerCase().includes(toTest)) {
+                if (isMatch) {
                     hasFilter = true;
                     toFilterElement.classList.add("filtered");
                 }
