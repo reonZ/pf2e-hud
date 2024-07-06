@@ -147,11 +147,14 @@ Hooks.on("renderSettingsConfig", (app: SettingsConfig, $html: JQuery) => {
 
         //
 
+        const gmOnlyLabel = localize("gmOnly");
+        const reloadLabel = localize("reload");
+
         for (const setting of hud.getSettings()) {
             const nameExtras: string[] = [];
 
-            if (setting.gmOnly) nameExtras.push(localize("gmOnly"));
-            if (setting.requiresReload) nameExtras.push(localize("reload"));
+            if (setting.gmOnly) nameExtras.push(gmOnlyLabel);
+            if (setting.requiresReload) nameExtras.push(reloadLabel);
 
             if (!nameExtras.length) continue;
 

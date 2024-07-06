@@ -825,21 +825,23 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = this.actor;
         if (!actor) return context;
 
+        const expiredLabel = game.i18n.localize("PF2E.EffectPanel.Expired");
+        const untileEndLabel = game.i18n.localize("PF2E.EffectPanel.UntilEncounterEnds");
+        const unlimitedLabel = game.i18n.localize("PF2E.EffectPanel.UnlimitedDuration");
+
         const effects = actor.itemTypes.effect.map((effect) => {
             const duration = effect.totalDuration;
             const { system } = effect;
             if (duration === Infinity) {
                 if (system.duration.unit === "encounter") {
-                    system.remaining = system.expired
-                        ? game.i18n.localize("PF2E.EffectPanel.Expired")
-                        : game.i18n.localize("PF2E.EffectPanel.UntilEncounterEnds");
+                    system.remaining = system.expired ? expiredLabel : untileEndLabel;
                 } else {
-                    system.remaining = game.i18n.localize("PF2E.EffectPanel.UnlimitedDuration");
+                    system.remaining = unlimitedLabel;
                 }
             } else {
                 const duration = effect.remainingDuration;
                 system.remaining = system.expired
-                    ? game.i18n.localize("PF2E.EffectPanel.Expired")
+                    ? expiredLabel
                     : getRemainingDurationLabel(
                           duration.remaining,
                           system.start.initiative ?? 0,

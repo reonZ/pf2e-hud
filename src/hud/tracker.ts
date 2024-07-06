@@ -160,6 +160,9 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
         let canRoll = false;
         let canRollNPCs = false;
 
+        const hideNameLabel = game.i18n.localize("PF2E.Encounter.HideName");
+        const revealNameLabel = game.i18n.localize("PF2E.Encounter.RevealName");
+
         for (let [i, combatant] of combat.turns.entries()) {
             const actor = combatant.actor;
             const hidden = combatant.hidden;
@@ -182,9 +185,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
                 if (!isGM || !tokenSetsNameVisibility || actor?.alliance === "party") return;
                 return {
                     active: playersCanSeeName,
-                    tooltip: game.i18n.localize(
-                        playersCanSeeName ? "PF2E.Encounter.HideName" : "PF2E.Encounter.RevealName"
-                    ),
+                    tooltip: playersCanSeeName ? hideNameLabel : revealNameLabel,
                 };
             })();
 
