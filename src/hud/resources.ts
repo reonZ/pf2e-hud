@@ -1,6 +1,5 @@
 import {
     addListenerAll,
-    awaitDialog,
     createHTMLElement,
     elementDataset,
     getFlagProperty,
@@ -11,6 +10,7 @@ import {
     settingPath,
     templateLocalize,
     toggleControlTool,
+    waitDialog,
 } from "foundry-pf2e";
 import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
 
@@ -52,6 +52,10 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
 
     get key(): "resources" {
         return "resources";
+    }
+
+    get templates() {
+        return ["tracker"];
     }
 
     get SETTINGS_ORDER(): (keyof ResourcesSettings)[] {
@@ -307,15 +311,9 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
     }
 
     async #openResourceMenu(resource: Resource, isEdit = false) {
-        const content = await render("resources/resource-menu", {
-            resource,
-            isEdit,
-            i18n: templateLocalize("resources.menu"),
-        });
-
-        const data = await awaitDialog<MenuResource>({
+        const editedResource = await waitDialog<MenuResource>({
             title: localize("resources.menu.title", isEdit ? "edit" : "create"),
-            content,
+            content: "resources/resource-menu",
             classes: ["pf2e-hud-resource-menu"],
             yes: {
                 label: localize("resources.menu.button.yes", isEdit ? "edit" : "create"),
@@ -324,9 +322,14 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
             no: {
                 label: localize("resources.menu.button.no"),
             },
+            data: {
+                resource,
+                isEdit,
+                i18n: templateLocalize("resources.menu"),
+            },
         });
 
-        return data ? this.validateResource(data) : null;
+        return editedResource ? this.validateResource(editedResource) : null;
     }
 
     #setPositionDebounce = foundry.utils.debounce(() => {
