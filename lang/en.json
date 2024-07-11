@@ -314,7 +314,6 @@
         },
         "resources": {
             "add": "Add new resource",
-            "edit": "[Right-Click] Edit Resource",
             "menu": {
                 "title": {
                     "create": "Create New Resource",
@@ -336,7 +335,13 @@
                     },
                     "no": "Cancel"
                 }
-            }
+            },
+            "edit": "[Right-Click] Edit Resource",
+            "increase": "{click} increase by {value}",
+            "decrease": "{click} decrease by {value}",
+            "step1": "[Click]",
+            "step2": "[Shift-Click]",
+            "step3": "[Control-Click]"
         },
         "sidebars": {
             "actions": {

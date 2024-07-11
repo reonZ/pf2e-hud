@@ -24,10 +24,10 @@
         <div class="value">{{resource.value}}</div>
     </div>
     {{#if isOwner}}
-    <a class="decrease" data-action="decrease-resource" data-tooltip="{{@root.tooltips.decrease}}">
+    <a class="decrease" data-action="decrease-resource" data-tooltip="{{resource.decrease}}">
         <i class="fa-solid fa-minus"></i>
     </a>
-    <a class="increase" data-action="increase-resource" data-tooltip="{{@root.tooltips.increase}}">
+    <a class="increase" data-action="increase-resource" data-tooltip="{{resource.increase}}">
         <i class="fa-solid fa-plus"></i>
     </a>
     {{/if}}

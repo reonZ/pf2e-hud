@@ -149,6 +149,10 @@
 }
 
 .application.dialog .pf2e-hud-resource-menu {
+    .dialog-content {
+        gap: 0.6em;
+    }
+
     label {
         white-space: nowrap;
     }

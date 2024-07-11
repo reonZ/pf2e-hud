@@ -6,6 +6,7 @@ import {
     htmlClosest,
     htmlQuery,
     localize,
+    R,
     render,
     settingPath,
     templateLocalize,
@@ -16,23 +17,31 @@ import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
 
 const DEFAULT_POSITION = { left: 150, top: 100 };
 
-let TOOLTIPS: { decrease: string; increase: string } | null = null;
-function getTooltips() {
-    TOOLTIPS ??= (() => {
-        const rightClick = localize("resources.edit");
-        const create = (type: "Decrease" | "Increase") => {
-            const leftClick = ["Click", "ShiftClick", "ControlClick"]
-                .map((x) => game.i18n.localize(`PF2E.Actor.Inventory.ItemQuantity.${type}.${x}`))
-                .join("<br>");
-            return `${rightClick}<br>${leftClick}`;
-        };
+function createStepTooltip(resource: Resource, direction: "increase" | "decrease") {
+    const steps = R.pipe(
+        ["step1", "step2", "step3"] as const,
+        R.map((step) => {
+            const value = resource[step];
+            if (typeof value !== "number" || value <= 0) return;
 
-        return {
-            decrease: create("Decrease"),
-            increase: create("Increase"),
-        };
-    })();
-    return TOOLTIPS;
+            const click = localize("resources", step);
+            return localize("resources", direction, { click, value });
+        }),
+        R.filter(R.isTruthy)
+    );
+
+    if (steps.length === 0) {
+        steps.push(
+            localize("resources", direction, {
+                click: localize("resources.step1"),
+                value: 1,
+            })
+        );
+    }
+
+    steps.unshift(localize("resources.edit"));
+
+    return steps.join("<br>");
 }
 
 class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSettings> {
@@ -114,7 +123,12 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
     async _prepareContext(options: ResourcesRenderOptions): Promise<ResourcesContext> {
         const resourceContext = (resource: Resource) => {
             const validated = this.validateResource(resource) as ContextResource;
+
             validated.ratio = (validated.value - validated.min) / (validated.max - validated.min);
+
+            validated.increase = createStepTooltip(validated, "increase");
+            validated.decrease = createStepTooltip(validated, "decrease");
+
             return validated;
         };
 
@@ -125,7 +139,6 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
 
         return {
             isGM,
-            tooltips: getTooltips(),
             worldResources: worldResources.map((resource) => resourceContext(resource)),
             userResources: this.userResources.map((resource) => resourceContext(resource)),
             i18n: templateLocalize("resources"),
@@ -179,9 +192,18 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
         const action = target.dataset.action as RecourcesActionEvent;
 
         const updateResource = (negative: boolean) => {
-            const nb = event.ctrlKey ? 10 : event.shiftKey ? 5 : 1;
             const parent = htmlClosest(target, "[data-resource-id]")!;
             const { resourceId, isWorld } = elementDataset(parent);
+            const resource = this.getResource(resourceId, isWorld === "true");
+            if (!resource) return;
+
+            const stepValue = event.ctrlKey
+                ? resource.step3
+                : event.shiftKey
+                ? resource.step2
+                : resource.step1;
+
+            const nb = stepValue || resource.step1 || 1;
             this.changeResourceQuantity(resourceId, isWorld === "true", negative ? nb * -1 : nb);
         };
 
@@ -220,6 +242,7 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
             min: 0,
             value: 100,
             world: isWorld,
+            step1: 1,
         });
 
         if (resource) {
@@ -327,7 +350,7 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
             data: {
                 resource,
                 isEdit,
-                i18n: templateLocalize("resources.menu"),
+                i18n: templateLocalize("resources"),
             },
         });
 
@@ -389,10 +412,6 @@ type ResourcesContext = {
     i18n: ReturnType<typeof templateLocalize>;
     userResources: ContextResource[];
     worldResources: ContextResource[];
-    tooltips: {
-        decrease: string;
-        increase: string;
-    };
 };
 
 type ResourcesRenderOptions = BaseRenderOptions;
@@ -405,9 +424,16 @@ type Resource = {
     value: number;
     world: boolean;
     visible?: boolean;
+    step1?: number;
+    step2?: number;
+    step3?: number;
 };
 
-type ContextResource = Resource & { ratio: number };
+type ContextResource = Resource & {
+    ratio: number;
+    increase: string;
+    decrease: string;
+};
 
 type MenuResource = Resource & {
     delete?: boolean;
