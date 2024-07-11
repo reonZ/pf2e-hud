@@ -51,7 +51,6 @@
         </div>
         {{/if}}
         <div class="shortcuts">
-            {{#if shortcutGroups}}
             {{#each shortcutGroups as |shortcutGroup|}}
             <div class="shortcut-group{{#if shortcutGroup.split}} split{{/if}}">
                 {{#each shortcutGroup.shortcuts as |shortcut|}}
@@ -63,13 +62,6 @@
                 {{/each}}
             </div>
             {{/each}}
-            {{else}}
-            {{#times 4}}
-            <div class="shortcut-group">
-                <div class="shortcut app empty"></div>
-            </div>
-            {{/times}}
-            {{/if}}
         </div>
     </div>
 </div>

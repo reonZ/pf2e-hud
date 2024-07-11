@@ -40,7 +40,7 @@
                 },
                 "fontSize": {
                     "name": "Font Size",
-                    "hint": "The HUD element dynamically scales with the font size."
+                    "hint": "The HUD element dynamically scales with the font size. NOTE: The module was designed to use a font size of 14."
                 },
                 "sidebarFontSize": {
                     "name": "Sidebars Font Size",
@@ -208,6 +208,10 @@
                 "shiftEffects": {
                     "name": "Hold Shift for Effects",
                     "hint": "Requires holding the shift key to interact with effect icons."
+                },
+                "shortcutSlots": {
+                    "name": "Shortcut Slots",
+                    "hint": "The number of shortcut slots available. NOTE: The module was designed to have 4 slots."
                 }
             },
             "tracker": {

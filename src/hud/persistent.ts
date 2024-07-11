@@ -148,6 +148,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             "sidebarFontSize",
             "sidebarHeight",
             "multiColumns",
+            "shortcutSlots",
             "ownerShortcuts",
             "autoFillNpc",
             "autoFillActions",
@@ -210,6 +211,20 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: "one",
                 scope: "client",
                 gmOnly: true,
+                onChange: () => {
+                    this.render();
+                },
+            },
+            {
+                key: "shortcutSlots",
+                type: Number,
+                default: 4,
+                scope: "client",
+                range: {
+                    min: 0,
+                    max: 10,
+                    step: 1,
+                },
                 onChange: () => {
                     this.render();
                 },
@@ -988,8 +1003,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         const cached: ShortcutCache = {};
         const shortcutGroups: ShortcutGroup[] = [];
+        const nbSlots = this.getSetting("shortcutSlots");
 
-        for (const groupIndex of R.range(0, 4)) {
+        for (const groupIndex of R.range(0, nbSlots)) {
             let isAttack = false;
             const shortcuts: (Shortcut | EmptyShortcut)[] = [];
 
@@ -1073,8 +1089,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
                     this.#shortcutData = {};
                     const cached: ShortcutCache = {};
+                    const nbSlots = this.getSetting("shortcutSlots");
 
-                    for (const groupIndex of R.range(0, 4)) {
+                    for (const groupIndex of R.range(0, nbSlots)) {
                         let isAttack = false;
 
                         for (const index of R.range(0, 4)) {
@@ -2535,6 +2552,7 @@ type PersistentSettings = BaseActorSettings &
         shiftEffects: boolean;
         autoFillActions: boolean;
         autoFillReactions: boolean;
+        shortcutSlots: number;
     };
 
 export { PF2eHudPersistent };
