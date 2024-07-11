@@ -589,14 +589,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
     async setActor(
         actor: ActorPF2e | null,
-        { token, skipSave }: { token?: Token; skipSave?: boolean } = {}
+        { token, skipSave, force }: { token?: Token; skipSave?: boolean; force?: boolean } = {}
     ) {
         if (actor && !this.isValidActor(actor)) return;
 
         const user = game.user;
         const userActor = user.character;
         const autoSet = this.getSetting("autoSet");
-        if (!actor && autoSet === "select" && !userActor) return;
+        if (!force && !actor && autoSet === "select" && !userActor) return;
 
         const savedActor = actor;
         this._actorCleanup();
@@ -688,7 +688,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #onDeleteActor(doc: ActorPF2e | TokenDocumentPF2e) {
         const actor = doc instanceof Actor ? doc : doc.actor;
         if (this.isCurrentActor(actor)) {
-            this.setActor(null, { skipSave: true });
+            this.setActor(null, { skipSave: true, force: true });
         }
     }
 
@@ -721,7 +721,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #onDeleteCombat() {
         if (this.savedActor) return;
 
-        this.setActor(null, { skipSave: true });
+        this.setActor(null, { skipSave: true, force: true });
     }
 
     #onCombatTurnChange() {
@@ -787,7 +787,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = this.actor;
 
         addListener(html, "[data-action='select-actor']", "contextmenu", () => {
-            this.setActor(null);
+            this.setActor(null, { force: true });
         });
 
         addListenerAll(html, "[data-action]", (event, el) => {
