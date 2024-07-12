@@ -1,3 +1,8 @@
+# 0.17.1
+
+-   `Persistent HUD`:
+    -   fixed issue with portrait width
+
 # 0.17.0
 
 -   made some slight improvement to filters
