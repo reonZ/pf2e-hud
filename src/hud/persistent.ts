@@ -276,8 +276,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: true,
                 scope: "client",
                 config: false,
-                onChange: () => {
-                    this.render();
+                onChange: (value) => {
+                    this.element?.classList.toggle("show-effects", value);
                 },
             },
             {
@@ -519,6 +519,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         document.getElementById("ui-left")?.append(content);
 
         content.style.setProperty("--font-size", fontSize);
+        content.classList.toggle("show-effects", this.getSetting("showEffects"));
         content.classList.toggle("show-users", this.getSetting("showUsers"));
         content.classList.toggle("cleaned", options.cleaned);
 
@@ -544,11 +545,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             this.mainElement?.appendChild(hotbar);
         }
 
-        if (options.showEffects && this.effectsElement) {
+        if (this.effectsElement) {
             this.mainElement?.append(this.effectsElement);
-        } else {
-            this.#elements.effects?.remove();
-            this.#elements.effects = null;
         }
     }
 
