@@ -3,9 +3,6 @@ $bottom-width: 542px;
 #pf2e-hud-persistent {
     --hud-height: 8em;
 
-    position: absolute;
-    bottom: 0;
-    left: 0;
     display: flex;
     align-items: flex-start;
     font-size: var(--font-size);
@@ -55,16 +52,6 @@ $bottom-width: 542px;
         }
     }
 
-    #players {
-        position: absolute;
-        bottom: 100%;
-        left: 0;
-        margin-left: 0;
-        margin-bottom: var(--panel-gap);
-        font-size: var(--font-size-14);
-        z-index: unset;
-    }
-
     &:not(.show-users) {
         #players {
             display: none;
@@ -84,6 +71,10 @@ $bottom-width: 542px;
             }
         }
     }
+}
+
+#players:has(+ #pf2e-hud-persistent:not(.show-users)) {
+    display: none;
 }
 
 #pf2e-hud-persistent-menu {

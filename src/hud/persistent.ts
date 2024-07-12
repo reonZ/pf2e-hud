@@ -108,6 +108,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         effects: null,
     };
 
+    #hotbar: HTMLElement | null = null;
+
     #parts: Parts = {
         main: {
             tooltipDirection: "UP",
@@ -351,6 +353,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         return this.#elements.effects;
     }
 
+    get hotbarElement() {
+        return (this.#hotbar = document.getElementById("hotbar"));
+    }
+
     get sidebars() {
         return this.mainElement?.querySelector<HTMLElement>(".sidebars") ?? null;
     }
@@ -507,7 +513,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         content: HTMLElement,
         options: PersistentRenderOptions
     ) {
-        const hotbar = document.getElementById("hotbar");
+        const hotbar = this.hotbarElement;
         const fontSize = `${this.getSetting("fontSize")}px`;
 
         document.getElementById("ui-left")?.append(content);
@@ -536,11 +542,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         if (hotbar) {
             this.mainElement?.appendChild(hotbar);
-        }
-
-        const players = document.getElementById("players");
-        if (players) {
-            content.prepend(players);
         }
 
         if (options.showEffects && this.effectsElement) {
@@ -579,11 +580,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const hotbar = document.getElementById("hotbar");
         if (hotbar) {
             document.getElementById("ui-bottom")?.prepend(hotbar);
-        }
-
-        const players = document.getElementById("players");
-        if (players) {
-            document.getElementById("ui-left")?.append(players);
         }
 
         return super.close(options);
