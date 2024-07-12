@@ -177,7 +177,7 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
     _replaceHTML(result: string, content: HTMLElement, options: ResourcesRenderOptions) {
         content.innerHTML = result;
 
-        content.style.setProperty(`--font-size`, `${options.fontSize}px`);
+        this.element!.style.setProperty(`--font-size`, `${options.fontSize}px`);
 
         this.#activateListeners(content);
     }

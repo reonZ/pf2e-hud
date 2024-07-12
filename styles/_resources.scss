@@ -7,6 +7,7 @@
     min-width: 0;
     box-shadow: none;
     border-radius: unset;
+    font-size: var(--font-size);
 
     .window-header {
         pointer-events: none;
@@ -14,6 +15,7 @@
         border: 0;
         padding: 0;
         flex: 0;
+        font-size: inherit;
 
         > * {
             pointer-events: all;
