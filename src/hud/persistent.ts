@@ -296,7 +296,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 scope: "client",
                 config: false,
                 onChange: (value) => {
-                    this.render();
                     this.element?.classList.toggle("cleaned", value);
                 },
             },
