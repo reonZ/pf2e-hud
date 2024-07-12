@@ -2,6 +2,8 @@ $bottom-width: 542px;
 
 [id^="pf2e-hud-persistent"] {
     --hud-height: 8em;
+
+    font-size: var(--font-size);
 }
 
 #pf2e-hud-persistent-left {
@@ -21,7 +23,6 @@ $bottom-width: 542px;
     grid-auto-flow: row;
     justify-items: center;
     gap: 0.3em;
-    font-size: 1rem;
 
     .set-actor {
         &:not(.active) {
