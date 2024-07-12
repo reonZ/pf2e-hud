@@ -20,8 +20,8 @@
             {{> (partial 'sidebars')}}
             {{#if hasActor}}
             <hr>
-            <a class="effects-toggle{{#unless showEffects}} greyed{{/unless}}"
-                data-action="toggle-effects" data-tooltip="{{i18n.path 'effects.toggle'}}">
+            <a class="effects-toggle" data-action="toggle-effects"
+                data-tooltip="{{i18n.path 'effects.toggle'}}">
                 <i class="fa-solid fa-bolt"></i>
             </a>
             {{/if}}

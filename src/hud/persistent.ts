@@ -278,6 +278,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 scope: "client",
                 config: false,
                 onChange: (value) => {
+                    this.element.classList.toggle("show-effects", value);
+
                     if (value) {
                         this.render({ parts: ["effects"] });
                     } else {
@@ -463,6 +465,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         super._configureRenderOptions(options);
 
         options.cleaned = this.getSetting("cleanPortrait");
+        options.showUsers = this.getSetting("showUsers");
         options.showEffects = this.getSetting("showEffects");
 
         options.parts ??= PARTS.slice();
@@ -531,7 +534,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const fontSize = `${this.getSetting("fontSize")}px`;
 
         content.style.setProperty("--font-size", fontSize);
-        content.classList.toggle("show-users", this.getSetting("showUsers"));
+        content.classList.toggle("show-effects", options.showEffects);
+        content.classList.toggle("show-users", options.showUsers);
         content.classList.toggle("cleaned", options.cleaned);
 
         for (let { name, element } of templates) {
@@ -991,10 +995,28 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     async #prepareMainContext(
         context: PersistentContext,
         options: PersistentRenderOptions
-    ): Promise<MainContext | PersistentContext> {
+    ): Promise<MainContext | (PersistentContext & { shortcutGroups: ShortcutGroup[] })> {
         const isGM = game.user.isGM;
         const actor = this.actor;
-        if (!actor) return context;
+        const nbSlots = this.getSetting("shortcutSlots");
+
+        if (!actor) {
+            return {
+                ...context,
+                shortcutGroups: R.range(0, nbSlots).map((n) => {
+                    return {
+                        split: false,
+                        shortcuts: [
+                            {
+                                index: "0",
+                                groupIndex: String(n),
+                                isEmpty: true,
+                            },
+                        ],
+                    } satisfies ShortcutGroup;
+                }),
+            };
+        }
 
         const isNPC = actor.isOfType("npc");
         const noShortcuts = !getFlag(actor, "persistent.shortcuts", game.user.id);
@@ -1011,7 +1033,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         const cached: ShortcutCache = {};
         const shortcutGroups: ShortcutGroup[] = [];
-        const nbSlots = this.getSetting("shortcutSlots");
 
         for (const groupIndex of R.range(0, nbSlots)) {
             let isAttack = false;
@@ -2338,7 +2359,7 @@ type ShortcutData =
 
 type BaseShortCut<T extends ShortcutType> = ShortcutDataBase<T> & {
     name: string;
-    isEmpty?: false;
+    isEmpty?: boolean;
     img: string;
     isDisabled: boolean;
     isFadedOut: boolean;
@@ -2491,6 +2512,7 @@ type PersistentHudActor = CharacterPF2e | NPCPF2e;
 type PersistentRenderOptions = BaseActorRenderOptions & {
     parts: PartName[];
     cleaned: boolean;
+    showUsers: boolean;
     showEffects: boolean;
 };
 
