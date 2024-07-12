@@ -101,8 +101,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #effectsInstructions: Record<string, string> | null = null;
     #effectsShiftInstructions: Record<string, string> | null = null;
 
-    #elements: Record<PartName | "left", HTMLElement | null> = {
-        left: null,
+    #elements: Record<PartName, HTMLElement | null> = {
         menu: null,
         portrait: null,
         main: null,
@@ -138,6 +137,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         window: {
             positioned: false,
         },
+        id: "pf2e-hud-persistent",
     };
 
     get SETTINGS_ORDER(): (keyof PersistentSettings)[] {
@@ -252,7 +252,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 scope: "client",
                 config: false,
                 onChange: (value) => {
-                    this.leftElement?.classList.toggle("show-users", value);
+                    this.element?.classList.toggle("show-users", value);
                 },
             },
             {
@@ -294,8 +294,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 scope: "client",
                 config: false,
                 onChange: (value) => {
-                    this.render({ parts: ["menu"] });
-                    this.portraitElement?.classList.toggle("cleaned", value);
+                    this.render();
+                    this.element?.classList.toggle("cleaned", value);
                 },
             },
             ...CLOSE_SETTINGS.map(
@@ -339,16 +339,16 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         return this.#elements.main;
     }
 
-    get leftElement() {
-        return this.#elements.left;
-    }
-
     get portraitElement() {
         return this.#elements.portrait;
     }
 
     get menuElement() {
         return this.#elements.menu;
+    }
+
+    get effectsElement() {
+        return this.#elements.effects;
     }
 
     get sidebars() {
@@ -453,18 +453,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         options.cleaned = this.getSetting("cleanPortrait");
         options.showEffects = this.getSetting("showEffects");
-
-        /**
-         * we either only render "menu" or everything
-         * we also make sure that "main" is before "effects"
-         */
-        if (!options.parts?.length || options.parts.length > 1 || options.parts[0] !== "menu") {
-            options.parts = ["main", "menu", "portrait", "effects"];
-        }
-
-        if (!options.showEffects) {
-            options.parts.findSplice((partName) => partName === "effects");
-        }
     }
 
     async _prepareContext(
@@ -489,8 +477,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         context: PersistentContext,
         options: PersistentRenderOptions
     ): Promise<PersistentTemplates> {
+        const parts = ["menu", "portrait", "main", "effects"] as const;
+
         return Promise.all(
-            options.parts.map(async (partName) => {
+            parts.map(async (partName) => {
                 const part = this.#parts[partName];
                 const tooltipDirection = part.tooltipDirection ?? "DOWN";
                 const partContext = await part.prepareContext(context, options);
@@ -500,10 +490,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 });
 
                 const classes = part.classes?.slice() ?? [];
-                if (options.cleaned && ["menu", "portrait"].includes(partName)) {
-                    classes.push("cleaned");
-                }
-
                 const element = createHTMLElement("div", {
                     id: `pf2e-hud-persistent-${partName}`,
                     dataset: { tooltipDirection },
@@ -521,16 +507,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         content: HTMLElement,
         options: PersistentRenderOptions
     ) {
-        content.remove();
+        const hotbar = document.getElementById("hotbar");
+        const fontSize = `${this.getSetting("fontSize")}px`;
 
-        if (!this.#elements.left) {
-            this.#elements.left = createHTMLElement("div", {
-                id: "pf2e-hud-persistent-left",
-            });
-            document.getElementById("ui-left")?.append(this.#elements.left);
-        }
+        document.getElementById("ui-left")?.append(content);
 
-        this.#elements.left.classList.toggle("show-users", this.getSetting("showUsers"));
+        content.style.setProperty("--font-size", fontSize);
+        content.classList.toggle("show-users", this.getSetting("showUsers"));
+        content.classList.toggle("cleaned", options.cleaned);
 
         for (let { name, element } of templates) {
             const oldElement = this.#elements[name];
@@ -538,14 +522,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
             if (oldElement) {
                 oldElement.replaceWith(element);
-            } else if (name === "main") {
-                document.getElementById("ui-bottom")?.prepend(element);
-            } else if (name === "menu") {
-                this.#elements.left.prepend(element);
-            } else if (name === "effects") {
-                document.getElementById("ui-bottom")?.prepend(element);
             } else {
-                this.#elements.left.append(element);
+                content.append(element);
             }
 
             if (focusName) {
@@ -556,16 +534,25 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             this.#parts[name].activateListeners(element);
         }
 
-        if (!options.showEffects) {
+        if (hotbar) {
+            this.mainElement?.appendChild(hotbar);
+        }
+
+        const players = document.getElementById("players");
+        if (players) {
+            content.prepend(players);
+        }
+
+        if (options.showEffects && this.effectsElement) {
+            this.mainElement?.append(this.effectsElement);
+        } else {
             this.#elements.effects?.remove();
             this.#elements.effects = null;
         }
     }
 
     _onRender(context: PersistentContext, options: PersistentRenderOptions) {
-        if (options.parts.includes("main")) {
-            this.sidebar?.render(true);
-        }
+        this.sidebar?.render(true);
     }
 
     _actorCleanup() {
@@ -579,14 +566,26 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
     _onClose(options: ApplicationClosingOptions) {
         for (const key in this.#elements) {
-            this.#elements[key as PartName | "left"]?.remove();
-            this.#elements[key as PartName | "left"] = null;
+            this.#elements[key as PartName]?.remove();
+            this.#elements[key as PartName] = null;
         }
+
         super._onClose(options);
     }
 
     async close(options?: ApplicationClosingOptions & { forced?: boolean }): Promise<this> {
         if (!options?.forced) return this;
+
+        const hotbar = document.getElementById("hotbar");
+        if (hotbar) {
+            document.getElementById("ui-bottom")?.prepend(hotbar);
+        }
+
+        const players = document.getElementById("players");
+        if (players) {
+            document.getElementById("ui-left")?.append(players);
+        }
+
         return super.close(options);
     }
 
@@ -763,7 +762,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     #onRenderHotbar() {
-        this.render({ parts: ["menu"] });
+        this.render();
     }
 
     setSelectedToken() {
@@ -2480,8 +2479,7 @@ type PartName = "menu" | "main" | "portrait" | "effects";
 
 type PersistentHudActor = CharacterPF2e | NPCPF2e;
 
-type PersistentRenderOptions = Omit<BaseActorRenderOptions, "parts"> & {
-    parts: PartName[];
+type PersistentRenderOptions = BaseActorRenderOptions & {
     cleaned: boolean;
     showEffects: boolean;
 };

@@ -237,14 +237,8 @@ $panel-gap: 5px;
     }
 }
 
-#interface:has([id^="pf2e-hud"]) {
+#interface:has(#pf2e-hud-persistent) {
     --panel-gap: #{$panel-gap};
-}
-
-#pf2e-hud-persistent-main + div {
-    #hotbar {
-        margin-bottom: $panel-gap;
-    }
 }
 
 #tooltip,
