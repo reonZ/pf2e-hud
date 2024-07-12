@@ -1,3 +1,14 @@
+# 0.17.2
+
+-   `Persistent HUD`:
+    -   some performance tweaks have been done
+    -   fixed the HUD not occupying actual space in the left UI
+        -   this was the cause for the scene navbar offset issue
+        -   this was the cause for smalltime not being able to dock on the players window
+        -   the players window is no longer removed from its original container anymore
+-   `Token Toolip`:
+    -   fixed tooltip position on hex-grid maps
+
 # 0.17.1
 
 -   `Persistent HUD`:
