@@ -52,12 +52,6 @@ $bottom-width: 542px;
         }
     }
 
-    &:not(.show-users) {
-        #players {
-            display: none;
-        }
-    }
-
     &:not(.show-effects) {
         #pf2e-hud-persistent-main {
             .effects-toggle {
@@ -77,6 +71,15 @@ $bottom-width: 542px;
                     opacity: 0;
                 }
             }
+        }
+    }
+}
+
+#players:has(+ #pf2e-hud-persistent) {
+    #context-menu {
+        &.expand-down {
+            bottom: calc(100% + 2px);
+            top: auto;
         }
     }
 }
