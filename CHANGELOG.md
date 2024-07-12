@@ -1,3 +1,15 @@
+# 0.17.0
+
+-   made some slight improvement to filters
+-   `Persistent HUD`:
+    -   added a new `Shortcut Slots` setting to set the number of shortcut slots available in the HUD (NOTE: the module was designed to have 4 slots)
+    -   implemented the `Font Size` setting for the persistent HUD
+    -   fixed not being able to manually unset the persistent actor when the `Auto-Set Actor` setting is set to `On Token Select`
+-   `Resources Tracker`:
+    -   implement the `Font Size` setting for the resources tracker
+    -   you can now use negative limits to the resources
+    -   resource steps are now customizable, if empty or 0 the step shortcut will be removed
+
 # 0.16.0
 
 -   IMPORTANT:
@@ -12,7 +24,7 @@
         -   a variant action skill will highlight the variant, the parent action and the skill they belong to
         -   an item inside a backpack in the container section will have all 3 highlighted
     -   the filter field closes as soon as it loses focus
-    -   pressing the `Enter` key will close the filter field was retaining the current filter for the sidebar
+    -   pressing the `Enter` key will close the filter field while retaining the current filter for the sidebar
     -   pressing the `Escape` key will close the filter field and revert any filter
     -   pressing the `Use Sidebar Filter` keybind when there is a filter active on the current sidebar will cancel the filter
 -   changed the default text color across the different HUDs to be the same as the one in the foundry interface
