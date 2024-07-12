@@ -58,12 +58,6 @@ $bottom-width: 542px;
         }
     }
 
-    &:not(.show-effects) {
-        #pf2e-hud-persistent-effects {
-            display: none;
-        }
-    }
-
     &.cleaned {
         #pf2e-hud-persistent-portrait {
             &:not(:hover) {

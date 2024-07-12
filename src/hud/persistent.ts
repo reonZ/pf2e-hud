@@ -76,6 +76,7 @@ import {
 } from "./sidebar/skills";
 import { getAnnotationTooltip } from "./sidebar/spells";
 
+const PARTS = ["menu", "portrait", "main", "effects"] as const;
 const ROMAN_RANKS = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"] as const;
 
 class PF2eHudPersistent extends makeAdvancedHUD(
@@ -277,7 +278,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 scope: "client",
                 config: false,
                 onChange: (value) => {
-                    this.element?.classList.toggle("show-effects", value);
+                    if (value) {
+                        this.render({ parts: ["effects"] });
+                    } else {
+                        this.#elements.effects?.remove();
+                        this.#elements.effects = null;
+                    }
                 },
             },
             {
@@ -458,6 +464,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         options.cleaned = this.getSetting("cleanPortrait");
         options.showEffects = this.getSetting("showEffects");
+
+        options.parts ??= PARTS.slice();
     }
 
     async _prepareContext(
@@ -478,14 +486,21 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         return data;
     }
 
+    async _preFirstRender(context: PersistentContext, options: PersistentRenderOptions) {
+        await super._preFirstRender(context, options);
+        options.parts = PARTS.slice();
+    }
+
     async _renderHTML(
         context: PersistentContext,
         options: PersistentRenderOptions
     ): Promise<PersistentTemplates> {
-        const parts = ["menu", "portrait", "main", "effects"] as const;
+        if (!options.showEffects) {
+            options.parts.findSplice((x) => x === "effects");
+        }
 
         return Promise.all(
-            parts.map(async (partName) => {
+            options.parts.map(async (partName) => {
                 const part = this.#parts[partName];
                 const tooltipDirection = part.tooltipDirection ?? "DOWN";
                 const partContext = await part.prepareContext(context, options);
@@ -515,10 +530,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const hotbar = this.hotbarElement;
         const fontSize = `${this.getSetting("fontSize")}px`;
 
-        document.getElementById("ui-left")?.append(content);
-
         content.style.setProperty("--font-size", fontSize);
-        content.classList.toggle("show-effects", this.getSetting("showEffects"));
         content.classList.toggle("show-users", this.getSetting("showUsers"));
         content.classList.toggle("cleaned", options.cleaned);
 
@@ -532,6 +544,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 content.append(element);
             }
 
+            if (hotbar && name === "main") {
+                element.appendChild(hotbar);
+            }
+
             if (focusName) {
                 element.querySelector<HTMLInputElement>(`input[name="${focusName}"]`)?.focus();
             }
@@ -540,13 +556,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             this.#parts[name].activateListeners(element);
         }
 
-        if (hotbar) {
-            this.mainElement?.appendChild(hotbar);
-        }
-
-        if (this.effectsElement) {
+        if (options.showEffects && options.parts.includes("effects") && this.effectsElement) {
             this.mainElement?.append(this.effectsElement);
         }
+    }
+
+    protected _onFirstRender(context: PersistentContext, options: PersistentRenderOptions) {
+        document.getElementById("ui-left")?.append(this.element);
     }
 
     _onRender(context: PersistentContext, options: PersistentRenderOptions) {
@@ -2473,6 +2489,7 @@ type PartName = "menu" | "main" | "portrait" | "effects";
 type PersistentHudActor = CharacterPF2e | NPCPF2e;
 
 type PersistentRenderOptions = BaseActorRenderOptions & {
+    parts: PartName[];
     cleaned: boolean;
     showEffects: boolean;
 };
