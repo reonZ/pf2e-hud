@@ -292,7 +292,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: true,
                 scope: "client",
                 onChange: () => {
-                    this.render();
+                    this.render({ parts: ["effects"] });
                 },
             },
             {
@@ -771,7 +771,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     #onRenderHotbar() {
-        this.render();
+        this.render({ parts: ["menu"] });
     }
 
     setSelectedToken() {
