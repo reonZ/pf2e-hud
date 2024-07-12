@@ -398,12 +398,13 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
         if (!element || !token || !canvas.ready) return position;
 
         const scale = token.worldTransform.a;
+        const gridSize = canvas.grid.size;
         const tokenCoords = canvas.clientCoordinatesFromCanvas(token);
         const targetCoords = {
             left: tokenCoords.x,
             top: tokenCoords.y,
-            width: token.hitArea.width * scale,
-            height: token.hitArea.height * scale,
+            width: token.document.width * gridSize * scale,
+            height: token.document.height * gridSize * scale,
             get right() {
                 return this.left + this.width;
             },
