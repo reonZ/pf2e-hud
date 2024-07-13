@@ -88,7 +88,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #renderTokenHudHook = createHook("renderTokenHUD", () => this.closeSidebar());
     #controlTokenHook = createHook("controlToken", this.#onControlTokenDebounce.bind(this));
     #renderHotbarHook = createHook("renderHotbar", this.#onRenderHotbar.bind(this));
-    #deleteTokenHook = createHook("deleteToken", this.#onDeleteActor.bind(this));
+    #deleteTokenHook = createHook("deleteToken", this.#onDeleteToken.bind(this));
     #deleteActorHook = createHook("deleteActor", this.#onDeleteActor.bind(this));
     #updateUserHook = createHook("updateUser", this.#onUpdateUser.bind(this));
     #combatDeleteHook = createHook("deleteCombat", this.#onDeleteCombat.bind(this));
@@ -712,10 +712,16 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         }
     }
 
-    #onDeleteActor(doc: ActorPF2e | TokenDocumentPF2e) {
-        const actor = doc instanceof Actor ? doc : doc.actor;
+    #onDeleteActor(actor: ActorPF2e) {
         if (this.isCurrentActor(actor)) {
             this.setActor(null, { skipSave: true, force: true });
+        }
+    }
+
+    #onDeleteToken(token: TokenDocumentPF2e) {
+        const actor = token.actor;
+        if (actor?.isToken) {
+            this.#onDeleteActor(actor);
         }
     }
 
