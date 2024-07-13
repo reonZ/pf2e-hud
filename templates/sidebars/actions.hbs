@@ -23,8 +23,19 @@
 {{/each}}
 
 {{#if blasts}}
-<header data-filter-value="{{filterValue blasts key='label' localize=true}}">
+<header class="blasts" data-filter-value="{{filterValue blasts key='label' localize=true}}">
     <div class="name">{{i18n 'blasts'}}</div>
+    <div class="controls">
+        {{#each blastActionCost as |suboption|}}
+        {{#if suboption.selected}}
+        <span data-tooltip="{{suboption.tooltip}}">{{suboption.label}}</span>
+        {{else}}
+        <a data-action="toggle-blast-action-cost" data-cost="{{suboption.cost}}"
+            data-item-id="{{suboption.itemId}}"
+            data-tooltip="{{suboption.tooltip}}">{{suboption.label}}</a>
+        {{/if}}
+        {{/each}}
+    </div>
 </header>
 {{/if}}
 {{#each blasts as |blast|}}
@@ -131,7 +142,7 @@
 {{/each}}
 
 {{#if heroActions}}
-<header data-filter-value="{{filterValue heroActions.actions key='name'}}">
+<header class="hero-actions" data-filter-value="{{filterValue heroActions.actions key='name'}}">
     <div class="name">{{localize 'pf2e-toolbelt.heroActions.sheet.label'}}</div>
     <div class="controls">
         {{#if heroActions.usesCount}}

@@ -204,7 +204,11 @@ abstract class PF2eHudSidebar extends foundry.applications.api
             const actor = this.actor;
             const toggles = R.pipe(
                 R.values(this.actor.synthetics.toggles).flatMap((domain) => Object.values(domain)),
-                R.filter((option) => option.placement === placement),
+                R.filter(
+                    ({ placement, option, domain }) =>
+                        placement === placement &&
+                        !(domain === "elemental-blast" && option === "action-cost")
+                ),
                 R.map((toggle) => ({
                     ...toggle,
                     label: game.i18n.localize(toggle.label),

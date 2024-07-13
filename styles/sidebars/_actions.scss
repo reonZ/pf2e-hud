@@ -1,3 +1,15 @@
+@mixin variant-selected {
+    cursor: default;
+    background: var(--variant-background-selected);
+    color: var(--variant-color-selected);
+    box-shadow: var(--variant-box-shadow-selected);
+    border: 0;
+
+    i {
+        margin-bottom: -0.05em;
+    }
+}
+
 #pf2e-hud-sidebar .inner.actions {
     --max-column-width: 19em;
     --attack-background: #171f693d;
@@ -7,8 +19,29 @@
     --category-width: 1.2em;
 
     header {
-        .controls {
-            font-size: 0.9em;
+        &.hero-actions {
+            .controls {
+                a {
+                    font-size: 0.9em;
+                }
+            }
+        }
+
+        &.blasts {
+            .controls {
+                > * {
+                    width: 2ch;
+                    text-align: center;
+                }
+
+                a {
+                    background: var(--variant-background);
+                }
+
+                span {
+                    @include variant-selected;
+                }
+            }
         }
     }
 
@@ -118,15 +151,7 @@
                 justify-content: center;
 
                 &.selected {
-                    cursor: default;
-                    background: #e7e2e2;
-                    color: #424242;
-                    box-shadow: inset 0 0 3px 1px black;
-                    border: 0;
-
-                    i {
-                        margin-bottom: -0.05em;
-                    }
+                    @include variant-selected;
                 }
             }
         }

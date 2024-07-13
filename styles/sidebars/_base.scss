@@ -16,9 +16,12 @@
     --item-spacing: 0.3em;
 
     --variant-background: #ffffff09;
+    --variant-background-selected: #e7e2e2;
     --variant-background-reversed: #ffffffad;
     --variant-border: 1px solid #ffffff24;
     --variant-color: var(--color);
+    --variant-color-selected: #424242;
+    --variant-box-shadow-selected: inset 0 0 3px 1px black;
     --variant-gap: 0.1em;
 
     --action-img-background: #ffffff7a;

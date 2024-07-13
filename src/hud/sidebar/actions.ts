@@ -170,6 +170,21 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             return list.map((x) => (localize ? game.i18n.localize(x[key]) : x[key])).join("|");
         };
 
+        const blastActionCost = (() => {
+            if (!isCharacter) return;
+
+            const blastOption = actor.synthetics.toggles["elemental-blast"]?.["action-cost"];
+            if (!blastOption) return;
+
+            return blastOption.suboptions.map(({ selected, value, label }) => ({
+                selected,
+                cost: value,
+                label: value === "1" ? "Ⅰ" : "Ⅱ",
+                tooltip: label,
+                itemId: blastOption.itemId,
+            }));
+        })();
+
         const data: ActionsContext = {
             ...parentData,
             inParty,
@@ -178,6 +193,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             actionSections,
             blasts: blasts?.sort((a, b) => a.label.localeCompare(b.label, game.i18n.lang)),
             strikes: strikes.sort((a, b) => a.index - b.index),
+            blastActionCost,
             isCharacter,
             variantLabel,
             filterValue,
@@ -248,6 +264,12 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             const action = button.dataset.action as Action;
 
             switch (action) {
+                case "toggle-blast-action-cost": {
+                    const { itemId, cost } = button.dataset;
+                    actor.toggleRollOption("elemental-blast", "action-cost", itemId, true, cost);
+                    break;
+                }
+
                 case "toggle-trait": {
                     const item = await getItemFromElement(button, actor);
                     if (!isOwnedItem(item) || !item.isOfType("action", "feat")) return;
@@ -686,7 +708,8 @@ type Action =
     | "hero-action-discard"
     | "use-action"
     | "toggle-exploration"
-    | "toggle-trait";
+    | "toggle-trait"
+    | "toggle-blast-action-cost";
 
 type ActionData = {
     id: string;
@@ -712,6 +735,14 @@ type ActionsContext = SidebarContext & {
     variantLabel: (label: string) => string;
     blasts: ActionBlast[] | undefined;
     strikes: ActionStrike[];
+    blastActionCost: Maybe<
+        {
+            selected: boolean;
+            cost: string;
+            label: string;
+            itemId: string;
+        }[]
+    >;
     actionSections: {
         type: "action" | "exploration" | "free" | "reaction" | "passive";
         label: string;
