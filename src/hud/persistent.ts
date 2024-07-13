@@ -77,7 +77,7 @@ import {
 import { getAnnotationTooltip } from "./sidebar/spells";
 
 const PARTS = ["menu", "portrait", "main", "effects"] as const;
-const ROMAN_RANKS = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"] as const;
+const ROMAN_RANKS = ["", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"] as const;
 
 class PF2eHudPersistent extends makeAdvancedHUD(
     PF2eHudBaseActor<PersistentSettings, PersistentHudActor, PersistentUserSetting>
