@@ -8,7 +8,7 @@
                 "hint": "Set the selected token's actor as persistent."
             },
             "altTracker": {
-                "name": "Toggle Tracker Menu",
+                "name": "Toggle Combat Tracker",
                 "hint": "Toggle the combat tracker menu to show additional options."
             },
             "filter": {
@@ -44,7 +44,7 @@
                 },
                 "sidebarFontSize": {
                     "name": "Sidebars Font Size",
-                    "hint": "Font size for the sidebars."
+                    "hint": "Sidebars opened by this HUD scale with the font size. NOTE: The module was designed to use a font size of 14."
                 },
                 "sidebarHeight": {
                     "name": "Sidebars Max Height",
@@ -113,7 +113,7 @@
                 "title": "Token HUD",
                 "scaleDimensions": {
                     "name": "Scale With Token",
-                    "hint": "Should the HUD have its dimensions scaled with the token it is attached to."
+                    "hint": "Should the HUD have its dimensions scaled with the token it is attached to instead of having fixed dimensions."
                 },
                 "mode": {
                     "name": "Display Mode",
@@ -203,7 +203,7 @@
                 },
                 "ownerShortcuts": {
                     "name": "Use Owner Shortcuts",
-                    "hint": "If you haven't made any manual changes to a character owned actor, its owner shortcut will be used."
+                    "hint": "If you haven't made any manual changes to a character owned actor, its owner shortcuts will be used."
                 },
                 "shiftEffects": {
                     "name": "Hold Shift for Effects",
