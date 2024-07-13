@@ -387,6 +387,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         };
     }
 
+    get worldActor() {
+        return this.actor?.token?.baseActor ?? this.actor;
+    }
+
     get savedActor() {
         const uuid = this.getUserSetting("selected") ?? "";
         const actor = fromUuidSync<ActorPF2e>(uuid);
@@ -1024,13 +1028,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             };
         }
 
+        const worldActor = this.worldActor!;
         const isNPC = actor.isOfType("npc");
-        const noShortcuts = !getFlag(actor, "persistent.shortcuts", game.user.id);
+        const noShortcuts = !getFlag(worldActor, "persistent.shortcuts", game.user.id);
         const autoFill = isGM && isNPC && noShortcuts && this.getSetting("autoFillNpc");
         const shortcutsOwner = (() => {
             if (!isGM || isNPC || !noShortcuts || !this.getSetting("ownerShortcuts")) return;
             const owner = getOwner(actor, false)?.id;
-            return owner && getFlag(actor, "persistent.shortcuts", owner) ? owner : undefined;
+            return owner && getFlag(worldActor, "persistent.shortcuts", owner) ? owner : undefined;
         })();
 
         this.#shortcuts = {};
@@ -1090,6 +1095,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = this.actor;
         if (!actor) return;
 
+        const worldActor = this.worldActor!;
+
         addStatsAdvancedListeners(this.actor, html);
         addSidebarsListeners(this, html);
 
@@ -1115,7 +1122,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     const confirm = await confirmAction("delete");
                     if (!confirm) return;
 
-                    return unsetFlag(actor, "persistent.shortcuts", game.user.id);
+                    await unsetFlag(worldActor, "persistent.shortcuts", game.user.id);
+                    return this.#renderIfUnlinkedActor();
                 }
 
                 case "fill-shortcuts": {
@@ -1150,7 +1158,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 case "copy-owner-shortcuts": {
                     const owner = getOwner(actor, false)?.id;
                     const userShortcuts = owner
-                        ? getFlag<UserShortcutsData>(actor, "persistent.shortcuts", owner)
+                        ? getFlag<UserShortcutsData>(worldActor, "persistent.shortcuts", owner)
                         : undefined;
 
                     if (!userShortcuts || foundry.utils.isEmpty(userShortcuts)) {
@@ -1160,12 +1168,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     const confirm = await confirmAction("owner");
                     if (!confirm) return;
 
-                    return setFlag(
-                        actor,
+                    await setFlag(
+                        worldActor,
                         "persistent.shortcuts",
                         game.user.id,
                         foundry.utils.deepClone(userShortcuts)
                     );
+                    return this.#renderIfUnlinkedActor();
                 }
             }
         });
@@ -1212,8 +1221,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         }
     }
 
-    #onDeleteShortcut(shortcutElement: HTMLElement) {
-        const actor = this.actor!;
+    async #onDeleteShortcut(shortcutElement: HTMLElement) {
         const { groupIndex, index } = elementDataset(shortcutElement);
 
         if (this.isVirtual) {
@@ -1222,7 +1230,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             }
             this.#overrideShortcutData();
         } else {
-            unsetFlag(actor, "persistent.shortcuts", game.user.id, groupIndex, index);
+            await unsetFlag(
+                this.worldActor!,
+                "persistent.shortcuts",
+                game.user.id,
+                groupIndex,
+                index
+            );
+            this.#renderIfUnlinkedActor();
         }
     }
 
@@ -1413,6 +1428,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         }
 
         const actor = this.actor!;
+        const worldActor = this.worldActor!;
 
         let { index, groupIndex } = elementDataset(el);
         const shortcut = this.getShortcut(groupIndex, index);
@@ -1587,7 +1603,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             ? this.#shortcutData[groupIndex] ?? {}
             : foundry.utils.deepClone(
                   getFlag<Record<string, any>>(
-                      actor,
+                      worldActor,
                       "persistent.shortcuts",
                       game.user.id,
                       groupIndex
@@ -1624,16 +1640,24 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         if (this.isVirtual) {
             this.#overrideShortcutData();
         } else {
-            setFlag(actor, "persistent.shortcuts", game.user.id, groupIndex, group);
+            await setFlag(worldActor, "persistent.shortcuts", game.user.id, groupIndex, group);
+            this.#renderIfUnlinkedActor();
+        }
+    }
+
+    #renderIfUnlinkedActor() {
+        if (this.actor?.isToken) {
+            this.render();
         }
     }
 
     async #overrideShortcutData() {
         const userId = game.user.id;
-        const actor = this.actor!;
+        const worldActor = this.worldActor!;
         const shortcutData = foundry.utils.deepClone(this.#shortcutData);
-        await unsetFlag(actor, "persistent.shortcuts", userId);
-        await setFlag(actor, "persistent.shortcuts", userId, shortcutData);
+        await unsetFlag(worldActor, "persistent.shortcuts", userId);
+        await setFlag(worldActor, "persistent.shortcuts", userId, shortcutData);
+        this.#renderIfUnlinkedActor();
     }
 
     async #fillShortcut(
@@ -1774,7 +1798,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         owner?: string
     ) {
         const flag = getFlag<ShortcutData>(
-            this.actor!,
+            this.worldActor!,
             "persistent.shortcuts",
             owner ?? game.user.id,
             String(groupIndex),
