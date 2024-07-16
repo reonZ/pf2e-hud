@@ -33,6 +33,11 @@
         z-index: -1;
         width: fit-content;
         margin: auto;
+        padding-left: calc(var(--inner-padding) - 0.1em);
+
+        .fa-user {
+            font-size: 0.92em;
+        }
 
         &:not(:last-child) {
             border-bottom-left-radius: 0;
