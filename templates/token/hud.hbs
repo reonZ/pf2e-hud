@@ -28,6 +28,9 @@
     {{/if}}
     {{> (partial 'stats_level')}}
     {{> (partial 'stats_speed')}}
+    {{#if isCharacter}}
+    {{> (partial 'three-steps') step=alliance}}
+    {{/if}}
     {{#if isNPC}}
     <a data-section="recall-knowledge" data-tooltip="PF2E.RecallKnowledge.Label"
         data-action="recall-knowledge">

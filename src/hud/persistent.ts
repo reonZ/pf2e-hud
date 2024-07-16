@@ -13,6 +13,7 @@ import {
     getActionAnnotation,
     getActionImg,
     getActiveModule,
+    getAlliance,
     getEnrichedDescriptions,
     getFirstActiveToken,
     getFlag,
@@ -52,8 +53,10 @@ import { PF2eHudItemPopup } from "./popup/item";
 import {
     StatsAdvanced,
     StatsHeaderExtras,
+    ThreeStep,
     getAdvancedStats,
     getStatsHeaderExtras,
+    threeStep,
 } from "./shared/advanced";
 import { StatsHeader, getStatsHeader } from "./shared/base";
 import { addStatsAdvancedListeners, addStatsHeaderListeners } from "./shared/listeners";
@@ -1032,6 +1035,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const isNPC = actor.isOfType("npc");
         const noShortcuts = !getFlag(worldActor, "persistent.shortcuts", game.user.id);
         const autoFill = isGM && isNPC && noShortcuts && this.getSetting("autoFillNpc");
+
         const shortcutsOwner = (() => {
             if (!isGM || isNPC || !noShortcuts || !this.getSetting("ownerShortcuts")) return;
             const owner = getOwner(actor, false)?.id;
@@ -1075,12 +1079,17 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             });
         }
 
+        const alliance = context.isCharacter
+            ? threeStep("alliance", getAlliance(actor).alliance)
+            : undefined;
+
         const data: MainContext = {
             ...context,
             ...getAdvancedStats(actor),
             sidebars: getSidebars(actor, this.sidebar?.key),
             shortcutGroups,
             noShortcuts,
+            alliance,
             isVirtual: this.isVirtual,
             isAutoFill: autoFill,
             isOwnerShortcuts: !!shortcutsOwner,
@@ -2530,6 +2539,7 @@ type MainContext = PersistentContext &
         isAutoFill: boolean;
         isOwnerShortcuts: boolean;
         showEffects: boolean;
+        alliance: ThreeStep | undefined;
         variantLabel: typeof variantLabel;
     };
 

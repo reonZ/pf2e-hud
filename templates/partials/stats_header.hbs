@@ -72,13 +72,11 @@
     <span>N/A&nbsp;&nbsp;</span>
     {{/if}}
 </div>
-{{!-- adjustment --}}
+{{!-- adjustment, alliance & notes --}}
 {{else if isNPC}}
-<div class="double" data-section="adjustment">
-    <a data-slider-action="adjustment" data-tooltip="pf2e-hud.hud.toggleAdjustment">
-        <i class="{{adjustment.icon}}"></i>
-        <span>{{localize adjustment.label}}</span>
-    </a>
+<div class="double npc" data-section>
+    {{> (partial 'three-steps') step=adjustment}}
+    {{> (partial 'three-steps') step=alliance}}
     <a data-action="show-notes" data-tooltip="PF2E.NPC.NotesTab">
         <i class="fa-duotone fa-clipboard"></i>
     </a>

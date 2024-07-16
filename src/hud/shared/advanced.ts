@@ -1,13 +1,43 @@
-import { R, getFlag, getSetting } from "foundry-pf2e";
+import { R, getAlliance, getFlag, getSetting, localize } from "foundry-pf2e";
 import { IWR_DATA, StatsSpeed, StatsStatistic, getSpeeds, getStatistics } from "./base";
 
 const COVER_UUID = "Compendium.pf2e.other-effects.Item.I9lfZUiCwMiGogVi";
 
 const ADJUSTMENTS = {
-    normal: { icon: "fa-regular fa-alien-8bit", label: "PF2E.NPC.Adjustment.NormalLabel" },
-    weak: { icon: "fa-thin fa-alien-8bit", label: "PF2E.NPC.Adjustment.WeakLabel" },
-    elite: { icon: "fa-solid fa-alien-8bit", label: "PF2E.NPC.Adjustment.EliteLabel" },
-};
+    normal: {
+        value: 2,
+        icon: "fa-regular fa-alien-8bit",
+        label: "PF2E.NPC.Adjustment.NormalLabel",
+    },
+    weak: {
+        value: 1,
+        icon: "fa-thin fa-alien-8bit",
+        label: "PF2E.NPC.Adjustment.WeakLabel",
+    },
+    elite: {
+        value: 3,
+        icon: "fa-solid fa-alien-8bit",
+        label: "PF2E.NPC.Adjustment.EliteLabel",
+    },
+} as const;
+
+const ALLIANCES = {
+    opposition: {
+        value: 3,
+        icon: "fa-solid fa-face-angry-horns",
+        label: "PF2E.Actor.Creature.Alliance.Opposition",
+    },
+    party: {
+        value: 1,
+        icon: "fa-solid fa-face-smile-halo",
+        label: "PF2E.Actor.Creature.Alliance.Party",
+    },
+    neutral: {
+        value: 2,
+        icon: "fa-solid fa-face-meh",
+        label: "PF2E.Actor.Creature.Alliance.Neutral",
+    },
+} as const;
 
 const INFOS = [
     {
@@ -52,11 +82,33 @@ function getCoverEffect(actor: ActorPF2e) {
     return actor?.itemTypes.effect.find((effect) => effect.flags.core?.sourceId === COVER_UUID);
 }
 
+function threeStep(action: "adjustment" | "alliance", step: string): ThreeStep {
+    const { icon, label, value } =
+        action === "adjustment"
+            ? ADJUSTMENTS[step as keyof typeof ADJUSTMENTS]
+            : ALLIANCES[step as keyof typeof ALLIANCES];
+
+    return {
+        icon,
+        value,
+        action,
+        tooltip: localize("hud", action, { value: game.i18n.localize(label) }),
+    };
+}
+
 function getStatsHeaderExtras(actor: ActorPF2e): StatsHeaderExtras {
     const isNPC = actor.isOfType("npc");
     const isFamiliar = actor.isOfType("familiar");
     const isCharacter = actor.isOfType("character");
-    const dataWithExtra: StatsHeaderExtras = {
+
+    const adjustment = isNPC
+        ? threeStep("adjustment", actor.attributes.adjustment ?? "normal")
+        : undefined;
+
+    const alliance =
+        isNPC || isCharacter ? threeStep("alliance", getAlliance(actor).alliance) : undefined;
+
+    return {
         isNPC,
         isFamiliar,
         isCharacter,
@@ -64,9 +116,9 @@ function getStatsHeaderExtras(actor: ActorPF2e): StatsHeaderExtras {
         hasCover: !!getCoverEffect(actor),
         resolve: isCharacter ? actor.system.resources.resolve : undefined,
         shield: isCharacter || isNPC ? actor.attributes.shield : undefined,
-        adjustment: (isNPC && ADJUSTMENTS[actor.attributes.adjustment ?? "normal"]) || undefined,
-    };
-    return dataWithExtra;
+        adjustment,
+        alliance,
+    } satisfies StatsHeaderExtras;
 }
 
 function getAdvancedStats(actor: ActorPF2e): StatsAdvanced {
@@ -191,6 +243,13 @@ type StatsAdvanced = {
     otherSpeeds: string | undefined;
 };
 
+type ThreeStep = {
+    value: 1 | 2 | 3;
+    action: string;
+    icon: string;
+    tooltip: string;
+};
+
 type StatsHeaderExtras = {
     isNPC: boolean;
     isFamiliar: boolean;
@@ -198,9 +257,10 @@ type StatsHeaderExtras = {
     isCombatant: boolean;
     hasCover: boolean;
     resolve: ValueAndMax | undefined;
-    adjustment: (typeof ADJUSTMENTS)[keyof typeof ADJUSTMENTS] | undefined;
+    adjustment: ThreeStep | undefined;
+    alliance: ThreeStep | undefined;
     shield: HeldShieldData | undefined;
 };
 
-export { addDragoverListener, getAdvancedStats, getCoverEffect, getStatsHeaderExtras };
-export type { StatsAdvanced, StatsHeaderExtras };
+export { addDragoverListener, getAdvancedStats, getCoverEffect, getStatsHeaderExtras, threeStep };
+export type { StatsAdvanced, StatsHeaderExtras, ThreeStep };

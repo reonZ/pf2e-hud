@@ -28,6 +28,7 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
                 "numbers",
                 "slider",
                 "sidebars",
+                "three-steps",
             ];
         }
 

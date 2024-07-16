@@ -233,7 +233,8 @@
             }
         },
         "hud": {
-            "toggleAdjustment": "Toggle Adjustment",
+            "adjustment": "Adjustment: {value}",
+            "alliance": "Alliance: {value}",
             "tempHP": "Temporary Hit Points",
             "resolve": {
                 "title": "Use Resolve Point",

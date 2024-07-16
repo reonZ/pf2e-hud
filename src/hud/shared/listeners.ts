@@ -3,6 +3,7 @@ import {
     addListener,
     addListenerAll,
     elementDataset,
+    getAlliance,
     hasItemWithSourceId,
     htmlClosest,
     isOwnedItem,
@@ -20,6 +21,7 @@ import { getItemFromElement } from "./base";
 
 const RESOLVE_UUID = "Compendium.pf2e.feats-srd.Item.jFmdevE4nKevovzo";
 const ADJUSTMENTS_INDEX = ["weak", null, "elite"] as const;
+const ALLIANCES_INDEX = ["party", "neutral", "opposition"] as const;
 
 function addEnterKeyListeners(html: HTMLElement) {
     addListenerAll(html, "input", "keyup", (event, el) => {
@@ -119,7 +121,9 @@ function addStatsHeaderListeners(actor: ActorPF2e, html: HTMLElement, token?: To
     });
 
     if (actor.isOfType("npc")) {
-        addListener(html, "[data-slider-action='adjustment']", "mousedown", (event) => {
+        addAllianceListener(actor, html);
+
+        addListener(html, "[data-step-action='adjustment']", "mousedown", (event) => {
             if (![0, 2].includes(event.button)) return;
 
             const direction = event.button === 0 ? 1 : -1;
@@ -128,10 +132,30 @@ function addStatsHeaderListeners(actor: ActorPF2e, html: HTMLElement, token?: To
             const adjustment = ADJUSTMENTS_INDEX[Math.clamp(currentIndex + direction, 0, 2)];
 
             if (adjustment !== currentAdjustment) {
-                return actor.applyAdjustment(adjustment);
+                actor.applyAdjustment(adjustment);
             }
         });
     }
+}
+
+function addAllianceListener(actor: ActorPF2e, html: HTMLElement) {
+    addListener(html, "[data-step-action='alliance']", "mousedown", (event) => {
+        if (![0, 2].includes(event.button)) return;
+
+        const direction = event.button === 0 ? 1 : -1;
+        const { defaultAlliance, alliance } = getAlliance(actor);
+        const currentIndex = ALLIANCES_INDEX.indexOf(alliance);
+        const newAlliance = ALLIANCES_INDEX[Math.clamp(currentIndex + direction, 0, 2)];
+        if (newAlliance === alliance) return;
+
+        if (newAlliance === defaultAlliance) {
+            actor.update({ "system.details.-=alliance": true });
+        } else {
+            actor.update({
+                "system.details.alliance": newAlliance === "neutral" ? null : newAlliance,
+            });
+        }
+    });
 }
 
 function addStatsAdvancedListeners(actor: ActorPF2e, html: HTMLElement) {
@@ -165,6 +189,8 @@ function addStatsAdvancedListeners(actor: ActorPF2e, html: HTMLElement) {
     });
 
     if (actor.isOfType("character")) {
+        addAllianceListener(actor, html);
+
         addListenerAll(html, "[data-slider-action]:not(.disabled)", "mousedown", (event, el) => {
             if (![0, 2].includes(event.button)) return;
 
