@@ -142,7 +142,7 @@ function addAllianceListener(actor: ActorPF2e, html: HTMLElement) {
     addListener(html, "[data-step-action='alliance']", "mousedown", (event) => {
         if (![0, 2].includes(event.button)) return;
 
-        const direction = event.button === 0 ? 1 : -1;
+        const direction = (event.button === 0 ? 1 : -1) * (event.shiftKey ? 2 : 1);
         const { defaultAlliance, alliance } = getAlliance(actor);
         const currentIndex = ALLIANCES_INDEX.indexOf(alliance);
         const newAlliance = ALLIANCES_INDEX[Math.clamp(currentIndex + direction, 0, 2)];
