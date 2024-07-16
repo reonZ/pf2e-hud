@@ -460,7 +460,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             } else {
                 this.render(true);
             }
-        } else {
+        } else if (this.rendered) {
             this.close({ forced: true });
         }
     }
@@ -598,9 +598,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     async close(options?: ApplicationClosingOptions & { forced?: boolean }): Promise<this> {
         if (!options?.forced) return this;
 
-        const hotbar = document.getElementById("hotbar");
+        const hotbar = this.hotbarElement;
         if (hotbar) {
-            document.getElementById("ui-bottom")?.prepend(hotbar);
+            document.querySelector("#ui-bottom > div")?.prepend(hotbar);
         }
 
         return super.close(options);

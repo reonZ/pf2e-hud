@@ -288,7 +288,7 @@
                     },
                     "noChannelElements": "Could not find the <strong>Channel Elements</strong> action on this character.",
                     "delete": {
-                        "title": "Delete Shortcuts",
+                        "title": "Reset Shortcuts",
                         "message": "Are you sure you want to delete all your shortcuts for <strong>{name}</strong>?"
                     },
                     "fill": {
