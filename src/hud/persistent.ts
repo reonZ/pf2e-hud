@@ -1647,6 +1647,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         group[index] = newShortcut;
 
         if (this.isVirtual) {
+            this.#shortcutData[groupIndex] = group;
             this.#overrideShortcutData();
         } else {
             await setFlag(worldActor, "persistent.shortcuts", game.user.id, groupIndex, group);
