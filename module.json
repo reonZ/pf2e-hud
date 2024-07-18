@@ -8,12 +8,10 @@
             "discord": "Idle#3251"
         }
     ],
-    "esmodules": [
-        "scripts/main.js"
-    ],
+    "esmodules": ["scripts/main.js"],
     "compatibility": {
-        "minimum": "12.328",
-        "verified": "12.328",
+        "minimum": "12.329",
+        "verified": "12.329",
         "maximum": "12"
     },
     "version": "0.17.2",
@@ -23,9 +21,7 @@
     "download": "https://github.com/reonZ/pf2e-hud/releases/download/0.17.2/module.zip",
     "changelog": "https://github.com/reonZ/pf2e-hud/blob/master/CHANGELOG.md",
     "bugs": "https://github.com/reonZ/pf2e-hud/issues",
-    "styles": [
-        "styles/pf2e-hud.css"
-    ],
+    "styles": ["styles/pf2e-hud.css"],
     "relationships": {
         "systems": [
             {
