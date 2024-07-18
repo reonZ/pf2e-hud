@@ -194,17 +194,12 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
         const updateResource = (negative: boolean) => {
             const parent = htmlClosest(target, "[data-resource-id]")!;
             const { resourceId, isWorld } = elementDataset(parent);
-            const resource = this.getResource(resourceId, isWorld === "true");
-            if (!resource) return;
-
-            const stepValue = event.ctrlKey
-                ? resource.step3
-                : event.shiftKey
-                ? resource.step2
-                : resource.step1;
-
-            const nb = stepValue || resource.step1 || 1;
-            this.changeResourceQuantity(resourceId, isWorld === "true", negative ? nb * -1 : nb);
+            this.moveResourceByStep(
+                resourceId,
+                isWorld === "true",
+                event.ctrlKey ? 3 : event.shiftKey ? 2 : 1,
+                negative
+            );
         };
 
         switch (action) {
@@ -257,6 +252,17 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
         resources.push(resource);
 
         return this.setResources(resources, resource.world);
+    }
+
+    moveResourceByStep(resourceId: string, isWorld: boolean, step: 1 | 2 | 3, negative: boolean) {
+        const resource = this.getResource(resourceId, isWorld);
+        if (!resource) return;
+
+        const stepValue =
+            step === 3 ? resource.step3 : step === 2 ? resource.step2 : resource.step1;
+
+        const nb = stepValue || resource.step1 || 1;
+        this.changeResourceQuantity(resourceId, isWorld, negative ? nb * -1 : nb);
     }
 
     changeResourceQuantity(id: string, isWorld: boolean, nb: number) {
