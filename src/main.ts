@@ -126,6 +126,9 @@ Hooks.once("setup", () => {
         hud: HUDS,
     };
 
+    // @ts-ignore
+    game.hud = HUDS;
+
     for (const hud of huds) {
         hud.enable();
     }
