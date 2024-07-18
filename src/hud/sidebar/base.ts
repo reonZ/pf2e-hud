@@ -199,14 +199,14 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
         await this.parentHUD._renderSidebarHTML?.(innerElement, this.key);
 
-        const placement = ROLLOPTIONS_PLACEMENT[this.key];
-        if (placement) {
+        const tabPlacement = ROLLOPTIONS_PLACEMENT[this.key];
+        if (tabPlacement) {
             const actor = this.actor;
             const toggles = R.pipe(
                 R.values(this.actor.synthetics.toggles).flatMap((domain) => Object.values(domain)),
                 R.filter(
                     ({ placement, option, domain }) =>
-                        placement === placement &&
+                        placement === tabPlacement &&
                         !(domain === "elemental-blast" && option === "action-cost")
                 ),
                 R.map((toggle) => ({
