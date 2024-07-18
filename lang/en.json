@@ -318,6 +318,7 @@
             "unknown": "Unknown"
         },
         "resources": {
+            "resource": "Resource",
             "add": "Add new resource",
             "menu": {
                 "title": {

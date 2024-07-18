@@ -358,6 +358,33 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
                 isEdit,
                 i18n: templateLocalize("resources"),
             },
+            render: (event, html) => {
+                const btn = createHTMLElement("a", {
+                    dataset: {
+                        tooltip: resource.id,
+                        tooltipDirection: "UP",
+                    },
+                    innerHTML: resource.world
+                        ? "<i class='fa-solid fa-earth-americas'></i>"
+                        : "<i class='fa-solid fa-user'></i>",
+                });
+
+                btn.style.marginLeft = "0.3em";
+
+                btn.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    game.clipboard.copyPlainText(resource.id);
+                    ui.notifications.info(
+                        game.i18n.format("DOCUMENT.IdCopiedClipboard", {
+                            label: localize("resources.resource"),
+                            type: "id",
+                            id: resource.id,
+                        })
+                    );
+                });
+
+                html.querySelector(".window-header .window-title")?.append(btn);
+            },
         });
 
         return editedResource ? this.validateResource(editedResource) : null;

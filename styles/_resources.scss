@@ -153,22 +153,22 @@
 .application.dialog .pf2e-hud-resource-menu {
     .dialog-content {
         gap: 0.6em;
-    }
 
-    label {
-        white-space: nowrap;
-    }
+        label {
+            white-space: nowrap;
+        }
 
-    input[type="number"] {
-        flex: 0 0 7ch;
-        text-align: center;
-        padding: 0;
-    }
+        input[type="number"] {
+            flex: 0 0 7ch;
+            text-align: center;
+            padding: 0;
+        }
 
-    .delete {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
+        .delete {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
     }
 }
 
