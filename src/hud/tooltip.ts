@@ -122,7 +122,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
                 key: "type",
                 type: String,
                 choices: SETTING_TYPE,
-                default: "owned",
+                default: "never",
                 scope: "client",
             },
             {
@@ -171,7 +171,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
                 key: "noDead",
                 type: String,
                 choices: SETTING_NO_DEAD,
-                default: "small",
+                default: "none",
                 scope: "client",
             },
         ]);
