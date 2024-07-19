@@ -1513,7 +1513,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         } satisfies TemporaryConsumableShortcutData;
                     }
                 } else if (
-                    item.isOfType("action") &&
+                    item.isOfType("action", "feat") &&
                     dropData.actorLess &&
                     typeof dropData.uuid === "string" &&
                     typeof dropData.isStatistic &&
@@ -1825,11 +1825,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         shortcutData: ShortcutData | { groupIndex: string; index: string },
         cached: CreateShortcutCache
     ): Promise<T | EmptyShortcut> {
+        const { groupIndex, index } = shortcutData;
         const throwError = () => {
-            MODULE.throwError("an error occured while trying to access the shortcut");
+            MODULE.throwError(
+                `an error occured while trying to access shortcuts ${groupIndex}/${index}`
+            );
         };
 
-        const { groupIndex, index } = shortcutData;
         const actor = this.actor as ActorPF2e;
         if (!actor || !groupIndex || isNaN(Number(groupIndex)) || !index || isNaN(Number(index))) {
             return throwError();
@@ -1858,7 +1860,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         switch (shortcutData.type) {
             case "skill": {
                 const item = await fromUuid(shortcutData.itemUuid);
-                if (!item || !isInstanceOf(item, "ItemPF2e") || !item.isOfType("action")) {
+                if (!item || !isInstanceOf(item, "ItemPF2e") || !item.isOfType("action", "feat")) {
                     return throwError();
                 }
 
@@ -2427,7 +2429,7 @@ type CostValue = number | string | undefined;
 
 type SkillShortcut = BaseShortCut<"skill"> &
     SkillShortcutData & {
-        item: AbilityItemPF2e;
+        item: AbilityItemPF2e | FeatPF2e;
         cost: CostValue;
     };
 
