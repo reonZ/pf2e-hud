@@ -11,13 +11,10 @@ import {
     isInstanceOf,
     localize,
     promptDialog,
-    render,
     templateLocalize,
 } from "foundry-pf2e";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 
-const BON_MOT = "Compendium.pf2e.feats-srd.Item.0GF2j54roPFIDmXf";
-const NATURAL_MEDICINE = "Compendium.pf2e.feats-srd.Item.WC4xLBGmBsdOdHWu";
 const FOLLOW_THE_EXPERT = "Compendium.pf2e.actionspf2e.Item.tfa4Sh7wcxCEqL29";
 const FOLLOW_THE_EXPERT_EFFECT = "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3XWMkd3";
 
@@ -225,8 +222,8 @@ const SKILLS: RawSkill[] = [
             {
                 actionId: "bonMot",
                 cost: 1,
-                condition: (actor) => hasItemWithSourceId(actor, BON_MOT, "feat"),
                 uuid: "Compendium.pf2e.feats-srd.Item.0GF2j54roPFIDmXf",
+                useInstance: true,
             },
             {
                 actionId: "gather-information",
@@ -300,8 +297,8 @@ const SKILLS: RawSkill[] = [
                 actionId: "treatWounds",
                 trained: true,
                 label: "PF2E.Actions.TreatWounds.Label",
-                condition: (actor) => hasItemWithSourceId(actor, NATURAL_MEDICINE, "feat"),
                 uuid: "Compendium.pf2e.feats-srd.Item.WC4xLBGmBsdOdHWu",
+                useInstance: true,
             },
             "identify-magic",
             "learn-a-spell",
@@ -459,12 +456,12 @@ function prepareStatisticAction(
         });
     })();
 
-    const dataset = dataToDatasetString<keyof SkillActionDataset>({
+    const dataset: SkillActionDataset = {
         actionId,
         statistic: statistic,
         itemUuid: action.uuid,
         option: action.rollOption,
-    });
+    };
 
     const filterValue = `${label} ${variants?.map((variant) => variant.label).join("|") ?? ""}`;
 
@@ -507,21 +504,31 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
         const rankLabel = game.i18n.localize(`PF2E.ProficiencyLevel${rank ?? 0}`);
 
         const actions = skill.actions
+            .map((action) => {
+                const item = action.useInstance
+                    ? getItemWithSourceId(actor, action.uuid, "feat")
+                    : null;
+
+                if (item) {
+                    action.dataset.itemUuid = item.uuid;
+                }
+
+                return {
+                    ...action,
+                    hasInstance: !!item,
+                    dataset: dataToDatasetString(action.dataset),
+                    proficient: !isCharacter || proficient || !action.trained,
+                } satisfies FinalizedSkillAction;
+            })
             .filter((action) => {
                 if (!isCharacter) {
-                    return typeof action.condition !== "function";
+                    return !action.useInstance;
                 }
 
                 return (
                     (!action.trained || !hideUntrained || proficient) &&
-                    (typeof action.condition === "function" ? action.condition(actor) : true)
+                    (!action.useInstance || action.hasInstance)
                 );
-            })
-            .map((action) => {
-                return {
-                    ...action,
-                    proficient: !isCharacter || proficient || !action.trained,
-                } satisfies FinalizedSkillAction;
             });
 
         return {
@@ -807,8 +814,10 @@ type FinalizedSkill = Omit<PreparedSkill, "actions"> & {
     actions: FinalizedSkillAction[];
 };
 
-type FinalizedSkillAction = PreparedSkillAction & {
+type FinalizedSkillAction = Omit<PreparedSkillAction, "dataset"> & {
     proficient: boolean;
+    dataset: string;
+    hasInstance: boolean;
 };
 
 type PreparedSkill = {
@@ -833,13 +842,14 @@ type PreparedSkillAction = Omit<RawSkillAction, "variants"> & {
     label: string;
     filterValue: string;
     variants: (MapVariant | ActionVariant)[] | undefined;
-    dataset: string;
+    dataset: SkillActionDataset;
     dragImg: string;
 };
 
 type RawSkillAction = {
     actionId: string;
     uuid: string;
+    useInstance?: boolean;
     cost?: ActionCost["type"] | ActionCost["value"];
     map?: true;
     agile?: true;
@@ -847,7 +857,6 @@ type RawSkillAction = {
     trained?: true;
     variants?: string[];
     rollOption?: string;
-    condition?: (actor: ActorPF2e) => boolean;
 };
 
 type RawSkill = {
@@ -865,8 +874,8 @@ type SkillsContext = SidebarContext & {
 };
 
 export {
-    SHARED_SKILLS,
     PF2eHudSidebarSkills,
+    SHARED_SKILLS,
     getMapLabel,
     getSkillVariantName,
     getStatisticDataFromElement,
