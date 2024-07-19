@@ -21,6 +21,8 @@ const NATURAL_MEDICINE = "Compendium.pf2e.feats-srd.Item.WC4xLBGmBsdOdHWu";
 const FOLLOW_THE_EXPERT = "Compendium.pf2e.actionspf2e.Item.tfa4Sh7wcxCEqL29";
 const FOLLOW_THE_EXPERT_EFFECT = "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3XWMkd3";
 
+const UNTRAINED_IMPROVISATION = "Compendium.pf2e.feats-srd.Item.9jGaBxLUtevZYcZO";
+
 const SHARED_SKILLS = {
     "recall-knowledge": {
         cost: 1,
@@ -497,7 +499,8 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
     });
 
     const isCharacter = actor.isOfType("character");
-    const hideUntrained = getSetting("hideUntrained");
+    const hideUntrained =
+        getSetting("hideUntrained") && !hasItemWithSourceId(actor, UNTRAINED_IMPROVISATION, "feat");
 
     return skillsCache.map((skill) => {
         const { mod, rank, proficient } = actor.getStatistic(skill.slug)!;
@@ -510,7 +513,7 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
                 }
 
                 return (
-                    (!action.trained || !hideUntrained) &&
+                    (!action.trained || !hideUntrained || proficient) &&
                     (typeof action.condition === "function" ? action.condition(actor) : true)
                 );
             })
