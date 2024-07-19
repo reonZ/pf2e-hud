@@ -279,7 +279,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 type: Boolean,
                 default: true,
                 scope: "client",
-                config: true,
+                config: false,
                 onChange: (value) => {
                     this.element.classList.toggle("show-effects", value);
 
