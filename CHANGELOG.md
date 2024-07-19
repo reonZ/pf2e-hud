@@ -1,3 +1,30 @@
+# 0.18.0
+
+-   upped the foundry minimum version to `12.329`
+-   HUD objects can now be directly accessed via the `globalThis` context `game.hud`
+-   added an `Alliance` icon to NPC & Character HUDs (shift+click skips neutral)
+-   `Persistent HUD`:
+    -   switched the attack & damage icons for strikes/blasts shortcuts
+    -   shortcuts are now saved on the world actor for unlinked actors and are shared between all tokens
+    -   fixed persistent actor being unset when deleting a linked token (only unlinked ones should)
+    -   fixed actor-less hud not showing any shortcut slot
+    -   fixed the `Show Effects` icon not changing state
+    -   fixed the players window context menu showing under the HUD
+    -   fixed creating a new shortcut in an empty virtual slot (virtual = autofill or copied) not adding the shortcut
+-   `Resources Tracker`:
+    -   added an icon to the resource menu header that can be clicked to get the id of the resource
+-   `Sidebars`:
+    -   elemental blasts action cost toggle options are now directly embedded into the `Blasts` header
+    -   fixed not being able to open the item description or send-to-chat skill actions that are behind a feat (e.g. `Bon Mot`)
+    -   fixed shortcuts for skill actions that are behind a feat not working
+    -   fixed skill actions that require to be trained never showing when the `Hide Untrained` setting was enabled even if the character was trained
+        -   also added support for `Untrained Improvisation`
+-   `Token Tooltip`:
+    -   now only ever shows the small version of the tooltip if a `Token HUD` is currently visible
+    -   fixed health status not showing when hovering one of the persistent actor tokens
+-   fixed hotbar being moved even when the `Persistent HUD` is disabled
+-   fixed hotbar no being put back in the correct container element when disabling the `Persistent HUD`
+
 # 0.17.2
 
 -   `Persistent HUD`:
