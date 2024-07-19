@@ -311,7 +311,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
 
         const statsMain = getStatsHeader(actor);
 
-        if (!statsMain.health || hud.persistent.isCurrentActor(actor)) {
+        if (!statsMain.health) {
             return baseData;
         }
 
@@ -337,19 +337,25 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
             return statuses.at(pick - 1);
         })();
 
+        if (hud.token.actor || hud.persistent.isCurrentActor(actor)) {
+            return {
+                ...baseData,
+                status,
+                health: statsMain.health,
+            } satisfies StatusedTooltipContext;
+        }
+
         const setting = this.getSetting("type");
         const isOwner = actor.isOwner;
         const isObserver = canObserveActor(actor);
 
         const expended = (setting === "owned" && isOwner) || (setting === "observed" && isObserver);
         if (!expended) {
-            const data: StatusedTooltipContext = {
+            return {
                 ...baseData,
                 status,
                 health: statsMain.health,
-            };
-
-            return data;
+            } satisfies StatusedTooltipContext;
         }
 
         const name =
