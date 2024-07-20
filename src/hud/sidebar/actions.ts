@@ -20,6 +20,8 @@ import { eventToRollMode, getActionIcon } from "foundry-pf2e/src/pf2e";
 import { PF2eHudTextPopup } from "../popup/text";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 import { getItemFromElement } from "../shared/base";
+import { SKILL_ACTIONS_UUIDS } from "./skills";
+import { EXTRAS_ACTIONS_UUIDS } from "./extras";
 
 const ACTION_TYPES = {
     action: { sort: 0, label: "PF2E.ActionsActionsHeader" },
@@ -82,7 +84,11 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             if (isCharacter) abilityTypes.push("feat");
 
             const actionableEnabled = !!toolbelt?.getSetting("actionable.enabled");
-            const excludedUUIDS = stances?.actions.map((x) => x.actionUUID) ?? [];
+            const excludedUUIDS = [
+                ...SKILL_ACTIONS_UUIDS,
+                ...EXTRAS_ACTIONS_UUIDS,
+                ...(stances?.actions.map((x) => x.actionUUID) ?? []),
+            ];
             const hasKineticAura =
                 isCharacter &&
                 actor.flags.pf2e.kineticist &&

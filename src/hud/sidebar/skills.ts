@@ -20,7 +20,7 @@ const FOLLOW_THE_EXPERT_EFFECT = "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3X
 
 const UNTRAINED_IMPROVISATION = "Compendium.pf2e.feats-srd.Item.9jGaBxLUtevZYcZO";
 
-const SHARED_SKILLS = {
+const SHARED_ACTIONS = {
     "recall-knowledge": {
         cost: 1,
         uuid: "Compendium.pf2e.actionspf2e.Item.1OagaWtBpVXExToo",
@@ -416,13 +416,22 @@ const SKILLS: RawSkill[] = [
     },
 ];
 
+const SKILL_ACTIONS_UUIDS = R.pipe(
+    SKILLS,
+    R.flatMap((rawSkill) => rawSkill.actions),
+    R.map((action) => (typeof action === "object" ? action.uuid : undefined)),
+    R.concat(Object.values(SHARED_ACTIONS).map((action) => action.uuid)),
+    R.filter(R.isTruthy),
+    R.unique()
+);
+
 function prepareStatisticAction(
     statistic: string | undefined,
     rawAction: ShareSkill | RawSkillAction
 ) {
     const [actionId, action]: [string, Omit<RawSkillAction, "actionId">] =
         typeof rawAction === "string"
-            ? [rawAction, SHARED_SKILLS[rawAction]]
+            ? [rawAction, SHARED_ACTIONS[rawAction]]
             : [rawAction.actionId, rawAction];
 
     const actionKey = game.pf2e.system.sluggify(actionId, { camel: "bactrian" });
@@ -522,12 +531,13 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
             })
             .filter((action) => {
                 if (!isCharacter) {
-                    return !action.useInstance;
+                    return !action.useInstance && typeof action.condition !== "function";
                 }
 
                 return (
                     (!action.trained || !hideUntrained || proficient) &&
-                    (!action.useInstance || action.hasInstance)
+                    (!action.useInstance || action.hasInstance) &&
+                    (typeof action.condition !== "function" || action.condition(actor))
                 );
             });
 
@@ -804,7 +814,7 @@ type SkillVariantDataset = {
     agile?: StringBoolean;
 };
 
-type ShareSkill = keyof typeof SHARED_SKILLS;
+type ShareSkill = keyof typeof SHARED_ACTIONS;
 
 type FinalizedSkill = Omit<PreparedSkill, "actions"> & {
     mod: number;
@@ -857,6 +867,7 @@ type RawSkillAction = {
     trained?: true;
     variants?: string[];
     rollOption?: string;
+    condition?: (actor: ActorPF2e) => boolean;
 };
 
 type RawSkill = {
@@ -875,7 +886,8 @@ type SkillsContext = SidebarContext & {
 
 export {
     PF2eHudSidebarSkills,
-    SHARED_SKILLS,
+    SHARED_ACTIONS,
+    SKILL_ACTIONS_UUIDS,
     getMapLabel,
     getSkillVariantName,
     getStatisticDataFromElement,

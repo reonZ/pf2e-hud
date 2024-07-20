@@ -15,7 +15,7 @@ import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } fro
 import {
     PreparedSkillAction,
     RawSkillAction,
-    SHARED_SKILLS,
+    SHARED_ACTIONS,
     getStatisticDataFromElement,
     getStatisticDragDataFromElement,
     getStatistics,
@@ -36,7 +36,7 @@ const ACTIONS: (RawSkillAction & { statistic?: SkillSlug | "perception" })[] = [
         condition: () => !!getActiveModule("pf2e-perception"),
     },
     {
-        ...SHARED_SKILLS["recall-knowledge"],
+        ...SHARED_ACTIONS["recall-knowledge"],
         actionId: "recall-knowledge",
     },
     {
@@ -46,6 +46,8 @@ const ACTIONS: (RawSkillAction & { statistic?: SkillSlug | "perception" })[] = [
         map: true,
     },
 ];
+
+const EXTRAS_ACTIONS_UUIDS = ACTIONS.map((action) => action.uuid);
 
 let actionsCache: PreparedSkillAction[] | null = null;
 function getActions(actor: ActorPF2e) {
@@ -249,4 +251,4 @@ type ExtrasContext = SidebarContext & {
     }[];
 };
 
-export { PF2eHudSidebarExtras };
+export { PF2eHudSidebarExtras, EXTRAS_ACTIONS_UUIDS };
