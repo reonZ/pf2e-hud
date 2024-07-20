@@ -491,7 +491,7 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
     skillsCache ??= SKILLS.map((raw) => {
         const actions = raw.actions.map((rawAction) => prepareStatisticAction(raw.slug, rawAction));
         const label = game.i18n.localize(
-            raw.slug === "perception" ? "PF2E.PerceptionLabel" : CONFIG.PF2E.skillList[raw.slug]
+            raw.slug === "perception" ? "PF2E.PerceptionLabel" : CONFIG.PF2E.skills[raw.slug].label
         );
 
         const filterValue = `${label} ${actions.map((action) => action.filterValue).join("|")}`;
@@ -717,8 +717,6 @@ let STATISTICS: { value: string; label: string }[] | undefined;
 function getStatistics(actor: ActorPF2e) {
     STATISTICS ??= (() => {
         const obj = getTranslatedSkills() as Record<SkillSlug | "perception", string>;
-        // @ts-ignore
-        delete obj.lore;
 
         const arr = R.pipe(
             R.entries(obj),

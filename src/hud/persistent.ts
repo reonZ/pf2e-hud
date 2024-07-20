@@ -1870,7 +1870,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     const statisticLabel = game.i18n.localize(
                         shortcutData.statistic === "perception"
                             ? "PF2E.PerceptionLabel"
-                            : CONFIG.PF2E.skillList[shortcutData.statistic]
+                            : CONFIG.PF2E.skills[shortcutData.statistic].label
                     );
 
                     return `${statisticLabel}: `;
