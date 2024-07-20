@@ -204,25 +204,37 @@
         <a data-action="item-description">{{action.name}}</a>
     </div>
     <div class="controls">
+        {{!-- toggles --}}
         {{#each action.toggles as |toggle|}}
         <a {{#if toggle.selected}}class="active" {{/if}} data-tooltip="{{toggle.tooltip}}"
             data-action="toggle-trait" data-trait="{{toggle.trait}}"><i
                 class="fa-solid fa-fw fa-{{toggle.icon}}"></i></a>
         {{/each}}
+        {{!-- if usages --}}
         {{#if action.usage}}
+        {{!-- frequency field --}}
         {{#if action.frequency}}
         <input type="number" class="small" data-item-id="{{action.id}}"
             data-item-property="system.frequency.value" value="{{action.frequency.value}}" min="0"
             max="{{action.frequency.max}}" data-tooltip="{{action.frequency.label}}">
         {{/if}}
-        <a {{#if action.usage.disabled}}class="disabled" {{/if}} data-action="use-action"
-            data-tooltip="{{action.usage.label}}">
+        {{!-- reset btn --}}
+        {{#if action.usage.disabled}}
+        <a data-action="reset-action" data-tooltip="{{action.usage.label}}">
+            <i class="fa-solid fa-rotate-left"></i>
+        </a>
+        {{!-- use btn --}}
+        {{else}}
+        <a data-action="use-action" data-tooltip="{{action.usage.label}}">
             <i class="fa-solid fa-play"></i>
         </a>
+        {{/if}}
+        {{!-- no usages but exploration --}}
         {{else if (and @root.inParty action.isExploration)}}
         <a data-action="toggle-exploration">
             <i class="fa-solid fa-toggle-{{ifThen action.isActive 'large-on' 'off'}}"></i>
         </a>
+        {{!-- end if usages --}}
         {{/if}}
     </div>
     <img src="{{action.dragImg}}" class="drag-img">

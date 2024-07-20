@@ -357,7 +357,8 @@
                 "ranged": "Range {max} ft.",
                 "rangedWithIncrement": "Range {increment}/{max} ft.",
                 "blasts": "Elemental Blasts",
-                "stances": "Stances"
+                "stances": "Stances",
+                "reset": "Reset Uses"
             },
             "items": {
                 "title": "Inventory"

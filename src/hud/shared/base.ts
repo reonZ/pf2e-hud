@@ -120,19 +120,19 @@ function getStatistics(actor: ActorPF2e) {
     );
 }
 
-function getItemFromElement(
+function getItemFromElement<T extends ItemPF2e>(
     el: HTMLElement,
     actor: ActorPF2e
-): ItemPF2e | null | Promise<ItemPF2e | null> {
+): T | null | Promise<T | null> {
     const element = htmlClosest(el, ".item");
     if (!element) return null;
 
     const { parentId, itemId, itemUuid, itemType, actionIndex, entryId } = element.dataset;
 
-    return parentId
+    const item = parentId
         ? actor.inventory.get(parentId, { strict: true }).subitems.get(itemId, { strict: true })
         : itemUuid
-        ? fromUuid<ItemPF2e>(itemUuid)
+        ? fromUuid<T>(itemUuid)
         : entryId
         ? actor.spellcasting?.collections
               .get(entryId, { strict: true })
@@ -142,6 +142,8 @@ function getItemFromElement(
         : actionIndex
         ? actor.system.actions?.[Number(actionIndex)].item ?? null
         : actor.items.get(itemId ?? "") ?? null;
+
+    return item as T | null | Promise<T | null>;
 }
 
 type StatsStatistic = {

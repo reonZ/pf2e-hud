@@ -1,5 +1,6 @@
 import {
     ErrorPF2e,
+    MODULE,
     R,
     actorItems,
     addListenerAll,
@@ -133,12 +134,21 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                     )
                         return;
 
-                    const costIcon = getActionGlyph(actionCost);
-                    const costLabel = `<span class="action-glyph">${costIcon}</span>`;
+                    const disabled = frequency?.value === 0;
+                    const label = (() => {
+                        if (disabled) {
+                            return MODULE.path("sidebars.actions.reset");
+                        }
+
+                        const costIcon = getActionGlyph(actionCost);
+                        const costLabel = `<span class="action-glyph">${costIcon}</span>`;
+
+                        return `${useLabel} ${costLabel}`;
+                    })();
 
                     return {
-                        disabled: frequency?.value === 0,
-                        label: `${useLabel} ${costLabel}`,
+                        disabled,
+                        label,
                     };
                 })();
 
@@ -428,9 +438,15 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                 }
 
                 case "use-action": {
-                    const itemId = elementDataset(htmlClosest(button, ".item")!).itemId;
-                    const item = actor.items.get(itemId);
+                    const item = await getItemFromElement<ActionItem>(button, actor);
                     return item?.isOfType("feat", "action") && useAction(event, item);
+                }
+
+                case "reset-action": {
+                    const item = await getItemFromElement<ActionItem>(button, actor);
+                    const frequency = item?.frequency;
+                    if (!item || !frequency?.max) return;
+                    return item.update({ "system.frequency.value": frequency.max });
                 }
             }
         });
@@ -641,7 +657,7 @@ function getActionFrequency(action: FeatPF2e | AbilityItemPF2e) {
     };
 }
 
-async function useAction(event: Event, item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>) {
+async function useAction(event: Event, item: ActionItem) {
     const frequency = item.frequency;
     if (frequency?.max && frequency.value) {
         item.update({ "system.frequency.value": frequency.value - 1 });
@@ -664,6 +680,8 @@ async function useAction(event: Event, item: FeatPF2e<ActorPF2e> | AbilityItemPF
         item.toMessage(event);
     }
 }
+
+type ActionItem = FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>;
 
 type ActionStrikeUsage<T extends StrikeData = StrikeData> = T & {
     damageFormula: string;
@@ -707,6 +725,7 @@ type Action =
     | "hero-action-use"
     | "hero-action-discard"
     | "use-action"
+    | "reset-action"
     | "toggle-exploration"
     | "toggle-trait"
     | "toggle-blast-action-cost";
