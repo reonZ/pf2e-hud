@@ -2,6 +2,7 @@ import {
     R,
     addListener,
     confirmDialog,
+    dataToDatasetString,
     eventToRollParams,
     getActiveModule,
     getFlag,
@@ -13,6 +14,7 @@ import {
 } from "foundry-pf2e";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 import {
+    FinalizedSkillAction,
     PreparedSkillAction,
     RawSkillAction,
     SHARED_ACTIONS,
@@ -58,12 +60,19 @@ function getActions(actor: ActorPF2e) {
 
     const isCharacter = actor.isOfType("character");
 
-    return actionsCache.filter((action) => {
-        if (!isCharacter) {
-            return typeof action.condition !== "function";
-        }
-        return typeof action.condition === "function" ? action.condition(actor) : true;
-    });
+    return actionsCache
+        .map((action) => {
+            return {
+                ...action,
+                dataset: dataToDatasetString(action.dataset),
+            };
+        })
+        .filter((action) => {
+            if (!isCharacter) {
+                return typeof action.condition !== "function";
+            }
+            return typeof action.condition === "function" ? action.condition(actor) : true;
+        });
 }
 
 class PF2eHudSidebarExtras extends PF2eHudSidebar {
@@ -244,7 +253,7 @@ type ExtrasContext = SidebarContext & {
     initiative: ActorInitiative | null;
     macros: { img: string; name: string; uuid: string }[];
     dailies: Maybe<{ canPrep: boolean; tooltip: string }>;
-    actions: PreparedSkillAction[];
+    actions: (Omit<PreparedSkillAction, "dataset"> & { dataset: string })[];
     statistics: {
         value: string;
         label: string;
