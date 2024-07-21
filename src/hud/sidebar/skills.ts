@@ -11,6 +11,7 @@ import {
     isInstanceOf,
     localize,
     promptDialog,
+    signedInteger,
     templateLocalize,
 } from "foundry-pf2e";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
@@ -472,7 +473,8 @@ function prepareStatisticAction(
         option: action.rollOption,
     };
 
-    const filterValue = `${label} ${variants?.map((variant) => variant.label).join("|") ?? ""}`;
+    const filterValues = variants?.map((variant) => variant.label) ?? [];
+    filterValues.unshift(label);
 
     return {
         ...action,
@@ -480,7 +482,7 @@ function prepareStatisticAction(
         actionId,
         label,
         dataset,
-        filterValue,
+        filterValue: filterValues.join("|"),
         dragImg: game.pf2e.actions.get(actionId)?.img ?? getActionIcon(action.cost ?? null),
     } satisfies PreparedSkillAction;
 }
@@ -494,13 +496,14 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
             raw.slug === "perception" ? "PF2E.PerceptionLabel" : CONFIG.PF2E.skills[raw.slug].label
         );
 
-        const filterValue = `${label} ${actions.map((action) => action.filterValue).join("|")}`;
+        const filterValues = actions.map((action) => action.filterValue);
+        filterValues.unshift(label);
 
         return {
             actions,
             slug: raw.slug,
             label,
-            filterValue,
+            filterValue: filterValues.join("|"),
         } satisfies PreparedSkill;
     });
 
@@ -594,11 +597,39 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
             active: hasItemWithSourceId(actor, FOLLOW_THE_EXPERT_EFFECT, "effect"),
         };
 
+        const lores = (() => {
+            if (!actor.isOfType("creature")) return;
+
+            const list = Object.values(actor.skills)
+                .filter((skill) => skill.lore)
+                .map(({ label, slug, rank, mod }) => {
+                    return {
+                        modifier: signedInteger(mod),
+                        label,
+                        slug,
+                        rank: rank ?? 0,
+                        rankLabel: game.i18n.localize(`PF2E.ProficiencyLevel${rank ?? 0}`),
+                    };
+                });
+
+            const modifierWidth = list.reduce(
+                (width, lore) => (lore.modifier.length > width ? lore.modifier.length : width),
+                2
+            );
+
+            return {
+                list,
+                modifierWidth,
+                filterValue: list.map((lore) => lore.label).join("|"),
+            };
+        })();
+
         const data: SkillsContext = {
             ...parentData,
             isCharacter: actor.isOfType("character"),
             follow,
             skills,
+            lores,
         };
 
         return data;
@@ -876,6 +907,17 @@ type RawSkill = {
 type SkillsContext = SidebarContext & {
     isCharacter: boolean;
     skills: FinalizedSkill[];
+    lores: Maybe<{
+        list: {
+            modifier: string;
+            label: string;
+            slug: string;
+            rank: ZeroToFour;
+            rankLabel: string;
+        }[];
+        modifierWidth: number;
+        filterValue: string;
+    }>;
     follow: {
         uuid: string;
         active: boolean;

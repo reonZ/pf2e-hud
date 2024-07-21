@@ -31,3 +31,23 @@
 {{> (@root.partial 'statistic-action') action=action}}
 {{/each}}
 {{/each}}
+{{#if lores}}
+<header data-filter-value="{{lores.filterValue}}">
+    {{localize 'PF2E.LoreSkillsHeader'}}
+</header>
+{{#each lores.list as |lore|}}
+<div class="item lore" data-filter-value="{{lore.slug}}" draggable="true">
+    <div class="name">
+        <a data-action="roll-skill" data-slug="{{lore.slug}}">
+            <span style="width: {{@root.lores.modifierWidth}}ch">
+                {{lore.modifier}}
+            </span>
+            {{lore.label}}
+        </a>
+    </div>
+    <div class="rank {{lore.rank}}">
+        {{lore.rankLabel}}
+    </div>
+</div>
+{{/each}}
+{{/if}}
