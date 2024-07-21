@@ -583,10 +583,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     _actorCleanup() {
         this.toggleSidebar(null);
 
+        super._actorCleanup();
+
         this.#actor = null;
         this.#isUserCharacter = false;
-
-        super._actorCleanup();
     }
 
     _onClose(options: ApplicationClosingOptions) {

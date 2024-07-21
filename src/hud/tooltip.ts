@@ -249,6 +249,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
 
     _tokenCleanup() {
         this.#targetToken = null;
+
         this.cancelRender();
         this.clearDistance();
 

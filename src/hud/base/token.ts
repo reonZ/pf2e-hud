@@ -41,9 +41,8 @@ abstract class PF2eHudBaseToken<
     }
 
     _tokenCleanup() {
-        this.#token = null;
-
         this._actorCleanup();
+        this.#token = null;
     }
 
     _onClose(options: ApplicationClosingOptions) {
