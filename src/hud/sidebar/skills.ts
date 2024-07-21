@@ -16,12 +16,18 @@ import {
 } from "foundry-pf2e";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 
-const LORE_IMG = "systems/pf2e/icons/spells/divine-decree.webp";
-
 const FOLLOW_THE_EXPERT = "Compendium.pf2e.actionspf2e.Item.tfa4Sh7wcxCEqL29";
 const FOLLOW_THE_EXPERT_EFFECT = "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3XWMkd3";
 
 const UNTRAINED_IMPROVISATION = "Compendium.pf2e.feats-srd.Item.9jGaBxLUtevZYcZO";
+
+const ACTION_IMAGES: Record<string, string> = {
+    lore: "systems/pf2e/icons/spells/divine-decree.webp",
+    treatWounds: "systems/pf2e/icons/spells/delay-affliction.webp",
+    "recall-knowledge": "systems/pf2e/icons/spells/brain-drain.webp",
+    "learn-a-spell": "systems/pf2e/icons/equipment/adventuring-gear/writing-set.webp",
+    "identify-magic": "systems/pf2e/icons/equipment/adventuring-gear/magnifying-glass.webp",
+};
 
 const SHARED_ACTIONS = {
     "recall-knowledge": {
@@ -485,7 +491,10 @@ function prepareStatisticAction(
         label,
         dataset,
         filterValue: filterValues.join("|"),
-        dragImg: game.pf2e.actions.get(actionId)?.img ?? getActionIcon(action.cost ?? null),
+        dragImg:
+            ACTION_IMAGES[actionId] ??
+            game.pf2e.actions.get(actionId)?.img ??
+            getActionIcon(action.cost ?? null),
     } satisfies PreparedSkillAction;
 }
 
@@ -613,7 +622,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
                     label: lore.name,
                     modifier: signedInteger(mod),
                     rankLabel: game.i18n.localize(`PF2E.ProficiencyLevel${rank ?? 0}`),
-                    dragImg: LORE_IMG,
+                    dragImg: ACTION_IMAGES.lore,
                 };
             });
 
@@ -946,7 +955,7 @@ type SkillsContext = SidebarContext & {
 
 export {
     PF2eHudSidebarSkills,
-    LORE_IMG,
+    ACTION_IMAGES,
     SHARED_ACTIONS,
     SKILL_ACTIONS_UUIDS,
     getLoreSlug,

@@ -72,7 +72,7 @@ import {
 } from "./sidebar/actions";
 import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
 import {
-    LORE_IMG,
+    ACTION_IMAGES,
     SkillVariantDataset,
     getLoreSlug,
     getMapLabel,
@@ -1912,8 +1912,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 }
 
                 const img = isLore
-                    ? LORE_IMG
-                    : game.pf2e.actions.get(shortcutData.actionId)?.img ?? getActionImg(item);
+                    ? ACTION_IMAGES.lore
+                    : ACTION_IMAGES[shortcutData.actionId] ??
+                      game.pf2e.actions.get(shortcutData.actionId)?.img ??
+                      getActionImg(item);
 
                 return {
                     ...shortcutData,
