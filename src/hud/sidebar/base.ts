@@ -48,7 +48,7 @@ const SIDEBARS = [
     {
         type: "extras",
         icon: "fa-solid fa-cubes",
-        disabled: (actor: ActorPF2e) => false,
+        disabled: (actor: ActorPF2e) => !actor.isOfType("creature"),
     },
 ] as const;
 
