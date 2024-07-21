@@ -227,9 +227,11 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
         const statsHeader = getStatsHeader(actor);
         if (!statsHeader.health) return parentData;
 
-        const sidebars = actor.isOfType("hazard", "army")
-            ? getSidebars(actor).slice(0, 1)
-            : getSidebars(actor);
+        const isHazard = actor.isOfType("hazard");
+        const sidebars =
+            isHazard || actor.isOfType("army")
+                ? getSidebars(actor).slice(0, 1)
+                : getSidebars(actor);
 
         const data: TokenContext = {
             ...parentData,
@@ -237,6 +239,7 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
             ...getAdvancedStats(actor),
             ...getStatsHeaderExtras(actor),
             sidebars,
+            noSidebars: isHazard || !sidebars.some((sidebar) => !sidebar.disabled),
             name: this.token.document.name,
         };
 
@@ -457,6 +460,7 @@ type TokenContext = TokenContextBase &
     StatsAdvanced & {
         name: string;
         sidebars: SidebarMenu[];
+        noSidebars: boolean;
     };
 
 type TokenCloseOption = (typeof CLOSE_OPTIONS)[number];

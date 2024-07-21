@@ -50,7 +50,7 @@
 {{#unless isArmy}}
 <div class="panel bottom">
     {{> (partial 'stats_infos')}}
-    {{#unless isHazard}}
+    {{#unless noSidebars}}
     <hr>
     {{> (partial 'sidebars')}}
     {{/unless}}
