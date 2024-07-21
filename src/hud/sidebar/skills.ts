@@ -761,10 +761,11 @@ function getStatistics(actor: ActorPF2e) {
 
     const statistics = STATISTICS.slice();
 
-    // TODO revisite that when we know more about the new lore system
     for (const lore of actor.itemTypes.lore) {
-        const slug = lore.slug ?? game.pf2e.system.sluggify(lore.name);
-        statistics.push({ value: slug, label: lore.name });
+        // TODO check if this needs to be reverted with the next system release
+        const rawLoreSlug = game.pf2e.system.sluggify(lore.name);
+        const loreSlug = /\blore\b/.test(rawLoreSlug) ? rawLoreSlug : `${rawLoreSlug}-lore`;
+        statistics.push({ value: loreSlug, label: lore.name });
     }
 
     return R.sortBy(statistics, R.prop("label"));

@@ -216,6 +216,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
         })();
 
         const blasts = isCharacter ? await getBlastData(actor) : undefined;
+        // TODO revert to 'const strikes = await getStrikeData(actor);' next system release
         const strikes = await (async () => {
             const strikes = await getStrikeData(actor);
             return stowedWeapons?.hidden
