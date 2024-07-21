@@ -16,6 +16,8 @@ import {
 } from "foundry-pf2e";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 
+const LORE_IMG = "systems/pf2e/icons/spells/divine-decree.webp";
+
 const FOLLOW_THE_EXPERT = "Compendium.pf2e.actionspf2e.Item.tfa4Sh7wcxCEqL29";
 const FOLLOW_THE_EXPERT_EFFECT = "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3XWMkd3";
 
@@ -600,17 +602,20 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
         const lores = (() => {
             if (!actor.isOfType("creature")) return;
 
-            const list = Object.values(actor.skills)
-                .filter((skill) => skill.lore)
-                .map(({ label, slug, rank, mod }) => {
-                    return {
-                        modifier: signedInteger(mod),
-                        label,
-                        slug,
-                        rank: rank ?? 0,
-                        rankLabel: game.i18n.localize(`PF2E.ProficiencyLevel${rank ?? 0}`),
-                    };
-                });
+            const list = actor.itemTypes.lore.map((lore): LoreSkill => {
+                const slug = getLoreSlug(lore);
+                const { mod, rank } = actor.getStatistic(slug)!;
+
+                return {
+                    slug,
+                    uuid: lore.uuid,
+                    rank: rank ?? 0,
+                    label: lore.name,
+                    modifier: signedInteger(mod),
+                    rankLabel: game.i18n.localize(`PF2E.ProficiencyLevel${rank ?? 0}`),
+                    dragImg: LORE_IMG,
+                };
+            });
 
             const modifierWidth = list.reduce(
                 (width, lore) => (lore.modifier.length > width ? lore.modifier.length : width),
@@ -762,13 +767,19 @@ function getStatistics(actor: ActorPF2e) {
     const statistics = STATISTICS.slice();
 
     for (const lore of actor.itemTypes.lore) {
-        // TODO check if this needs to be reverted with the next system release
-        const rawLoreSlug = game.pf2e.system.sluggify(lore.name);
-        const loreSlug = /\blore\b/.test(rawLoreSlug) ? rawLoreSlug : `${rawLoreSlug}-lore`;
-        statistics.push({ value: loreSlug, label: lore.name });
+        statistics.push({
+            // TODO check if this needs to be reverted with the next system release
+            value: getLoreSlug(lore),
+            label: lore.name,
+        });
     }
 
     return R.sortBy(statistics, R.prop("label"));
+}
+
+function getLoreSlug(lore: LorePF2e) {
+    const rawLoreSlug = game.pf2e.system.sluggify(lore.name);
+    return /\blore\b/.test(rawLoreSlug) ? rawLoreSlug : `${rawLoreSlug}-lore`;
 }
 
 async function getStatisticVariants(
@@ -909,17 +920,21 @@ type RawSkill = {
     actions: (SharedAction | RawSkillAction)[];
 };
 
+type LoreSkill = {
+    modifier: string;
+    label: string;
+    uuid: string;
+    slug: string;
+    rank: ZeroToFour;
+    rankLabel: string;
+    dragImg: string;
+};
+
 type SkillsContext = SidebarContext & {
     isCharacter: boolean;
     skills: FinalizedSkill[];
     lores: Maybe<{
-        list: {
-            modifier: string;
-            label: string;
-            slug: string;
-            rank: ZeroToFour;
-            rankLabel: string;
-        }[];
+        list: LoreSkill[];
         modifierWidth: number;
         filterValue: string;
     }>;
@@ -931,8 +946,10 @@ type SkillsContext = SidebarContext & {
 
 export {
     PF2eHudSidebarSkills,
+    LORE_IMG,
     SHARED_ACTIONS,
     SKILL_ACTIONS_UUIDS,
+    getLoreSlug,
     getMapLabel,
     getSkillVariantName,
     getStatisticDataFromElement,

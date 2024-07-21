@@ -36,7 +36,8 @@
     {{localize 'PF2E.LoreSkillsHeader'}}
 </header>
 {{#each lores.list as |lore|}}
-<div class="item lore" data-filter-value="{{lore.slug}}" draggable="true">
+<div class="item lore" data-filter-value="{{lore.slug}}" data-action-id="lore"
+    data-item-uuid="{{lore.uuid}}" draggable="true">
     <div class="name">
         <a data-action="roll-skill" data-slug="{{lore.slug}}">
             <span style="width: {{@root.lores.modifierWidth}}ch">
@@ -48,6 +49,7 @@
     <div class="rank {{lore.rank}}">
         {{lore.rankLabel}}
     </div>
+    <img src="{{lore.dragImg}}" class="drag-img">
 </div>
 {{/each}}
 {{/if}}

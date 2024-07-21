@@ -72,7 +72,9 @@ import {
 } from "./sidebar/actions";
 import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
 import {
+    LORE_IMG,
     SkillVariantDataset,
+    getLoreSlug,
     getMapLabel,
     getSkillVariantName,
     rollStatistic,
@@ -1264,6 +1266,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         switch (shortcut.type) {
             case "skill": {
                 if (!shortcut.item) return;
+
+                if (shortcut.item.isOfType("lore")) {
+                    const slug = getLoreSlug(shortcut.item);
+                    return actor.getStatistic(slug)?.roll({ event });
+                }
+
                 rollStatistic(actor, event, shortcut);
                 break;
             }
@@ -1486,7 +1494,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                           ?.get(dropData.itemId as string)
                     : await fromUuid<ItemPF2e>(dropData.uuid as string);
 
-                if (!item?.isOfType("consumable", "spell", "action", "feat")) return wrongType();
+                if (!item?.isOfType("consumable", "spell", "action", "feat", "lore")) {
+                    return wrongType();
+                }
 
                 if (
                     (dropData.actorLess && dropData.actorUUID !== actor.uuid) ||
@@ -1513,10 +1523,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         } satisfies TemporaryConsumableShortcutData;
                     }
                 } else if (
-                    item.isOfType("action", "feat") &&
+                    item.isOfType("action", "feat", "lore") &&
                     dropData.actorLess &&
+                    dropData.isStatistic &&
                     typeof dropData.uuid === "string" &&
-                    typeof dropData.isStatistic &&
                     typeof dropData.actionId === "string"
                 ) {
                     newShortcut = {
@@ -1828,7 +1838,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const { groupIndex, index } = shortcutData;
         const throwError = () => {
             MODULE.throwError(
-                `an error occured while trying to access shortcuts ${groupIndex}/${index}`
+                `an error occured while trying to access shortcut ${groupIndex}/${index}`
             );
         };
 
@@ -1860,7 +1870,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         switch (shortcutData.type) {
             case "skill": {
                 const item = await fromUuid(shortcutData.itemUuid);
-                if (!item || !isInstanceOf(item, "ItemPF2e") || !item.isOfType("action", "feat")) {
+                if (
+                    !item ||
+                    !isInstanceOf(item, "ItemPF2e") ||
+                    !item.isOfType("action", "feat", "lore")
+                ) {
                     return throwError();
                 }
 
@@ -1891,14 +1905,24 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     name += ` (${mapLabel})`;
                 }
 
+                const isLore = item.isOfType("lore");
+
+                if (isLore) {
+                    name = `${game.i18n.localize("PF2E.Lore")}: ${name}`;
+                }
+
+                const img = isLore
+                    ? LORE_IMG
+                    : game.pf2e.actions.get(shortcutData.actionId)?.img ?? getActionImg(item);
+
                 return {
                     ...shortcutData,
                     isDisabled: false,
                     isFadedOut: false,
                     item,
                     name,
-                    img: game.pf2e.actions.get(shortcutData.actionId)?.img ?? getActionImg(item),
-                    cost: getCost(item?.actionCost),
+                    img,
+                    cost: getCost(isLore ? undefined : item?.actionCost),
                 } satisfies SkillShortcut as T;
             }
 
@@ -2429,7 +2453,7 @@ type CostValue = number | string | undefined;
 
 type SkillShortcut = BaseShortCut<"skill"> &
     SkillShortcutData & {
-        item: AbilityItemPF2e | FeatPF2e;
+        item: AbilityItemPF2e | FeatPF2e | LorePF2e;
         cost: CostValue;
     };
 
