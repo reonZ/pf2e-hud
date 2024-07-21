@@ -1,3 +1,25 @@
+#
+
+-   this is a system `6.1.0` release
+-   finalized the item description popup inline links functionalities and styling
+-   changed the way HUD elements fade-out is handled to try to avoid some fringe browser issues
+-   `Persistent HUD`:
+    -   most skill actions now have a customized icon when dragged and turned into a shortcut
+-   `Sidebars`:
+    -   actions with `0` remaining uses will see their `Use` button replaced by a `Reset Uses` button
+    -   all duplicate actions are removed from the `actions` sidebar
+        -   actions that are in the `Stances` section
+        -   `Element Blast` when `Channel Elements` is active
+        -   skills actions present in the `skills` and `extras` sidebars
+    -   now disables the `Extras` sidebar for non-creature actors
+    -   implemented the `Recall Knowledge` action in the `Extras` sidebar
+        -   it respects the `Show Secret Checks` system metagame setting
+    -   added a new icon to show or hide stowed weapons in the `Attacks` header
+    -   added lores to the `Skills` sidebar
+    -   fixed skill actions in the `Extras` sidebar not working
+    -   fixed not being able to drop items beind the sidebar even though it faded out
+-   fixed breaking changes with skills
+
 # 0.18.0
 
 -   upped the foundry minimum version to `12.329`
@@ -15,12 +37,12 @@
     -   added an icon to the resource menu header that can be clicked to get the id of the resource
 -   `Sidebars`:
     -   elemental blasts action cost toggle options are now directly embedded into the `Blasts` header
-    -   fixed not being able to open the item description or send-to-chat skill actions that are behind a feat (e.g. `Bon Mot`)
+    -   fixed not being able to open the item description or send-to-chat for skill actions that are behind a feat (e.g. `Bon Mot`)
     -   fixed shortcuts for skill actions that are behind a feat not working
     -   fixed skill actions that require to be trained never showing when the `Hide Untrained` setting was enabled even if the character was trained
         -   also added support for `Untrained Improvisation`
 -   `Token Tooltip`:
-    -   now only ever shows the small version of the tooltip if a `Token HUD` is currently visible
+    -   now only ever shows the small version of the tooltip when a `Token HUD` is currently visible
     -   fixed health status not showing when hovering one of the persistent actor tokens
 -   fixed hotbar being moved even when the `Persistent HUD` is disabled
 -   fixed hotbar no being put back in the correct container element when disabling the `Persistent HUD`
