@@ -361,7 +361,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         addSendItemToChatListeners(this.actor, html);
 
         if (this.key !== "extras") {
-            addDragoverListener(this.element);
+            addDragoverListener(this.innerElement);
         }
 
         addListenerAll(html, "[draggable='true']", "dragstart", async (event, target) => {
