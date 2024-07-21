@@ -358,7 +358,11 @@
                 "rangedWithIncrement": "Range {increment}/{max} ft.",
                 "blasts": "Elemental Blasts",
                 "stances": "Stances",
-                "reset": "Reset Uses"
+                "reset": "Reset Uses",
+                "stowedWeapons": {
+                    "shown": "Stowed Weapons are shown",
+                    "hidden": "Stowed Weapons are hidden"
+                }
             },
             "items": {
                 "title": "Inventory"

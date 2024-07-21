@@ -53,9 +53,6 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             };
         })();
 
-        const blasts = isCharacter ? await getBlastData(actor) : undefined;
-        const strikes = await getStrikeData(actor);
-
         const heroActions = (() => {
             if (!isCharacter || !toolbelt?.getSetting("heroActions.enabled")) return;
 
@@ -201,11 +198,37 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             }));
         })();
 
+        const stowedWeapons = (() => {
+            if (!isCharacter) return;
+
+            if (
+                !actor.itemTypes.weapon.some((i) => i.isStowed) &&
+                !actor.itemTypes.shield.some((i) => i.isStowed)
+            )
+                return;
+
+            const hidden = !!actor.getFlag<boolean>("pf2e", "hideStowed");
+
+            return {
+                tooltip: MODULE.path("sidebars.actions.stowedWeapons", hidden ? "hidden" : "shown"),
+                hidden,
+            };
+        })();
+
+        const blasts = isCharacter ? await getBlastData(actor) : undefined;
+        const strikes = await (async () => {
+            const strikes = await getStrikeData(actor);
+            return stowedWeapons?.hidden
+                ? strikes.filter((x) => !(x.item as WeaponPF2e).isStowed)
+                : strikes;
+        })();
+
         const data: ActionsContext = {
             ...parentData,
             inParty,
             stances,
             heroActions,
+            stowedWeapons,
             actionSections,
             blasts: blasts?.sort((a, b) => a.label.localeCompare(b.label, game.i18n.lang)),
             strikes: strikes.sort((a, b) => a.index - b.index),
@@ -280,6 +303,11 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             const action = button.dataset.action as Action;
 
             switch (action) {
+                case "toggle-hide-stowed": {
+                    actor.setFlag("pf2e", "hideStowed", !actor.getFlag("pf2e", "hideStowed"));
+                    break;
+                }
+
                 case "toggle-blast-action-cost": {
                     const { itemId, cost } = button.dataset;
                     actor.toggleRollOption("elemental-blast", "action-cost", itemId, true, cost);
@@ -734,7 +762,8 @@ type Action =
     | "reset-action"
     | "toggle-exploration"
     | "toggle-trait"
-    | "toggle-blast-action-cost";
+    | "toggle-blast-action-cost"
+    | "toggle-hide-stowed";
 
 type ActionData = {
     id: string;
@@ -760,6 +789,7 @@ type ActionsContext = SidebarContext & {
     variantLabel: (label: string) => string;
     blasts: ActionBlast[] | undefined;
     strikes: ActionStrike[];
+    stowedWeapons: Maybe<{ tooltip: string; hidden: boolean }>;
     blastActionCost: Maybe<
         {
             selected: boolean;

@@ -68,6 +68,14 @@
 {{#if strikes.length}}
 <header data-filter-value="{{filterValue strikes key='label'}}">
     <div class="name">{{localize 'PF2E.Actor.Attacks'}}</div>
+    {{#if stowedWeapons}}
+    <div class="controls">
+        <a {{#if stowedWeapons.hidden}} class="greyed" {{/if}} data-action="toggle-hide-stowed"
+            data-tooltip="{{stowedWeapons.tooltip}}">
+            <i class="fa-solid fa-eye"></i>
+        </a>
+    </div>
+    {{/if}}
 </header>
 {{/if}}
 {{#each strikes as |strike|}}
