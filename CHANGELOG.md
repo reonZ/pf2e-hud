@@ -17,7 +17,7 @@
     -   added a new icon to show or hide stowed weapons in the `Attacks` header
     -   added lores to the `Skills` sidebar
     -   fixed skill actions in the `Extras` sidebar not working
-    -   fixed not being able to drop items beind the sidebar even though it faded out
+    -   fixed not being able to drop items behind the sidebar even though it faded out
 -   fixed breaking changes with skills
 
 # 0.18.0
