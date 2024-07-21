@@ -85,6 +85,11 @@ class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
                 this.close();
             });
         }
+
+        const damageLinks = html.querySelectorAll<HTMLElement>("a[data-damage-roll]");
+        for (const link of damageLinks) {
+            link.dataset.itemUuid = item.uuid;
+        }
     }
 }
 

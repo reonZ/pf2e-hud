@@ -1,6 +1,6 @@
 [id^="pf2e-hud-popup-"] {
     --header-height: 2em;
-    --link-background: #0000001c;
+    --link-background: #161616;
     --color-text-dark-improved: #11d393;
 
     position: absolute;
@@ -55,23 +55,40 @@
         [data-visibility="gm"] {
             border-radius: 0;
             background: none;
-            outline: 1px dotted rgb(255 255 255 / 44%);
+            outline: 1px dotted #ffffff70;
             line-height: 1.1;
         }
 
         a.content-link,
         a.inline-roll,
-        a.inline-check {
-            padding: 0 0.2em 0 0;
-            background: var(--color-cool-5-50);
+        a.inline-check,
+        span[data-pf2-effect-area] {
+            --inline-padding: 0.2em;
+
+            padding: 0 var(--inline-padding);
+            background: var(--link-background);
 
             i {
+                background: unset;
+                width: unset;
                 color: unset;
+
+                &[data-pf2-repost] {
+                    margin-right: calc(var(--inline-padding) * -1);
+                    font-size: 0.85em;
+                }
             }
         }
 
-        a.inline-check {
-            color: var(--color-alt);
+        a.inline-check,
+        span[data-pf2-effect-area] {
+            color: var(--color);
+        }
+
+        span[data-pf2-effect-area] {
+            &::before {
+                color: unset;
+            }
         }
 
         p:last-of-type:empty {

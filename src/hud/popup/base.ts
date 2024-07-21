@@ -61,7 +61,6 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig> extends foundry.applica
     }
 
     #activateListeners(html: HTMLElement) {
-        // InlineRollLinks.listen(description, item);
         addDragoverListener(this.element);
     }
 }
