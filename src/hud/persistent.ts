@@ -1897,7 +1897,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     isFadedOut: false,
                     item,
                     name,
-                    img: getActionImg(item),
+                    img: game.pf2e.actions.get(shortcutData.actionId)?.img ?? getActionImg(item),
                     cost: getCost(item?.actionCost),
                 } satisfies SkillShortcut as T;
             }

@@ -427,7 +427,7 @@ const SKILL_ACTIONS_UUIDS = R.pipe(
 
 function prepareStatisticAction(
     statistic: string | undefined,
-    rawAction: ShareSkill | RawSkillAction
+    rawAction: SharedAction | RawSkillAction
 ) {
     const [actionId, action]: [string, Omit<RawSkillAction, "actionId">] =
         typeof rawAction === "string"
@@ -481,7 +481,7 @@ function prepareStatisticAction(
         label,
         dataset,
         filterValue,
-        dragImg: getActionIcon(action.cost ?? null),
+        dragImg: game.pf2e.actions.get(actionId)?.img ?? getActionIcon(action.cost ?? null),
     } satisfies PreparedSkillAction;
 }
 
@@ -812,7 +812,7 @@ type SkillVariantDataset = {
     agile?: StringBoolean;
 };
 
-type ShareSkill = keyof typeof SHARED_ACTIONS;
+type SharedAction = keyof typeof SHARED_ACTIONS;
 
 type FinalizedSkill = Omit<PreparedSkill, "actions"> & {
     mod: number;
@@ -870,7 +870,7 @@ type RawSkillAction = {
 
 type RawSkill = {
     slug: SkillSlug | "perception";
-    actions: (ShareSkill | RawSkillAction)[];
+    actions: (SharedAction | RawSkillAction)[];
 };
 
 type SkillsContext = SidebarContext & {
