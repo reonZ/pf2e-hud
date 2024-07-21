@@ -822,6 +822,10 @@ function getStatisticDataFromElement(el: HTMLElement): StatisticData {
     };
 }
 
+interface PF2eHudSidebarSkills {
+    get actor(): CreaturePF2e;
+}
+
 type StatisticData = SkillActionDataset & {
     map?: 1 | 2;
     variant?: string;

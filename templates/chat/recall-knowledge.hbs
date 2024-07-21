@@ -1,0 +1,107 @@
+<div class="pf2e-hud-rk">
+    <h4 class="action">
+        <span class="pf2-icon larger">A</span>
+        <strong>{{localize 'PF2E.RecallKnowledge.Label'}}</strong>
+    </h4>
+    {{#if target}}
+    <div class="target-dc">
+        <span data-visibility="all" data-whose="target">{{i18n 'target'}}: {{target.name}}</span>
+    </div>
+    {{/if}}
+    <div class="tags">
+        <span class="tag" data-slug="concentrate"
+            data-description="PF2E.TraitDescriptionConcentrate">
+            {{localize 'PF2E.TraitConcentrate'}}
+        </span>
+        <span class="tag" data-slug="secret" data-description="PF2E.TraitDescriptionSecret">
+            {{localize 'PF2E.TraitSecret'}}
+        </span>
+    </div>
+    <hr>
+    {{!-- if target --}}
+    {{#if target}}
+    <div class="rk-skills" style="--nb-rows: {{add skills.length 2}};">
+        <span></span>
+        <span></span>
+        <span class="header">{{i18n 'first'}}</span>
+        <span class="header">{{i18n 'second'}}</span>
+        <span class="header">{{i18n 'third'}}</span>
+        <span class="header">{{i18n 'fourth'}}</span>
+
+        <span class="header">{{localize 'PF2E.RecallKnowledge.Skill'}}</span>
+        <span></span>
+        {{#each skillsDCs as |dc|}}
+        <span class="header">{{#if dc}}{{@root.i18n 'dc'}} {{dc}}{{else}}-{{/if}}</span>
+        {{/each}}
+
+        {{#each skills as |skill|}}
+        <span class="name rank {{skill.rank}}" data-tooltip="{{skill.rankLabel}}">
+            {{skill.label}}
+        </span>
+        <span class="success {{@root.dieSuccess}}">{{skill.total}}</span>
+        {{#each skill.checks as |check|}}
+        <span class="success {{check.success}}"
+            data-tooltip="PF2E.Check.Result.Degree.Check.{{check.name}}">{{{check.icon}}}</span>
+        {{/each}}
+        {{/each}}
+    </div>
+    {{#if lores.length}}
+    <hr>
+    <div class="rk-lores" style="--nb-rows: 3;">
+        <span class="header">{{localize 'TYPES.Item.lore'}}</span>
+        <span class="header">{{i18n 'first'}}</span>
+        <span class="header">{{i18n 'second'}}</span>
+        <span class="header">{{i18n 'third'}}</span>
+        <span class="header">{{i18n 'fourth'}}</span>
+        <span class="header">{{i18n 'fifth'}}</span>
+        <span class="header">{{i18n 'sixth'}}</span>
+
+        {{#each loresDCs as |dcs|}}
+        <span>
+            {{#if @index}}
+            {{@root.i18n 'specific'}}
+            {{else}}
+            {{@root.i18n 'unspecific'}}
+            {{/if}}
+        </span>
+        {{#each dcs as |dc|}}
+        <span>{{#if dc}}{{dc}}{{else}}-{{/if}}</span>
+        {{/each}}
+        {{/each}}
+    </div>
+    <hr>
+    <div class="rk-lores-rolls" style="--nb-rows: {{add lores.length 1}}">
+        <span class="header">{{localize 'TYPES.Item.lore'}}</span>
+        <span class="header">{{localize 'PF2E.ProficiencyLabel'}}</span>
+        <span class="header">{{i18n 'modifier'}}</span>
+        <span class="header">{{i18n 'result'}}</span>
+        {{> skillsRows skills=lores}}
+    </div>
+    {{/if}}
+    {{!-- else no target --}}
+    {{else}}
+    <div class="rk" style="--nb-rows: {{add skills.length 1}}">
+        <span class="header">{{localize 'PF2E.RecallKnowledge.Skill'}}</span>
+        <span class="header">{{localize 'PF2E.ProficiencyLabel'}}</span>
+        <span class="header">{{i18n 'modifier'}}</span>
+        <span class="header">{{i18n 'result'}}</span>
+        {{> skillsRows skills=skills}}
+    </div>
+    {{!-- end if target --}}
+    {{/if}}
+</div>
+
+{{#*inline 'skillsRows'}}
+{{#each skills as |skill|}}
+<span class="name">{{skill.label}}</span>
+<span class="rank {{skill.rank}}">
+    {{#if skill.rank includeZero=true}}
+    {{skill.rankLabel}}
+    {{else}}
+    '-'
+    {{/if}}
+</span>
+<span>{{skill.modifier}}</span>
+<span class="success {{dieSuccess}}">{{add @root.dieResult skill.mod}}</span>
+{{/each}}
+{{/inline}}

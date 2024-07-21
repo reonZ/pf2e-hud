@@ -408,7 +408,21 @@
         "leftClick": "[Left Click]",
         "rightClick": "[Right Click]",
         "actions": {
-            "borrowArcaneSpell": "Borrow an Arcane Spell"
+            "borrowArcaneSpell": "Borrow an Arcane Spell",
+            "recall-knowledge": {
+                "result": "Result",
+                "modifier": "Mod.",
+                "target": "Target",
+                "first": "1st",
+                "second": "2nd",
+                "third": "3rd",
+                "fourth": "4th",
+                "fifth": "5th",
+                "sixth": "6th",
+                "dc": "DC",
+                "unspecific": "Unspecific",
+                "specific": "Specific"
+            }
         },
         "dialogs": {
             "variants": {

@@ -1,6 +1,5 @@
 import {
     R,
-    addListener,
     confirmDialog,
     dataToDatasetString,
     eventToRollParams,
@@ -12,9 +11,9 @@ import {
     rollInitiative,
     setFlag,
 } from "foundry-pf2e";
+import { rollRecallKnowledge } from "../../actions/recall-knowledge";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 import {
-    FinalizedSkillAction,
     PreparedSkillAction,
     RawSkillAction,
     SHARED_ACTIONS,
@@ -174,7 +173,8 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
                 const data = getStatisticDataFromElement(target);
 
                 if (data.actionId === "recall-knowledge") {
-                    return;
+                    await rollRecallKnowledge(actor);
+                    return this.parentHUD.closeIf("roll-skill");
                 }
 
                 rollStatistic(actor, event, data, {
@@ -239,6 +239,10 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
     }
 }
 
+interface PF2eHudSidebarExtras {
+    get actor(): CreaturePF2e;
+}
+
 type ExtrasActionEvent =
     | "roll-initiative"
     | "rest-for-the-night"
@@ -260,4 +264,4 @@ type ExtrasContext = SidebarContext & {
     }[];
 };
 
-export { PF2eHudSidebarExtras, EXTRAS_ACTIONS_UUIDS };
+export { EXTRAS_ACTIONS_UUIDS, PF2eHudSidebarExtras };

@@ -247,6 +247,41 @@ $panel-gap: 5px;
     }
 }
 
+[id^="pf2e-hud"],
+[class^="pf2e-hud"] {
+    --color-rarity-uncommon: #cb8470;
+    --color-rarity-rare: #5996f7;
+    --color-rarity-unique: #d05fff;
+
+    --color-rank-0: #787878;
+    --color-rank-1: #6070ff;
+    --color-rank-2: #b739ff;
+    --color-rank-3: #bc7f05;
+    --color-rank-4: #db2020;
+
+    .rank {
+        &.\30 {
+            color: var(--color-rank-0);
+        }
+
+        &.\31 {
+            color: var(--color-rank-1);
+        }
+
+        &.\32 {
+            color: var(--color-rank-2);
+        }
+
+        &.\33 {
+            color: var(--color-rank-3);
+        }
+
+        &.\34 {
+            color: var(--color-rank-4);
+        }
+    }
+}
+
 #interface:has(#pf2e-hud-persistent) {
     --panel-gap: #{$panel-gap};
 }
