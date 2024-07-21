@@ -1,4 +1,4 @@
-#
+# 1.0.0
 
 -   this is a system `6.1.0` release
 -   finalized the item description popup inline links functionalities and styling
