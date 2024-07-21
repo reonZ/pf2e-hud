@@ -1,15 +1,19 @@
 import { getSetting } from "foundry-pf2e";
 import { addDragoverListener } from "../shared/advanced";
 
-abstract class PF2eHudPopup<TConfig extends PopupConfig> extends foundry.applications.api
-    .ApplicationV2 {
+abstract class PF2eHudPopup<TConfig extends PopupConfig = PopupConfig> extends foundry.applications
+    .api.ApplicationV2 {
     #config: TConfig;
+
+    static apps: Set<PF2eHudPopup> = new Set();
 
     constructor(config: TConfig, options?: PartialApplicationConfiguration) {
         super(options);
 
         this.#config = config;
         config.actor.apps[this.id] = this;
+
+        PF2eHudPopup.apps.add(this);
     }
 
     static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
@@ -36,6 +40,7 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig> extends foundry.applica
 
     _onClose(options?: ApplicationClosingOptions) {
         delete this.actor?.apps[this.id];
+        PF2eHudPopup.apps.delete(this);
     }
 
     _replaceHTML(result: HTMLElement, content: HTMLElement, options: ApplicationRenderOptions) {

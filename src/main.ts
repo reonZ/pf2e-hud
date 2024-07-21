@@ -1,5 +1,6 @@
 import {
     MODULE,
+    R,
     createHTMLElement,
     htmlQuery,
     localize,
@@ -8,11 +9,12 @@ import {
     userIsGM,
 } from "foundry-pf2e";
 import { PF2eHudPersistent } from "./hud/persistent";
+import { PF2eHudPopup } from "./hud/popup/base";
+import { PF2eHudResources } from "./hud/resources";
+import { PF2eHudFilter } from "./hud/sidebar/filter";
 import { PF2eHudToken } from "./hud/token";
 import { PF2eHudTooltip } from "./hud/tooltip";
 import { PF2eHudTracker } from "./hud/tracker";
-import { PF2eHudResources } from "./hud/resources";
-import { PF2eHudFilter } from "./hud/sidebar/filter";
 
 MODULE.register("pf2e-hud", "PF2e HUD");
 
@@ -172,13 +174,33 @@ Hooks.on("renderSettingsConfig", (app: SettingsConfig, $html: JQuery) => {
     }
 });
 
+function getFadingElements() {
+    const list = [
+        HUDS.token.mainElement,
+        ...[HUDS.token, HUDS.persistent].map(
+            (x) => x.sidebar && x.sidebar.key !== "extras" && x.sidebar.element
+        ),
+        ...PF2eHudPopup.apps,
+    ];
+    return R.pipe(list, R.filter(R.isTruthy));
+}
+
 window.addEventListener(
     "dragstart",
     () => {
-        document.body.classList.add("pf2e-hud-fadeout");
+        for (const element of getFadingElements()) {
+            element.classList.add("pf2e-hud-fadeout");
+        }
+
         window.addEventListener(
             "dragend",
-            () => setTimeout(() => document.body.classList.remove("pf2e-hud-fadeout"), 500),
+            () => {
+                setTimeout(() => {
+                    for (const element of getFadingElements()) {
+                        element.classList.remove("pf2e-hud-fadeout");
+                    }
+                }, 500);
+            },
             { once: true, capture: true }
         );
     },

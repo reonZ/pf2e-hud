@@ -129,11 +129,16 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
     }
 
     get mainElement() {
-        return this.#mainElement!;
+        return this.#mainElement;
     }
 
     get anchor(): AdvancedHudAnchor {
-        const bounds = this.mainElement.getBoundingClientRect();
+        const bounds = this.mainElement?.getBoundingClientRect() ?? {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+        };
         return {
             x: bounds.x + bounds.width / 2,
             y: bounds.y + bounds.height / 2,
