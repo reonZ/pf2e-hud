@@ -7,9 +7,11 @@ import {
     hasSpells,
     htmlClosest,
     htmlQuery,
+    isOwnedItem,
     render,
     templateLocalize,
     templatePath,
+    unownedItemtoMessage,
 } from "foundry-pf2e";
 import { PF2eHudBaseActor } from "../base/actor";
 import { IPF2eHudAdvanced } from "../base/advanced";
@@ -17,7 +19,7 @@ import { GlobalSettings } from "../base/base";
 import { PF2eHudItemPopup } from "../popup/item";
 import { addDragoverListener } from "../shared/advanced";
 import { getItemFromElement } from "../shared/base";
-import { addEnterKeyListeners, addSendItemToChatListeners } from "../shared/listeners";
+import { addEnterKeyListeners } from "../shared/listeners";
 
 const SIDEBARS = [
     {
@@ -357,12 +359,31 @@ abstract class PF2eHudSidebar extends foundry.applications.api
     }
 
     #activateListeners(html: HTMLElement) {
+        const actor = this.actor;
+
         addEnterKeyListeners(html);
-        addSendItemToChatListeners(this.actor, html);
 
         if (this.key !== "extras") {
             addDragoverListener(this.innerElement);
         }
+
+        addListenerAll(html, "[data-action='send-to-chat']", async (event, el) => {
+            const item = await getItemFromElement(el, actor);
+            if (!item) return;
+
+            if (!isOwnedItem(item)) {
+                unownedItemtoMessage(actor, item, event);
+            } else if (item.isOfType("spell")) {
+                const castRank = Number(
+                    htmlClosest(el, "[data-cast-rank]")?.dataset.castRank ?? NaN
+                );
+                item.toMessage(event, { data: { castRank } });
+            } else {
+                item.toMessage(event);
+            }
+
+            this.parentHUD.closeIf("send-to-chat");
+        });
 
         addListenerAll(html, "[draggable='true']", "dragstart", async (event, target) => {
             if (!event.dataTransfer) return;

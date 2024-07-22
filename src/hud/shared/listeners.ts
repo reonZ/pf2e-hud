@@ -4,16 +4,12 @@ import {
     addListenerAll,
     elementDataset,
     getAlliance,
-    htmlClosest,
-    isOwnedItem,
     render,
     setFlag,
-    unownedItemtoMessage,
 } from "foundry-pf2e";
+import { useResolve } from "../../actions/resolve";
 import { PF2eHudTextPopup } from "../popup/text";
 import { getCoverEffect } from "./advanced";
-import { getItemFromElement } from "./base";
-import { useResolve } from "../../actions/resolve";
 
 const ADJUSTMENTS_INDEX = ["weak", null, "elite"] as const;
 const ALLIANCES_INDEX = ["party", "neutral", "opposition"] as const;
@@ -220,37 +216,10 @@ function addStatsAdvancedListeners(actor: ActorPF2e, html: HTMLElement) {
     }
 }
 
-function addSendItemToChatListeners(
-    actor: ActorPF2e,
-    html: HTMLElement,
-    onSendToChat?: () => void
-) {
-    addListenerAll(html, "[data-action='send-to-chat']", async (event, el) => {
-        const item = await getItemFromElement(el, actor);
-        if (!item) return;
-
-        if (!isOwnedItem(item)) {
-            unownedItemtoMessage(actor, item, event);
-        } else if (item.isOfType("spell")) {
-            const castRank = Number(htmlClosest(el, "[data-cast-rank]")?.dataset.castRank ?? NaN);
-            item.toMessage(event, { data: { castRank } });
-        } else {
-            item.toMessage(event);
-        }
-
-        onSendToChat?.();
-    });
-}
-
 type StatsHeaderActionEvent = "take-cover" | "raise-shield" | "show-notes" | "use-resolve";
 
 type StatsAdvancedActionEvent = "roll-statistic" | "change-speed";
 
 type StatsAdvancedSliderEvent = "hero" | "wounded" | "dying";
 
-export {
-    addEnterKeyListeners,
-    addSendItemToChatListeners,
-    addStatsAdvancedListeners,
-    addStatsHeaderListeners,
-};
+export { addEnterKeyListeners, addStatsAdvancedListeners, addStatsHeaderListeners };
