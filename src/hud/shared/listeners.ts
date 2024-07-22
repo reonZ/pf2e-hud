@@ -186,6 +186,10 @@ function addStatsAdvancedListeners(actor: ActorPF2e, html: HTMLElement) {
     if (actor.isOfType("character")) {
         addAllianceListener(actor, html);
 
+        addListener(html, "[data-action='recovery-check']:not(.disabled)", (event) => {
+            actor.rollRecovery(event);
+        });
+
         addListenerAll(html, "[data-slider-action]:not(.disabled)", "mousedown", (event, el) => {
             if (![0, 2].includes(event.button)) return;
 
