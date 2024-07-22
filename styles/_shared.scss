@@ -361,3 +361,11 @@ aside.locked-tooltip {
         height: 100%;
     }
 }
+
+#ui-middle:has(#pf2e-hud-tracker) {
+    #fps {
+        --panel-gap: #{$panel-gap};
+
+        margin: 0 18em var(--panel-gap) 0;
+    }
+}

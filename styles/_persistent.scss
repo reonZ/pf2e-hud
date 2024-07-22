@@ -891,3 +891,9 @@ $bottom-width: 542px;
         }
     }
 }
+
+#ui-bottom {
+    > div:not(:has(#hotbar)) {
+        justify-content: flex-end;
+    }
+}
