@@ -1,3 +1,18 @@
+# 1.1.0
+
+-   this is a system `6.1.1` release
+-   `Persistent HUD`:
+    -   added support for lore skill shortcuts
+    -   added extra custom icons for skill actions & lore skills shortcuts
+-   `Sidebars`:
+    -   fixed focus slider style in `Spells` sidebar
+-   `Token HUD`:
+    -   no longer shows the sidebars icons row if all sidebars are disabled for that actor
+-   fixed `Recovery Check` icon not doing anything
+-   fixed `Close on Send to Chat` settings not doing anything
+-   fixed some prompt dialogs having an `undefined` button label
+-   fixed fps panel showing behind the hotbar when the `Persistent HUD` is enabled
+
 # 1.0.0
 
 -   this is a system `6.1.0` release
