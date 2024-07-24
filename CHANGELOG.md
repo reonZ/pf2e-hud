@@ -1,3 +1,11 @@
+#
+
+-   `Persistent HUD`:
+    -   prevent the display of strike auxiliaries containing a dropdown in strike shortcuts
+    -   added a new `Keep Last Persistent` setting (enabled by default)
+        -   when using `Auto-Set Actor`, should the last valid actor be kept as persistent instead of being unset
+        -   it will still revert to your assigned actor if you have one and `On Token Selection` is chosen
+
 # 1.1.1
 
 -   the critical button for NPC strikes will no longer show the formula directly but only `Critical`
