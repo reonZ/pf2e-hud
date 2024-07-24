@@ -606,6 +606,10 @@ $bottom-width: 542px;
                         color: var(--color-disabled);
                         filter: grayscale(1);
                     }
+
+                    &:has(select) {
+                        display: none;
+                    }
                 }
 
                 + .variants,
