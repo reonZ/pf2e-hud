@@ -152,6 +152,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         return [
             "enabled",
             "autoSet",
+            "keepLast",
             "fontSize",
             "sidebarFontSize",
             "sidebarHeight",
@@ -181,6 +182,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: "disabled",
                 scope: "client",
                 requiresReload: true,
+            },
+            {
+                key: "keepLast",
+                type: Boolean,
+                default: true,
+                scope: "client",
             },
             {
                 key: "autoFillNpc",
@@ -627,12 +634,15 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         actor: ActorPF2e | null,
         { token, skipSave, force }: { token?: Token; skipSave?: boolean; force?: boolean } = {}
     ) {
-        if (actor && !this.isValidActor(actor)) return;
+        if (!this.isValidActor(actor)) {
+            actor = null;
+        }
 
         const user = game.user;
         const userActor = user.character;
         const autoSet = this.getSetting("autoSet");
-        if (!force && !actor && autoSet === "select" && !userActor) return;
+        const keepLast = autoSet !== "disabled" && this.getSetting("keepLast");
+        if (!force && keepLast && !actor && (autoSet !== "select" || !userActor)) return;
 
         const savedActor = actor;
         this._actorCleanup();
@@ -772,9 +782,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const combatant = game.combat?.combatants.get(game.combat?.current.combatantId ?? "");
         const actor = this.isValidActor(combatant?.actor) ? combatant.actor : null;
 
-        if (actor) {
-            this.setActor(actor, { skipSave: true });
-        }
+        this.setActor(actor, { skipSave: true });
     }
 
     #onControlToken() {
@@ -782,11 +790,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         const token = R.only(canvas.tokens.controlled);
 
-        if (this.isValidActor(token?.actor)) {
-            this.setActor(token.actor, { token, skipSave: true });
-        } else {
-            this.setActor(null, { token, skipSave: true });
-        }
+        this.setActor(token?.actor ?? null, { token, skipSave: true });
     }
 
     #onRenderHotbar() {
@@ -2652,6 +2656,7 @@ type PersistentSettings = BaseActorSettings &
         autoFillActions: boolean;
         autoFillReactions: boolean;
         shortcutSlots: number;
+        keepLast: boolean;
     };
 
 export { PF2eHudPersistent };

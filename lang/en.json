@@ -181,6 +181,10 @@
                         "combat": "Current Combatant"
                     }
                 },
+                "keepLast": {
+                    "name": "Keep Last Persistent",
+                    "hint": "When using 'Auto-Set Actor', should the last valid actor be kept as persistent instead of being unset. It will still revert to your assigned actor if you have one and 'On Token Selection' is chosen."
+                },
                 "autoFillNpc": {
                     "name": "Auto-Fill NPCs",
                     "hint": "If you haven't made any manual changes, the shortcut slots will automatically be filled."
