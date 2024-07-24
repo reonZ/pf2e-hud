@@ -1,3 +1,11 @@
+# 1.1.1
+
+-   the critical button for NPC strikes will no longer show the formula directly but only `Critical`
+    -   NPC criticals are always double damage
+    -   you can still hover over it to see the formula
+-   `Persistent HUD`:
+    -   fixed NPC strike shortcuts not showing the damage variant buttons
+
 # 1.1.0
 
 -   this is a system `6.1.1` release
