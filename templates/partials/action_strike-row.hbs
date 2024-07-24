@@ -30,7 +30,7 @@
     {{/unless}}
     <div class="variant damage" data-action="strike-damage" {{#if
         isAltUsage}}data-alt-usage="{{#if item.isThrown}}thrown{{else}}melee{{/if}}" {{/if}} {{#if
-        @root.isCharacter}}data-tooltip="{{damageFormula}}" {{/if}}>
+        (or @root.isCharacter isShortcut)}}data-tooltip="{{damageFormula}}" {{/if}}>
         {{#if (or @root.isCharacter isShortcut)}}
         {{localize "PF2E.DamageLabel"}}
         {{else}}
@@ -38,13 +38,9 @@
         {{/if}}
     </div>
     <div class="variant damage" data-action="strike-critical" {{#if
-        isAltUsage}}data-alt-usage="{{#if item.isThrown}}thrown{{else}}melee{{/if}}" {{/if}} {{#if
-        @root.isCharacter}}data-tooltip="{{criticalFormula}}" {{/if}}>
-        {{#if (or @root.isCharacter isShortcut)}}
+        isAltUsage}}data-alt-usage="{{#if item.isThrown}}thrown{{else}}melee{{/if}}" {{/if}}
+        data-tooltip="{{criticalFormula}}">
         {{localize "PF2E.CriticalDamageLabel"}}
-        {{else}}
-        {{criticalFormula}}
-        {{/if}}
     </div>
     {{!-- end if damage --}}
     {{/if}}
