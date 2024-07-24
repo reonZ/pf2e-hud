@@ -219,7 +219,7 @@
     {{attack.strike.category.value}}
 </div>
 {{/if}}
-{{> (@root.partial 'action_strike-row') attack.strike}}
+{{> (@root.partial 'action_strike-row') attack.strike isShortcut=true}}
 {{#if attack.strike.altUsages}}
 {{> (@root.partial 'action_strike-row') attack.strike.altUsages.[0] isAltUsage=true}}
 {{/if}}
