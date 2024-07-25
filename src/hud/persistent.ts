@@ -1552,7 +1552,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         groupIndex,
                         itemId: item.id,
                         name: item.name,
-                        img: getActionImg(item),
+                        img: getActionImg(item, true),
                         effectUuid: dropData.effectUuid,
                     } satisfies ActionShortcutData;
                 } else if (item.isOfType("spell")) {
@@ -1740,7 +1740,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     groupIndex,
                     itemId: action.id,
                     name: action.name,
-                    img: getActionImg(action),
+                    img: getActionImg(action, true),
                     effectUuid: undefined,
                 };
 
@@ -1961,7 +1961,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     isFadedOut: disabled,
                     item,
                     isActive,
-                    img: item ? getActionImg(item) : shortcutData.img,
+                    img: item ? getActionImg(item, true) : shortcutData.img,
                     name: frequency ? `${name} - ${frequency.label}` : name,
                     frequency,
                     hasEffect,

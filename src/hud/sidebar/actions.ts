@@ -162,7 +162,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                     isExploration,
                     name: ability.name,
                     img: getActionIcon(actionCost),
-                    dragImg: getActionImg(ability),
+                    dragImg: getActionImg(ability, true),
                     isActive: isExploration && explorations.includes(id),
                     toggles: ability.system.traits.toggles.getSheetData(),
                 });
