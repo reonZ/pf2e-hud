@@ -179,10 +179,9 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
             const playersCanSeeName = !tokenSetsNameVisibility || combatant.playersCanSeeName;
             const dispositionColor = getDispositionColor(actor);
 
-            const texture = (useTextureScaling ? combatant.token?.texture : undefined) ?? {
-                scaleX: 1,
-                scaleY: 1,
-                src: await this.tracker._getCombatantThumbnail(combatant),
+            const texture = {
+                ...((useTextureScaling && combatant.token?.texture) || { scaleX: 1, scaleY: 1 }),
+                img: await this.tracker._getCombatantThumbnail(combatant),
             };
 
             const toggleName = (() => {
@@ -607,7 +606,7 @@ type TrackerTurn = {
     hasRolled: boolean;
     health: HealthData | undefined;
     css: string;
-    texture: { scaleX: number; scaleY: number; src: string };
+    texture: { scaleX: number; scaleY: number; img: string };
     toggleName: Maybe<{
         tooltip: string;
         active: boolean;
