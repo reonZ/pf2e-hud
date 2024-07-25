@@ -1,4 +1,14 @@
-#
+# 1.3.0
+
+-   this is a system `6.1.2` release
+-   added Polish localization (thanks to [Lioheart](https://github.com/Lioheart))
+-   `Combat Tracker`:
+    -   fixed token animated images not being displayed
+-   `Persistent HUD`:
+    -   fixed the attack shortcut popup styling
+    -   fixed toggle shortcuts using the item name instead of the toggle label
+
+# 1.2.0
 
 -   `Persistent HUD`:
     -   prevent the display of strike auxiliaries containing a dropdown in strike shortcuts
