@@ -2242,7 +2242,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     checked,
                     item,
                     img: item?.img ?? shortcutData.img,
-                    name: item ? `${item.name} (${label})` : shortcutData.name,
+                    name: toggle ? `${toggle.label} (${label})` : shortcutData.name,
                 } satisfies ToggleShortcut as T);
             }
         }
