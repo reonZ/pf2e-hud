@@ -338,14 +338,6 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
             return statuses.at(pick - 1);
         })();
 
-        if (hud.token.actor || hud.persistent.isCurrentActor(actor)) {
-            return {
-                ...baseData,
-                status,
-                health: statsMain.health,
-            } satisfies StatusedTooltipContext;
-        }
-
         const setting = this.getSetting("type");
         const isOwner = actor.isOwner;
         const isObserver = canObserveActor(actor);
