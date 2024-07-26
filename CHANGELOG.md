@@ -1,3 +1,12 @@
+# 1.3.1
+
+-   `Persistent HUD`:
+    -   action shortcuts that don't have a self-effect will now use their parent feat icon (if it isn't one of the default ones)
+    -   no longer auto-fill ammunition consumables for NPCs (those aren't clickable shortcuts)
+-   `Token Toolip`:
+    -   revert only ever showing the small version of the tooltip when a `Token HUD` is currently visible or the hovbered token is the persistent actor's
+-   fixed NPCs not being able to use the focus slider in the `Spells` sidebar
+
 # 1.3.0
 
 -   this is a system `6.1.2` release
