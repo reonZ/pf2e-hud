@@ -1788,7 +1788,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             cached.consumable ??= 0;
 
             const consumable = actor.itemTypes.consumable.at(cached.consumable++);
-            if (!consumable) return emptyData;
+            if (!consumable || consumable.category === "ammo") return emptyData;
 
             const shortcutData: TemporaryConsumableShortcutData = {
                 type: "consumable",
