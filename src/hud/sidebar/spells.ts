@@ -55,8 +55,9 @@ class PF2eHudSidebarSpells extends PF2eHudSidebar {
 
     _activateListeners(html: HTMLElement) {
         const actor = this.actor;
+        const isCharacter = actor.isOfType("character");
 
-        if (actor.isOfType("character")) {
+        if (isCharacter || actor.isOfType("npc")) {
             addListenerAll(html, "[data-slider-action='focus']", "mousedown", (event, el) => {
                 const direction = event.button === 0 ? 1 : -1;
                 const focusPoints = actor.system.resources.focus;
@@ -66,7 +67,9 @@ class PF2eHudSidebarSpells extends PF2eHudSidebar {
                     actor.update({ "system.resources.focus.value": newValue });
                 }
             });
+        }
 
+        if (isCharacter) {
             const pf2eDailies = getActiveModule("pf2e-dailies");
             if (pf2eDailies) {
                 addListenerAll(
