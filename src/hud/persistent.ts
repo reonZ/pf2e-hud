@@ -24,16 +24,19 @@ import {
     htmlClosest,
     imagePath,
     isInstanceOf,
+    isValidStance,
     localize,
     objectHasKey,
     openAttackpopup,
     resolveMacroActor,
     setFlag,
     templateLocalize,
+    toggleStance,
     unsetFlag,
     warn,
 } from "foundry-pf2e";
 import { PersistentDialog } from "foundry-pf2e/src/pf2e";
+import { rollRecallKnowledge } from "../actions/recall-knowledge";
 import { hud } from "../main";
 import {
     BaseActorContext,
@@ -80,7 +83,6 @@ import {
     rollStatistic,
 } from "./sidebar/skills";
 import { getAnnotationTooltip } from "./sidebar/spells";
-import { rollRecallKnowledge } from "../actions/recall-knowledge";
 
 const PARTS = ["menu", "portrait", "main", "effects"] as const;
 const ROMAN_RANKS = ["", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"] as const;
@@ -1319,15 +1321,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
                 if (this.getSetting("confirmShortcut") && !(await confirmUse(item))) return;
 
-                const toolbelt = getActiveModule("pf2e-toolbelt");
-                if (!shortcut.effectUuid || !toolbelt?.api.stances.isValidStance(item)) {
+                if (!shortcut.effectUuid || !isValidStance(item)) {
                     return useAction(event, item);
                 }
 
-                return toolbelt.api.stances.toggleStance(
-                    actor as CharacterPF2e,
-                    shortcut.effectUuid
-                );
+                return toggleStance(actor as CharacterPF2e, shortcut.effectUuid);
             }
 
             case "spell": {
@@ -1951,11 +1949,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
                 const isActive = (() => {
                     const effectUUID = shortcutData.effectUuid;
-                    if (!item || !effectUUID) return null;
-
-                    const toolbelt = getActiveModule("pf2e-toolbelt");
-                    if (!toolbelt?.api.stances.isValidStance(item)) return null;
-
+                    if (!item || !effectUUID || !isValidStance(item)) return null;
                     return hasItemWithSourceId(actor, effectUUID, "effect");
                 })();
 

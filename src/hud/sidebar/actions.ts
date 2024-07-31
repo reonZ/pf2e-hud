@@ -4,24 +4,27 @@ import {
     R,
     actorItems,
     addListenerAll,
+    canUseStances,
     createSelfEffectMessage,
     elementDataset,
     getActionGlyph,
     getActionImg,
     getActiveModule,
+    getStances,
     htmlClosest,
     htmlQuery,
     isOwnedItem,
     localize,
     objectHasKey,
+    toggleStance,
     tupleHasValue,
 } from "foundry-pf2e";
 import { eventToRollMode, getActionIcon } from "foundry-pf2e/src/pf2e";
 import { PF2eHudTextPopup } from "../popup/text";
-import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 import { getItemFromElement } from "../shared/base";
-import { SKILL_ACTIONS_UUIDS } from "./skills";
+import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 import { EXTRAS_ACTIONS_UUIDS } from "./extras";
+import { SKILL_ACTIONS_UUIDS } from "./skills";
 
 const ACTION_TYPES = {
     action: { sort: 0, label: "PF2E.ActionsActionsHeader" },
@@ -42,16 +45,12 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
         const parentData = await super._prepareContext(options);
         const toolbelt = getActiveModule("pf2e-toolbelt");
 
-        const stances = (() => {
-            if (!isCharacter || !toolbelt?.getSetting("stances.enabled")) return;
-
-            const actions = toolbelt.api.stances.getStances(actor);
-
-            return {
-                actions: R.sortBy(actions, R.prop("name")),
-                canUse: toolbelt.api.stances.canUseStances(actor),
-            };
-        })();
+        const stances = isCharacter
+            ? {
+                  actions: R.sortBy(getStances(actor), R.prop("name")),
+                  canUse: canUseStances(actor),
+              }
+            : undefined;
 
         const heroActions = (() => {
             if (!isCharacter || !toolbelt?.getSetting("heroActions.enabled")) return;
@@ -406,11 +405,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
 
                 case "toggle-stance": {
                     const uuid = elementDataset(htmlClosest(button, ".item")!).effectUuid;
-                    getActiveModule("pf2e-toolbelt")?.api.stances.toggleStance(
-                        actor as CharacterPF2e,
-                        uuid,
-                        event.ctrlKey
-                    );
+                    toggleStance(actor as CharacterPF2e, uuid, event.ctrlKey);
                     break;
                 }
 
@@ -818,7 +813,6 @@ type ActionsContext = SidebarContext & {
     ) => string;
 };
 
-export type { ActionBlast, ActionStrike };
 export {
     PF2eHudSidebarActions,
     getActionFrequency,
@@ -828,3 +822,4 @@ export {
     useAction,
     variantLabel,
 };
+export type { ActionBlast, ActionStrike };
