@@ -1,3 +1,17 @@
+# 1.4.0
+
+-   the module no longer requires having `PF2e Toolbelt` installed/activated nor its `Stances` setting enabled to display and toggle the stances section in the `Actions` sidebar
+-   `Persistent HUD`:
+    -   fixed generic recall knowledge (from the `extras` sidebar) shortcut not doing anything
+    -   fixed `Copy Owner Shortcuts` action not cleaning the current shortcuts first
+    -   fixed the HUD not showing on load in the unlikely scenario where a user no longer has ownership of their assigned actor
+-   `Token Tooltip`:
+    -   now displays the level of the token actor
+        -   the level will be colored for NPCs with adjustment (elite/weak)
+    -   added a new `Party as Observed` world setting
+        -   consider actors in the 'Party' alliance to be observed by players for the sake of extending the tooltip
+        -   not to be confused with the 'Party' actor
+
 # 1.3.1
 
 -   `Persistent HUD`:
