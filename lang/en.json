@@ -107,6 +107,10 @@
                         "small": "Small Version Only",
                         "full": "Extended Version"
                     }
+                },
+                "partyAsObserved": {
+                    "name": "Party as Observed",
+                    "hint": "Consider actors in the 'Party' alliance to be observed by players for the sake of extending the tooltip. Not to be confused with the 'Party' actor."
                 }
             },
             "token": {

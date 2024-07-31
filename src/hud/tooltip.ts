@@ -98,6 +98,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
 
     get SETTINGS_ORDER(): (keyof TooltipSettings)[] {
         return [
+            "partyAsObserved",
             "status",
             "enabled",
             "type",
@@ -112,6 +113,11 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
 
     getSettings() {
         return super.getSettings().concat([
+            {
+                key: "partyAsObserved",
+                type: Boolean,
+                default: false,
+            },
             {
                 key: "status",
                 type: String,
@@ -340,10 +346,12 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
 
         const setting = this.getSetting("type");
         const isOwner = actor.isOwner;
-        const isObserver = canObserveActor(actor);
+        const isObserver =
+            canObserveActor(actor) ||
+            (this.getSetting("partyAsObserved") && actor?.system.details.alliance === "party");
 
-        const expended = (setting === "owned" && isOwner) || (setting === "observed" && isObserver);
-        if (!expended) {
+        const extended = (setting === "owned" && isOwner) || (setting === "observed" && isObserver);
+        if (!extended) {
             return {
                 ...baseData,
                 status,
@@ -368,7 +376,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
             health: statsMain.health,
             statistics: getStatistics(actor),
             distance: baseData.distance,
-            expended,
+            expended: extended,
             status,
             name,
             iwr,
@@ -646,6 +654,7 @@ type TooltipSettings = BaseTokenSettings & {
     delay: number;
     status: string;
     drawDistance: number;
+    partyAsObserved: boolean;
     type: (typeof SETTING_TYPE)[number];
     noDead: (typeof SETTING_NO_DEAD)[number];
     position: (typeof SETTING_POSITION)[number];
