@@ -1189,6 +1189,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     const confirm = await confirmAction("owner");
                     if (!confirm) return;
 
+                    await unsetFlag(worldActor, "persistent.shortcuts", game.user.id);
                     await setFlag(
                         worldActor,
                         "persistent.shortcuts",
