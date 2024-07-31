@@ -80,6 +80,7 @@ import {
     rollStatistic,
 } from "./sidebar/skills";
 import { getAnnotationTooltip } from "./sidebar/spells";
+import { rollRecallKnowledge } from "../actions/recall-knowledge";
 
 const PARTS = ["menu", "portrait", "main", "effects"] as const;
 const ROMAN_RANKS = ["", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"] as const;
@@ -1274,6 +1275,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 if (shortcut.item.isOfType("lore")) {
                     const slug = getLoreSlug(shortcut.item);
                     return actor.getStatistic(slug)?.roll({ event });
+                } else if (shortcut.actionId === "recall-knowledge" && !shortcut.statistic) {
+                    return rollRecallKnowledge(actor);
                 }
 
                 rollStatistic(actor, event, shortcut);
