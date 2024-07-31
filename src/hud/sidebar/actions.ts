@@ -697,7 +697,7 @@ async function useAction(event: Event, item: ActionItem) {
         ? await toolbelt.api.actionable.getActionMacro(item)
         : undefined;
     if (macro) {
-        macro?.execute({ actor: item.actor });
+        macro?.execute({ actor: item.actor, item: item });
     }
 
     if (!macro || toolbelt!.getSetting("actionable.message")) {
