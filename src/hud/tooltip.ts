@@ -373,10 +373,12 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
             ...parentData,
             ...statsMain,
             ...getSpeeds(actor),
-            health: statsMain.health,
+            adjustment: (actor.isOfType("npc") && actor.attributes.adjustment) || "normal",
             statistics: getStatistics(actor),
             distance: baseData.distance,
+            health: statsMain.health,
             expended: extended,
+            level: actor.level,
             status,
             name,
             iwr,
@@ -639,9 +641,11 @@ type TooltipContext = StatusedTooltipContext & {
     distance: DistanceContext | undefined;
     status: string | undefined;
     expended: boolean;
+    level: number;
     name: string | undefined;
     speeds: StatsSpeed[];
     speedNote: string | undefined;
+    adjustment: "elite" | "weak" | "normal";
     statistics: StatsStatistic[];
     iwr: {
         active: boolean;

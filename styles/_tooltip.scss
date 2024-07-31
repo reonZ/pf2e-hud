@@ -1,8 +1,14 @@
 #pf2e-hud-tooltip {
+    --color-weak: #cc3311;
+    --color-elite: #009988;
+
     --outer-padding: 4px;
+
     --inner-padding: 0.5em;
     --inner-gap: 0.6em;
+
     --span-width: 1.7em;
+
     --section-gap: 0.1em;
     --section-width: calc(var(--icon-width) + var(--span-width) + var(--section-gap));
 
@@ -116,7 +122,7 @@
             &.iwr {
                 width: var(--section-width);
                 justify-content: center;
-                column-gap: 0.2em;
+                column-gap: 0.3em;
 
                 i {
                     width: unset;
@@ -125,6 +131,20 @@
 
                 .disabled {
                     color: var(--color-disabled);
+                }
+            }
+
+            &.level {
+                &.weak {
+                    span {
+                        color: var(--color-weak);
+                    }
+                }
+
+                &.elite {
+                    span {
+                        color: var(--color-elite);
+                    }
                 }
             }
         }

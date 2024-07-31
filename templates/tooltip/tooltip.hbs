@@ -50,6 +50,12 @@
     </section>
     {{/each}}
 
+
+    <section class="level {{adjustment}}" data-section="level">
+        <i class="fa-solid fa-user-graduate"></i>
+        <span>{{level}}</span>
+    </section>
+
     <section class="iwr" data-section="iwr">
         {{#each iwr}}
         <i class="{{this.icon}} {{#unless this.active}}disabled{{/unless}}"></i>
