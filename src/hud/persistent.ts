@@ -466,7 +466,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 }
             }
 
-            actor = game.user.character;
+            actor = this.getAssignedActor();
 
             if (actor) {
                 this.setActor(actor, { skipSave: true });
@@ -631,6 +631,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         return false;
     }
 
+    getAssignedActor() {
+        const assigned = game.user.character;
+        return this.isValidActor(assigned) ? assigned : null;
+    }
+
     async setActor(
         actor: ActorPF2e | null,
         { token, skipSave, force }: { token?: Token; skipSave?: boolean; force?: boolean } = {}
@@ -678,7 +683,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             }
         }
 
-        this.#isUserCharacter = actor === game.user.character;
+        this.#isUserCharacter = actor === this.getAssignedActor();
         this.#actor = actor as PersistentHudActor;
 
         if (!skipSave) await this.setUserSetting("selected", savedActor?.uuid ?? "");
