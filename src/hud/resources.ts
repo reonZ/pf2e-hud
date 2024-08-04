@@ -329,7 +329,7 @@ class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSetti
     validateResource<T extends Resource>(resource: T): T {
         const { id, max = 0, min = 0, name = "", value = 0 } = resource;
         const validatedMin = Number(min) || 0;
-        const validatedMax = Math.max((Number(validatedMin) || 0) + 2, max);
+        const validatedMax = Math.max(validatedMin + 2, Number(max) || 0);
 
         return {
             ...resource,
