@@ -134,18 +134,14 @@ function addAllianceListener(actor: ActorPF2e, html: HTMLElement) {
         if (![0, 2].includes(event.button)) return;
 
         const direction = (event.button === 0 ? 1 : -1) * (event.shiftKey ? 2 : 1);
-        const { defaultAlliance, alliance } = getAlliance(actor);
+        const alliance = getAlliance(actor);
         const currentIndex = ALLIANCES_INDEX.indexOf(alliance);
         const newAlliance = ALLIANCES_INDEX[Math.clamp(currentIndex + direction, 0, 2)];
         if (newAlliance === alliance) return;
 
-        if (newAlliance === defaultAlliance) {
-            actor.update({ "system.details.-=alliance": true });
-        } else {
-            actor.update({
-                "system.details.alliance": newAlliance === "neutral" ? null : newAlliance,
-            });
-        }
+        actor.update({
+            "system.details.alliance": newAlliance === "neutral" ? null : newAlliance,
+        });
     });
 }
 

@@ -1094,7 +1094,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         }
 
         const alliance = context.isCharacter
-            ? threeStep("alliance", getAlliance(actor).alliance)
+            ? threeStep("alliance", getAlliance(actor))
             : undefined;
 
         const data: MainContext = {

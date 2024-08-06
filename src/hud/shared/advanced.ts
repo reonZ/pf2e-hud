@@ -105,8 +105,7 @@ function getStatsHeaderExtras(actor: ActorPF2e): StatsHeaderExtras {
         ? threeStep("adjustment", actor.attributes.adjustment ?? "normal")
         : undefined;
 
-    const alliance =
-        isNPC || isCharacter ? threeStep("alliance", getAlliance(actor).alliance) : undefined;
+    const alliance = isNPC || isCharacter ? threeStep("alliance", getAlliance(actor)) : undefined;
 
     return {
         isNPC,
