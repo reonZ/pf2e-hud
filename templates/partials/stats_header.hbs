@@ -76,7 +76,11 @@
 {{else if isNPC}}
 <div class="double npc" data-section>
     {{> (partial 'three-steps') step=adjustment}}
+    {{#if alliance}}
     {{> (partial 'three-steps') step=alliance}}
+    {{else}}
+    <div></div>
+    {{/if}}
     <a data-action="show-notes" data-tooltip="PF2E.NPC.NotesTab">
         <i class="fa-duotone fa-clipboard"></i>
     </a>

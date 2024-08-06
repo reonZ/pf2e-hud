@@ -28,7 +28,7 @@
     {{/if}}
     {{> (partial 'stats_level')}}
     {{> (partial 'stats_speed')}}
-    {{#if isCharacter}}
+    {{#if (and isCharacter alliance)}}
     {{> (partial 'three-steps') step=alliance}}
     {{/if}}
     {{#if isNPC}}

@@ -13,7 +13,6 @@ import {
     getActionAnnotation,
     getActionImg,
     getActiveModule,
-    getAlliance,
     getEnrichedDescriptions,
     getFirstActiveToken,
     getFlag,
@@ -47,8 +46,8 @@ import {
 import {
     AdvancedHudAnchor,
     AdvancedHudEvent,
+    AdvancedHudSettings,
     CLOSE_SETTINGS,
-    CloseSetting,
     addSidebarsListeners,
     makeAdvancedHUD,
 } from "./base/advanced";
@@ -59,7 +58,6 @@ import {
     ThreeStep,
     getAdvancedStats,
     getStatsHeaderExtras,
-    threeStep,
 } from "./shared/advanced";
 import { StatsHeader, getStatsHeader } from "./shared/base";
 import { addStatsAdvancedListeners, addStatsHeaderListeners } from "./shared/listeners";
@@ -73,7 +71,7 @@ import {
     useAction,
     variantLabel,
 } from "./sidebar/actions";
-import { SidebarMenu, SidebarSettings, getSidebars } from "./sidebar/base";
+import { SidebarMenu, getSidebars } from "./sidebar/base";
 import {
     ACTION_IMAGES,
     SkillVariantDataset,
@@ -172,6 +170,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             "closeOnSendToChat",
             "closeOnSpell",
             "closeOnSkill",
+            "showAlliance",
             "shiftEffects",
         ];
     }
@@ -1000,7 +999,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const data: PortraitContext = {
             ...context,
             ...getStatsHeader(actor),
-            ...getStatsHeaderExtras(actor),
+            ...getStatsHeaderExtras(actor, this),
             avatar: actor.img,
             name: actor.name,
         };
@@ -1089,17 +1088,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             });
         }
 
-        const alliance = context.isCharacter
-            ? threeStep("alliance", getAlliance(actor))
-            : undefined;
-
         const data: MainContext = {
             ...context,
-            ...getAdvancedStats(actor),
+            ...getAdvancedStats(actor, this),
             sidebars: getSidebars(actor, this.sidebar?.key),
             shortcutGroups,
             noShortcuts,
-            alliance,
             isVirtual: this.isVirtual,
             isAutoFill: autoFill,
             isOwnerShortcuts: !!shortcutsOwner,
@@ -2569,7 +2563,7 @@ type MainContext = PersistentContext &
         isAutoFill: boolean;
         isOwnerShortcuts: boolean;
         showEffects: boolean;
-        alliance: ThreeStep | undefined;
+        alliance?: ThreeStep;
         variantLabel: typeof variantLabel;
     };
 
@@ -2637,8 +2631,7 @@ type PersistentUserSetting = {
 };
 
 type PersistentSettings = BaseActorSettings &
-    SidebarSettings &
-    Record<CloseSetting, boolean> & {
+    AdvancedHudSettings<boolean> & {
         cleanPortrait: boolean;
         noflash: boolean;
         confirmShortcut: boolean;

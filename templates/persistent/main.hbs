@@ -17,7 +17,7 @@
 <div class="group stretch">
     <div class="top">
         <div class="panel app sidebars">
-            {{#if isCharacter}}
+            {{#if (and isCharacter alliance)}}
             {{> (partial 'three-steps') step=alliance}}
             <hr>
             {{/if}}

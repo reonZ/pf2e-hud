@@ -11,8 +11,8 @@ import { hud } from "../main";
 import {
     AdvancedHudAnchor,
     AdvancedHudEvent,
+    AdvancedHudSettings,
     CLOSE_SETTINGS,
-    CloseSetting,
     addSidebarsListeners,
     makeAdvancedHUD,
 } from "./base/advanced";
@@ -30,7 +30,7 @@ import {
 } from "./shared/advanced";
 import { StatsHeader, getStatsHeader } from "./shared/base";
 import { addStatsAdvancedListeners, addStatsHeaderListeners } from "./shared/listeners";
-import { SidebarMenu, SidebarName, SidebarSettings, getSidebars } from "./sidebar/base";
+import { SidebarMenu, SidebarName, getSidebars } from "./sidebar/base";
 
 const CLOSE_OPTIONS = ["never", "sidebar", "all"] as const;
 const CLOSE_CHOICES = R.mapToObj(CLOSE_OPTIONS, (option) => [
@@ -64,6 +64,7 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
             "closeOnSendToChat",
             "closeOnSpell",
             "closeOnSkill",
+            "showAlliance",
         ];
     }
 
@@ -235,8 +236,8 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
         const data: TokenContext = {
             ...parentData,
             ...statsHeader,
-            ...getAdvancedStats(actor),
-            ...getStatsHeaderExtras(actor),
+            ...getStatsHeaderExtras(actor, this),
+            ...getAdvancedStats(actor, this),
             sidebars,
             noSidebars: isHazard || !sidebars.some((sidebar) => !sidebar.disabled),
             name: this.token.document.name,
@@ -465,8 +466,7 @@ type TokenContext = TokenContextBase &
 type TokenCloseOption = (typeof CLOSE_OPTIONS)[number];
 
 type TokenSettings = BaseTokenSettings &
-    Record<CloseSetting, TokenCloseOption> &
-    SidebarSettings & {
+    AdvancedHudSettings<TokenCloseOption> & {
         scaleDimensions: boolean;
         mode: "exploded" | "left" | "right";
         closeAllOnCLick: boolean;

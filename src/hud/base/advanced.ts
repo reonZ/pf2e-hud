@@ -1,7 +1,7 @@
 import { addListenerAll, settingPath, templatePath } from "foundry-pf2e";
 import { hud } from "../../main";
 import { PF2eHudSidebarActions } from "../sidebar/actions";
-import { PF2eHudSidebar, SidebarEvent, SidebarName } from "../sidebar/base";
+import { PF2eHudSidebar, SidebarEvent, SidebarName, SidebarSettings } from "../sidebar/base";
 import { PF2eHudSidebarExtras } from "../sidebar/extras";
 import { PF2eHudSidebarItems } from "../sidebar/items";
 import { PF2eHudSidebarSkills } from "../sidebar/skills";
@@ -32,61 +32,68 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
             ];
         }
 
-        getSettings() {
+        getSettings(this: PF2eHudAdvanced & PF2eHudBaseActor) {
             const parentSettings = PF2eHudBaseActor.prototype.getSettings.call(this);
             const enableSetting = parentSettings.find((setting) => setting.key === "enabled")!;
             enableSetting.requiresReload = true;
 
-            return parentSettings.concat([
-                {
-                    key: "sidebarFontSize",
-                    type: Number,
-                    range: {
-                        min: 10,
-                        max: 30,
-                        step: 1,
+            return parentSettings
+                .concat([
+                    {
+                        key: "sidebarFontSize",
+                        type: Number,
+                        range: {
+                            min: 10,
+                            max: 30,
+                            step: 1,
+                        },
+                        default: 14,
+                        onChange: () => {
+                            this.sidebar?.render();
+                        },
                     },
-                    default: 14,
-                    scope: "client",
-                    name: settingPath("shared.sidebarFontSize.name"),
-                    hint: settingPath("shared.sidebarFontSize.hint"),
-                    onChange: () => {
-                        this.sidebar?.render();
+                    {
+                        key: "sidebarHeight",
+                        type: Number,
+                        range: {
+                            min: 50,
+                            max: 100,
+                            step: 1,
+                        },
+                        default: 100,
+                        onChange: () => {
+                            this.sidebar?.render();
+                        },
                     },
-                },
-                {
-                    key: "sidebarHeight",
-                    type: Number,
-                    range: {
-                        min: 50,
-                        max: 100,
-                        step: 1,
+                    {
+                        key: "multiColumns",
+                        type: Number,
+                        default: 5,
+                        range: {
+                            min: 1,
+                            max: 5,
+                            step: 1,
+                        },
+                        onChange: () => {
+                            this.sidebar?.render();
+                        },
                     },
-                    default: 100,
-                    scope: "client",
-                    name: settingPath("shared.sidebarHeight.name"),
-                    hint: settingPath("shared.sidebarHeight.hint"),
-                    onChange: () => {
-                        this.sidebar?.render();
+                    {
+                        key: "showAlliance",
+                        type: Boolean,
+                        default: false,
+                        onChange: () => {
+                            this.render();
+                        },
                     },
-                },
-                {
-                    key: "multiColumns",
-                    type: Number,
-                    default: 5,
-                    scope: "client",
-                    range: {
-                        min: 1,
-                        max: 5,
-                        step: 1,
-                    },
-                    name: settingPath("shared.multiColumns.name"),
-                    hint: settingPath("shared.multiColumns.hint"),
-                    onChange: () => {
-                        this.sidebar?.render();
-                    },
-                },
-            ]);
+                ])
+                .map((setting) => {
+                    setting.scope = "client";
+                    setting.name = settingPath("shared", setting.key, "name");
+                    setting.hint = settingPath("shared", setting.key, "hint");
+
+                    return setting;
+                });
         }
 
         get sidebar() {
@@ -242,5 +249,16 @@ interface IPF2eHudAdvanced {
     eventToSetting(event: AdvancedHudEvent): CloseSetting;
 }
 
-export { CLOSE_SETTINGS, addSidebarsListeners, makeAdvancedHUD };
-export type { AdvancedHudAnchor, AdvancedHudEvent, CloseSetting, IPF2eHudAdvanced };
+type AdvancedHudSettings<TClose extends any> = SidebarSettings &
+    Record<CloseSetting, TClose> & {
+        showAlliance: boolean;
+    };
+
+export { addSidebarsListeners, CLOSE_SETTINGS, makeAdvancedHUD };
+export type {
+    AdvancedHudAnchor,
+    AdvancedHudEvent,
+    AdvancedHudSettings,
+    CloseSetting,
+    IPF2eHudAdvanced,
+};

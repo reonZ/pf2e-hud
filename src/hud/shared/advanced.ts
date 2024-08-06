@@ -96,7 +96,7 @@ function threeStep(action: "adjustment" | "alliance", step: string): ThreeStep {
     };
 }
 
-function getStatsHeaderExtras(actor: ActorPF2e): StatsHeaderExtras {
+function getStatsHeaderExtras(actor: ActorPF2e, hud: AdvancedHUD): StatsHeaderExtras {
     const isNPC = actor.isOfType("npc");
     const isFamiliar = actor.isOfType("familiar");
     const isCharacter = actor.isOfType("character");
@@ -105,9 +105,7 @@ function getStatsHeaderExtras(actor: ActorPF2e): StatsHeaderExtras {
         ? threeStep("adjustment", actor.attributes.adjustment ?? "normal")
         : undefined;
 
-    const alliance = isNPC || isCharacter ? threeStep("alliance", getAlliance(actor)) : undefined;
-
-    return {
+    const data: StatsHeaderExtras = {
         isNPC,
         isFamiliar,
         isCharacter,
@@ -116,11 +114,16 @@ function getStatsHeaderExtras(actor: ActorPF2e): StatsHeaderExtras {
         resolve: isCharacter ? actor.system.resources.resolve : undefined,
         shield: isCharacter || isNPC ? actor.attributes.shield : undefined,
         adjustment,
-        alliance,
-    } satisfies StatsHeaderExtras;
+    };
+
+    if (isNPC && hud.getSetting("showAlliance")) {
+        data.alliance = threeStep("alliance", getAlliance(actor));
+    }
+
+    return data;
 }
 
-function getAdvancedStats(actor: ActorPF2e): StatsAdvanced {
+function getAdvancedStats(actor: ActorPF2e, hud: AdvancedHUD): StatsAdvanced {
     const isNPC = actor.isOfType("npc");
     const isArmy = actor.isOfType("army");
     const isHazard = actor.isOfType("hazard");
@@ -183,7 +186,7 @@ function getAdvancedStats(actor: ActorPF2e): StatsAdvanced {
         ?.map((speed) => `<i class="${speed.icon}"></i> <span>${speed.total}</span>`)
         .join("");
 
-    return {
+    const data: StatsAdvanced = {
         isNPC,
         isArmy,
         isHazard,
@@ -200,6 +203,12 @@ function getAdvancedStats(actor: ActorPF2e): StatsAdvanced {
         statistics: getStatistics(actor),
         otherSpeeds: otherSpeeds || undefined,
     };
+
+    if (isCharacter && hud.getSetting("showAlliance")) {
+        data.alliance = threeStep("alliance", getAlliance(actor));
+    }
+
+    return data;
 }
 
 function addDragoverListener(html: HTMLElement) {
@@ -232,6 +241,7 @@ type StatsAdvanced = {
     isVehicle: boolean;
     isCharacter: boolean;
     isCombatant: boolean;
+    alliance?: ThreeStep;
     recall: number | undefined;
     dying: ValueAndMax | undefined;
     wounded: ValueAndMax | undefined;
@@ -249,6 +259,8 @@ type ThreeStep = {
     tooltip: string;
 };
 
+type AdvancedHUD = { getSetting(setting: "showAlliance"): boolean };
+
 type StatsHeaderExtras = {
     isNPC: boolean;
     isFamiliar: boolean;
@@ -257,7 +269,7 @@ type StatsHeaderExtras = {
     hasCover: boolean;
     resolve: ValueAndMax | undefined;
     adjustment: ThreeStep | undefined;
-    alliance: ThreeStep | undefined;
+    alliance?: ThreeStep;
     shield: HeldShieldData | undefined;
 };
 
