@@ -197,7 +197,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 type: Boolean,
                 default: true,
                 scope: "client",
-                gmOnly: true,
                 onChange: () => {
                     this.render();
                 },
@@ -207,7 +206,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 type: Boolean,
                 default: true,
                 scope: "client",
-                gmOnly: true,
                 onChange: () => {
                     this.render();
                 },
@@ -217,7 +215,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 type: Boolean,
                 default: true,
                 scope: "client",
-                gmOnly: true,
                 onChange: () => {
                     this.render();
                 },
@@ -228,7 +225,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 choices: ["one", "two"],
                 default: "one",
                 scope: "client",
-                gmOnly: true,
                 onChange: () => {
                     this.render();
                 },
@@ -1048,7 +1044,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const worldActor = this.worldActor!;
         const isNPC = actor.isOfType("npc");
         const noShortcuts = !getFlag(worldActor, "persistent.shortcuts", game.user.id);
-        const autoFill = isGM && isNPC && noShortcuts && this.getSetting("autoFillNpc");
+        const autoFill = isNPC && noShortcuts && this.getSetting("autoFillNpc");
 
         const shortcutsOwner = (() => {
             if (!isGM || isNPC || !noShortcuts || !this.getSetting("ownerShortcuts")) return;

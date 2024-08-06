@@ -30,18 +30,20 @@
             </a>
             {{/if}}
         </div>
-        {{#if (and hasActor isGM)}}
+        {{#if hasActor}}
         <div class="panel app shotcut-menus">
             <a {{#if (or isAutoFill isCharacter)}}class="disabled" {{/if}}
                 data-section="fill-shortcuts" data-action="fill-shortcuts"
                 data-tooltip="{{i18n.path 'shortcut.fill.title'}}">
                 <i class="fa-solid fa-fill-drip"></i>
             </a>
+            {{#if isGM}}
             <a {{#if (or isOwnerShortcuts isNPC)}}class="disabled" {{/if}}
                 data-section="copy-shortcuts" data-action="copy-owner-shortcuts"
                 data-tooltip="{{i18n.path 'shortcut.owner.title'}}">
                 <i class="fa-solid fa-user-pen"></i>
             </a>
+            {{/if}}
             <a {{#if noShortcuts}}class="disabled" {{/if}} data-section="reset-shortcuts"
                 data-action="delete-shortcuts" data-tooltip="{{i18n.path 'shortcut.delete.title'}}">
                 <i class="fa-solid fa-circle-x"></i>
