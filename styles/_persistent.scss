@@ -250,8 +250,12 @@ $bottom-width: 542px;
 
                 .shotcut-menus {
                     a {
+                        display: block;
+
                         &.disabled {
-                            color: var(--color-disabled);
+                            i {
+                                color: var(--color-disabled);
+                            }
                         }
                     }
                 }
