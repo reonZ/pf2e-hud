@@ -178,7 +178,7 @@
                 },
                 "autoSet": {
                     "name": "Auto-Set Actor",
-                    "hint": "Whenever no persistent actor has been set, the currently selected token actor or the current combatant actor will automatically be set as persistent. Will completely disable the 'Token HUD' feature if set to 'On Token Selection'.",
+                    "hint": "Whenever no persistent actor has been set, the currently selected token actor or the current combatant actor will automatically be set as persistent. NOTE: Will completely disable the 'Token HUD' feature if set to 'On Token Selection'.",
                     "choices": {
                         "disabled": "Disabled",
                         "select": "On Token Selection",
