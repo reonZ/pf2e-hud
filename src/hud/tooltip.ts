@@ -83,7 +83,10 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
     #renderTimeout = createTimeout(this.render.bind(this), DELAY_BUFFER);
     #closeTimeout = createTimeout(this.close.bind(this), DELAY_BUFFER);
 
-    #clickEvent = createGlobalEvent("mousedown", () => this.close());
+    #clickEvent = createGlobalEvent("mousedown", () => {
+        this.cancelRender();
+        this.close();
+    });
 
     #targetToken: TokenPF2e | null = null;
     #graphics: PIXI.Graphics | null = null;
