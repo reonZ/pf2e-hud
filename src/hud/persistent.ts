@@ -1881,11 +1881,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         switch (shortcutData.type) {
             case "skill": {
                 const item = await fromUuid(shortcutData.itemUuid);
-                if (
-                    !item ||
-                    !isInstanceOf(item, "ItemPF2e") ||
-                    !item.isOfType("action", "feat", "lore")
-                ) {
+                if (!item) return emptyData;
+
+                if (!isInstanceOf(item, "ItemPF2e") || !item.isOfType("action", "feat", "lore")) {
                     return throwError();
                 }
 
