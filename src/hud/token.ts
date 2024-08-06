@@ -68,11 +68,7 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
     }
 
     getSettings() {
-        const parentSettings = super.getSettings();
-        const enableSetting = parentSettings.find((setting) => setting.key === "enabled")!;
-        enableSetting.requiresReload = true;
-
-        return parentSettings.concat([
+        return super.getSettings().concat([
             {
                 key: "mode",
                 type: String,
@@ -113,7 +109,10 @@ class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, Token
     }
 
     get enabled(): boolean {
-        return this.getSetting("enabled") && hud.persistent.getSetting("autoSet") !== "select";
+        return (
+            this.getSetting("enabled") &&
+            (!hud.persistent.enabled || hud.persistent.getSetting("autoSet") !== "select")
+        );
     }
 
     get key(): "token" {
