@@ -15,6 +15,8 @@ import { PF2eHudFilter } from "./hud/sidebar/filter";
 import { PF2eHudToken } from "./hud/token";
 import { PF2eHudTooltip } from "./hud/tooltip";
 import { PF2eHudTracker } from "./hud/tracker";
+import { rollRecallKnowledge } from "./actions/recall-knowledge";
+import { useResolve } from "./actions/resolve";
 
 MODULE.register("pf2e-hud", "PF2e HUD");
 
@@ -126,10 +128,20 @@ Hooks.once("setup", () => {
 
     MODULE.current.api = {
         hud: HUDS,
+        actions: {
+            rollRecallKnowledge,
+            useResolve,
+        },
     };
 
     // @ts-ignore
-    game.hud = HUDS;
+    game.hud = {
+        ...HUDS,
+        actions: {
+            rollRecallKnowledge,
+            useResolve,
+        },
+    };
 
     for (const hud of huds) {
         hud.enable();
