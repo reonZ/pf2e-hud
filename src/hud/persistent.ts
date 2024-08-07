@@ -21,6 +21,7 @@ import {
     getRemainingDurationLabel,
     hasItemWithSourceId,
     htmlClosest,
+    htmlQuery,
     imagePath,
     isInstanceOf,
     isValidStance,
@@ -37,6 +38,7 @@ import {
 import { PersistentDialog } from "foundry-pf2e/src/pf2e";
 import { rollRecallKnowledge } from "../actions/recall-knowledge";
 import { hud } from "../main";
+import { AvatarData, editAvatar } from "../utils/avatar";
 import {
     BaseActorContext,
     BaseActorRenderOptions,
@@ -1011,7 +1013,32 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const actor = this.actor;
         if (!actor) return;
 
-        addStatsHeaderListeners(this.actor, html);
+        addStatsHeaderListeners(actor, html);
+
+        addListener(html, "[data-action='edit-avatar']", () => {
+            editAvatar(actor);
+        });
+
+        if (!game.ready) return;
+
+        const avatarElement = htmlQuery(html, ".avatar");
+        if (!avatarElement) return;
+
+        const avatarFlag = getFlag<AvatarData>(actor, "avatar");
+        if (!avatarFlag) {
+            avatarElement.style.backgroundImage = `url("${actor.img}")`;
+            return;
+        }
+
+        const { position, src, scales } = avatarFlag;
+
+        avatarElement.style.backgroundImage = `url("${src}")`;
+        avatarElement.style.backgroundSize = `${scales.x * 100}% ${scales.y * 100}%`;
+
+        const offsetX = position.x * avatarElement.clientWidth;
+        const offsetY = position.y * avatarElement.clientHeight;
+
+        avatarElement.style.backgroundPosition = `${offsetX}px ${offsetY}px`;
     }
 
     async #prepareMainContext(

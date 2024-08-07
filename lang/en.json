@@ -436,6 +436,18 @@
                 "specific": "Specific"
             }
         },
+        "utils": {
+            "avatar": {
+                "title": "Edit Avatar - {name}",
+                "src": {
+                    "actor": "Use Actor Image",
+                    "token": "Use Token Image"
+                },
+                "save": "Save",
+                "cancel": "Cancel",
+                "contain": "Contain"
+            }
+        },
         "dialogs": {
             "variants": {
                 "title": "Action Variants",
