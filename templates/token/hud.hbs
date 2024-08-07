@@ -32,11 +32,15 @@
     {{> (partial 'three-steps') step=alliance}}
     {{/if}}
     {{#if isNPC}}
-    <a data-section="recall-knowledge" data-tooltip="PF2E.RecallKnowledge.Label"
+    <div data-section="recall-knowledge" data-tooltip="PF2E.RecallKnowledge.Label">
+        <i class="fa-solid fa-book"></i>
+        <span>{{recall}}</span>
+    </div>
+    {{!-- <a data-section="recall-knowledge" data-tooltip="PF2E.RecallKnowledge.Label"
         data-action="recall-knowledge">
         <i class="fa-solid fa-book"></i>
         <span>{{recall}}</span>
-    </a>
+    </a> --}}
     {{/if}}
 </div>
 {{/if}}
