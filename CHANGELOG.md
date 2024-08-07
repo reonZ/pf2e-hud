@@ -1,3 +1,30 @@
+# 1.5.0
+
+-   now provides the item as argument to the `Use Action` macro scope
+-   changed the HUDs icons color to demark them slightly from their associated value
+-   added a new `Alliance Button` setting to the `Token HUD` and `Persistent HUD`
+    -   it shows the alliance/disposition button on the HUD when enabled (instead of always)
+-   exposed `rollRecallKnowledge` and `useResolve` actions to the API
+-   `Persistent HUD`:
+    -   the `Enabled` setting now requires a reload when changed
+    -   `Auto-Fill` settings are now available to players
+    -   added the `Auto-Fill Shortcuts` and `Reset Shortcuts` buttons to the players HUD
+    -   added a new alternate shortcut for attacks
+        -   you need to hold `Ctrl` when creating the shortcut
+        -   the shortcut will display the variant of the strike/blast by default
+    -   added a way to customize the portrait shown in the HUD
+        -   click on the portrait itself to open the menu
+        -   this is global: all users who have ownership of the actor will share the same customization
+    -   the portrait will now use a cover size instead of contain by default
+        -   it will fix some portrait but probably mess up with some other
+    -   fixed rare error with feat related skill action shortcuts that are missing the feat on the actor (e.g. removing the `Bon Mot` feat while having its action as a shortcut)
+-   `Token HUD`:
+    -   fixed the HUD not being enabled if the `On Token Selection` option of `Auto-Set Actor` was chosen even if the `Persistent HUD` was disabled
+-   `Token Tooltip`:
+    -   fixed tooltip still showing up when a click was registered during its render delay
+-   fixed issue preventing the update of an actor's alliance when its default value was `Neutral`
+    -   the module can no longer return an alliance to `Ownership Default`
+
 # 1.4.0
 
 -   the module no longer requires having `PF2e Toolbelt` installed/activated nor its `Stances` setting enabled to display and toggle the stances section in the `Actions` sidebar
