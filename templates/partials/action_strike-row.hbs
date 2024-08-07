@@ -1,18 +1,18 @@
 <div class="variants">
     {{!-- category --}}
     {{#if category}}
-    {{> (@root.partial 'strike_category') category=category}}
+    {{> (@root.partial 'strike_category') category}}
     {{/if}}
     {{!-- attacks --}}
     {{#each variants as |variant index|}}
     <div class="variant attack" data-action="strike-attack" data-variant-index="{{index}}" {{#if
         ../isAltUsage}} data-alt-usage="{{#if ../item.isThrown}}thrown{{else}}melee{{/if}}" {{/if}}
-        {{#if (eq ../quantity 0)}} data-disabled data-tooltip="{{localize "
-        PF2E.ErrorMessage.WeaponQuantityZero"}}"{{/if}}>
+        {{#if (eq ../quantity 0)}} data-disabled data-tooltip="PF2E.ErrorMessage.WeaponQuantityZero"
+        {{/if}}>
         {{!-- first attack --}}
         {{#if (eq index 0)}}
         {{#if @root.isCharacter}}
-        {{localize "PF2E.WeaponStrikeLabel"}}
+        {{localize 'PF2E.WeaponStrikeLabel'}}
         {{/if}}
         {{variant.label}}
         {{!-- other map --}}

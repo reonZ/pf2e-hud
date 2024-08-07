@@ -1,14 +1,10 @@
 <div class="variants">
     {{!-- category --}}
-    <span class="category">
-        {{#if melee}}
-        <img class="alt-usage-icon" src="systems/pf2e/icons/mdi/sword.svg"
-            data-tooltip="{{blast.reach}}">
-        {{else}}
-        <i class="fa-regular fa-meteor fa-rotate-180 alt-usage-icon"
-            data-tooltip="{{blast.range.label}}"></i>
-        {{/if}}
-    </span>
+    {{#if melee}}
+    {{> (@root.partial 'strike_category') type='melee' tooltip=blast.reach}}
+    {{else}}
+    {{> (@root.partial 'strike_category') type='blast' tooltip=blast.range.label}}
+    {{/if}}
     {{!-- attacks --}}
     <div class="variant attack" data-action="blast-attack" data-melee="{{melee}}"
         data-map-increases="0">

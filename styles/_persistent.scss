@@ -542,7 +542,7 @@ $bottom-width: 542px;
                 pointer-events: all;
                 overflow: hidden;
 
-                .category {
+                > .category {
                     flex: 1;
                     position: relative;
 
@@ -616,9 +616,14 @@ $bottom-width: 542px;
                     }
                 }
 
-                + .variants,
-                &:has(+ .variants) {
-                    .category {
+                &.versatiles {
+                    display: none;
+                }
+            }
+
+            &.has-variants {
+                .variants {
+                    > .category {
                         i,
                         img {
                             cursor: pointer;
@@ -633,10 +638,6 @@ $bottom-width: 542px;
                                 brightness(104%) contrast(106%);
                         }
                     }
-                }
-
-                &.versatiles {
-                    display: none;
                 }
             }
 

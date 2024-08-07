@@ -518,7 +518,7 @@ async function getBlastData(
 
             const formulaFor = (
                 outcome: "success" | "criticalSuccess",
-                melee = true
+                melee: boolean
             ): Promise<string | null> =>
                 blastData.damage({
                     element: config.element,
@@ -552,8 +552,8 @@ async function getBlastData(
                 damageType,
                 formula: {
                     melee: {
-                        damage: await formulaFor("success"),
-                        critical: await formulaFor("criticalSuccess"),
+                        damage: await formulaFor("success", true),
+                        critical: await formulaFor("criticalSuccess", true),
                     },
                     ranged: {
                         damage: await formulaFor("success", false),

@@ -1,11 +1,11 @@
 <span class="category">
-    {{#if (eq category.type 'melee')}}
-    <img class="alt-usage-icon" src="systems/pf2e/icons/mdi/sword.svg"
-        data-tooltip="{{category.tooltip}}">
-    {{else if (eq category.type 'thrown')}}
-    <img class="alt-usage-icon" src="systems/pf2e/icons/mdi/thrown.svg"
-        data-tooltip="{{category.tooltip}}">
+    {{#if (eq type 'blast')}}
+    <i class="fa-regular fa-meteor fa-rotate-180 alt-usage-icon" data-tooltip="{{tooltip}}"></i>
+    {{else if (eq type 'melee')}}
+    <img class="alt-usage-icon" src="systems/pf2e/icons/mdi/sword.svg" data-tooltip="{{tooltip}}">
+    {{else if (eq type 'thrown')}}
+    <img class="alt-usage-icon" src="systems/pf2e/icons/mdi/thrown.svg" data-tooltip="{{tooltip}}">
     {{else }}
-    <i class="fa-regular fa-bow-arrow" data-tooltip="{{category.tooltip}}"></i>
+    <i class="fa-regular fa-bow-arrow" data-tooltip="{{tooltip}}"></i>
     {{/if}}
 </span>

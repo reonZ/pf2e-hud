@@ -1205,7 +1205,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
             shortcutElement.addEventListener("mouseleave", () => {
                 shortcutElement.classList.remove("show-damage");
-                shortcutElement.classList.remove("use-variant");
+                shortcutElement.classList.toggle(
+                    "use-variant",
+                    shortcutElement.dataset.variantFirst === "true"
+                );
             });
 
             shortcutElement.addEventListener("contextmenu", () => {
@@ -1222,7 +1225,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 this.#onShortcutAction(event, shortcutElement, el)
             );
 
-            addListenerAll(shortcutElement, ".variants .category > *", () => {
+            addListenerAll(shortcutElement, ".variants > .category > *", () => {
                 shortcutElement.classList.toggle("use-variant");
             });
 
@@ -1586,14 +1589,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 const itemActor = resolveMacroActor(dropData.actorUUID);
                 if (!this.isCurrentActor(itemActor)) return wrongActor();
 
+                const isCharacter = actor.isOfType("character");
                 const { elementTrait, index: actionIndex } = dropData;
 
                 index = "0";
 
-                if (
-                    actor.isOfType("character") &&
-                    objectHasKey(CONFIG.PF2E.elementTraits, elementTrait)
-                ) {
+                if (isCharacter && objectHasKey(CONFIG.PF2E.elementTraits, elementTrait)) {
                     const blast = new game.pf2e.ElementalBlast(actor);
                     const config = blast.configs.find((c) => c.element === elementTrait);
                     if (!config) return wrongType();
@@ -1604,13 +1605,19 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         groupIndex,
                         elementTrait,
                         img: config.img,
+                        variant: event.ctrlKey,
                         name: game.i18n.localize(config.label),
                     } satisfies BlastShortcutData;
                 } else if (actionIndex !== undefined) {
                     const action = actor.system.actions[actionIndex];
                     if (!action) return wrongType();
 
-                    newShortcut = createStrikeShortcutData(groupIndex, index, action);
+                    newShortcut = createStrikeShortcutData(
+                        groupIndex,
+                        index,
+                        action,
+                        isCharacter && (action.altUsages?.length ?? 0) > 1 && event.ctrlKey
+                    );
                 }
 
                 break;
@@ -1699,21 +1706,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         const returnShortcut = async (shortcutData: ShortcutData) => {
             const shortcut = await this.#createShortcut(shortcutData, cached);
-
-            if (!shortcut.isEmpty) {
-                foundry.utils.setProperty(
-                    this.#shortcutData,
-                    `${groupIndex}.${index}`,
-                    shortcutData
-                );
-            }
-
             return shortcut;
         };
 
         const strike = actor.system.actions[Number(groupIndex)];
         if (strike) {
-            const shortcutData = createStrikeShortcutData(groupIndex, index, strike);
+            const shortcutData = createStrikeShortcutData(groupIndex, index, strike, false);
             return returnShortcut(shortcutData);
         }
 
@@ -2154,17 +2152,29 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     if (!actor.isOfType("character")) return throwError();
 
                     const blast = await getBlastData(actor, shortcutData.elementTrait);
-                    const disabled = !blast;
-
                     const versatile = blast?.damageTypes.find((x) => x.selected)?.icon;
+
+                    const category = (() => {
+                        if (!blast) return;
+
+                        const tooltip = shortcutData.variant ? blast.range.label : blast.reach;
+
+                        return {
+                            type: shortcutData.variant ? "blast" : "melee",
+                            tooltip,
+                            value: tooltip.replaceAll(/[^\d]/g, ""),
+                        } as const;
+                    })();
 
                     return returnShortcut({
                         ...shortcutData,
-                        isDisabled: disabled,
-                        isFadedOut: disabled,
+                        isDisabled: !blast,
+                        isFadedOut: !blast,
                         isBlast: true,
                         versatile,
                         blast,
+                        category,
+                        hasVariants: !!blast,
                     } satisfies AttackShortcut as T);
                 } else {
                     const { itemId, slug } = shortcutData;
@@ -2209,6 +2219,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         img: img ?? shortcutData.img,
                         name: nameExtra ? `${name} (${nameExtra})` : name,
                         subtitle: traits.length ? traits.join(", ") : undefined,
+                        hasVariants: (strike?.altUsages?.length ?? 0) > 1,
                     } satisfies AttackShortcut as T);
                 }
             }
@@ -2253,11 +2264,13 @@ function isUsableAction(item: FeatPF2e | AbilityItemPF2e) {
 function createStrikeShortcutData(
     groupIndex: string,
     index: string,
-    strike: NPCStrike | CharacterStrike
+    strike: NPCStrike | CharacterStrike,
+    variant: boolean
 ): StrikeShortcutData {
     return {
         type: "attack",
         index,
+        variant,
         groupIndex,
         itemId: strike.item.id,
         slug: strike.slug,
@@ -2367,7 +2380,11 @@ type ToggleShortcutData = ShortcutDataBase<"toggle"> & {
     img: string;
 };
 
-type AttackShortcutDataBase = ShortcutDataBase<"attack"> & { img: string; name: string };
+type AttackShortcutDataBase = ShortcutDataBase<"attack"> & {
+    img: string;
+    name: string;
+    variant: boolean;
+};
 
 type StrikeShortcutData = AttackShortcutDataBase & {
     itemId: string;
@@ -2422,6 +2439,7 @@ type ShortcutData =
 
 type BaseShortCut<T extends ShortcutType> = ShortcutDataBase<T> & {
     name: string;
+    css?: string[];
     isEmpty?: boolean;
     img: string;
     isDisabled: boolean;
@@ -2489,11 +2507,17 @@ type BaseAttackShortcut = BaseShortCut<"attack"> &
         img: string;
         name: string;
         versatile: Maybe<string>;
+        hasVariants: boolean;
     };
 
 type BlastShortcut = BaseAttackShortcut & {
     isBlast: true;
     blast: ActionBlast | undefined;
+    category: Maybe<{
+        type: "melee" | "blast";
+        tooltip: string;
+        value: string;
+    }>;
 };
 
 type StrikeShortcut = BaseAttackShortcut & {

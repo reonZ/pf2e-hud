@@ -61,11 +61,10 @@
             {{#each shortcutGroups as |shortcutGroup|}}
             <div class="shortcut-group{{#if shortcutGroup.split}} split{{/if}}">
                 {{#each shortcutGroup.shortcuts as |shortcut|}}
-                <div class="shortcut app {{shortcut.type}}{{#if shortcut.isEmpty}} empty{{else if shortcut.isDisabled}} disabled{{/if}}{{#if shortcut.isFadedOut}} faded-out{{/if}}"
-                    data-group-index="{{shortcut.groupIndex}}" data-index="{{shortcut.index}}">
-                    {{#unless
-                    shortcut.isEmpty}}{{> shortcut
-                    shortcut=shortcut}}{{/unless}}</div>
+                <div class="shortcut app {{shortcut.type}}{{#if shortcut.variant}} use-variant{{/if}}{{#if shortcut.hasVariants}} has-variants{{/if}}{{#if shortcut.isEmpty}} empty{{/if}}{{#if shortcut.isDisabled}} disabled{{/if}}{{#if shortcut.isFadedOut}} faded-out{{/if}}"
+                    data-group-index="{{shortcut.groupIndex}}" {{#if shortcut.variant}}
+                    data-variant-first="true" {{/if}} data-index="{{shortcut.index}}">
+                    {{#unless shortcut.isEmpty}}{{> shortcut shortcut=shortcut}}{{/unless}}</div>
                 {{/each}}
             </div>
             {{/each}}
@@ -197,6 +196,10 @@
 {{!-- blast --}}
 {{#if attack.isBlast}}
 {{#if attack.blast}}
+<div class="range boxed">
+    {{> (@root.partial 'strike_category') attack.category}}
+    {{attack.category.value}}
+</div>
 {{> (@root.partial 'action_blast-row') blast=attack.blast melee=true}}
 {{> (@root.partial 'action_blast-row') blast=attack.blast melee=false}}
 {{#if attack.versatile}}
@@ -218,8 +221,13 @@
 {{#if attack.strike.ready}}
 {{#if @root.isCharacter}}
 <div class="range boxed">
-    {{> (@root.partial 'strike_category') category=attack.strike.category}}
+    {{#if attack.variant}}
+    {{> (@root.partial 'strike_category') attack.strike.altUsages.[0].category}}
+    {{attack.strike.altUsages.[0].category.value}}
+    {{else}}
+    {{> (@root.partial 'strike_category') attack.strike.category}}
     {{attack.strike.category.value}}
+    {{/if}}
 </div>
 {{/if}}
 {{> (@root.partial 'action_strike-row') attack.strike isShortcut=true}}
