@@ -17,6 +17,7 @@ import { PF2eHudTooltip } from "./hud/tooltip";
 import { PF2eHudTracker } from "./hud/tracker";
 import { rollRecallKnowledge } from "./actions/recall-knowledge";
 import { useResolve } from "./actions/resolve";
+import { editAvatar } from "./utils/avatar";
 
 MODULE.register("pf2e-hud", "PF2e HUD");
 
@@ -132,6 +133,9 @@ Hooks.once("setup", () => {
             rollRecallKnowledge,
             useResolve,
         },
+        utils: {
+            editAvatar,
+        },
     };
 
     // @ts-ignore
@@ -140,6 +144,9 @@ Hooks.once("setup", () => {
         actions: {
             rollRecallKnowledge,
             useResolve,
+        },
+        utils: {
+            editAvatar,
         },
     };
 
