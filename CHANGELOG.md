@@ -1,3 +1,11 @@
+# 1.5.1
+
+-   `Persistent HUD`:
+    -   changed the portrait style to be less opaque and accentuate the whole HUD icons/texts
+    -   changed the left menu icons color to be the same as the one in the rest of the HUD
+    -   added a `Reset` button to the `Edit Avatar` menu
+    -   fixed shortcuts of the slot 0 of a prepared spellcasting entry not showing as expended
+
 # 1.5.0
 
 -   now provides the item as argument to the `Use Action` macro scope
