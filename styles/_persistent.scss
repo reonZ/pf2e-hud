@@ -13,6 +13,12 @@ $bottom-width: 542px;
     padding: 0;
     z-index: var(--z-index-app);
 
+    i,
+    span,
+    input {
+        text-shadow: 0 0 3px black;
+    }
+
     #hotbar-directory-controls,
     #hotbar-lock {
         display: none;
@@ -137,11 +143,11 @@ $bottom-width: 542px;
             text-align: center;
             background: linear-gradient(
                 90deg,
-                rgba(0, 0, 0, 0.298739564185049) 0%,
-                rgba(0, 0, 0, 0.7021009087228641) 20%,
-                rgba(0, 0, 0, 1) 50%,
-                rgba(0, 0, 0, 0.7021009087228641) 80%,
-                rgba(0, 0, 0, 0.2959384437368697) 100%
+                rgba(0, 0, 0, 0.3) 0%,
+                rgba(0, 0, 0, 0.6) 20%,
+                rgba(0, 0, 0, 0.8) 50%,
+                rgba(0, 0, 0, 0.6) 80%,
+                rgba(0, 0, 0, 0.3) 100%
             );
         }
     }
@@ -151,7 +157,7 @@ $bottom-width: 542px;
         inset-inline: 0;
         display: grid;
         gap: var(--section-gap);
-        background: rgb(33 33 33);
+        background: #212121b3;
         padding: 0.2em 0.1em 0.1em;
         grid-template-columns: repeat(3, 1fr);
     }
