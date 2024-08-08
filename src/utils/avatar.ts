@@ -71,24 +71,7 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
     _replaceHTML(result: string, content: HTMLElement, options: ApplicationRenderOptions) {
         content.innerHTML = result;
 
-        const actor = this.actor;
-        const flag = getFlag<AvatarData>(actor, "avatar");
-
-        requestAnimationFrame(async () => {
-            await this.#setImage(flag?.src ?? actor.img);
-
-            if (flag) {
-                const imageElement = this.imageElement;
-                const offsetX = flag.position.x * imageElement.clientWidth;
-                const offsetY = flag.position.y * imageElement.clientHeight;
-
-                this.setImageScale(flag.scale);
-                this.setImagePosition(offsetX, offsetY);
-            } else {
-                this.containImage();
-            }
-        });
-
+        this.#resetEditor();
         this.#activateListeners(content);
     }
 
@@ -145,6 +128,24 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
         this.imageElement.style.backgroundPosition = `${x}px ${y}px`;
     }
 
+    async #resetEditor() {
+        const actor = this.actor;
+        const flag = getFlag<AvatarData>(actor, "avatar");
+
+        await this.#setImage(flag?.src ?? actor.img);
+
+        if (flag) {
+            const imageElement = this.imageElement;
+            const offsetX = flag.position.x * imageElement.clientWidth;
+            const offsetY = flag.position.y * imageElement.clientHeight;
+
+            this.setImageScale(flag.scale);
+            this.setImagePosition(offsetX, offsetY);
+        } else {
+            this.containImage();
+        }
+    }
+
     #centerImage() {
         const imageElement = this.imageElement;
 
@@ -163,7 +164,7 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
         this.#src = src;
         this.#img = await this.#loadImage(src);
 
-        htmlQuery(this.element, "input")!.value = src;
+        htmlQuery<HTMLInputElement>(this.element, "input[name='src']")!.value = src;
         this.imageElement.style.backgroundImage = url;
     }
 
@@ -214,8 +215,7 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
 
             switch (action) {
                 case "open-browser": {
-                    const parent = el.parentElement as HTMLElement;
-                    const input = htmlQuery(parent, "input") as HTMLInputElement;
+                    const input = htmlQuery(html, "input[name='src']") as HTMLInputElement;
                     const current = input.src || input.placeholder;
 
                     new FilePicker({
@@ -253,6 +253,11 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
                     this.containImage();
                     break;
                 }
+
+                case "reset": {
+                    this.#resetEditor();
+                    break;
+                }
             }
         });
     }
@@ -272,7 +277,8 @@ type EventAction =
     | "use-token-image"
     | "contain"
     | "save"
-    | "cancel";
+    | "cancel"
+    | "reset";
 
 type AvatarData = {
     src: string;

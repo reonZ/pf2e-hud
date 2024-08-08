@@ -2,7 +2,7 @@
     <div class="form-group">
         <label>{{localize "TOKEN.ImagePath"}}</label>
         <div class="form-fields">
-            <input type="text" placeholder="{{placeholder}}" disabled>
+            <input type="text" name="src" placeholder="{{placeholder}}" disabled>
             <button class="fa-solid fa-file-import fa-fw" type="button"
                 data-tooltip="FILES.BrowseTooltip" data-action="open-browser" {{disabled
                 noBrowser}}>
@@ -16,7 +16,7 @@
             </button>
         </div>
     </div>
-    <div class="form-group buttons">
+    <div class="buttons">
         <button type="button" data-action="save">
             <i class="fa-solid fa-floppy-disk"></i>
             {{i18n 'save'}}
@@ -25,7 +25,11 @@
             <i class="fa-solid fa-xmark"></i>
             {{i18n 'cancel'}}
         </button>
-        <div></div>
+        <div class="spacer"></div>
+        <button type="button" data-action="reset">
+            <i class="fa-solid fa-rotate-left"></i>
+            {{i18n 'reset'}}
+        </button>
         <button type="button" data-action="contain">
             <i class="fa-solid fa-expand"></i>
             {{i18n 'contain'}}

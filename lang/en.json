@@ -445,7 +445,8 @@
                 },
                 "save": "Save",
                 "cancel": "Cancel",
-                "contain": "Contain"
+                "contain": "Contain",
+                "reset": "Reset"
             }
         },
         "dialogs": {
