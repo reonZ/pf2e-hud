@@ -2051,7 +2051,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         ? (group.uses as ValueAndMax)
                         : undefined;
 
-                const active = slotId ? group?.active[slotId] : undefined;
+                const active = slotId != null ? group?.active[slotId] : undefined;
 
                 const uses =
                     isCantrip || isConsumable || (isPrepared && !isFlexible)
