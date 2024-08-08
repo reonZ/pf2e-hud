@@ -101,9 +101,15 @@ $bottom-width: 542px;
     justify-items: center;
     gap: 0.3em;
 
+    i {
+        color: var(--icon-color);
+    }
+
     .set-actor {
         &:not(.active) {
-            color: var(--color-disabled);
+            i {
+                color: var(--color-disabled);
+            }
         }
     }
 }
