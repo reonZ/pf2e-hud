@@ -105,7 +105,7 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
             options: ApplicationRenderOptions
         ): Promise<void> {
             const thisSuper = constructor.prototype as PF2eHudBaseActor;
-            thisSuper._preFirstRender.call(this, context, options);
+            await thisSuper._preFirstRender.call(this, context, options);
 
             const templates: Set<string> = new Set();
 
