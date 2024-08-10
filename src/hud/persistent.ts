@@ -1643,7 +1643,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         groupIndex,
                         index,
                         action,
-                        isCharacter && (action.altUsages?.length ?? 0) > 1 && event.ctrlKey
+                        isCharacter && (action.altUsages?.length ?? 0) > 0 && event.ctrlKey
                     );
                 }
 
@@ -2246,7 +2246,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         img: img ?? shortcutData.img,
                         name: nameExtra ? `${name} (${nameExtra})` : name,
                         subtitle: traits.length ? traits.join(", ") : undefined,
-                        hasVariants: (strike?.altUsages?.length ?? 0) > 1,
+                        hasVariants: (strike?.altUsages?.length ?? 0) > 0,
                     } satisfies AttackShortcut as T);
                 }
             }
