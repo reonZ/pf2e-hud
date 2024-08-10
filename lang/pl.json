@@ -53,6 +53,10 @@
                 "multiColumns": {
                     "name": "Wielokolumnowe paski boczne",
                     "hint": "Gdy wysokość paska bocznego jest większa niż jego maksymalna wysokość, zostanie on podzielony na maksymalnie x kolumn. Należy pamiętać, że Firefox ma dziwne ograniczenie wymuszające przewijanie w poziomie podczas korzystania z tej funkcji."
+                },
+                "showAlliance": {
+                    "name": "Przycisk sojuszu",
+                    "hint": "Pokaż przycisk sojuszu/dyspozycji na HUD."
                 }
             },
             "tooltip": {
@@ -178,7 +182,7 @@
                 },
                 "autoSet": {
                     "name": "Automatycznie ustawiany aktor",
-                    "hint": "Za każdym razem, gdy nie ustawiono żadnego stałego aktora, aktualnie wybrany aktor tokenu lub aktualny aktor walczący zostanie automatycznie ustawiony jako stały. Całkowicie wyłączy funkcję \"Token HUD\", jeśli jest ustawiona na \"Zaznaczony token\".",
+                    "hint": "Za każdym razem, gdy nie ustawiono żadnego stałego aktora, aktualnie wybrany aktor tokena lub aktualny aktor walczący zostanie automatycznie ustawiony jako stały. UWAGA: Całkowicie wyłączy funkcję \"Token HUD\", jeśli jest ustawiona na \"Zaznaczony token\".",
                     "choices": {
                         "disabled": "Wyłączony",
                         "select": "Zaznaczony token",
@@ -430,6 +434,19 @@
                 "dc": "ST",
                 "unspecific": "Nieokreślony",
                 "specific": "Określony"
+            }
+        },
+        "utils": {
+            "avatar": {
+                "title": "Edytuj awatar - {name}",
+                "src": {
+                    "actor": "Użyj obrazu aktora",
+                    "token": "Użyj obrazu tokena"
+                },
+                "save": "Zapisz",
+                "cancel": "Anuluj",
+                "contain": "Zawartość",
+                "reset": "Reset"
             }
         },
         "dialogs": {
