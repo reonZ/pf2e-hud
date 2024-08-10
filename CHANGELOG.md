@@ -1,3 +1,12 @@
+# 1.5.2
+
+-   filters for skills will now work both ways instead of from child to parent only
+    -   the statistic will be passed down to all its children
+    -   the action will be passed down to its variants
+    -   which will allow highlighting of related sections instead of just the found match
+-   `Persistent HUD`:
+    -   fixed alternate strike shortcuts not working for strikes with a single variant
+
 # 1.5.1
 
 -   `Persistent HUD`:
