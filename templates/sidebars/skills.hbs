@@ -28,7 +28,7 @@
     {{/if}}
 </header>
 {{#each skill.actions as |action|}}
-{{> (@root.partial 'statistic-action') action=action}}
+{{> (@root.partial 'statistic-action') action=action skill=skill.label}}
 {{/each}}
 {{/each}}
 {{#if lores}}

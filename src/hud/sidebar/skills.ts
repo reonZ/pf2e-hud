@@ -777,7 +777,6 @@ function getStatistics(actor: ActorPF2e) {
 
     for (const lore of actor.itemTypes.lore) {
         statistics.push({
-            // TODO check if this needs to be reverted with the next system release
             value: getLoreSlug(lore),
             label: lore.name,
         });

@@ -1,6 +1,6 @@
 <div class="item statistic{{#if action.proficient}} proficient{{/if}}" {{{action.dataset}}} {{#if
     (and action.proficient (not action.variants))}} draggable="true" {{/if}}>
-    <div class="skill" data-filter-value="{{action.filterValue}}">
+    <div class="skill" data-filter-value="{{action.filterValue}}{{#if skill}}|{{skill}}{{/if}}">
         <div class="name">
             <a data-action="item-description">
                 {{action.label}}
@@ -24,7 +24,8 @@
         <div class="variant" data-action="roll-statistic-action" {{#if variant.slug}}
             data-variant="{{variant.slug}}" {{/if}} {{#if variant.map}} data-map="{{variant.map}}"
             {{/if}} {{#if variant.agile}} data-agile="{{variant.agile}}" {{/if}} draggable="true"
-            data-drag-parent=".item" data-filter-value="{{variant.label}}">
+            data-drag-parent=".item"
+            data-filter-value="{{variant.label}}|{{../action.label}}{{#if ../skill}}|{{../skill}}{{/if}}">
             {{variant.label}}
         </div>
         {{/each}}
