@@ -34,8 +34,8 @@
                 "hint": "Should skill actions be hidden from the sidebar if the character isn't proficient with them."
             },
             "closePopupOnSendToChat": {
-                "name": "Close Popup on Send to Chat",
-                "hint": "Should the popup be closed when sending an item to chat."
+                "name": "Close Popup on Send-to-Chat",
+                "hint": "Should the popup be closed when sending an item to chat from the header button."
             },
             "shared": {
                 "enabled": {
@@ -145,7 +145,7 @@
                     "hint": "Should the HUD/sidebar be closed when casting a spell."
                 },
                 "closeOnSendToChat": {
-                    "name": "Close on Send to Chat",
+                    "name": "Close on Send-to-Chat",
                     "hint": "Should the HUD/sidebar be closed when sending an item to chat."
                 },
                 "closeOnSkill": {
@@ -168,7 +168,7 @@
                     "hint": "Should the sidebar be closed when casting a spell."
                 },
                 "closeOnSendToChat": {
-                    "name": "Close Sidebar on Send to Chat",
+                    "name": "Close Sidebar on Send-to-Chat",
                     "hint": "Should the sidebar be closed when sending an item to chat."
                 },
                 "consumableShortcut": {
@@ -177,7 +177,7 @@
                     "choices": {
                         "use": "Use Directly",
                         "confirm": "Confirm Before Use",
-                        "chat": "Send to Chat Only"
+                        "chat": "Send-to-Chat Only"
                     }
                 },
                 "confirmShortcut": {
