@@ -70,6 +70,13 @@ Hooks.once("setup", () => {
     });
 
     registerSetting({
+        key: "closePopupOnSendToChat",
+        type: Boolean,
+        default: false,
+        scope: "client",
+    });
+
+    registerSetting({
         key: "hideUntrained",
         type: Boolean,
         default: false,

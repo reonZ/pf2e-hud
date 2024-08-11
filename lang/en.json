@@ -33,6 +33,10 @@
                 "name": "Hide Untrained",
                 "hint": "Should skill actions be hidden from the sidebar if the character isn't proficient with them."
             },
+            "closePopupOnSendToChat": {
+                "name": "Close Popup on Send to Chat",
+                "hint": "Should the popup be closed when sending an item to chat."
+            },
             "shared": {
                 "enabled": {
                     "name": "Enabled",
