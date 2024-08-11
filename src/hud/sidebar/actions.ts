@@ -20,6 +20,7 @@ import {
     tupleHasValue,
 } from "foundry-pf2e";
 import { eventToRollMode, getActionIcon } from "foundry-pf2e/src/pf2e";
+import { getNpcStrikeImage } from "../../utils/npc-attacks";
 import { PF2eHudTextPopup } from "../popup/text";
 import { getItemFromElement } from "../shared/base";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
@@ -577,7 +578,6 @@ async function getStrikeData(
     options?: { id: string; slug: string }
 ): Promise<ActionStrike | ActionStrike[] | undefined> {
     const rollData = actor.getRollData();
-    const isCharacter = actor.isOfType("character");
 
     const actions = (() => {
         const actorStrikes = actor.system.actions ?? [];
@@ -596,23 +596,34 @@ async function getStrikeData(
     })();
 
     const strikes = await Promise.all(
-        actions.map(
-            async (strike, index): Promise<ActionStrike> => ({
-                ...(await getActionData(strike, actor)),
+        actions.map(async (strike, index): Promise<ActionStrike> => {
+            const actionData = await getActionData(strike, actor);
+
+            const description = await TextEditor.enrichHTML(strike.description, {
+                secrets: true,
+                rollData,
+            });
+
+            const altUsages = await Promise.all(
+                (strike.altUsages ?? []).map((altUsage) => getActionData(altUsage, actor))
+            );
+
+            return {
+                ...actionData,
                 index,
-                visible: !isCharacter || (strike as CharacterStrike).visible,
-                description: await TextEditor.enrichHTML(strike.description, {
-                    secrets: true,
-                    rollData,
-                }),
-                altUsages: await Promise.all(
-                    (strike.altUsages ?? []).map((altUsage) => getActionData(altUsage, actor))
-                ),
-            })
-        )
+                img: getStrikeImage(strike, actor.isOfType("npc")),
+                visible: !actor.isOfType("character") || (strike as CharacterStrike).visible,
+                description,
+                altUsages,
+            };
+        })
     );
 
     return options ? strikes[0] : strikes;
+}
+
+function getStrikeImage(strike: StrikeData, isNPC: boolean) {
+    return isNPC ? getNpcStrikeImage(strike) : strike.item.img;
 }
 
 function getActionCategory(actor: ActorPF2e, item: WeaponPF2e<ActorPF2e> | MeleePF2e<ActorPF2e>) {
@@ -719,6 +730,7 @@ type ActionStrikeUsage<T extends StrikeData = StrikeData> = T & {
 
 type ActionStrike<T extends StrikeData = StrikeData> = ActionStrikeUsage<T> & {
     index: number;
+    img: string;
     visible: boolean;
     description: string;
 };
@@ -819,6 +831,7 @@ export {
     getActionFrequency,
     getBlastData,
     getStrikeData,
+    getStrikeImage,
     getStrikeVariant,
     useAction,
     variantLabel,

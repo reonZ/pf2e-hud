@@ -22,7 +22,6 @@ import {
     hasItemWithSourceId,
     htmlClosest,
     htmlQuery,
-    imagePath,
     isInstanceOf,
     isValidStance,
     localize,
@@ -69,6 +68,7 @@ import {
     getActionFrequency,
     getBlastData,
     getStrikeData,
+    getStrikeImage,
     getStrikeVariant,
     useAction,
     variantLabel,
@@ -2209,10 +2209,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     const disabled = !strike;
                     const isNPC = actor.isOfType("npc");
 
-                    const img =
-                        isNPC && strike?.item.range
-                            ? imagePath("npc-range", "svg")
-                            : strike?.item.img;
+                    const img = strike ? getStrikeImage(strike, isNPC) : undefined;
 
                     const additionalEffects =
                         strike && isNPC
