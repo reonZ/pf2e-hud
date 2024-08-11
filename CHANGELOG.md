@@ -1,3 +1,13 @@
+# 1.6.0
+
+-   added a new `Close Popup on Send-to-Chat` setting
+-   `Persistent HUD`:
+    -   a majority of NPC strikes will now have a custom shortcut images
+        -   the priority is given to images that were manually set
+        -   if not, it will look for one of the module's custom image
+        -   otherwise it will display a custom default image for the ranged attacks
+        -   thanks to [Shemetz](https://github.com/shemetz) for compiling the list of images for us
+
 # 1.5.2
 
 -   filters for skills will now work both ways instead of from child to parent only
@@ -102,7 +112,7 @@
 -   `Token HUD`:
     -   no longer shows the sidebars icons row if all sidebars are disabled for that actor
 -   fixed `Recovery Check` icon not doing anything
--   fixed `Close on Send to Chat` settings not doing anything
+-   fixed `Close on Send-to-Chat` settings not doing anything
 -   fixed some prompt dialogs having an `undefined` button label
 -   fixed fps panel showing behind the hotbar when the `Persistent HUD` is enabled
 
@@ -246,7 +256,7 @@
 
 # 0.13.0
 
--   added a `Send to Chat` button to the item popup
+-   added a `Send-to-Chat` button to the item popup
 -   the `Skills` sidebar icon is now disabled for non-creature actors
 -   the `perception` and `stealth` rolls from the main HUD parts now have the `secret` roll option
 -   strike versatile damage icons are now displayed directly bellow the variant row they are associated with
