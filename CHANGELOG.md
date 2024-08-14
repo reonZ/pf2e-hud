@@ -1,10 +1,14 @@
+# 1.7.1
+
+-   fixed custom stances not showing in the `Stances` section of the `Actions` sidebar
+
 # 1.7.0
 
 -   changed the `Stealth` icon from the slashed eye to the mask
 -   `Combat Tracker`:
     -   added a new `Delay Turn` feature:
         -   this is a GM only feature
-        -   it is activated by clicking on the initiative die and turn the icon into an hourglass
+        -   it is activated by clicking on the initiative die and turns the icon into an hourglass
         -   clicking on the hourglass icon will change the initiative of the combatant to be just after the current one
 -   `Persistent HUD`:
     -   changed the `Toggle Effects` icon to use the same as the actor sheet
