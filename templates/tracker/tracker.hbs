@@ -102,7 +102,25 @@
             {{#if hasRolled}}
             <div class="initiative" data-tooltip="PF2E.InitiativeLabel">
                 <span>{{combatant.initiative}}</span>
+                {{!-- is GM --}}
+                {{#if @root.isGM}}
+                <a class="delay" data-action="delay-turn">
+                    {{#if combatant.isDelayed}}
+                    <i class="fa-solid fa-hourglass-start"
+                        data-tooltip="{{@root.i18n.path 'join'}}"></i>
+                    {{else}}
+                    <i class="fa-solid fa-dice-d20" data-tooltip="{{@root.i18n.path 'delay'}}"></i>
+                    {{/if}}
+                </a>
+                {{!-- is not GM --}}
+                {{else}}
+                {{#if combatant.isDelayed}}
+                <i class="fa-solid fa-hourglass-start"></i>
+                {{else}}
                 <i class="fa-solid fa-dice-d20"></i>
+                {{/if}}
+                {{!-- end is GM --}}
+                {{/if}}
             </div>
             {{!-- if health --}}
             {{#if health}}

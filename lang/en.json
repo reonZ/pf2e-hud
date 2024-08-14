@@ -331,7 +331,9 @@
                 "nothing": "Encounter Not Started",
                 "secret": "Something Secret is Happening"
             },
-            "unknown": "Unknown"
+            "unknown": "Unknown",
+            "delay": "Delay Turn",
+            "join": "Join Turn"
         },
         "resources": {
             "resource": "Resource",

@@ -6,12 +6,15 @@ import {
     createHook,
     elementDataset,
     getDispositionColor,
+    getFlag,
     hasRolledInitiative,
     htmlClosest,
     htmlQueryAll,
     localize,
     render,
+    setFlag,
     templateLocalize,
+    unsetFlag,
 } from "foundry-pf2e";
 import Sortable, { SortableEvent } from "sortablejs";
 import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
@@ -206,6 +209,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
                 id: combatant.id,
                 name: isGM || playersCanSeeName ? combatant.name : unknown,
                 initiative: String(initiative),
+                isDelayed: getFlag(combatant, "delayed") ?? false,
                 hasRolled,
                 texture,
                 toggleName,
@@ -317,15 +321,35 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
         this.#updateEffectsPanel();
     }
 
-    _onClickAction(event: PointerEvent, target: HTMLElement) {
-        if (event.button !== 0) return;
+    async #onDelayAction(el: HTMLElement) {
+        const combat = this.combat;
+        const combatantElement = htmlClosest(el, ".combatant")!;
+        const combatant = combat?.combatants.get(combatantElement.dataset.combatantId, {
+            strict: true,
+        });
+        if (!combat || !combatant || !hasRolledInitiative(combatant)) return;
 
-        const action = target.dataset.action;
+        const isDelayed = getFlag<boolean>(combatant, "delayed");
 
-        if (action === "toggle-expand") {
-            event.preventDefault();
-            this.setSetting("collapsed", !this.getSetting("collapsed"));
+        if (!isDelayed) {
+            return setFlag(combatant, "delayed", true);
         }
+
+        await unsetFlag(combatant, "delayed");
+
+        const currentCombatant = combat.combatant;
+
+        if (!currentCombatant || currentCombatant === combatant) return;
+
+        const newOrder = combat.turns.filter((c) => c !== combatant);
+        const currentIndex = newOrder.indexOf(currentCombatant);
+
+        newOrder.splice(currentIndex + 1, 0, combatant);
+
+        return this.#newInitiativeOrder(
+            newOrder.filter((c): c is RolledCombatant => hasRolledInitiative(c)),
+            combatant
+        );
     }
 
     #onRenderCombatTracker(tracker: EncounterTrackerPF2e) {
@@ -462,7 +486,16 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
             R.map((id) => encounter.combatants.get(id, { strict: true })),
             R.filter((combatant): combatant is RolledCombatant => hasRolledInitiative(combatant))
         );
-        const oldOrder = encounter.turns.filter((Combatant) => Combatant.initiative !== null);
+
+        return this.#newInitiativeOrder(newOrder, dropped);
+    }
+
+    #newInitiativeOrder(newOrder: RolledCombatant[], combatant: RolledCombatant) {
+        const tracker = this.tracker;
+        const encounter = tracker.viewed;
+        if (!encounter) return;
+
+        const oldOrder = encounter.turns.filter((combatant) => combatant.initiative !== null);
         const allOrdersChecks = newOrder.every(
             (combatant) => newOrder.indexOf(combatant) === oldOrder.indexOf(combatant)
         );
@@ -470,7 +503,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
 
         this.#cancelScroll = true;
 
-        tracker.setInitiativeFromDrop(newOrder, dropped);
+        tracker.setInitiativeFromDrop(newOrder, combatant);
         return tracker.saveNewOrder(newOrder);
     }
 
@@ -554,6 +587,25 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
             tracker._onCombatantHoverOut(event);
         });
 
+        addListenerAll(html, "[data-action]", (event, el) => {
+            const action = el.dataset.action as EventAction;
+
+            switch (action) {
+                case "toggle-expand": {
+                    event.preventDefault();
+                    this.setSetting("collapsed", !this.getSetting("collapsed"));
+                    break;
+                }
+
+                case "delay-turn": {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.#onDelayAction(el);
+                    break;
+                }
+            }
+        });
+
         /**
          * GM only from here on
          */
@@ -595,6 +647,8 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
     }
 }
 
+type EventAction = "toggle-expand" | "delay-turn";
+
 type TrackerTurn = {
     id: string;
     index: number;
@@ -604,6 +658,7 @@ type TrackerTurn = {
     hidden: boolean;
     defeated: boolean;
     initiative: string;
+    isDelayed: boolean;
     hasRolled: boolean;
     health: HealthData | undefined;
     css: string;

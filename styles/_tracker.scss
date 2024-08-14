@@ -173,6 +173,14 @@ $threat-extreme: red;
                     }
                 }
 
+                .initiative {
+                    a {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                }
+
                 .roll {
                     display: block;
                     background-size: 32px;
