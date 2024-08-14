@@ -33,6 +33,10 @@
                 "name": "Ukryj niewytrenowane",
                 "hint": "Akcje umiejętności będą ukryte na pasku bocznym, jeśli postać nie jest w nich biegła."
             },
+            "closePopupOnSendToChat": {
+                "name": "Zamknięcie wyskakującego okienka przy wysyłaniu na czat",
+                "hint": "Wyskakujące okienko będzie zamykane podczas wysyłania elementu na czat za pomocą przycisku nagłówka."
+            },
             "shared": {
                 "enabled": {
                     "name": "Włączone",
