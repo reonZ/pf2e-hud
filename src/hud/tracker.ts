@@ -587,6 +587,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
                 draggable: ".combatant",
                 dataIdAttr: "data-combatant-id",
                 easing: "cubic-bezier(1, 0, 0, 1)",
+                revertOnSpill: true,
                 onEnd: (event) => this.#onSortableEnd(event),
                 onUpdate: (event) => this.#onSortableUpdate(event),
             });
