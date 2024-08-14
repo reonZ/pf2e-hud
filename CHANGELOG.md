@@ -1,8 +1,15 @@
+# 1.6.1
+
+-   added French localization (thanks to [Mose](https://github.com/mose))
+-   `Combat Tracker`:
+    -   releasing a combatant outside of the combat tracker will now revert its position in the initative
+        -   thanks to [Shemetz](https://github.com/shemetz)
+
 # 1.6.0
 
 -   added a new `Close Popup on Send-to-Chat` setting
 -   `Persistent HUD`:
-    -   a majority of NPC strikes will now have a custom shortcut images
+    -   a majority of NPC strikes will now have custom shortcut images
         -   the priority is given to images that were manually set
         -   if not, it will look for one of the module's custom image
         -   otherwise it will display a custom default image for the ranged attacks
@@ -20,7 +27,7 @@
 # 1.5.1
 
 -   `Persistent HUD`:
-    -   changed the portrait style to be less opaque and accentuate the whole HUD icons/texts
+    -   changed the portrait style to be less opaque and accentuated the whole HUD icons/texts
     -   changed the left menu icons color to be the same as the one in the rest of the HUD
     -   added a `Reset` button to the `Edit Avatar` menu
     -   fixed shortcuts of the slot 0 of a prepared spellcasting entry not showing as expended
