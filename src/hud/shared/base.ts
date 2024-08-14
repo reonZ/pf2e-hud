@@ -19,7 +19,7 @@ const STATISTICS = [
     { slug: "reflex", icon: "fa-solid fa-person-running" },
     { slug: "will", icon: "fa-solid fa-brain" },
     { slug: "perception", icon: "fa-solid fa-eye" },
-    { slug: "stealth", icon: "fa-duotone fa-eye-slash" },
+    { slug: "stealth", icon: "fa-solid fa-mask" },
     { slug: "athletics", icon: "fa-solid fa-hand-fist" },
 ] as const;
 
