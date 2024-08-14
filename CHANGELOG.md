@@ -1,8 +1,20 @@
+# 1.7.0
+
+-   changed the `Stealth` icon from the slashed eye to the mask
+-   `Combat Tracker`:
+    -   added a new `Delay Turn` feature:
+        -   this is a GM only feature
+        -   it is activated by clicking on the initiative die and turn the icon into an hourglass
+        -   clicking on the hourglass icon will change the initiative of the combatant to be just after the current one
+-   `Persistent HUD`:
+    -   changed the `Toggle Effects` icon to use the same as the actor sheet
+    -   fixed `Toggle Effects` icon not being greyed out when disabled
+
 # 1.6.1
 
 -   added French localization (thanks to [Mose](https://github.com/mose))
 -   `Combat Tracker`:
-    -   releasing a combatant outside of the combat tracker will now revert its position in the initative
+    -   releasing a combatant outside of the combat tracker will now revert its position in the initiative
         -   thanks to [Shemetz](https://github.com/shemetz)
 
 # 1.6.0
