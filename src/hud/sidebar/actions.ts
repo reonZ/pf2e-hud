@@ -596,6 +596,9 @@ async function getStrikeData(
         return realItem && realItem.type !== match.item.type ? [match] : [];
     })();
 
+    const isCharacter = actor.isOfType("character");
+    const isNPC = actor.isOfType("npc");
+
     const strikes = await Promise.all(
         actions.map(async (strike, index): Promise<ActionStrike> => {
             const actionData = await getActionData(strike, actor);
@@ -612,8 +615,8 @@ async function getStrikeData(
             return {
                 ...actionData,
                 index,
-                img: getStrikeImage(strike, actor.isOfType("npc")),
-                visible: !actor.isOfType("character") || (strike as CharacterStrike).visible,
+                img: getStrikeImage(strike, isNPC),
+                visible: !isCharacter || (strike as CharacterStrike).visible,
                 description,
                 altUsages,
             };
