@@ -943,6 +943,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         };
 
         addListenerAll(html, ".effect-item[data-item-id] .icon", "mousedown", (event, el) => {
+            if (![0, 2].includes(event.button)) return;
+
             if (!event.shiftKey && this.getSetting("shiftEffects")) return;
 
             const effect = getEffect(el);
