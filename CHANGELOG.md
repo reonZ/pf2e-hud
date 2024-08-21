@@ -1,3 +1,12 @@
+# 1.8.0
+
+-   add support for the `Identify` feature of `PF2e Toolbelt`
+    -   you need to update toolbelt to `2.10.0` or expect some breakage
+-   add the `Raise Shield` icon to NPC layouts
+-   change the shield icon when the actor doesn't have a shield equipped and replace the `N/A` with `——`
+-   expose `getNpcStrikeImage` function to the API
+-   fix `Use` button showing on unidentified items
+
 # 1.7.1
 
 -   fixed custom stances not showing in the `Stances` section of the `Actions` sidebar
