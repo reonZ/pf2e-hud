@@ -135,16 +135,19 @@
                     <i class="fa-solid fa-hammer fa-fw"></i>
                 </a>
                 {{/if}}
-                {{#if @root.isGM}}
+                {{!-- is identified --}}
                 {{#if item.isIdentified}}
+                {{#if @root.isGM}}
                 <a data-action="toggle-identified" data-tooltip="PF2E.identification.Mystify">
                     <i class="fa-regular fa-question-circle fa-fw"></i>
                 </a>
-                {{else}}
+                {{/if}}
+                {{!-- not identified --}}
+                {{else if @root.canIdentify}}
                 <a data-action="toggle-identified" data-tooltip="PF2E.identification.Identify">
                     <i class="fa-solid fa-question-circle fa-fw"></i>
                 </a>
-                {{/if}}
+                {{!-- end is identified --}}
                 {{/if}}
                 {{#if (or @root.isGM item.isIdentified)}}
                 <a data-action="edit-item" data-tooltip="PF2E.EditItemTitle">

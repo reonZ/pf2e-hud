@@ -6,6 +6,7 @@ import {
     consumeItem,
     createHTMLElement,
     detachSubitem,
+    getActiveModule,
     htmlClosest,
     tupleHasValue,
 } from "foundry-pf2e";
@@ -19,6 +20,7 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
 
     async _prepareContext(options: SidebarRenderOptions): Promise<ItemContext> {
         const actor = this.actor;
+        const isGM = game.user.isGM;
         const inventory = actor.inventory;
         const parentData = await super._prepareContext(options);
 
@@ -38,12 +40,25 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
                 return section;
             });
 
+        const canIdentify = (() => {
+            if (isGM) return true;
+
+            const toolbelt = getActiveModule("pf2e-toolbelt");
+            if (!toolbelt) return false;
+
+            return (
+                toolbelt.getSetting("identify.enabled") &&
+                toolbelt.getSetting("identify.playerRequest")
+            );
+        })();
+
         const data: ItemContext = {
             ...parentData,
             ...inventoryData,
-            isGM: game.user.isGM,
+            isGM,
             isNPC: actor.isOfType("npc"),
             isCharacter: actor.isOfType("character"),
+            canIdentify,
             wealth: {
                 coins: inventory.coins.goldValue,
                 total: inventory.totalWealth.goldValue,
@@ -87,9 +102,21 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
                 case "toggle-identified": {
                     if (item.isIdentified) {
                         item.setIdentificationStatus("unidentified");
+                        return;
+                    }
+
+                    const toolbelt = getActiveModule("pf2e-toolbelt");
+
+                    if (toolbelt?.getSetting("identify.enabled")) {
+                        if (game.user.isGM) {
+                            toolbelt.api.identify.openTracker(item);
+                        } else {
+                            toolbelt.api.identify.requestIdentify(item);
+                        }
                     } else {
                         new IdentifyItemPopup(item).render(true);
                     }
+
                     break;
                 }
 
@@ -214,6 +241,7 @@ type ItemContext = SidebarContext &
         isGM: boolean;
         isNPC: boolean;
         isCharacter: boolean;
+        canIdentify: boolean;
         wealth: {
             coins: number;
             total: number;
