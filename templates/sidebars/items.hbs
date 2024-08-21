@@ -86,7 +86,7 @@
                     <i class="fa-solid fa-gem fa-fw"></i>
                 </a>
                 {{/if}}
-                {{#if (and hasCharges (not item.isAmmo))}}
+                {{#if (and item.isIdentified hasCharges (not item.isAmmo))}}
                 {{#if (lt item.uses.value 1)}}
                 <span class="use" data-tooltip="PF2E.Item.Consumable.Uses.None">
                     <i class="fa-solid fa-play"></i>
