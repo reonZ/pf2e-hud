@@ -54,17 +54,7 @@
 {{!-- shield --}}
 {{#if isCharacter}}
 <div class="double" data-section="shield">
-    <a {{#if (eq shield.itemId null)}}class="disabled" {{/if}} data-action="raise-shield"
-        data-tooltip="PF2E.Actions.RaiseAShield.SingleActionTitle">
-        {{#if shield.broken}}
-        <i class="fa-regular fa-shield-slash"></i>
-        {{else if shield.raised}}
-        <i class="fa-solid fa-shield"></i>
-        {{else}}
-        <i class="fa-regular fa-shield"></i>
-        {{/if}}
-        <span>({{shield.hardness}})</span>
-    </a>
+    {{> shield shield=shield showHardness=true}}
     {{#if shield.itemId}}
     <input type="number" name="system.attributes.shield.hp" value="{{shield.hp.value}}" min="0"
         max="{{shield.hp.max}}" data-tooltip="PF2E.Actor.Creature.Shield.HitPoints.Value">
@@ -81,8 +71,27 @@
     {{else}}
     <div></div>
     {{/if}}
+    {{> shield shield=shield}}
     <a data-action="show-notes" data-tooltip="PF2E.NPC.NotesTab">
         <i class="fa-duotone fa-clipboard"></i>
     </a>
 </div>
 {{/if}}
+
+{{#*inline 'shield'}}
+<a {{#if (eq shield.itemId null)}}class="disabled" {{/if}} data-action="raise-shield"
+    data-tooltip="PF2E.Actions.RaiseAShield.SingleActionTitle">
+    {{#if shield.broken}}
+    <i class="fa-regular fa-shield-slash"></i>
+    {{else if shield.raised}}
+    <i class="fa-solid fa-shield"></i>
+    {{else if shield.itemId}}
+    <i class="fa-regular fa-shield"></i>
+    {{else}}
+    <i class="fa-regular fa-shield-slash"></i>
+    {{/if}}
+    {{#if showHardness}}
+    <span>({{shield.hardness}})</span>
+    {{/if}}
+</a>
+{{/inline}}

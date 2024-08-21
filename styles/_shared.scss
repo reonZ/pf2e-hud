@@ -129,7 +129,7 @@ $panel-gap: 5px;
                 }
 
                 &.npc {
-                    grid-template-columns: 1fr 1fr auto;
+                    grid-template-columns: repeat(4, 1fr);
                 }
             }
         }
