@@ -89,7 +89,12 @@ const PARTS = ["menu", "portrait", "main", "effects"] as const;
 const ROMAN_RANKS = ["", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"] as const;
 
 class PF2eHudPersistent extends makeAdvancedHUD(
-    PF2eHudBaseActor<PersistentSettings, PersistentHudActor, PersistentUserSetting>
+    PF2eHudBaseActor<
+        PersistentSettings,
+        PersistentHudActor,
+        PersistentUserSetting,
+        PersistentRenderOptions
+    >
 ) {
     #onControlTokenDebounce = foundry.utils.debounce(this.#onControlToken.bind(this), 1);
 
@@ -100,9 +105,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #deleteTokenHook = createHook("deleteToken", this.#onDeleteToken.bind(this));
     #deleteActorHook = createHook("deleteActor", this.#onDeleteActor.bind(this));
     #updateUserHook = createHook("updateUser", this.#onUpdateUser.bind(this));
-    #combatDeleteHook = createHook("deleteCombat", this.#onDeleteCombat.bind(this));
+    #deleteCombatHook = createHook("deleteCombat", this.#onDeleteCombat.bind(this));
+    #deleteCombatantHook = createHook("deleteCombatant", this.#onChangeCombatant.bind(this));
+    #createCombatantHook = createHook("createCombatant", this.#onChangeCombatant.bind(this));
     #combatTurnHook = createHook("combatTurnChange", this.#onCombatTurnChange.bind(this));
 
+    #hasStances: boolean = false;
     #isVirtual: boolean = false;
     #isUserCharacter: boolean = false;
     #actor: PersistentHudActor | null = null;
@@ -200,7 +208,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: true,
                 scope: "client",
                 onChange: () => {
-                    this.render();
+                    this.render({ parts: ["main"] });
                 },
             },
             {
@@ -209,7 +217,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: true,
                 scope: "client",
                 onChange: () => {
-                    this.render();
+                    this.render({ parts: ["main"] });
                 },
             },
             {
@@ -218,7 +226,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: true,
                 scope: "client",
                 onChange: () => {
-                    this.render();
+                    this.render({ parts: ["main"] });
                 },
             },
             {
@@ -228,7 +236,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: "one",
                 scope: "client",
                 onChange: () => {
-                    this.render();
+                    this.render({ parts: ["main"] });
                 },
             },
             {
@@ -242,7 +250,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     step: 1,
                 },
                 onChange: () => {
-                    this.render();
+                    this.render({ parts: ["main"] });
                 },
             },
             {
@@ -252,7 +260,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 scope: "client",
                 gmOnly: true,
                 onChange: () => {
-                    this.render();
+                    this.render({ parts: ["main"] });
                 },
             },
             {
@@ -445,8 +453,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         this.#deleteActorHook.toggle(enabled);
         this.#updateUserHook.toggle(enabled);
 
+        this.#deleteCombatHook.toggle(enabled);
+        this.#deleteCombatantHook.toggle(enabled);
+        this.#createCombatantHook.toggle(enabled);
+
         this.#controlTokenHook.toggle(enabled && autoSet === "select");
-        this.#combatDeleteHook.toggle(enabled && autoSet === "combat");
         this.#combatTurnHook.toggle(enabled && autoSet === "combat");
 
         if (enabled) {
@@ -776,10 +787,18 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         else titleElement.append(btnElement);
     }
 
-    #onDeleteCombat() {
-        if (this.savedActor) return;
+    #onChangeCombatant(combatant: CombatantPF2e) {
+        if (this.#hasStances && this.isCurrentActor(combatant.actor)) {
+            this.render({ parts: ["main"] });
+        }
+    }
 
-        this.setActor(null, { skipSave: true, force: true });
+    #onDeleteCombat() {
+        if (!this.savedActor && this.getSetting("autoSet") === "combat") {
+            this.setActor(null, { skipSave: true, force: true });
+        } else if (this.#hasStances) {
+            this.render({ parts: ["main"] });
+        }
     }
 
     #onCombatTurnChange() {
@@ -1081,6 +1100,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             return owner && getFlag(worldActor, "persistent.shortcuts", owner) ? owner : undefined;
         })();
 
+        this.#hasStances = false;
         this.#shortcuts = {};
         this.#shortcutData = {};
         this.#isVirtual = !!shortcutsOwner || autoFill;
@@ -1961,7 +1981,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
                 const name = item?.name ?? shortcutData.name;
                 const frequency = item ? getActionFrequency(item) : undefined;
-                const isStance = actor.isOfType("character") && !!item && isValidStance(item);
+                const isStance = !!item && actor.isOfType("character") && isValidStance(item);
                 const disabled = !item || frequency?.value === 0;
 
                 const isActive = (() => {
@@ -1974,6 +1994,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     if (!item || isActive !== null || !item.system.selfEffect) return false;
                     return hasItemWithSourceId(actor, item.system.selfEffect.uuid, "effect");
                 })();
+
+                if (isStance) this.#hasStances = true;
 
                 return returnShortcut({
                     ...shortcutData,
