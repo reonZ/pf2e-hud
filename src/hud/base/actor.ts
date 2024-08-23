@@ -3,12 +3,13 @@ import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base";
 abstract class PF2eHudBaseActor<
     TSettings extends BaseActorSettings = BaseActorSettings,
     TActor extends ActorPF2e = ActorPF2e,
-    TUserSettings extends Record<string, any> = Record<string, any>
-> extends PF2eHudBase<TSettings, TUserSettings> {
+    TUserSettings extends Record<string, any> = Record<string, any>,
+    TRenderOptions extends BaseActorRenderOptions = BaseActorRenderOptions
+> extends PF2eHudBase<TSettings, TUserSettings, TRenderOptions> {
     abstract get actor(): TActor | null;
     abstract get allowedActorTypes(): (ActorType | "creature")[];
 
-    async _prepareContext(options: BaseActorRenderOptions): Promise<BaseActorContext<TActor>> {
+    async _prepareContext(options: TRenderOptions): Promise<BaseActorContext<TActor>> {
         if (this.actor !== null) {
             return { hasActor: true, actor: this.actor };
         } else {

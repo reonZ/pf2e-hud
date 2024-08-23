@@ -34,7 +34,7 @@ import { HealthData, getHealth } from "./shared/base";
 //     });
 // });
 
-class PF2eHudTracker extends PF2eHudBase<TrackerSettings> {
+class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOptions> {
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
     #targetTokenHook = createHook("targetToken", this.#refreshTargetDisplay.bind(this));
     #renderEffectsHook = createHook("renderEffectsPanel", this.#onRenderEffectsPanel.bind(this));

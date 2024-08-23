@@ -67,7 +67,7 @@ const SETTING_TYPE = ["never", "owned", "observed"] as const;
 const SETTING_DISTANCE = ["never", "idiot", "smart", "weird"] as const;
 const SETTING_NO_DEAD = ["none", "small", "full"] as const;
 
-class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
+class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, TooltipRenderOptions> {
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
     #canvasTearDownHook = createHook("canvasTearDown", this.#onCanvasTearDown.bind(this));
 
@@ -399,7 +399,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
         content.innerHTML = result;
     }
 
-    _onRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
+    _onRender(context: ApplicationRenderContext, options: TooltipRenderOptions) {
         this.cancelClose();
         this.drawDistance();
     }
@@ -495,8 +495,8 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings> {
     }
 
     async render(
-        options?: boolean | Partial<BaseTokenRenderOptions>,
-        _options?: Partial<BaseTokenRenderOptions>
+        options?: boolean | Partial<TooltipRenderOptions>,
+        _options?: Partial<TooltipRenderOptions>
     ) {
         if (!this.actor || this.token === hud.token.token) return this;
         return super.render(options, _options);

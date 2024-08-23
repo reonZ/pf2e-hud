@@ -44,7 +44,11 @@ function createStepTooltip(resource: Resource, direction: "increase" | "decrease
     return steps.join("<br>");
 }
 
-class PF2eHudResources extends PF2eHudBase<ResourcesSettings, ResourcesUserSettings> {
+class PF2eHudResources extends PF2eHudBase<
+    ResourcesSettings,
+    ResourcesUserSettings,
+    ResourcesRenderOptions
+> {
     #initialized: boolean = false;
 
     static DEFAULT_OPTIONS: PartialApplicationConfiguration = {

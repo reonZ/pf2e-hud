@@ -38,7 +38,9 @@ const CLOSE_CHOICES = R.mapToObj(CLOSE_OPTIONS, (option) => [
     `pf2e-hud.token.closeChoices.${option}`,
 ]);
 
-class PF2eHudToken extends makeAdvancedHUD(PF2eHudBaseToken<TokenSettings, TokenHudActor>) {
+class PF2eHudToken extends makeAdvancedHUD(
+    PF2eHudBaseToken<TokenSettings, TokenHudActor, TokenRenderOptions>
+) {
     #canvasPanHook = createHook("canvasPan", () => {
         this._updatePosition();
         this.sidebar?._updatePosition();

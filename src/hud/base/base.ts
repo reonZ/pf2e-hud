@@ -15,8 +15,9 @@ const GLOBAL_SETTINGS: ReadonlyArray<keyof GlobalSettings> = [
 
 abstract class PF2eHudBase<
     TSettings extends BaseSettings = BaseSettings,
-    TUserSettings extends Record<string, any> = Record<string, any>
-> extends foundry.applications.api.ApplicationV2<ApplicationConfiguration> {
+    TUserSettings extends Record<string, any> = Record<string, any>,
+    TRenderOptions extends BaseRenderOptions = BaseRenderOptions
+> extends foundry.applications.api.ApplicationV2<ApplicationConfiguration, TRenderOptions> {
     static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
         window: {
             resizable: false,
@@ -67,7 +68,7 @@ abstract class PF2eHudBase<
 
     abstract _onEnable(enabled?: boolean): void;
 
-    _configureRenderOptions(options: BaseRenderOptions) {
+    _configureRenderOptions(options: TRenderOptions) {
         super._configureRenderOptions(options);
         options.fontSize = this.getSetting("fontSize");
     }

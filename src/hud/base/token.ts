@@ -8,8 +8,9 @@ import {
 
 abstract class PF2eHudBaseToken<
     TSettings extends BaseTokenSettings = BaseTokenSettings,
-    TActor extends ActorPF2e = ActorPF2e
-> extends PF2eHudBaseActor<TSettings, TActor> {
+    TActor extends ActorPF2e = ActorPF2e,
+    TRenderOptions extends BaseTokenRenderOptions = BaseTokenRenderOptions
+> extends PF2eHudBaseActor<TSettings, TActor, any, TRenderOptions> {
     #deleteTokenHook = createHook("deleteToken", this.#onDeleteToken.bind(this));
     #updateTokenHook = createHook("updateToken", this.#onUpdateToken.bind(this));
     #tearDownHook = createHook("tearDownTokenLayer", () => {
@@ -51,8 +52,8 @@ abstract class PF2eHudBaseToken<
     }
 
     async render(
-        options: boolean | Partial<BaseTokenRenderOptions> = {},
-        _options: Partial<BaseTokenRenderOptions> = {}
+        options: boolean | Partial<TRenderOptions> = {},
+        _options: Partial<TRenderOptions> = {}
     ) {
         if (!this.actor) return this;
 
