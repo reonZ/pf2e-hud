@@ -688,7 +688,7 @@ $bottom-width: 542px;
                 background: rgb(0 0 0 / 37%);
             }
 
-            &:not(.empty, .disabled, .attack) {
+            &:not(.empty, .disabled, .attack, .faded-out) {
                 cursor: pointer;
 
                 &:hover {

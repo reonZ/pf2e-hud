@@ -4,6 +4,7 @@ import {
     addListener,
     addListenerAll,
     arrayIncludes,
+    canUseStances,
     changeCarryType,
     confirmDialog,
     consumeItem,
@@ -1347,7 +1348,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     return useAction(event, item);
                 }
 
-                return toggleStance(actor as CharacterPF2e, shortcut.effectUuid);
+                return toggleStance(actor as CharacterPF2e, shortcut.effectUuid, event.ctrlKey);
             }
 
             case "spell": {
@@ -1960,11 +1961,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
                 const name = item?.name ?? shortcutData.name;
                 const frequency = item ? getActionFrequency(item) : undefined;
+                const isStance = actor.isOfType("character") && !!item && isValidStance(item);
                 const disabled = !item || frequency?.value === 0;
 
                 const isActive = (() => {
                     const effectUUID = shortcutData.effectUuid;
-                    if (!item || !effectUUID || !isValidStance(item)) return null;
+                    if (!item || !effectUUID || !isStance) return null;
                     return hasItemWithSourceId(actor, effectUUID, "effect");
                 })();
 
@@ -1976,7 +1978,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 return returnShortcut({
                     ...shortcutData,
                     isDisabled: disabled,
-                    isFadedOut: disabled,
+                    isFadedOut: disabled || (isStance && !canUseStances(actor)),
                     item,
                     isActive,
                     img: item ? getActionImg(item, true) : shortcutData.img,
@@ -2370,6 +2372,7 @@ type CreateShortcutCache = {
     dailiesModule?: Maybe<PF2eDailiesModule>;
     entryLabel?: Record<string, string>;
     canCastRank?: Partial<Record<OneToTen, boolean>>;
+    canUseStances?: boolean;
 };
 
 type FillShortcutCache = {
