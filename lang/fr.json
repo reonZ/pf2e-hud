@@ -313,7 +313,7 @@
                         "message": "Êtes-vous sûr(e) de vouloir automatiquement remplir tous les raccourcis pour <strong>{name}</strong> ?"
                     },
                     "owner": {
-                        "title": "Copier les raccourcis su propriétaire",
+                        "title": "Copier les raccourcis du propriétaire",
                         "message": "Êtes-vous sûr(e) de vouloir copier les raccourcis du propriétaire de <strong>{name}</strong> ?",
                         "none": "Ce personnage n'a pas de propriétaire disposant d'un jeu de raccourcis."
                     }
