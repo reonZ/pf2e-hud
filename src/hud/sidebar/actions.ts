@@ -7,7 +7,9 @@ import {
     canUseStances,
     createSelfEffectMessage,
     elementDataset,
+    eventToRollMode,
     getActionGlyph,
+    getActionIcon,
     getActionImg,
     getActiveModule,
     getSourceId,
@@ -20,7 +22,6 @@ import {
     toggleStance,
     tupleHasValue,
 } from "foundry-pf2e";
-import { eventToRollMode, getActionIcon } from "foundry-pf2e/src/pf2e";
 import { getNpcStrikeImage } from "../../utils/npc-attacks";
 import { PF2eHudTextPopup } from "../popup/text";
 import { getItemFromElement } from "../shared/base";

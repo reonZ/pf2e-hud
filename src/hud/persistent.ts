@@ -1,5 +1,6 @@
 import {
     MODULE,
+    PersistentDamageDialog,
     R,
     addListener,
     addListenerAll,
@@ -35,7 +36,6 @@ import {
     unsetFlag,
     warn,
 } from "foundry-pf2e";
-import { PersistentDialog } from "foundry-pf2e/src/pf2e";
 import { rollRecallKnowledge } from "../actions/recall-knowledge";
 import { hud } from "../main";
 import { AvatarData, editAvatar } from "../utils/avatar";
@@ -1001,7 +1001,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             if (!effect) return;
 
             if (effect.isOfType("condition") && effect.slug === "persistent-damage") {
-                new PersistentDialog(actor, { editing: effect.id }).render(true);
+                new PersistentDamageDialog(actor, { editing: effect.id }).render(true);
             } else {
                 effect.sheet.render(true);
             }
