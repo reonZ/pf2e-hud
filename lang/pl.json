@@ -17,6 +17,10 @@
             }
         },
         "settings": {
+            "partyAsObserved": {
+                "name": "Drużyna dla Obserwowanych",
+                "hint": "Aktorzy w sojuszu \"Drużyna\" powinni być obserwowani przez graczy w celu rozszerzenia podpowiedzi. Nie mylić z aktorem \"Drużyny\"."
+            },
             "highestSpeed": {
                 "name": "Pokaż najwyższą szybkość",
                 "hint": "Jeśli żadna szybkość nie została wybrana ręcznie, najwyższa z nich będzie zawsze wyświetlana domyślnie, nawet jeśli szybkość na lądzie nie wynosi 0."
@@ -115,10 +119,6 @@
                         "small": "Tylko mała wersja",
                         "full": "Rozszerzona wersja"
                     }
-                },
-                "partyAsObserved": {
-                    "name": "Drużyna dla Obserwowanych",
-                    "hint": "Aktorzy w sojuszu \"Drużyna\" powinni być obserwowani przez graczy w celu rozszerzenia podpowiedzi. Nie mylić z aktorem \"Drużyny\"."
                 }
             },
             "token": {

@@ -1,4 +1,4 @@
-import { R, getSetting, htmlClosest, signedInteger } from "foundry-pf2e";
+import { R, canObserveActor, getSetting, htmlClosest, signedInteger } from "foundry-pf2e";
 
 const IWR_DATA = [
     { type: "immunities", icon: "fa-solid fa-ankh", label: "PF2E.ImmunitiesLabel" },
@@ -146,6 +146,13 @@ function getItemFromElement<T extends ItemPF2e>(
     return item as T | null | Promise<T | null>;
 }
 
+function userCanObserveActor(actor: ActorPF2e) {
+    return (
+        canObserveActor(actor, true) ||
+        (getSetting("partyAsObserved") && actor?.system.details.alliance === "party")
+    );
+}
+
 type StatsStatistic = {
     slug: string;
     icon: string;
@@ -193,5 +200,13 @@ type HealthData = {
     max: number;
 };
 
-export { IWR_DATA, getHealth, getItemFromElement, getSpeeds, getStatistics, getStatsHeader };
+export {
+    IWR_DATA,
+    getHealth,
+    getItemFromElement,
+    getSpeeds,
+    getStatistics,
+    getStatsHeader,
+    userCanObserveActor,
+};
 export type { HealthData, StatsHeader, StatsSpeed, StatsSpeeds, StatsStatistic };

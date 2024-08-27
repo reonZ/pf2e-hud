@@ -1,6 +1,5 @@
 import {
     R,
-    canObserveActor,
     createGlobalEvent,
     createHook,
     createTimeout,
@@ -24,6 +23,7 @@ import {
     getSpeeds,
     getStatistics,
     getStatsHeader,
+    userCanObserveActor,
 } from "./shared/base";
 
 const POSITIONS = {
@@ -101,7 +101,6 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
 
     get SETTINGS_ORDER(): (keyof TooltipSettings)[] {
         return [
-            "partyAsObserved",
             "status",
             "enabled",
             "type",
@@ -116,11 +115,6 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
 
     getSettings() {
         return super.getSettings().concat([
-            {
-                key: "partyAsObserved",
-                type: Boolean,
-                default: false,
-            },
             {
                 key: "status",
                 type: String,
@@ -349,9 +343,8 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
 
         const setting = this.getSetting("type");
         const isOwner = actor.isOwner;
-        const isObserver =
-            canObserveActor(actor) ||
-            (this.getSetting("partyAsObserved") && actor?.system.details.alliance === "party");
+        const isObserver = userCanObserveActor(actor);
+        console.log(isObserver);
 
         const extended = (setting === "owned" && isOwner) || (setting === "observed" && isObserver);
         if (!extended) {
@@ -661,7 +654,6 @@ type TooltipSettings = BaseTokenSettings & {
     delay: number;
     status: string;
     drawDistance: number;
-    partyAsObserved: boolean;
     type: (typeof SETTING_TYPE)[number];
     noDead: (typeof SETTING_NO_DEAD)[number];
     position: (typeof SETTING_POSITION)[number];

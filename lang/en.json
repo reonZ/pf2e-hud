@@ -17,6 +17,10 @@
             }
         },
         "settings": {
+            "partyAsObserved": {
+                "name": "Party Alliance as Observed",
+                "hint": "Consider actors in the 'Party' alliance to be observed by players for the sake of extending the tooltip. Not to be confused with the 'Party' actor."
+            },
             "highestSpeed": {
                 "name": "Show Highest Speed",
                 "hint": "If no speed was manually selected, the highest one will always be shown by default even if the land speed isn't 0."
@@ -115,10 +119,6 @@
                         "small": "Small Version Only",
                         "full": "Extended Version"
                     }
-                },
-                "partyAsObserved": {
-                    "name": "Party as Observed",
-                    "hint": "Consider actors in the 'Party' alliance to be observed by players for the sake of extending the tooltip. Not to be confused with the 'Party' actor."
                 }
             },
             "token": {

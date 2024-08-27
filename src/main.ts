@@ -42,6 +42,16 @@ Hooks.once("setup", () => {
     const settings: SettingOptions[] = [];
 
     registerSetting({
+        key: "partyAsObserved",
+        type: Boolean,
+        default: false,
+        scope: "world",
+        onChange: () => {
+            HUDS.tracker.render();
+        },
+    });
+
+    registerSetting({
         key: "useModifiers",
         type: Boolean,
         default: false,

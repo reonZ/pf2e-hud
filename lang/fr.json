@@ -17,6 +17,10 @@
             }
         },
         "settings": {
+            "partyAsObserved": {
+                "name": "Groupe observé",
+                "hint": "Considérer les acteurs du groupe comme 'observés' quand il s'agit de déterminer si l'information est étendue ou pas. À ne pas confondre avec l'acteur de groupe."
+            },
             "highestSpeed": {
                 "name": "Montrer la plus grande vitesse",
                 "hint": "Si aucune vitesse n'a été manuellement sélectionnée, la plus élevée sera toujours montrée par défaut même si la vitesse de déplacement au sol n'est pas 0."
@@ -115,10 +119,6 @@
                         "small": "Version réduite",
                         "full": "Version étendue"
                     }
-                },
-                "partyAsObserved": {
-                    "name": "Groupe observé",
-                    "hint": "Considérer les acteurs du groupe comme 'observés' quand il s'agit de déterminer si l'information est étendue ou pas. À ne pas confondre avec l'acteur de groupe."
                 }
             },
             "token": {
