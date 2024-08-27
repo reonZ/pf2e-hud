@@ -360,6 +360,10 @@ const SKILLS: RawSkill[] = [
         slug: "stealth",
         actions: [
             {
+                actionId: "avoid-notice",
+                uuid: "Compendium.pf2e.actionspf2e.Item.IE2nThCmoyhQA0Jn",
+            },
+            {
                 actionId: "conceal-an-object",
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.qVNVSmsgpKFGk9hV",
