@@ -151,11 +151,18 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
 
         switch (action) {
             case "roll-initiative": {
-                const select = htmlQueryInClosest(target, ".initiative", "select");
-                const statistic = actor.getStatistic(select?.value ?? "");
-                if (statistic) {
-                    rollInitiative(actor, statistic, eventToRollParams(event, { type: "check" }));
+                const ActorInit = actor.initiative?.constructor as typeof ActorInitiative;
+                const statistic = htmlQueryInClosest(target, ".initiative", "select")?.value;
+
+                if (ActorInit && statistic) {
+                    const initiative = new ActorInit(actor, {
+                        statistic,
+                        tiebreakPriority: actor.system.initiative!.tiebreakPriority,
+                    });
+
+                    initiative.roll(eventToRollParams(event, { type: "check" }));
                 }
+
                 break;
             }
 
