@@ -1,3 +1,20 @@
+# 1.9.0
+
+-   the `Token HUD` no longer gets disabled when the `Auto-Set Actor` setting is set to `On Token Selection`
+    -   the HUD will now show up whenever an actor isn't moved to the persistent HUD
+        -   if the actor isn't a PC or NPC
+        -   if the persistent HUD currently has a "locked" actor
+    -   because of that new approach, few settings don't require a "reload" anymore
+-   move `Party as Observed` (now `Party Alliance as Observed`) to be a global setting
+    -   it is used by both the `Token Tooltip` and `Combat Tracker` HUDs
+    -   the actor being part of a `Party` actor you can observe is now also taken into account
+    -   the setting has been reset because of that change
+-   add `Avoid Notice` as a skill action in the `Skills` sidebar under `Stealth`
+-   `Persistent HUD`:
+    -   stances shortcut now fade-out when out of combat
+    -   the HUD is refreshed when the actor's combatant is added/removed from the active encounter
+-   fix the initiative roll missing roll options in the `Extras` sidebar
+
 # 1.8.0
 
 -   add support for the `Identify` feature of `PF2e Toolbelt`
