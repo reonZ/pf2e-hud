@@ -194,7 +194,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 choices: ["disabled", "select", "combat"],
                 default: "disabled",
                 scope: "client",
-                requiresReload: true,
+                onChange: () => {
+                    this.enable();
+                },
             },
             {
                 key: "keepLast",

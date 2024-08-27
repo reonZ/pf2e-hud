@@ -34,66 +34,67 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
 
         getSettings(this: PF2eHudAdvanced & PF2eHudBaseActor) {
             const parentSettings = PF2eHudBaseActor.prototype.getSettings.call(this);
-            const enableSetting = parentSettings.find((setting) => setting.key === "enabled")!;
-            enableSetting.requiresReload = true;
 
-            return parentSettings
-                .concat([
-                    {
-                        key: "sidebarFontSize",
-                        type: Number,
-                        range: {
-                            min: 10,
-                            max: 30,
-                            step: 1,
-                        },
-                        default: 14,
-                        onChange: () => {
-                            this.sidebar?.render();
-                        },
+            const sharedSettings: SettingOptions[] = [
+                {
+                    key: "sidebarFontSize",
+                    type: Number,
+                    range: {
+                        min: 10,
+                        max: 30,
+                        step: 1,
                     },
-                    {
-                        key: "sidebarHeight",
-                        type: Number,
-                        range: {
-                            min: 50,
-                            max: 100,
-                            step: 1,
-                        },
-                        default: 100,
-                        onChange: () => {
-                            this.sidebar?.render();
-                        },
+                    default: 14,
+                    onChange: () => {
+                        this.sidebar?.render();
                     },
-                    {
-                        key: "multiColumns",
-                        type: Number,
-                        default: 5,
-                        range: {
-                            min: 1,
-                            max: 5,
-                            step: 1,
-                        },
-                        onChange: () => {
-                            this.sidebar?.render();
-                        },
+                },
+                {
+                    key: "sidebarHeight",
+                    type: Number,
+                    range: {
+                        min: 50,
+                        max: 100,
+                        step: 1,
                     },
-                    {
-                        key: "showAlliance",
-                        type: Boolean,
-                        default: false,
-                        onChange: () => {
-                            this.render();
-                        },
+                    default: 100,
+                    onChange: () => {
+                        this.sidebar?.render();
                     },
-                ])
-                .map((setting) => {
+                },
+                {
+                    key: "multiColumns",
+                    type: Number,
+                    default: 5,
+                    range: {
+                        min: 1,
+                        max: 5,
+                        step: 1,
+                    },
+                    onChange: () => {
+                        this.sidebar?.render();
+                    },
+                },
+                {
+                    key: "showAlliance",
+                    type: Boolean,
+                    default: false,
+                    onChange: () => {
+                        this.render();
+                    },
+                },
+            ];
+
+            return [
+                ...parentSettings,
+                ...sharedSettings.map((setting) => {
                     setting.scope = "client";
                     setting.name = settingPath("shared", setting.key, "name");
                     setting.hint = settingPath("shared", setting.key, "hint");
 
                     return setting;
-                });
+                }),
+            ];
         }
 
         get sidebar() {
@@ -159,13 +160,13 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
         toggleSidebar(this: PF2eHudAdvanced & PF2eHudBaseActor, sidebar: SidebarName | null) {
             if (this.#sidebar?.key === sidebar) sidebar = null;
 
-            const otherHUD = this.key === "token" ? hud.persistent : hud.token;
-            otherHUD.closeSidebar();
-            otherHUD.close();
-
             this.closeSidebar();
 
             if (!sidebar) return;
+
+            const otherHUD = this.key === "token" ? hud.persistent : hud.token;
+            otherHUD.closeSidebar();
+            otherHUD.close();
 
             switch (sidebar) {
                 case "actions":

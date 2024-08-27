@@ -2,6 +2,7 @@ import {
     R,
     createHTMLElement,
     createHook,
+    createWrapper,
     htmlQuery,
     libWrapper,
     registerWrapper,
@@ -41,13 +42,30 @@ const CLOSE_CHOICES = R.mapToObj(CLOSE_OPTIONS, (option) => [
 class PF2eHudToken extends makeAdvancedHUD(
     PF2eHudBaseToken<TokenSettings, TokenHudActor, TokenRenderOptions>
 ) {
-    #canvasPanHook = createHook("canvasPan", () => {
-        this._updatePosition();
-        this.sidebar?._updatePosition();
-    });
+    #tokenClickLeftWrapper = createWrapper(
+        "CONFIG.Token.objectClass.prototype._onClickLeft",
+        this.#tokenClickLeft,
+        { context: this }
+    );
+
+    #tokenDragLeftStartWrapper = createWrapper(
+        "CONFIG.Token.objectClass.prototype._onDragLeftStart",
+        this.#tokenDragLeftStart,
+        { context: this }
+    );
+
+    #tokenLayerClickLeftWrapper = createWrapper(
+        "TokenLayer.prototype._onClickLeft",
+        this.#tokenLayerClickLeft,
+        { context: this }
+    );
+
+    #canvasPanHook = createHook("canvasPan", this.#onCanvasPan.bind(this));
+    #renderTokenHudHook = createHook("renderTokenHUD", () => this.close());
+    #canvasTearDownHook = createHook("canvasTearDown", () => this.setToken(null));
+    #renderActorSheetHook = createHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
 
     #mainElement: HTMLElement | null = null;
-    #initialized = false;
 
     static DEFAULT_OPTIONS: Partial<ApplicationConfiguration> = {
         id: "pf2e-hud-token",
@@ -112,10 +130,7 @@ class PF2eHudToken extends makeAdvancedHUD(
     }
 
     get enabled(): boolean {
-        return (
-            this.getSetting("enabled") &&
-            (!hud.persistent.enabled || hud.persistent.getSetting("autoSet") !== "select")
-        );
+        return this.getSetting("enabled");
     }
 
     get key(): "token" {
@@ -151,70 +166,16 @@ class PF2eHudToken extends makeAdvancedHUD(
         return this.mainElement?.querySelector<HTMLElement>(".panel.bottom") ?? null;
     }
 
-    _onEnable() {
-        if (this.#initialized) return;
-        this.#initialized = true;
-
-        const enabled = this.enabled;
-        if (!enabled) return;
-
+    _onEnable(enabled: boolean = this.enabled) {
         super._onEnable(enabled);
 
-        const context = this;
+        this.#tokenClickLeftWrapper.toggle(enabled);
+        this.#tokenDragLeftStartWrapper.toggle(enabled);
+        this.#tokenLayerClickLeftWrapper.toggle(enabled);
 
-        registerWrapper(
-            "CONFIG.Token.objectClass.prototype._onClickLeft",
-            function (
-                this: TokenPF2e,
-                wrapped: libWrapper.RegisterCallback,
-                event: PIXI.FederatedMouseEvent
-            ) {
-                wrapped(event);
-                if (event.altKey || event.shiftKey || event.ctrlKey || game.activeTool !== "select")
-                    return;
-                if (this === context.token) context.close();
-                else context.setToken(this);
-            },
-            "WRAPPER"
-        );
-
-        registerWrapper(
-            "CONFIG.Token.objectClass.prototype._onDragLeftStart",
-            function (
-                this: TokenPF2e,
-                wrapped: libWrapper.RegisterCallback,
-                event: PIXI.FederatedEvent
-            ) {
-                wrapped(event);
-                context.close();
-            },
-            "WRAPPER"
-        );
-
-        registerWrapper(
-            "TokenLayer.prototype._onClickLeft",
-            function (
-                this: Canvas,
-                wrapped: libWrapper.RegisterCallback,
-                event: PIXI.FederatedMouseEvent
-            ) {
-                wrapped(event);
-                context.#clickClose();
-            },
-            "WRAPPER"
-        );
-
-        Hooks.on("canvasTearDown", () => {
-            this.setToken(null);
-        });
-
-        Hooks.on("renderTokenHUD", () => {
-            this.close();
-        });
-
-        Hooks.on("renderActorSheet", (sheet: ActorSheetPF2e) => {
-            if (this.isCurrentActor(sheet.actor)) this.close();
-        });
+        this.#canvasTearDownHook.toggle(enabled);
+        this.#renderTokenHudHook.toggle(enabled);
+        this.#renderActorSheetHook.toggle(enabled);
     }
 
     _onSetToken(token: TokenPF2e | null): void {
@@ -399,7 +360,10 @@ class PF2eHudToken extends makeAdvancedHUD(
             !actor?.isOwner ||
             actor.isOfType("loot", "party") ||
             actor.sheet.rendered ||
-            hud.persistent.isCurrentActor(actor, true)
+            hud.persistent.isCurrentActor(actor, true) ||
+            (hud.persistent.getSetting("autoSet") === "select" &&
+                hud.persistent.isValidActor(actor) &&
+                !hud.persistent.savedActor)
         ) {
             token = null;
         }
@@ -421,7 +385,44 @@ class PF2eHudToken extends makeAdvancedHUD(
         return true;
     }
 
-    #clickClose() {
+    #onRenderActorSheet(sheet: ActorSheetPF2e) {
+        if (this.isCurrentActor(sheet.actor)) this.close();
+    }
+
+    #onCanvasPan() {
+        this._updatePosition();
+        this.sidebar?._updatePosition();
+    }
+
+    #tokenClickLeft(
+        token: TokenPF2e,
+        wrapped: libWrapper.RegisterCallback,
+        event: PIXI.FederatedMouseEvent
+    ) {
+        wrapped(event);
+
+        if (event.altKey || event.shiftKey || event.ctrlKey || game.activeTool !== "select") return;
+
+        if (token === this.token) this.close();
+        else this.setToken(token);
+    }
+
+    #tokenDragLeftStart(
+        token: TokenPF2e,
+        wrapped: libWrapper.RegisterCallback,
+        event: PIXI.FederatedEvent
+    ) {
+        wrapped(event);
+        this.close();
+    }
+
+    #tokenLayerClickLeft(
+        canvas: Canvas,
+        wrapped: libWrapper.RegisterCallback,
+        event: PIXI.FederatedMouseEvent
+    ) {
+        wrapped(event);
+
         if (this.getSetting("closeAllOnCLick")) {
             this.close();
             return;
