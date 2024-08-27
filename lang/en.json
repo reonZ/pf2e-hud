@@ -19,7 +19,7 @@
         "settings": {
             "partyAsObserved": {
                 "name": "Party Alliance as Observed",
-                "hint": "Consider actors in the 'Party' alliance to be observed by players for the sake of extending the tooltip. Not to be confused with the 'Party' actor."
+                "hint": "Consider actors in the 'Party' alliance to be observed by players for the sake of extending the tooltip or showing health details in the combat tracker. Not to be confused with the 'Party' actor."
             },
             "highestSpeed": {
                 "name": "Show Highest Speed",
