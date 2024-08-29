@@ -1,3 +1,19 @@
+# 1.10.0
+
+-   this is a system `6.3.0` release
+-   `Combat Tracker`:
+    -   token image no longer overflows out of the tracker's bounds when `Texture Scaling` is enabled
+        -   this was causing some issues when the tracker was reaching a height big enough to require scrolling
+        -   downscaled token images now have gradient masks instead (stolen from [supe](https://github.com/CarlosFdez))
+    -   fix non-breaking error when changing settings while the feature was disabled
+-   `Persistent HUD`:
+    -   fix portrait image not using the custom avatar until an actor update took place
+-   `Token HUD`:
+    -   fix hud not closing when disabling the feature and still on screen
+    -   fix hud not showing for PCs/NPCs if the `Auto-Set Actor` was set to `On Token Selection` even when the `Persistent HUD` was disabled
+-   fix debug stuff showing in console
+-   fix `Party Alliance as Observed` description only mentioning the tooltip
+
 # 1.9.0
 
 -   the `Token HUD` no longer gets disabled when the `Auto-Set Actor` setting is set to `On Token Selection`
