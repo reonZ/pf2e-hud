@@ -8,9 +8,7 @@
             "discord": "idleatre"
         }
     ],
-    "esmodules": [
-        "scripts/main.js"
-    ],
+    "esmodules": ["scripts/main.js"],
     "compatibility": {
         "minimum": "12.329",
         "verified": "12.331",
@@ -23,9 +21,7 @@
     "download": "https://github.com/reonZ/pf2e-hud/releases/download/1.9.0/module.zip",
     "changelog": "https://github.com/reonZ/pf2e-hud/blob/master/CHANGELOG.md",
     "bugs": "https://github.com/reonZ/pf2e-hud/issues",
-    "styles": [
-        "styles/pf2e-hud.css"
-    ],
+    "styles": ["styles/pf2e-hud.css"],
     "relationships": {
         "systems": [
             {
@@ -33,7 +29,7 @@
                 "type": "system",
                 "manifest": "https://raw.githubusercontent.com/foundryvtt/pf2e/master/system.json",
                 "compatibility": {
-                    "minimum": "6.1.3"
+                    "minimum": "6.3.0"
                 }
             }
         ],

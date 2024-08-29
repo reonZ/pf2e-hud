@@ -595,7 +595,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         }
     }
 
-    protected _onFirstRender(context: PersistentContext, options: PersistentRenderOptions) {
+    _onFirstRender(context: PersistentContext, options: PersistentRenderOptions) {
         document.getElementById("ui-left")?.append(this.element);
     }
 
@@ -2650,7 +2650,7 @@ type PartName = "menu" | "main" | "portrait" | "effects";
 
 type PersistentHudActor = CharacterPF2e | NPCPF2e;
 
-type PersistentRenderOptions = BaseActorRenderOptions & {
+type PersistentRenderOptions = Omit<BaseActorRenderOptions, "parts"> & {
     parts: PartName[];
     cleaned: boolean;
     showUsers: boolean;

@@ -12,7 +12,6 @@ import {
     getActionIcon,
     getActionImg,
     getActiveModule,
-    getSourceId,
     getStances,
     htmlClosest,
     htmlQuery,
@@ -102,7 +101,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             const useLabel = game.i18n.localize("PF2E.Action.Use");
 
             for (const ability of actorItems(actor, abilityTypes)) {
-                const sourceId = getSourceId(ability);
+                const sourceId = ability.sourceId;
                 const traits = ability.system.traits.value;
                 const isExploration = isCharacter && traits.includes("exploration");
 
