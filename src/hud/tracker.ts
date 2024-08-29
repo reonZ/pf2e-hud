@@ -135,8 +135,11 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         this.#combatTrackerHook.toggle(enabled);
         this.#renderEffectsHook.toggle(enabled);
 
-        if (enabled && this.combat) this.render(true);
-        else if (!enabled && this.rendered) this.close();
+        if (enabled && this.combat) {
+            this.render(true);
+        } else if (!enabled && this.rendered) {
+            this.close();
+        }
 
         // toggleControlTool("pf2e-hud-tracker", enabled);
 

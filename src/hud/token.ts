@@ -176,6 +176,10 @@ class PF2eHudToken extends makeAdvancedHUD(
         this.#canvasTearDownHook.toggle(enabled);
         this.#renderTokenHudHook.toggle(enabled);
         this.#renderActorSheetHook.toggle(enabled);
+
+        if (!enabled && this.rendered) {
+            this.close();
+        }
     }
 
     _onSetToken(token: TokenPF2e | null): void {
