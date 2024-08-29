@@ -1,3 +1,8 @@
+# 1.10.1
+
+-   `Combat Tracker`:
+    -   fix showing of party members stats not respecting the system's metagame setting `Show Party-Member Stats`
+
 # 1.10.0
 
 -   this is a system `6.3.0` release
