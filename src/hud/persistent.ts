@@ -713,6 +713,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         return super.isValidActor(actor) && actor.isOwner;
     }
 
+    acceptsActor(actor: Maybe<ActorPF2e>) {
+        return this.enabled && !hud.persistent.savedActor && this.isValidActor(actor);
+    }
+
     flash() {
         if (this.getSetting("noflash")) return;
 

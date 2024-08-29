@@ -362,8 +362,7 @@ class PF2eHudToken extends makeAdvancedHUD(
             actor.sheet.rendered ||
             hud.persistent.isCurrentActor(actor, true) ||
             (hud.persistent.getSetting("autoSet") === "select" &&
-                hud.persistent.isValidActor(actor) &&
-                !hud.persistent.savedActor)
+                hud.persistent.acceptsActor(actor))
         ) {
             token = null;
         }
