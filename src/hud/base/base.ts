@@ -91,6 +91,11 @@ abstract class PF2eHudBase<
         this._onEnable?.(enabled);
     }, 1);
 
+    async render(options?: boolean | Partial<TRenderOptions>, _options?: Partial<TRenderOptions>) {
+        if (!this.enabled) return this;
+        return super.render(options, _options);
+    }
+
     async close(options: ApplicationClosingOptions = {}): Promise<this> {
         options.animate = false;
         return super.close(options);
