@@ -1047,10 +1047,21 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             editAvatar(actor);
         });
 
-        if (!game.ready) return;
+        if (game.ready) {
+            requestAnimationFrame(() => {
+                this.#setupAvatar(html);
+            });
+        } else {
+            Hooks.once("ready", () => {
+                this.#setupAvatar(html);
+            });
+        }
+    }
 
+    #setupAvatar(html: HTMLElement) {
+        const actor = this.actor;
         const avatarElement = htmlQuery(html, ".avatar");
-        if (!avatarElement) return;
+        if (!avatarElement || !actor) return;
 
         const avatarFlag = getFlag<AvatarData>(actor, "avatar");
         if (!avatarFlag) {
