@@ -90,6 +90,7 @@ $threat-extreme: red;
                     border: none;
                     pointer-events: none;
                     transform: scale(var(--scaleX), var(--scaleY));
+                    mask-image: var(--mask);
                 }
 
                 .alt {
@@ -304,14 +305,6 @@ $threat-extreme: red;
 
         .combatants {
             border-top: none;
-        }
-    }
-
-    &.textureScaling {
-        .combatants {
-            margin: -3em 0 -2em -3em;
-            padding: 3em 0 2em 3em;
-            min-height: calc(var(--combatant-height) * 2 + 5em);
         }
     }
 
