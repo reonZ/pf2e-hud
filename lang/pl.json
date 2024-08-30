@@ -18,8 +18,8 @@
         },
         "settings": {
             "partyAsObserved": {
-                "name": "Drużyna dla Obserwowanych",
-                "hint": "Aktorzy w sojuszu \"Drużyna\" powinni być obserwowani przez graczy w celu rozszerzenia podpowiedzi. Nie mylić z aktorem \"Drużyny\"."
+                "name": "Drużyna sojuszników jako Obserwowani",
+                "hint": "Aktorzy w sojuszu „Drużyna” mogą być obserwowani przez graczy w celu rozszerzenia podpowiedzi lub pokazania szczegółów zdrowia w śledzeniu walki. Nie mylić z aktorem „Drużyny”."
             },
             "highestSpeed": {
                 "name": "Pokaż najwyższą szybkość",
@@ -186,7 +186,7 @@
                 },
                 "autoSet": {
                     "name": "Automatycznie ustawiany aktor",
-                    "hint": "Za każdym razem, gdy nie ustawiono żadnego stałego aktora, aktualnie wybrany aktor tokena lub aktualny aktor walczący zostanie automatycznie ustawiony jako stały. UWAGA: Całkowicie wyłączy funkcję \"Token HUD\", jeśli jest ustawiona na \"Zaznaczony token\".",
+                    "hint": "Jeśli nie ustawiono żadnego stałego aktora, aktualnie wybrany token aktora lub aktualny aktor walczący zostanie automatycznie ustawiony jako stały.",
                     "choices": {
                         "disabled": "Wyłączony",
                         "select": "Zaznaczony token",
