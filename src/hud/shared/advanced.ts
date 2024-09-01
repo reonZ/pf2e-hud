@@ -1,4 +1,4 @@
-import { R, getAlliance, getFlag, getSetting, localize } from "foundry-pf2e";
+import { R, getAlliance, getFlag, getItemWithSourceId, getSetting, localize } from "foundry-pf2e";
 import { IWR_DATA, StatsSpeed, StatsStatistic, getSpeeds, getStatistics } from "./base";
 
 const COVER_UUID = "Compendium.pf2e.other-effects.Item.I9lfZUiCwMiGogVi";
@@ -79,7 +79,7 @@ const INFOS = [
 ] as const;
 
 function getCoverEffect(actor: ActorPF2e) {
-    return actor?.itemTypes.effect.find((effect) => effect.flags.core?.sourceId === COVER_UUID);
+    return getItemWithSourceId(actor, COVER_UUID, "effect");
 }
 
 function threeStep(action: "adjustment" | "alliance", step: string): ThreeStep {
