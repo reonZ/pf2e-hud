@@ -46,10 +46,6 @@ const SHARED_ACTIONS = {
         trained: true,
         uuid: "Compendium.pf2e.actionspf2e.Item.Q5iIYCFdqJFM31GW",
     },
-    earnIncome: {
-        trained: true,
-        uuid: "Compendium.pf2e.actionspf2e.Item.QyzlsLrqM0EEwd7j",
-    },
     subsist: {
         uuid: "Compendium.pf2e.actionspf2e.Item.49y9Ec4bDii8pcD3",
     },
@@ -192,7 +188,6 @@ const SKILLS: RawSkill[] = [
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.rmwa3OyhTZ2i2AHl",
             },
-            "earnIncome",
             {
                 actionId: "identify-alchemy",
                 trained: true,
@@ -336,7 +331,6 @@ const SKILLS: RawSkill[] = [
                 ],
                 uuid: "Compendium.pf2e.actionspf2e.Item.EEDElIyin4z60PXx",
             },
-            "earnIncome",
         ],
     },
     {

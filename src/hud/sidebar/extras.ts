@@ -8,7 +8,6 @@ import {
     htmlClosest,
     htmlQueryInClosest,
     localize,
-    rollInitiative,
     setFlag,
 } from "foundry-pf2e";
 import { rollRecallKnowledge } from "../../actions/recall-knowledge";
@@ -46,6 +45,10 @@ const ACTIONS: (RawSkillAction & { statistic?: SkillSlug | "perception" })[] = [
         cost: 1,
         map: true,
     },
+    {
+        actionId: "earnIncome",
+        uuid: "Compendium.pf2e.actionspf2e.Item.QyzlsLrqM0EEwd7j",
+    },
 ];
 
 const EXTRAS_ACTIONS_UUIDS = ACTIONS.map((action) => action.uuid);
@@ -59,19 +62,20 @@ function getActions(actor: ActorPF2e) {
 
     const isCharacter = actor.isOfType("character");
 
-    return actionsCache
-        .map((action) => {
-            return {
-                ...action,
-                dataset: dataToDatasetString(action.dataset),
-            };
-        })
-        .filter((action) => {
+    return R.pipe(
+        actionsCache,
+        R.map((action) => ({
+            ...action,
+            dataset: dataToDatasetString(action.dataset),
+        })),
+        R.filter((action) => {
             if (!isCharacter) {
                 return typeof action.condition !== "function";
             }
             return typeof action.condition === "function" ? action.condition(actor) : true;
-        });
+        }),
+        R.sortBy(R.prop("label"))
+    );
 }
 
 class PF2eHudSidebarExtras extends PF2eHudSidebar {
@@ -182,6 +186,10 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
                 if (data.actionId === "recall-knowledge") {
                     await rollRecallKnowledge(actor);
                     return this.parentHUD.closeIf("roll-skill");
+                }
+
+                if (data.actionId === "earnIncome") {
+                    return game.pf2e.actions.earnIncome(actor);
                 }
 
                 rollStatistic(actor, event, data, {
