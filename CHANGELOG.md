@@ -1,3 +1,7 @@
+# 1.11.1
+
+-   fix `Earn Income` shortcut not working
+
 # 1.11.0
 
 -   this is a system `6.3.1` release
