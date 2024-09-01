@@ -1344,6 +1344,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     return actor.getStatistic(slug)?.roll({ event });
                 } else if (shortcut.actionId === "recall-knowledge" && !shortcut.statistic) {
                     return rollRecallKnowledge(actor);
+                } else if (shortcut.actionId === "earnIncome") {
+                    return game.pf2e.actions.earnIncome(actor);
                 }
 
                 rollStatistic(actor, event, shortcut);
