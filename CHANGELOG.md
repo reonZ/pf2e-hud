@@ -3,7 +3,7 @@
 -   this is a system `6.3.1` release
 -   fix `Earn Income` skill action not working and move it to the `Extras` sidebar instead
 -   fix `Popup` application not having a vertical scrollbar when reaching the viewport's height
--   fix `Take Cover` action not removeing the effect if it is currently present on the actor
+-   fix `Take Cover` action not removing the effect if it is currently present on the actor
 
 # 1.10.1
 
