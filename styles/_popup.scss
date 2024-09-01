@@ -16,6 +16,7 @@
     .window-content {
         padding: 0;
         color: var(--color);
+        overflow-y: auto;
 
         hr {
             margin: revert;
