@@ -695,7 +695,7 @@ async function rollStatistic(
     { variant, agile, map, option, actionId, statistic, dc }: StatisticData,
     { requireVariants, onRoll }: { requireVariants?: boolean; onRoll?: Function } = {}
 ) {
-    if (actionId === "recall-knowledge" && !statistic) {
+    if ((actionId === "recall-knowledge" && !statistic) || actionId === "earnIncome") {
         return;
     }
 
