@@ -742,10 +742,7 @@ async function rollStatistic(
 
     if (!action) {
         actor.getStatistic(statistic ?? "")?.roll(options);
-        return;
-    }
-
-    if (isInstanceOf<BaseAction>(action, "BaseAction")) {
+    } else if (isInstanceOf<BaseAction>(action, "BaseAction")) {
         (options as SingleCheckActionVariantData).statistic = statistic;
         action.use(options);
     } else if (action) {
