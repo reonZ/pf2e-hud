@@ -73,17 +73,6 @@ Hooks.once("setup", () => {
         },
     });
 
-    registerSetting({
-        key: "hideUntrained",
-        type: Boolean,
-        default: false,
-        scope: "client",
-        onChange: () => {
-            HUDS.token.sidebar?.render();
-            HUDS.persistent.sidebar?.render();
-        },
-    });
-
     // popup
 
     registerSetting({
@@ -115,6 +104,19 @@ Hooks.once("setup", () => {
         type: Boolean,
         default: false,
         scope: "client",
+    });
+
+    // sidebar
+
+    registerSetting({
+        key: "sidebar.hideUntrained",
+        type: Boolean,
+        default: false,
+        scope: "client",
+        onChange: () => {
+            HUDS.token.sidebar?.render();
+            HUDS.persistent.sidebar?.render();
+        },
     });
 
     //
@@ -199,7 +201,7 @@ Hooks.on("renderSettingsConfig", (app: SettingsConfig, $html: JQuery) => {
     const tab = htmlQuery(html, `.tab[data-tab="${MODULE.id}"]`);
 
     const huds = Object.values(HUDS);
-    const settings = huds.map(({ key }) => key).concat(["popup"]);
+    const settings = huds.map(({ key }) => key).concat(["popup", "sidebar"]);
 
     for (const key of settings) {
         const group = htmlQuery(tab, `[data-setting-id^="${MODULE.id}.${key}."]`);

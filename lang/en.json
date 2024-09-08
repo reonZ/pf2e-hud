@@ -29,10 +29,7 @@
                 "name": "Use Modifiers",
                 "hint": "Display modifiers instead of the difficulty value in the different HUD elements."
             },
-            "hideUntrained": {
-                "name": "Hide Untrained",
-                "hint": "Should skill actions be hidden from the sidebar if the character isn't proficient with them."
-            },
+
             "popup": {
                 "title": "Popup",
                 "onCursor": {
@@ -49,7 +46,11 @@
                 }
             },
             "sidebar": {
-                "title": "Sidebar"
+                "title": "Sidebar",
+                "hideUntrained": {
+                    "name": "Hide Untrained",
+                    "hint": "Should skill actions be hidden from the sidebar if the character isn't proficient with them."
+                }
             },
             "shared": {
                 "enabled": {

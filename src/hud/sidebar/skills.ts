@@ -518,7 +518,8 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
 
     const isCharacter = actor.isOfType("character");
     const hideUntrained =
-        getSetting("hideUntrained") && !hasItemWithSourceId(actor, UNTRAINED_IMPROVISATION, "feat");
+        getSetting("sidebar.hideUntrained") &&
+        !hasItemWithSourceId(actor, UNTRAINED_IMPROVISATION, "feat");
 
     return skillsCache.map((skill) => {
         const { mod, rank, proficient } = actor.getStatistic(skill.slug)!;
