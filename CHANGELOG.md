@@ -1,3 +1,23 @@
+# 1.12.0
+
+-   add support for `Starfinder 2nd Edition Playtest for PF2e` skills and their respective actions
+-   `Persistent HUD`:
+    -   now save the avatar data on the world actor, sharing it between all unlinked actors
+    -   shortcut of consumables not held will now indicate so by adding a subtitle and a hand icon
+        -   using the shortcut will now "retrieve" it instead of using it right away
+    -   add a subtitle to stance shortcuts when out of combat to indicate how to force its use
+    -   fix shortcut icons being completely black making them almost impossible to distinguish
+-   `Popup`:
+    -   popup now has its own section in the settings
+    -   add `Font Size` setting to popup
+    -   the popup related settings have been renamed and reset
+-   `Sidebars`:
+    -   sidebar settings are no longer split between the `Token HUD` and `Persistent HUD`
+    -   sidebars now have their own section in the settings
+    -   all sidebars related settings have been reset (some renamed)
+    -   the `Max Height` setting is now always relative to the viewport
+-   fix very rare occurence of `Skills` sidebar not closing when rolling a skill action
+
 # 1.11.1
 
 -   fix `Earn Income` shortcut not working

@@ -56,7 +56,7 @@
                 },
                 "multiColumns": {
                     "name": "Multi Columns",
-                    "hint": "When a sidebar's height is bigger than its max-height, it will be split into up to x columns. Note that firefox has a weird quirk of forcing horizontal scrolling when using this feature."
+                    "hint": "When a sidebar's height is bigger than its max-height, it will be split into up to x columns. NOTE: Firefox has a weird quirk of forcing horizontal scrolling when using this feature."
                 },
                 "maxHeight": {
                     "name": "Max Height",
