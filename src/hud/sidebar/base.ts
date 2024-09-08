@@ -9,6 +9,7 @@ import {
     htmlClosest,
     htmlQuery,
     isOwnedItem,
+    localize,
     render,
     templateLocalize,
     templatePath,
@@ -16,7 +17,6 @@ import {
 } from "foundry-pf2e";
 import { PF2eHudBaseActor } from "../base/actor";
 import { IPF2eHudAdvanced } from "../base/advanced";
-import { GlobalSettings } from "../base/base";
 import { PF2eHudItemPopup } from "../popup/item";
 import { addDragoverListener } from "../shared/advanced";
 import { getItemFromElement } from "../shared/base";
@@ -496,6 +496,12 @@ function getSidebars(actor: ActorPF2e, active?: SidebarName) {
     );
 }
 
+function getAnnotationTooltip(annotation: NonNullable<AuxiliaryActionPurpose>) {
+    const label = localize("sidebars.annotation", annotation);
+    const icon = `<span class='action-glyph'>${annotation === "retrieve" ? 2 : 1}</span>`;
+    return `${label} ${icon}`;
+}
+
 interface PF2eHudSidebar {
     _getDragData?(
         target: HTMLElement,
@@ -532,5 +538,5 @@ type SidebarMenu = {
     active: boolean;
 };
 
-export { PF2eHudSidebar, getSidebars };
+export { PF2eHudSidebar, getAnnotationTooltip, getSidebars };
 export type { SidebarContext, SidebarEvent, SidebarMenu, SidebarName, SidebarRenderOptions };

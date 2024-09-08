@@ -301,7 +301,7 @@ $bottom-width: 542px;
         .shortcut {
             --offset: calc(var(--split-gap) * -1);
             --name-offset: 0.35em;
-            --subtitle-offset: calc(var(--name-offset) + 2em);
+            --subtitle-offset: calc(var(--name-offset) + 2.1em);
 
             @mixin top-left {
                 top: var(--offset);
@@ -688,9 +688,11 @@ $bottom-width: 542px;
                 background: rgb(0 0 0 / 37%);
             }
 
-            &:not(.empty, .disabled, .attack, .faded-out) {
+            &:not(.empty, .disabled, .attack) {
                 cursor: pointer;
+            }
 
+            &:not(.empty, .disabled, .attack, .faded-out) {
                 &:hover {
                     img {
                         filter: brightness(1.5);

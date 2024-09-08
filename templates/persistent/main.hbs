@@ -111,9 +111,7 @@
 {{!-- not broken nor unequipped --}}
 {{else}}
 <div class="rank boxed">
-    <span>
-        {{spell.rank}}
-    </span>
+    <span>{{spell.rank}}</span>
 </div>
 {{> cost cost=spell.cost}}
 {{#if spell.categoryIcon}}
@@ -123,15 +121,11 @@
 {{/if}}
 {{#if spell.uses}}
 <div class="quantity boxed">
-    <span>
-        {{spell.uses.value}}
-    </span>
+    <span>{{spell.uses.value}}</span>
 </div>
 {{else if spell.isPrepared}}
 <div class="prepared boxed">
-    <span>
-        {{ifThen spell.isDisabled '-' '+'}}
-    </span>
+    <span>{{ifThen spell.isDisabled '-' '+'}}</span>
 </div>
 {{/if}}
 {{!-- end if broken --}}
@@ -139,10 +133,17 @@
 {{/inline}}
 
 {{#*inline 'consumable'}}
+{{!-- not carried --}}
+{{#if consumable.notCarried}}
+<div class="subtitle app">{{{consumable.subtitle}}}</div>
+<div class="equip">
+    <i class="fa-solid fa-hand-back-fist"></i>
+    <i class="fa-solid fa-hand-back-fist"></i>
+</div>
+{{!-- carried --}}
+{{else}}
 <div class="quantity boxed">
-    <span>
-        {{consumable.quantity}}
-    </span>
+    <span>{{consumable.quantity}}</span>
 </div>
 {{#if consumable.isGeneric}}
 <div class="generic">
@@ -156,12 +157,12 @@
 {{/if}}
 {{#if consumable.rank}}
 <div class="rank boxed">
-    <span>
-        {{consumable.rank}}
-    </span>
+    <span>{{consumable.rank}}</span>
 </div>
 {{/if}}
 {{> cost cost=consumable.cost}}
+{{/if}}
+{{!-- end of carried --}}
 {{/inline}}
 
 {{#*inline 'action'}}

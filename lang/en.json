@@ -392,6 +392,12 @@
                     "hidden": "Stowed Weapons are hidden"
                 }
             },
+            "annotation": {
+                "pick-up": "Pick Up",
+                "retrieve": "Retrieve",
+                "sheathe": "Sheathe",
+                "draw": "Draw"
+            },
             "items": {
                 "title": "Inventory"
             },
@@ -401,13 +407,7 @@
                 "charges": "Charges",
                 "cast": "Cast the Spell",
                 "draw": "Draw Consumable",
-                "broken": "Broken Spell",
-                "action": {
-                    "pick-up": "Pick Up",
-                    "retrieve": "Retrieve",
-                    "sheathe": "Sheathe",
-                    "draw": "Draw"
-                }
+                "broken": "Broken Spell"
             },
             "skills": {
                 "title": "Skills",

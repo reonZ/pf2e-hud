@@ -73,7 +73,7 @@ import {
     useAction,
     variantLabel,
 } from "./sidebar/actions";
-import { SidebarMenu, getSidebars } from "./sidebar/base";
+import { SidebarMenu, getAnnotationTooltip, getSidebars } from "./sidebar/base";
 import {
     ACTION_IMAGES,
     ACTION_VARIANTS,
@@ -83,7 +83,6 @@ import {
     getSkillVariantName,
     rollStatistic,
 } from "./sidebar/skills";
-import { getAnnotationTooltip } from "./sidebar/spells";
 
 const PARTS = ["menu", "portrait", "main", "effects"] as const;
 const ROMAN_RANKS = ["", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"] as const;
@@ -1361,7 +1360,21 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     return item.toMessage(event);
                 }
 
-                if (setting === "confirm" && !(await confirmUse(item))) return;
+                if (shortcut.notCarried && shortcut.annotation) {
+                    if (setting === "confirm") {
+                        const type = localize("sidebars.annotation", shortcut.annotation);
+                        const name = item.name;
+                        const confirm = await confirmShortcut("draw", { type, name });
+                        if (!confirm) return;
+                    }
+
+                    return changeCarryType(actor, item, 1, shortcut.annotation);
+                }
+
+                if (setting === "confirm") {
+                    const confirm = await confirmUse(item);
+                    if (!confirm) return;
+                }
 
                 return consumeItem(event, item);
             }
@@ -1407,7 +1420,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     if (!annotation || !parentItem) return;
 
                     if (setting) {
-                        const type = localize("sidebars.spells.action", annotation);
+                        const type = localize("sidebars.annotation", annotation);
                         const name = parentItem.name;
                         const confirm = await confirmShortcut("draw", { type, name });
 
@@ -1902,7 +1915,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             );
         };
 
-        const actor = this.actor as ActorPF2e;
+        const actor = this.actor as CreaturePF2e;
         if (!actor || !groupIndex || isNaN(Number(groupIndex)) || !index || isNaN(Number(index))) {
             return throwError();
         }
@@ -2196,6 +2209,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 const img =
                     item?.system.spell?.img ?? item?.img ?? (shortcutData as { img: string }).img;
 
+                const notCarried = !!item && item.carryType !== "held";
+                const annotation = notCarried ? getActionAnnotation(item) : undefined;
+
                 let name = item?.name ?? (shortcutData as { name: string }).name;
                 if (uses !== undefined && quantity > 1) name += ` x ${quantity}`;
 
@@ -2205,7 +2221,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     rank: consumableRank(item, true),
                     quantity: uses ?? quantity,
                     categoryIcon,
-                    isFadedOut: isOutOfStock,
+                    isFadedOut: isOutOfStock || notCarried,
+                    annotation,
+                    subtitle: annotation ? getAnnotationTooltip(annotation) : undefined,
+                    notCarried,
                     isGeneric,
                     uses,
                     item,
@@ -2561,13 +2580,16 @@ type ToggleShortcut = BaseShortCut<"toggle"> &
 
 type ConsumableShortcut = BaseShortCut<"consumable"> &
     ConsumableShortcutData & {
-        item: ConsumablePF2e<ActorPF2e> | undefined;
+        item: ConsumablePF2e<CreaturePF2e> | undefined;
         cost: CostValue;
         quantity: number;
         uses: number | undefined;
         isGeneric: boolean;
         rank: RomanRank | undefined;
         categoryIcon: string | undefined;
+        notCarried: boolean;
+        annotation: AuxiliaryActionPurpose | undefined;
+        subtitle: string | undefined;
     };
 
 type BaseAttackShortcut = BaseShortCut<"attack"> &
