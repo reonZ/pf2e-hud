@@ -74,20 +74,6 @@ Hooks.once("setup", () => {
     });
 
     registerSetting({
-        key: "popupOnCursor",
-        type: Boolean,
-        default: true,
-        scope: "client",
-    });
-
-    registerSetting({
-        key: "closePopupOnSendToChat",
-        type: Boolean,
-        default: false,
-        scope: "client",
-    });
-
-    registerSetting({
         key: "hideUntrained",
         type: Boolean,
         default: false,
@@ -97,6 +83,41 @@ Hooks.once("setup", () => {
             HUDS.persistent.sidebar?.render();
         },
     });
+
+    // popup
+
+    registerSetting({
+        key: "popup.onCursor",
+        type: Boolean,
+        default: true,
+        scope: "client",
+    });
+
+    registerSetting({
+        key: "popup.fontSize",
+        type: Number,
+        range: {
+            min: 10,
+            max: 30,
+            step: 1,
+        },
+        default: 14,
+        scope: "client",
+        onChange: () => {
+            for (const popup of PF2eHudPopup.apps) {
+                popup.render();
+            }
+        },
+    });
+
+    registerSetting({
+        key: "popup.closeOnSendToChat",
+        type: Boolean,
+        default: false,
+        scope: "client",
+    });
+
+    //
 
     registerKeybind("setActor", {
         onUp: () => HUDS.persistent.setSelectedToken(),
@@ -177,18 +198,21 @@ Hooks.on("renderSettingsConfig", (app: SettingsConfig, $html: JQuery) => {
     const html = $html[0];
     const tab = htmlQuery(html, `.tab[data-tab="${MODULE.id}"]`);
 
-    for (const hud of Object.values(HUDS)) {
-        const group = htmlQuery(tab, `[data-setting-id^="${MODULE.id}.${hud.key}."]`);
+    const huds = Object.values(HUDS);
+    const settings = huds.map(({ key }) => key).concat(["popup"]);
+
+    for (const key of settings) {
+        const group = htmlQuery(tab, `[data-setting-id^="${MODULE.id}.${key}."]`);
         if (!group) continue;
 
         const titleElement = createHTMLElement("h3", {
-            innerHTML: localize("settings", hud.key, "title"),
+            innerHTML: localize("settings", key, "title"),
         });
 
         group.before(titleElement);
+    }
 
-        //
-
+    for (const hud of huds) {
         const gmOnlyLabel = localize("gmOnly");
         const reloadLabel = localize("reload");
 

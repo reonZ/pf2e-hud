@@ -45,12 +45,15 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig = PopupConfig> extends f
 
     _replaceHTML(result: HTMLElement, content: HTMLElement, options: ApplicationRenderOptions) {
         content.replaceChildren(result);
+        content.style.setProperty("--font-size", `${getSetting("popup.fontSize")}px`);
+        console.log(content);
+
         this.#activateListeners(result);
         this._activateListeners?.(result);
     }
 
     _onFirstRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
-        if (!getSetting("popupOnCursor")) return;
+        if (!getSetting("popup.onCursor")) return;
 
         const event = this.event;
         const bounds = this.element.getBoundingClientRect();

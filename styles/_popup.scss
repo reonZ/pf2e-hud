@@ -4,7 +4,6 @@
     --color-text-dark-improved: #11d393;
 
     position: absolute;
-    max-width: 40em;
     background: var(--outer-background);
     border-radius: var(--outer-border-radius);
     box-shadow: var(--outer-box-shadow);
@@ -17,6 +16,8 @@
         padding: 0;
         color: var(--color);
         overflow-y: auto;
+        font-size: var(--font-size);
+        max-width: 40em;
 
         hr {
             margin: revert;

@@ -20,7 +20,7 @@ class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
         this.item.actor
             ? this.item.toMessage(event)
             : unownedItemtoMessage(this.actor, this.item, event);
-        if (getSetting("closePopupOnSendToChat")) this.close();
+        if (getSetting("popup.closeOnSendToChat")) this.close();
     }
 
     get title() {

@@ -29,17 +29,27 @@
                 "name": "Use Modifiers",
                 "hint": "Display modifiers instead of the difficulty value in the different HUD elements."
             },
-            "popupOnCursor": {
-                "name": "Popup on Cursor",
-                "hint": "The module popup will be centered on the position of the cursor when it is first rendered (instead of showing up in the center of the viewport)."
-            },
             "hideUntrained": {
                 "name": "Hide Untrained",
                 "hint": "Should skill actions be hidden from the sidebar if the character isn't proficient with them."
             },
-            "closePopupOnSendToChat": {
-                "name": "Close Popup on Send-to-Chat",
-                "hint": "Should the popup be closed when sending an item to chat from the header button."
+            "popup": {
+                "title": "Popup",
+                "onCursor": {
+                    "name": "Show on Cursor",
+                    "hint": "The module popup will be centered on the cursor when it is first rendered (instead of showing up in the center of the viewport)."
+                },
+                "fontSize": {
+                    "name": "Font Size",
+                    "hint": "The popup dynamically scales with the font size. NOTE: The module was designed to use a font size of 14."
+                },
+                "closeOnSendToChat": {
+                    "name": "Close on Send-to-Chat",
+                    "hint": "Should the popup be closed when sending an item to chat from the header button."
+                }
+            },
+            "sidebar": {
+                "title": "Sidebar"
             },
             "shared": {
                 "enabled": {
