@@ -13,9 +13,9 @@ $bottom-width: 542px;
     padding: 0;
     z-index: var(--z-index-app);
 
-    i,
     span,
-    input {
+    input,
+    [data-section] i {
         text-shadow: 0 0 3px black;
     }
 
@@ -495,10 +495,10 @@ $bottom-width: 542px;
 
             .category-icon {
                 @include bottom-left();
-                text-shadow: 0 0 0px white;
-                color: black;
 
                 i {
+                    text-shadow: 0 0 0px white;
+                    color: black;
                     font-size: 0.9em;
                 }
             }
