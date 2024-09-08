@@ -2,7 +2,6 @@ import {
     addListener,
     createHTMLElement,
     getRankLabel,
-    getSetting,
     htmlClosest,
     isOwnedItem,
     unownedItemtoMessage,
@@ -20,7 +19,7 @@ class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
         this.item.actor
             ? this.item.toMessage(event)
             : unownedItemtoMessage(this.actor, this.item, event);
-        if (getSetting("popup.closeOnSendToChat")) this.close();
+        if (PF2eHudPopup.getSetting("closeOnSendToChat")) this.close();
     }
 
     get title() {

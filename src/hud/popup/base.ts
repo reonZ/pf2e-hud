@@ -7,6 +7,10 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig = PopupConfig> extends f
 
     static apps: Set<PF2eHudPopup> = new Set();
 
+    static getSetting<K extends keyof PopupSettings>(key: K): PopupSettings[K] {
+        return getSetting(`popup.${key}`);
+    }
+
     constructor(config: TConfig, options?: PartialApplicationConfiguration) {
         super(options);
 
@@ -45,7 +49,7 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig = PopupConfig> extends f
 
     _replaceHTML(result: HTMLElement, content: HTMLElement, options: ApplicationRenderOptions) {
         content.replaceChildren(result);
-        content.style.setProperty("--font-size", `${getSetting("popup.fontSize")}px`);
+        content.style.setProperty("--font-size", `${PF2eHudPopup.getSetting("fontSize")}px`);
         console.log(content);
 
         this.#activateListeners(result);
@@ -53,7 +57,7 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig = PopupConfig> extends f
     }
 
     _onFirstRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
-        if (!getSetting("popup.onCursor")) return;
+        if (!PF2eHudPopup.getSetting("onCursor")) return;
 
         const event = this.event;
         const bounds = this.element.getBoundingClientRect();
@@ -80,6 +84,12 @@ interface PF2eHudPopup<TConfig extends PopupConfig> extends foundry.applications
 type PopupConfig = {
     actor: ActorPF2e;
     event: MouseEvent;
+};
+
+type PopupSettings = {
+    onCursor: boolean;
+    fontSize: number;
+    closeOnSendToChat: boolean;
 };
 
 export { PF2eHudPopup };

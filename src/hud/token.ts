@@ -5,7 +5,6 @@ import {
     createWrapper,
     htmlQuery,
     libWrapper,
-    registerWrapper,
     render,
 } from "foundry-pf2e";
 import { hud } from "../main";
