@@ -1,7 +1,7 @@
 import { addListenerAll, settingPath, templatePath } from "foundry-pf2e";
 import { hud } from "../../main";
 import { PF2eHudSidebarActions } from "../sidebar/actions";
-import { PF2eHudSidebar, SidebarEvent, SidebarName, SidebarSettings } from "../sidebar/base";
+import { PF2eHudSidebar, SidebarEvent, SidebarName } from "../sidebar/base";
 import { PF2eHudSidebarExtras } from "../sidebar/extras";
 import { PF2eHudSidebarItems } from "../sidebar/items";
 import { PF2eHudSidebarSkills } from "../sidebar/skills";
@@ -36,45 +36,6 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
             const parentSettings = PF2eHudBaseActor.prototype.getSettings.call(this);
 
             const sharedSettings: SettingOptions[] = [
-                {
-                    key: "sidebarFontSize",
-                    type: Number,
-                    range: {
-                        min: 10,
-                        max: 30,
-                        step: 1,
-                    },
-                    default: 14,
-                    onChange: () => {
-                        this.sidebar?.render();
-                    },
-                },
-                {
-                    key: "sidebarHeight",
-                    type: Number,
-                    range: {
-                        min: 50,
-                        max: 100,
-                        step: 1,
-                    },
-                    default: 100,
-                    onChange: () => {
-                        this.sidebar?.render();
-                    },
-                },
-                {
-                    key: "multiColumns",
-                    type: Number,
-                    default: 5,
-                    range: {
-                        min: 1,
-                        max: 5,
-                        step: 1,
-                    },
-                    onChange: () => {
-                        this.sidebar?.render();
-                    },
-                },
                 {
                     key: "showAlliance",
                     type: Boolean,
@@ -250,10 +211,9 @@ interface IPF2eHudAdvanced {
     eventToSetting(event: AdvancedHudEvent): CloseSetting;
 }
 
-type AdvancedHudSettings<TClose extends any> = SidebarSettings &
-    Record<CloseSetting, TClose> & {
-        showAlliance: boolean;
-    };
+type AdvancedHudSettings<TClose extends any> = Record<CloseSetting, TClose> & {
+    showAlliance: boolean;
+};
 
 export { addSidebarsListeners, CLOSE_SETTINGS, makeAdvancedHUD };
 export type {

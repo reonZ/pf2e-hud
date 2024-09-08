@@ -29,7 +29,6 @@
                 "name": "Use Modifiers",
                 "hint": "Display modifiers instead of the difficulty value in the different HUD elements."
             },
-
             "popup": {
                 "title": "Popup",
                 "onCursor": {
@@ -46,10 +45,22 @@
                 }
             },
             "sidebar": {
-                "title": "Sidebar",
+                "title": "Sidebars",
                 "hideUntrained": {
                     "name": "Hide Untrained",
                     "hint": "Should skill actions be hidden from the sidebar if the character isn't proficient with them."
+                },
+                "fontSize": {
+                    "name": "Font Size",
+                    "hint": "The sidebars dynamically scale with the font size. NOTE: The module was designed to use a font size of 14."
+                },
+                "multiColumns": {
+                    "name": "Multi Columns",
+                    "hint": "When a sidebar's height is bigger than its max-height, it will be split into up to x columns. Note that firefox has a weird quirk of forcing horizontal scrolling when using this feature."
+                },
+                "maxHeight": {
+                    "name": "Max Height",
+                    "hint": "Sets the sidebars max height as a percentage of the viewport."
                 }
             },
             "shared": {
@@ -60,18 +71,6 @@
                 "fontSize": {
                     "name": "Font Size",
                     "hint": "The HUD element dynamically scales with the font size. NOTE: The module was designed to use a font size of 14."
-                },
-                "sidebarFontSize": {
-                    "name": "Sidebars Font Size",
-                    "hint": "Sidebars opened by this HUD scale with the font size. NOTE: The module was designed to use a font size of 14."
-                },
-                "sidebarHeight": {
-                    "name": "Sidebars Max Height",
-                    "hint": "Sets the sidebars max height as a percentage of the allotted height space."
-                },
-                "multiColumns": {
-                    "name": "Multi Columns Sidebars",
-                    "hint": "When a sidebar's height is bigger than its max-height, it will be split into up to x columns. Note that firefox has a weird quirk of forcing horizontal scrolling when using this feature."
                 },
                 "showAlliance": {
                     "name": "Alliance Button",

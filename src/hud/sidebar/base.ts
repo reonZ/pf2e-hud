@@ -4,6 +4,7 @@ import {
     addListenerAll,
     createHTMLElement,
     elementDataset,
+    getSetting,
     hasSpells,
     htmlClosest,
     htmlQuery,
@@ -81,6 +82,10 @@ abstract class PF2eHudSidebar extends foundry.applications.api
             height: "auto",
         },
     };
+
+    static getSetting<K extends keyof SidebarSettings>(key: K): SidebarSettings[K] {
+        return getSetting(`sidebar.${key}`);
+    }
 
     constructor(
         parent: IPF2eHudAdvanced & PF2eHudBaseActor,
@@ -172,7 +177,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
     _configureRenderOptions(options: SidebarRenderOptions) {
         super._configureRenderOptions(options);
-        options.fontSize = this.getSetting("sidebarFontSize");
+        options.fontSize = PF2eHudSidebar.getSetting("fontSize");
     }
 
     async _prepareContext(options: SidebarRenderOptions): Promise<SidebarContext> {
@@ -273,7 +278,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
     _onRender(context: ApplicationRenderContext, options: SidebarRenderOptions) {
         const innerElement = this.innerElement;
-        const multiColumns = this.getSetting("multiColumns");
+        const multiColumns = PF2eHudSidebar.getSetting("multiColumns");
 
         if (multiColumns > 1) {
             const maxHeight = this.getMaxHeight(true);
@@ -333,8 +338,10 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
     getMaxHeight(inner?: boolean) {
         const { limits } = this.parentHUD.anchor;
+        const maxHeightRatio = PF2eHudSidebar.getSetting("maxHeight") / 100;
+        const viewportHeight = window.innerHeight * maxHeightRatio;
         const allottedHeight = (limits?.bottom ?? window.innerHeight) - (limits?.top ?? 0);
-        const maxHeight = allottedHeight * (this.getSetting("sidebarHeight") / 100);
+        const maxHeight = Math.min(allottedHeight, viewportHeight);
 
         if (inner) {
             const elementStyle = getComputedStyle(this.element);
@@ -350,12 +357,6 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         }
 
         return maxHeight;
-    }
-
-    getSetting<K extends keyof SidebarSettings & string>(key: K): SidebarSettings[K];
-    getSetting<K extends keyof GlobalSettings & string>(key: K): GlobalSettings[K];
-    getSetting<K extends (keyof SidebarSettings | keyof GlobalSettings) & string>(key: K) {
-        return this.parentHUD.getSetting(key as any);
     }
 
     #activateListeners(html: HTMLElement) {
@@ -513,6 +514,12 @@ type SidebarRenderOptions = ApplicationRenderOptions & {
     fontSize: number;
 };
 
+type SidebarSettings = {
+    fontSize: number;
+    multiColumns: number;
+    maxHeight: number;
+};
+
 type SidebarName = (typeof SIDEBARS)[number]["type"];
 
 type SidebarEvent = "cast-spell" | "roll-skill";
@@ -525,18 +532,5 @@ type SidebarMenu = {
     active: boolean;
 };
 
-type SidebarSettings = {
-    sidebarFontSize: number;
-    sidebarHeight: number;
-    multiColumns: number;
-};
-
 export { PF2eHudSidebar, getSidebars };
-export type {
-    SidebarContext,
-    SidebarEvent,
-    SidebarMenu,
-    SidebarName,
-    SidebarRenderOptions,
-    SidebarSettings,
-};
+export type { SidebarContext, SidebarEvent, SidebarMenu, SidebarName, SidebarRenderOptions };

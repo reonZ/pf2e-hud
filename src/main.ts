@@ -109,13 +109,57 @@ Hooks.once("setup", () => {
     // sidebar
 
     registerSetting({
+        key: "sidebar.fontSize",
+        type: Number,
+        range: {
+            min: 10,
+            max: 30,
+            step: 1,
+        },
+        default: 14,
+        scope: "client",
+        onChange: () => {
+            refreshSidebar();
+        },
+    });
+
+    registerSetting({
+        key: "sidebar.multiColumns",
+        type: Number,
+        default: 5,
+        range: {
+            min: 1,
+            max: 5,
+            step: 1,
+        },
+        scope: "client",
+        onChange: () => {
+            refreshSidebar();
+        },
+    });
+
+    registerSetting({
+        key: "sidebar.maxHeight",
+        type: Number,
+        range: {
+            min: 50,
+            max: 100,
+            step: 1,
+        },
+        default: 100,
+        scope: "client",
+        onChange: () => {
+            refreshSidebar();
+        },
+    });
+
+    registerSetting({
         key: "sidebar.hideUntrained",
         type: Boolean,
         default: false,
         scope: "client",
         onChange: () => {
-            HUDS.token.sidebar?.render();
-            HUDS.persistent.sidebar?.render();
+            refreshSidebar();
         },
     });
 
@@ -236,6 +280,11 @@ Hooks.on("renderSettingsConfig", (app: SettingsConfig, $html: JQuery) => {
         }
     }
 });
+
+function refreshSidebar() {
+    HUDS.token.sidebar?.render();
+    HUDS.persistent.sidebar?.render();
+}
 
 function getFadingElements() {
     const list = [
