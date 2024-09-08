@@ -16,7 +16,7 @@
     -   sidebars now have their own section in the settings
     -   all sidebars related settings have been reset (some renamed)
     -   the `Max Height` setting is now always relative to the viewport
--   fix very rare occurence of `Skills` sidebar not closing when rolling a skill action
+-   fix very rare occurrence of `Skills` sidebar not closing when rolling a skill action
 
 # 1.11.1
 
