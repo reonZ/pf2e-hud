@@ -264,11 +264,13 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
 }
 
 function editAvatar(actor: ActorPF2e) {
-    if (!actor.isOfType("character", "npc")) {
+    const worldActor = actor.token?.baseActor ?? actor;
+
+    if (!worldActor.isOfType("character", "npc")) {
         return;
     }
 
-    new PF2eHudAvatarEditor(actor).render(true);
+    new PF2eHudAvatarEditor(worldActor).render(true);
 }
 
 type EventAction =

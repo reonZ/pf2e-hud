@@ -19,6 +19,7 @@ abstract class PF2eHudBaseActor<
 
     _actorCleanup() {
         delete this.actor?.apps[this.id];
+        delete this.actor?.token?.baseActor.apps[this.id];
     }
 
     _onClose(options: ApplicationClosingOptions) {

@@ -685,6 +685,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         if (actor) {
             actor.apps[this.id] = this;
 
+            if (actor.token) {
+                actor.token.baseActor.apps[this.id] = this;
+            }
+
             const tokens = token ? [token] : actor.getActiveTokens();
 
             for (const token of tokens) {
@@ -1056,7 +1060,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     #setupAvatar(html: HTMLElement) {
-        const actor = this.actor;
+        const actor = this.worldActor;
         const avatarElement = htmlQuery(html, ".avatar");
         if (!avatarElement || !actor) return;
 
@@ -1199,8 +1203,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     const confirm = await confirmAction("delete");
                     if (!confirm) return;
 
-                    await unsetFlag(worldActor, "persistent.shortcuts", game.user.id);
-                    return this.#renderIfUnlinkedActor();
+                    return unsetFlag(worldActor, "persistent.shortcuts", game.user.id);
                 }
 
                 case "fill-shortcuts": {
@@ -1246,13 +1249,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     if (!confirm) return;
 
                     await unsetFlag(worldActor, "persistent.shortcuts", game.user.id);
-                    await setFlag(
+                    return setFlag(
                         worldActor,
                         "persistent.shortcuts",
                         game.user.id,
                         foundry.utils.deepClone(userShortcuts)
                     );
-                    return this.#renderIfUnlinkedActor();
                 }
             }
         });
@@ -1318,7 +1320,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 groupIndex,
                 index
             );
-            this.#renderIfUnlinkedActor();
         }
     }
 
@@ -1737,13 +1738,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             this.#overrideShortcutData();
         } else {
             await setFlag(worldActor, "persistent.shortcuts", game.user.id, groupIndex, group);
-            this.#renderIfUnlinkedActor();
-        }
-    }
-
-    #renderIfUnlinkedActor() {
-        if (this.actor?.isToken) {
-            this.render();
         }
     }
 
@@ -1753,7 +1747,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const shortcutData = foundry.utils.deepClone(this.#shortcutData);
         await unsetFlag(worldActor, "persistent.shortcuts", userId);
         await setFlag(worldActor, "persistent.shortcuts", userId, shortcutData);
-        this.#renderIfUnlinkedActor();
     }
 
     async #fillShortcut(
