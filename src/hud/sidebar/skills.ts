@@ -3,6 +3,7 @@ import {
     dataToDatasetString,
     elementDataset,
     getActionIcon,
+    getActiveModule,
     getItemWithSourceId,
     getSetting,
     getTranslatedSkills,
@@ -29,6 +30,32 @@ const ACTION_IMAGES: Record<string, string> = {
     "identify-magic": "systems/pf2e/icons/equipment/adventuring-gear/magnifying-glass.webp",
 };
 
+const ACTION_VARIANTS: Record<string, Record<string, { label: string; cost?: ActionCost }>> = {
+    drive: {
+        drive1: {
+            label: "pf2e-hud.actions.drive.drive1",
+            cost: {
+                type: "action",
+                value: 1,
+            },
+        },
+        drive2: {
+            label: "pf2e-hud.actions.drive.drive2",
+            cost: {
+                type: "action",
+                value: 2,
+            },
+        },
+        drive3: {
+            label: "pf2e-hud.actions.drive.drive3",
+            cost: {
+                type: "action",
+                value: 3,
+            },
+        },
+    },
+};
+
 const SHARED_ACTIONS = {
     "recall-knowledge": {
         cost: 1,
@@ -45,6 +72,11 @@ const SHARED_ACTIONS = {
     "learn-a-spell": {
         trained: true,
         uuid: "Compendium.pf2e.actionspf2e.Item.Q5iIYCFdqJFM31GW",
+    },
+    "disable-device": {
+        cost: 2,
+        trained: true,
+        uuid: "Compendium.pf2e.actionspf2e.Item.cYdz2grcOcRt4jk6",
     },
     subsist: {
         uuid: "Compendium.pf2e.actionspf2e.Item.49y9Ec4bDii8pcD3",
@@ -172,6 +204,29 @@ const SKILLS: RawSkill[] = [
                 agile: true,
                 trained: true,
                 uuid: "Compendium.pf2e.actionspf2e.Item.Dt6B1slsBy8ipJu9",
+            },
+        ],
+    },
+    {
+        slug: "computers",
+        sf2e: true,
+        actions: [
+            {
+                actionId: "access-infosphere",
+                uuid: "Compendium.starfinder-field-test-for-pf2e.actions.Item.Yn4jLPVWVE1vtAaF",
+            },
+            "recall-knowledge",
+            "decipher-writing",
+            "disable-device",
+            {
+                actionId: "hack",
+                trained: true,
+                uuid: "Compendium.starfinder-field-test-for-pf2e.actions.Item.RF8xNJ8QsMwogerB",
+            },
+            {
+                actionId: "program",
+                trained: true,
+                uuid: "Compendium.starfinder-field-test-for-pf2e.actions.Item.9zvazWNY5tKbMFnC",
             },
         ],
     },
@@ -334,6 +389,55 @@ const SKILLS: RawSkill[] = [
         ],
     },
     {
+        slug: "piloting",
+        sf2e: true,
+        actions: [
+            "recall-knowledge",
+            {
+                actionId: "drive",
+                uuid: "Compendium.starfinder-field-test-for-pf2e.actions.Item.OxF2dvUCdTYHrnIm",
+                variants: ["drive1", "drive2", "drive3"],
+            },
+            {
+                actionId: "navigate",
+                uuid: "Compendium.starfinder-field-test-for-pf2e.actions.Item.hsUKPqTdAvWwsqH2",
+            },
+            {
+                actionId: "plot-course",
+                uuid: "Compendium.starfinder-field-test-for-pf2e.actions.Item.LXqcXRayK58inaKo",
+            },
+            {
+                actionId: "run-over",
+                uuid: "Compendium.starfinder-field-test-for-pf2e.actions.Item.FisNbAu9pdMnz6vF",
+                cost: 3,
+            },
+            {
+                actionId: "stop",
+                uuid: "Compendium.starfinder-field-test-for-pf2e.actions.Item.3oL5ap2Qb00Saaz9",
+                cost: 1,
+            },
+            {
+                actionId: "stunt",
+                uuid: "Compendium.starfinder-field-test-for-pf2e.actions.Item.ailFBRjKuGCOAsCR",
+                cost: 1,
+                variants: [
+                    "back-off",
+                    "evade",
+                    "flip-and-burn",
+                    "barrel-roll",
+                    "flyby",
+                    "drift",
+                    "turn-in-place",
+                ],
+            },
+            {
+                actionId: "take-control",
+                uuid: "Compendium.starfinder-field-test-for-pf2e.actions.Item.9Msf0P33UR5mNRuz",
+                cost: 1,
+            },
+        ],
+    },
+    {
         slug: "religion",
         actions: ["recall-knowledge", "decipher-writing", "identify-magic", "learn-a-spell"],
     },
@@ -407,12 +511,7 @@ const SKILLS: RawSkill[] = [
                 cost: 1,
                 uuid: "Compendium.pf2e.actionspf2e.Item.RDXXE7wMrSPCLv5k",
             },
-            {
-                actionId: "disable-device",
-                cost: 2,
-                trained: true,
-                uuid: "Compendium.pf2e.actionspf2e.Item.cYdz2grcOcRt4jk6",
-            },
+            "disable-device",
             {
                 actionId: "pick-a-lock",
                 cost: 2,
@@ -432,6 +531,18 @@ const SKILL_ACTIONS_UUIDS = R.pipe(
     R.unique()
 );
 
+const SF2E_VARIANTS = R.pipe(
+    SKILLS,
+    R.filter((rawSkill) => !!rawSkill.sf2e),
+    R.flatMap((rawSkill) =>
+        R.pipe(
+            rawSkill.actions,
+            R.filter((rawAction) => typeof rawAction === "object"),
+            R.map((rawAction) => rawAction.actionId)
+        )
+    )
+);
+
 function prepareStatisticAction(
     statistic: string | undefined,
     rawAction: SharedAction | RawSkillAction
@@ -442,7 +553,8 @@ function prepareStatisticAction(
             : [rawAction.actionId, rawAction];
 
     const actionKey = game.pf2e.system.sluggify(actionId, { camel: "bactrian" });
-    const label = game.i18n.localize(action.label ?? `PF2E.Actions.${actionKey}.Title`);
+    const prefix = SF2E_VARIANTS.includes(actionId) ? "SF2E" : "PF2E";
+    const label = game.i18n.localize(action.label ?? `${prefix}.Actions.${actionKey}.Title`);
     actionLabels[actionId] = label;
 
     const variants: ActionVariant[] | MapVariant[] | undefined = (() => {
@@ -499,22 +611,31 @@ function prepareStatisticAction(
 let skillsCache: PreparedSkill[] | null = null;
 const actionLabels: Record<string, string> = {};
 function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
-    skillsCache ??= SKILLS.map((raw) => {
-        const actions = raw.actions.map((rawAction) => prepareStatisticAction(raw.slug, rawAction));
-        const label = game.i18n.localize(
-            raw.slug === "perception" ? "PF2E.PerceptionLabel" : CONFIG.PF2E.skills[raw.slug].label
-        );
+    if (!skillsCache) {
+        const isPF2e = getActiveModule("starfinder-field-test-for-pf2e");
+        const skills = isPF2e ? SKILLS : SKILLS.filter((rawSkill) => !rawSkill.sf2e);
 
-        const filterValues = actions.map((action) => action.filterValue);
-        filterValues.unshift(label);
+        skillsCache ??= skills.map((rawSkill) => {
+            const actions = rawSkill.actions.map((rawAction) =>
+                prepareStatisticAction(rawSkill.slug, rawAction)
+            );
+            const label = game.i18n.localize(
+                rawSkill.slug === "perception"
+                    ? "PF2E.PerceptionLabel"
+                    : (CONFIG.PF2E.skills as SkillsConfigSf2e)[rawSkill.slug].label
+            );
 
-        return {
-            actions,
-            slug: raw.slug,
-            label,
-            filterValue: filterValues.join("|"),
-        } satisfies PreparedSkill;
-    });
+            const filterValues = actions.map((action) => action.filterValue);
+            filterValues.unshift(label);
+
+            return {
+                actions,
+                slug: rawSkill.slug,
+                label,
+                filterValue: filterValues.join("|"),
+            } satisfies PreparedSkill;
+        });
+    }
 
     const isCharacter = actor.isOfType("character");
     const hideUntrained =
@@ -809,9 +930,16 @@ async function getStatisticVariants(
 }
 
 function getSkillVariantName(actionId: string, variant: string) {
+    const variantLabel = ACTION_VARIANTS[actionId]?.[variant]?.label;
+    if (variantLabel) {
+        return game.i18n.localize(variantLabel);
+    }
+
+    const prefix = SF2E_VARIANTS.includes(actionId) ? "SF2E" : "PF2E";
     const actionKey = game.pf2e.system.sluggify(actionId, { camel: "bactrian" });
     const variantKey = game.pf2e.system.sluggify(variant, { camel: "bactrian" });
-    return game.i18n.localize(`PF2E.Actions.${actionKey}.${variantKey}.Title`);
+
+    return game.i18n.localize(`${prefix}.Actions.${actionKey}.${variantKey}.Title`);
 }
 
 function getMapValue(map: 1 | 2, agile = false) {
@@ -909,7 +1037,7 @@ type RawSkillAction = {
     actionId: string;
     uuid: string;
     useInstance?: boolean;
-    cost?: ActionCost["type"] | ActionCost["value"];
+    cost?: ActionCost["value"];
     map?: true;
     agile?: true;
     label?: string;
@@ -920,8 +1048,9 @@ type RawSkillAction = {
 };
 
 type RawSkill = {
-    slug: SkillSlug | "perception";
+    slug: SkillSlug | SkillSlugSfe2 | "perception";
     actions: (SharedAction | RawSkillAction)[];
+    sf2e?: boolean;
 };
 
 type LoreSkill = {
@@ -949,8 +1078,9 @@ type SkillsContext = SidebarContext & {
 };
 
 export {
-    PF2eHudSidebarSkills,
     ACTION_IMAGES,
+    ACTION_VARIANTS,
+    PF2eHudSidebarSkills,
     SHARED_ACTIONS,
     SKILL_ACTIONS_UUIDS,
     getLoreSlug,

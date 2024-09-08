@@ -76,6 +76,7 @@ import {
 import { SidebarMenu, getSidebars } from "./sidebar/base";
 import {
     ACTION_IMAGES,
+    ACTION_VARIANTS,
     SkillVariantDataset,
     getLoreSlug,
     getMapLabel,
@@ -1975,6 +1976,12 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     name = `${game.i18n.localize("PF2E.Lore")}: ${name}`;
                 }
 
+                const actionCost = isLore
+                    ? undefined
+                    : (shortcutData.variant &&
+                          ACTION_VARIANTS[shortcutData.actionId]?.[shortcutData.variant]?.cost) ||
+                      item?.actionCost;
+
                 const img = isLore
                     ? ACTION_IMAGES.lore
                     : ACTION_IMAGES[shortcutData.actionId] ??
@@ -1988,7 +1995,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     item,
                     name,
                     img,
-                    cost: getCost(isLore ? undefined : item?.actionCost),
+                    cost: getCost(actionCost),
                 } satisfies SkillShortcut as T;
             }
 

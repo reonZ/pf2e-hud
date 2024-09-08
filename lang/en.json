@@ -450,6 +450,11 @@
                 "dc": "DC",
                 "unspecific": "Unspecific",
                 "specific": "Specific"
+            },
+            "drive": {
+                "drive1": "Drive <span class=\"action-glyph\">1</span>",
+                "drive2": "Drive <span class=\"action-glyph\">2</span>",
+                "drive3": "Drive <span class=\"action-glyph\">3</span>"
             }
         },
         "utils": {

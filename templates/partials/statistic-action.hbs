@@ -26,7 +26,7 @@
             {{/if}} {{#if variant.agile}} data-agile="{{variant.agile}}" {{/if}} draggable="true"
             data-drag-parent=".item"
             data-filter-value="{{variant.label}}|{{../action.label}}{{#if ../skill}}|{{../skill}}{{/if}}">
-            {{variant.label}}
+            {{{variant.label}}}
         </div>
         {{/each}}
     </div>

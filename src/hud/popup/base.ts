@@ -50,7 +50,6 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig = PopupConfig> extends f
     _replaceHTML(result: HTMLElement, content: HTMLElement, options: ApplicationRenderOptions) {
         content.replaceChildren(result);
         content.style.setProperty("--font-size", `${PF2eHudPopup.getSetting("fontSize")}px`);
-        console.log(content);
 
         this.#activateListeners(result);
         this._activateListeners?.(result);
