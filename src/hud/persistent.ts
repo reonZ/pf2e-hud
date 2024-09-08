@@ -2025,12 +2025,16 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     return hasItemWithSourceId(actor, item.system.selfEffect.uuid, "effect");
                 })();
 
-                if (isStance) this.#hasStances = true;
+                if (isStance) {
+                    this.#hasStances = true;
+                }
+
+                const cannotUseStances = isStance && !canUseStances(actor);
 
                 return returnShortcut({
                     ...shortcutData,
                     isDisabled: disabled,
-                    isFadedOut: disabled || (isStance && !canUseStances(actor)),
+                    isFadedOut: disabled || cannotUseStances,
                     item,
                     isActive,
                     img: item ? getActionImg(item, true) : shortcutData.img,
@@ -2038,6 +2042,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     frequency,
                     hasEffect,
                     cost: getCost(item?.actionCost),
+                    subtitle: cannotUseStances
+                        ? localize("sidebars.actions.outOfCombat")
+                        : undefined,
                 } satisfies ActionShortcut as T);
             }
 
@@ -2178,6 +2185,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     isStaff,
                     parentItem,
                     annotation,
+                    subtitle: entryLabel,
                 } satisfies SpellShortcut as T);
             }
 
@@ -2526,6 +2534,7 @@ type ShortcutData =
 
 type BaseShortCut<T extends ShortcutType> = ShortcutDataBase<T> & {
     name: string;
+    subtitle?: string;
     css?: string[];
     isEmpty?: boolean;
     img: string;
@@ -2589,7 +2598,6 @@ type ConsumableShortcut = BaseShortCut<"consumable"> &
         categoryIcon: string | undefined;
         notCarried: boolean;
         annotation: AuxiliaryActionPurpose | undefined;
-        subtitle: string | undefined;
     };
 
 type BaseAttackShortcut = BaseShortCut<"attack"> &

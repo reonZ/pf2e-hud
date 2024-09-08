@@ -390,7 +390,8 @@
                 "stowedWeapons": {
                     "shown": "Stowed Weapons are shown",
                     "hidden": "Stowed Weapons are hidden"
-                }
+                },
+                "outOfCombat": "[Ctrl + Click] to force"
             },
             "annotation": {
                 "pick-up": "Pick Up",
