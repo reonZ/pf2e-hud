@@ -39,8 +39,31 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
     #renderEffectsHook = createHook("renderEffectsPanel", this.#onRenderEffectsPanel.bind(this));
     #combatTrackerHook = createHook("renderCombatTracker", this.#onRenderCombatTracker.bind(this));
 
+    #combatTrackerHeightObserver = new ResizeObserver((entries) => {
+        const trackerEvent = entries.find((e) => e.target === this.element);
+        if (!trackerEvent) {
+            return;
+        }
+        this.#trackerHeight = {
+            offsetHeight: trackerEvent.contentRect.height,
+            clientHeight: this.combatantsElement?.clientHeight ?? 0,
+            scrollHeight: this.combatantsElement?.scrollHeight ?? 0,
+        };
+        this.element.classList.toggle(
+            "tall",
+            this.#trackerHeight.offsetHeight > window.innerHeight / 2
+        );
+        this.#updateEffectsPanel();
+        this.#scrollToCurrent();
+    });
+
     #toggled = false;
     #cancelScroll = false;
+    #trackerHeight = {
+        offsetHeight: 0,
+        clientHeight: 0,
+        scrollHeight: 0,
+    };
     #combatantElement: HTMLElement | null = null;
     #combatantsElement: HTMLElement | null = null;
     #contextMenus: EntryContextOption[] = [];
@@ -129,19 +152,23 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         super._onClose(options);
     }
 
-    _onEnable(enabled = this.enabled) {
+    async _onEnable(enabled = this.enabled) {
         this.#hoverTokenHook.toggle(enabled);
         this.#targetTokenHook.toggle(enabled);
         this.#combatTrackerHook.toggle(enabled);
         this.#renderEffectsHook.toggle(enabled);
 
         if (enabled && this.combat) {
-            this.render(true);
+            await this.render(true);
         } else if (!enabled && this.rendered) {
+            this.#combatTrackerHeightObserver.disconnect();
             this.close();
         }
 
         // toggleControlTool("pf2e-hud-tracker", enabled);
+        if (this.element) {
+            this.#combatTrackerHeightObserver.observe(this.element);
+        }
 
         if (!canvas.ready) {
             Hooks.once("canvasReady", () => this.#refreshTargetDisplay());
@@ -311,7 +338,6 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         content.style.setProperty(`--font-size`, `${options.fontSize}px`);
         content.classList.toggle("collapsed", options.collapsed);
         content.classList.toggle("textureScaling", options.textureScaling);
-        content.classList.toggle("tall", content.offsetHeight > window.innerHeight / 2);
 
         this.#combatantsElement = content.querySelector(".combatants")!;
         this.#combatantElement = this.#combatantsElement.querySelector(".combatant.active");
@@ -409,7 +435,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         const trackerElement = this.element;
         if (!effectsPanel || !trackerElement) return;
 
-        const offsetHeight = trackerElement.offsetHeight;
+        const offsetHeight = this.#trackerHeight.offsetHeight;
         effectsPanel.style.setProperty("max-height", `calc(100% - ${offsetHeight}px - 2em)`);
     }
 
@@ -423,8 +449,8 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         const activeCombatant = this.combatantElement;
         if (!combatantsList || !activeCombatant) return;
 
-        const clientHeight = combatantsList.clientHeight;
-        const scrollHeight = combatantsList.scrollHeight;
+        const clientHeight = this.#trackerHeight.clientHeight;
+        const scrollHeight = this.#trackerHeight.scrollHeight;
         if (clientHeight === scrollHeight) return;
 
         combatantsList.scrollTop = activeCombatant.offsetTop - clientHeight / 2;
