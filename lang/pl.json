@@ -29,17 +29,39 @@
                 "name": "Użycie modyfikatorów",
                 "hint": "Wyświetlanie modyfikatorów zamiast wartości poziomu trudności w różnych elementach HUD."
             },
-            "popupOnCursor": {
-                "name": "Wyskakujące okienko na kursorze",
-                "hint": "Wyskakujące okienko modułu zostanie wyśrodkowane na pozycji kursora, gdy zostanie wyrenderowane po raz pierwszy (zamiast pojawiać się na środku widoku)."
+            "popup": {
+                "title": "Wyskakujące okienko",
+                "onCursor": {
+                    "name": "Wyświetl na kursorze",
+                    "hint": "Wyskakujące okienko modułu zostanie wyśrodkowane na kursorze, gdy zostanie wyrenderowane po raz pierwszy (zamiast pojawiać się na środku widoku)."
+                },
+                "fontSize": {
+                    "name": "Rozmiar czcionki",
+                    "hint": "Wyskakujące okienko dynamicznie skaluje się wraz z rozmiarem czcionki. UWAGA: Moduł został zaprojektowany do używania czcionki o rozmiarze 14."
+                },
+                "closeOnSendToChat": {
+                    "name": "Zamknięcie przy wysyłaniu na czat",
+                    "hint": "Wyskakujące okienko będzie zamykane podczas wysyłania elementu na czat za pomocą przycisku nagłówka."
+                }
             },
-            "hideUntrained": {
-                "name": "Ukryj niewytrenowane",
-                "hint": "Akcje umiejętności będą ukryte na pasku bocznym, jeśli postać nie jest w nich biegła."
-            },
-            "closePopupOnSendToChat": {
-                "name": "Zamknięcie wyskakującego okienka przy wysyłaniu na czat",
-                "hint": "Wyskakujące okienko będzie zamykane podczas wysyłania elementu na czat za pomocą przycisku nagłówka."
+            "sidebar": {
+                "title": "Paski boczne",
+                "hideUntrained": {
+                    "name": "Ukryj niewytrenowane",
+                    "hint": "Akcje umiejętności będą ukryte na pasku bocznym, jeśli postać nie jest w nich biegła."
+                },
+                "fontSize": {
+                    "name": "Rozmiar czcionki",
+                    "hint": "Paski boczne dynamicznie skalują się wraz z rozmiarem czcionki. UWAGA: Moduł został zaprojektowany do używania czcionki o rozmiarze 14."
+                },
+                "multiColumns": {
+                    "name": "Wiele kolumn",
+                    "hint": "Gdy wysokość paska bocznego jest większa niż jego maksymalna wysokość, zostanie on podzielony na maksymalnie x kolumn. UWAGA: Firefox ma dziwne ograniczenie polegające na wymuszaniu przewijania w poziomie podczas korzystania z tej funkcji."
+                },
+                "maxHeight": {
+                    "name": "Maksymalna wysokość",
+                    "hint": "Ustawia maksymalną wysokość pasków bocznych jako procent widoku."
+                }
             },
             "shared": {
                 "enabled": {
@@ -49,18 +71,6 @@
                 "fontSize": {
                     "name": "Rozmiar czcionki",
                     "hint": "Element HUD dynamicznie skaluje się wraz z rozmiarem czcionki. UWAGA: Moduł został zaprojektowany do używania czcionki o rozmiarze 14."
-                },
-                "sidebarFontSize": {
-                    "name": "Rozmiar czcionki pasków bocznych",
-                    "hint": "Paski boczne otwierane przez ten HUD skalują się wraz z rozmiarem czcionki. UWAGA: Moduł został zaprojektowany do używania czcionki o rozmiarze 14."
-                },
-                "sidebarHeight": {
-                    "name": "Maksymalna wysokość pasków bocznych",
-                    "hint": "Ustawia maksymalną wysokość pasków bocznych jako procent przydzielonego miejsca."
-                },
-                "multiColumns": {
-                    "name": "Wielokolumnowe paski boczne",
-                    "hint": "Gdy wysokość paska bocznego jest większa niż jego maksymalna wysokość, zostanie on podzielony na maksymalnie x kolumn. Należy pamiętać, że Firefox ma dziwne ograniczenie wymuszające przewijanie w poziomie podczas korzystania z tej funkcji."
                 },
                 "showAlliance": {
                     "name": "Przycisk sojuszu",
@@ -380,7 +390,14 @@
                 "stowedWeapons": {
                     "shown": "Broń schowana jest wyświetlana",
                     "hidden": "Broń schowana jest ukryta"
-                }
+                },
+                "outOfCombat": "[Ctrl + Kliknięcie] aby wymusić"
+            },
+            "annotation": {
+                "pick-up": "Podnoszenie",
+                "retrieve": "Odzyskanie",
+                "sheathe": "Schowek",
+                "draw": "Wyciągnięcie"
             },
             "items": {
                 "title": "Ekwipunek"
@@ -391,13 +408,7 @@
                 "charges": "Ładunki",
                 "cast": "Rzuć zaklęcie",
                 "draw": "Wyświetlanie materiałów zużywalnych",
-                "broken": "Przerwane zaklęcie",
-                "action": {
-                    "pick-up": "Podnoszenie",
-                    "retrieve": "Odzyskanie",
-                    "sheathe": "Schowek",
-                    "draw": "Losowanie"
-                }
+                "broken": "Przerwane zaklęcie"
             },
             "skills": {
                 "title": "Umiejętności",
@@ -440,6 +451,11 @@
                 "dc": "ST",
                 "unspecific": "Nieokreślony",
                 "specific": "Określony"
+            },
+            "drive": {
+                "drive1": "Napęd <span class=\"action-glyph\">1</span>",
+                "drive2": "Napęd <span class=\"action-glyph\">2</span>",
+                "drive3": "Napęd <span class=\"action-glyph\">3</span>"
             }
         },
         "utils": {
