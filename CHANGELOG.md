@@ -1,3 +1,11 @@
+# 1.13.0
+
+-   this release comes with some attempt at improving the performance of the module
+    -   thanks to [Codas](https://github.com/Codas) for his help locating the places that could be improved and his advice on how to
+    -   those are not significant improvements but the goal is to avoid pilling on what already exists in foundry as much as possible
+    -   please keep an eye on potential styling issues, the module has a lot of small parts and some may have slipped through the cracks during the transition
+-   updated actions (and their shortcuts) to follow the coming changes of `PF2e Toolbelt` `Actionable`
+
 # 1.12.0
 
 -   add support for `Starfinder 2nd Edition Playtest for PF2e` skills and their respective actions
