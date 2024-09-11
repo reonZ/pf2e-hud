@@ -293,6 +293,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         }
 
         this.parentHUD._onRenderSidebar?.(innerElement);
+        this.parentHUD.mainElement?.classList.add("sidebar-opened");
     }
 
     _updatePosition(position = {} as ApplicationPosition) {
@@ -333,6 +334,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
     async close(options: ApplicationClosingOptions = {}): Promise<this> {
         options.animate = false;
+        this.parentHUD.mainElement?.classList.remove("sidebar-opened");
         return super.close(options);
     }
 

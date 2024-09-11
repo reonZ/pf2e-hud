@@ -113,8 +113,6 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
             this.#sidebar?.close();
             this.#sidebar = null;
 
-            this.mainElement?.classList.remove("sidebar-opened");
-
             const sidebarElements = this.sidebars?.querySelectorAll<HTMLElement>("[data-sidebar]");
             for (const sidebarElement of sidebarElements ?? []) {
                 sidebarElement.classList.remove("active");
@@ -127,8 +125,6 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
             this.closeSidebar();
 
             if (!sidebar) return;
-
-            this.mainElement?.classList.add("sidebar-opened");
 
             const otherHUD = this.key === "token" ? hud.persistent : hud.token;
             otherHUD.closeSidebar();
