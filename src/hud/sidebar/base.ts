@@ -81,6 +81,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
             width: "auto",
             height: "auto",
         },
+        classes: ["pf2e-hud", "pf2e-hud-colors"],
     };
 
     static getSetting<K extends keyof SidebarSettings>(key: K): SidebarSettings[K] {

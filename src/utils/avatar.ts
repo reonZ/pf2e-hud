@@ -29,6 +29,7 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
             width: 600,
         },
         id: "pf2e-hud-avatar-editor",
+        classes: ["pf2e-hud"],
     };
 
     constructor(actor: CharacterPF2e | NPCPF2e, options: PartialApplicationConfiguration = {}) {

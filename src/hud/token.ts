@@ -223,6 +223,7 @@ class PF2eHudToken extends makeAdvancedHUD(
         this.#mainElement = createHTMLElement("div", {
             id: "pf2e-hud-token-main",
             innerHTML: result,
+            classes: ["pf2e-hud"],
         });
 
         const mode = this.getSetting("mode");

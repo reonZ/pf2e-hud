@@ -24,6 +24,7 @@ abstract class PF2eHudBase<
             minimizable: false,
             frame: false,
         },
+        classes: ["pf2e-hud"],
     };
 
     abstract get key(): string;

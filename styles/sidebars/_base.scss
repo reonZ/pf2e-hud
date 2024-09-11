@@ -381,20 +381,6 @@
         .name {
             background-color: var(--name-background);
             padding-inline: 0.2em;
-
-            [data-action="item-description"] {
-                &.rarity-uncommon {
-                    color: var(--color-rarity-uncommon);
-                }
-
-                &.rarity-rare {
-                    color: var(--color-rarity-rare);
-                }
-
-                &.rarity-unique {
-                    color: var(--color-rarity-unique);
-                }
-            }
         }
     }
 

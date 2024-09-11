@@ -28,7 +28,7 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig = PopupConfig> extends f
             minimizable: true,
             frame: true,
         },
-        classes: ["pf2e-hud-popup"],
+        classes: ["pf2e-hud-popup", "pf2e-hud"],
     };
 
     get config() {

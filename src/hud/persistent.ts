@@ -546,7 +546,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     id: `pf2e-hud-persistent-${partName}`,
                     dataset: { tooltipDirection },
                     innerHTML: template,
-                    classes,
+                    classes: classes.concat("pf2e-hud"),
                 });
 
                 return { name: partName, element };

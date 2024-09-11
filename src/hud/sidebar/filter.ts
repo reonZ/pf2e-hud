@@ -19,6 +19,7 @@ class PF2eHudFilter extends foundry.applications.api.ApplicationV2 {
             minimizable: false,
             frame: false,
         },
+        classes: ["pf2e-hud"],
     };
 
     get sidebar() {

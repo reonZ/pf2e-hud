@@ -1,19 +1,6 @@
 $panel-gap: 5px;
 
-#pf2e-hud-tracker,
-#pf2e-hud-tooltip,
-#pf2e-hud-token,
-#pf2e-hud-token-main,
-#pf2e-hud-resources,
-.application.pf2e-hud-popup,
-#pf2e-hud-avatar-editor,
-#pf2e-hud-persistent,
-#pf2e-hud-persistent-menu,
-#pf2e-hud-persistent-portrait,
-#pf2e-hud-persistent-main,
-#pf2e-hud-persistent-effects,
-#pf2e-hud-sidebar,
-#pf2e-hud-sidebar-filter {
+.pf2e-hud {
     --icon-width: 1.4em;
     --icon-color: #d4d7de;
 
@@ -279,29 +266,7 @@ $panel-gap: 5px;
     }
 }
 
-#pf2e-hud-tracker,
-#pf2e-hud-tooltip,
-#pf2e-hud-token,
-#pf2e-hud-token-main,
-#pf2e-hud-resources,
-.application.pf2e-hud-popup,
-#pf2e-hud-avatar-editor,
-#pf2e-hud-persistent,
-#pf2e-hud-persistent-menu,
-#pf2e-hud-persistent-portrait,
-#pf2e-hud-persistent-main,
-#pf2e-hud-persistent-effects,
-#pf2e-hud-sidebar,
-#pf2e-hud-sidebar-filter,
-.pf2e-hud-rk,
-.pf2e-hud-resource-menu,
-.pf2e-hud-resources-tooltip,
-.pf2e-hud-iconed-list,
-.pf2e-hud-left,
-.pf2e-hud-width,
-.pf2e-hud-metrics,
-.pf2e-hud-skills,
-.pf2e-hud-resolve {
+.pf2e-hud-colors {
     --color-rarity-uncommon: #cb8470;
     --color-rarity-rare: #5996f7;
     --color-rarity-unique: #d05fff;
@@ -332,6 +297,18 @@ $panel-gap: 5px;
         &.\34 {
             color: var(--color-rank-4);
         }
+    }
+
+    .rarity-uncommon {
+        color: var(--color-rarity-uncommon);
+    }
+
+    .rarity-rare {
+        color: var(--color-rarity-rare);
+    }
+
+    .rarity-unique {
+        color: var(--color-rarity-unique);
     }
 }
 
