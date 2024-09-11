@@ -15,6 +15,7 @@ import {
     templateLocalize,
     unsetFlag,
 } from "foundry-pf2e";
+import { createTemporaryStyles } from "foundry-pf2e/src/html";
 import Sortable, { SortableEvent } from "sortablejs";
 import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
 import { HealthData, getHealth, userCanObserveActor } from "./shared/base";
@@ -39,9 +40,10 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
     #renderEffectsHook = createHook("renderEffectsPanel", this.#onRenderEffectsPanel.bind(this));
     #combatTrackerHook = createHook("renderCombatTracker", this.#onRenderCombatTracker.bind(this));
 
+    #temporaryStyles = createTemporaryStyles();
+
     #combatTrackerHeightObserver = new ResizeObserver((entries) => {
-        const element = this.element;
-        const trackerEvent = entries.find((e) => e.target === element);
+        const trackerEvent = entries.find((e) => e.target === this.element);
         if (!trackerEvent) return;
 
         this.#trackerHeight = {
@@ -50,7 +52,11 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
             scrollHeight: this.combatantsElement?.scrollHeight ?? 0,
         };
 
-        element.classList.toggle("tall", this.#trackerHeight.offsetHeight > window.innerHeight / 2);
+        this.#temporaryStyles.toggle(
+            "#interface",
+            "hud-tracker-tall",
+            this.#trackerHeight.offsetHeight > window.innerHeight / 2
+        );
 
         this.#updateEffectsPanel();
         this.#scrollToCurrent();
@@ -148,7 +154,9 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         this.#combatTrackerHeightObserver.disconnect();
 
         const effectsPanel = document.getElementById("effects-panel");
-        if (effectsPanel) effectsPanel.style.removeProperty("max-height");
+        effectsPanel?.style.removeProperty("max-height");
+
+        this.#temporaryStyles.clear();
 
         super._onClose(options);
     }
@@ -331,6 +339,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
 
     _onFirstRender(context: ApplicationRenderContext, options: TrackerRenderOptions): void {
         this.#combatTrackerHeightObserver.observe(this.element);
+        this.#temporaryStyles.add("#interface", "has-hud-tracker");
     }
 
     _replaceHTML(result: string, content: HTMLElement, options: TrackerRenderOptions): void {

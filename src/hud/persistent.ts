@@ -11,6 +11,7 @@ import {
     consumeItem,
     createHTMLElement,
     createHook,
+    createTemporaryStyles,
     elementDataset,
     getActionAnnotation,
     getActionImg,
@@ -108,6 +109,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #deleteCombatantHook = createHook("deleteCombatant", this.#onChangeCombatant.bind(this));
     #createCombatantHook = createHook("createCombatant", this.#onChangeCombatant.bind(this));
     #combatTurnHook = createHook("combatTurnChange", this.#onCombatTurnChange.bind(this));
+
+    #temporaryStyles = createTemporaryStyles();
 
     #hasStances: boolean = false;
     #isVirtual: boolean = false;
@@ -274,7 +277,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 scope: "client",
                 config: false,
                 onChange: (value) => {
-                    this.element?.classList.toggle("show-users", value);
+                    this.#temporaryStyles.toggle("#interface", "show-users", value);
                 },
             },
             {
@@ -561,7 +564,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
         content.style.setProperty("--font-size", fontSize);
         content.classList.toggle("show-effects", options.showEffects);
-        content.classList.toggle("show-users", options.showUsers);
         content.classList.toggle("cleaned", options.cleaned);
 
         for (let { name, element } of templates) {
@@ -593,6 +595,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
     _onFirstRender(context: PersistentContext, options: PersistentRenderOptions) {
         document.getElementById("ui-left")?.append(this.element);
+        this.#temporaryStyles.add("#interface", "has-hud-persistent");
+        this.#temporaryStyles.toggle("#interface", "show-users", options.showUsers);
     }
 
     _onRender(context: PersistentContext, options: PersistentRenderOptions) {
@@ -613,6 +617,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             this.#elements[key as PartName]?.remove();
             this.#elements[key as PartName] = null;
         }
+
+        this.#temporaryStyles.clear();
 
         super._onClose(options);
     }

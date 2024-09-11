@@ -83,17 +83,21 @@ $bottom-width: 542px;
     }
 }
 
-#players:has(+ #pf2e-hud-persistent) {
-    #context-menu {
-        &.expand-down {
-            bottom: calc(100% + 2px);
-            top: auto;
+#interface.has-hud-persistent {
+    #players {
+        #context-menu {
+            &.expand-down {
+                bottom: calc(100% + 2px);
+                top: auto;
+            }
         }
     }
-}
 
-#players:has(+ #pf2e-hud-persistent:not(.show-users)) {
-    display: none;
+    &:not(.show-users) {
+        #players {
+            display: none;
+        }
+    }
 }
 
 #pf2e-hud-persistent-menu {

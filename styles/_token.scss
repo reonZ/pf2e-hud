@@ -53,6 +53,10 @@
             }
         }
     }
+
+    &.sidebar-opened {
+        visibility: hidden;
+    }
 }
 
 #pf2e-hud-token-main.exploded {
@@ -179,11 +183,5 @@
                 padding-bottom: var(--panel-spacer-gap);
             }
         }
-    }
-}
-
-body:has(#pf2e-hud-sidebar .inner.token) {
-    #pf2e-hud-token-main {
-        visibility: hidden;
     }
 }

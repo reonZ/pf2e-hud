@@ -355,7 +355,7 @@ $threat-extreme: red;
     }
 }
 
-#interface:has(#pf2e-hud-tracker) {
+#interface.has-hud-tracker {
     --combatant-height: 3.2em;
 
     #sidebar {
@@ -388,21 +388,21 @@ $threat-extreme: red;
             }
         }
     }
-}
 
-#interface:has(#pf2e-hud-tracker.tall) {
-    #effects-panel {
-        hr {
-            width: 44px;
-            margin-block: 5px;
-        }
-
-        .effect-item {
-            height: 48px;
-
-            .icon {
-                height: 44px;
+    &.hud-tracker-tall {
+        #effects-panel {
+            hr {
                 width: 44px;
+                margin-block: 5px;
+            }
+
+            .effect-item {
+                height: 48px;
+
+                .icon {
+                    height: 44px;
+                    width: 44px;
+                }
             }
         }
     }

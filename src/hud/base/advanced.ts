@@ -16,6 +16,7 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
 
         abstract get sidebars(): HTMLElement | null;
         abstract get anchor(): AdvancedHudAnchor;
+        abstract get mainElement(): HTMLElement | null;
 
         get partials(): string[] {
             return [
@@ -112,6 +113,8 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
             this.#sidebar?.close();
             this.#sidebar = null;
 
+            this.mainElement?.classList.remove("sidebar-opened");
+
             const sidebarElements = this.sidebars?.querySelectorAll<HTMLElement>("[data-sidebar]");
             for (const sidebarElement of sidebarElements ?? []) {
                 sidebarElement.classList.remove("active");
@@ -124,6 +127,8 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
             this.closeSidebar();
 
             if (!sidebar) return;
+
+            this.mainElement?.classList.add("sidebar-opened");
 
             const otherHUD = this.key === "token" ? hud.persistent : hud.token;
             otherHUD.closeSidebar();
@@ -196,6 +201,7 @@ interface IPF2eHudAdvanced {
     get sidebar(): PF2eHudSidebar | null;
     get anchor(): AdvancedHudAnchor;
     get sidebars(): HTMLElement | null;
+    get mainElement(): HTMLElement | null;
 
     _renderSidebarHTML?(innerElement: HTMLElement, sidebar: SidebarName): Promise<void>;
     _onRenderSidebar?(innerElement: HTMLElement): void;
