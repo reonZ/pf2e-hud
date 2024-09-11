@@ -40,19 +40,18 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
     #combatTrackerHook = createHook("renderCombatTracker", this.#onRenderCombatTracker.bind(this));
 
     #combatTrackerHeightObserver = new ResizeObserver((entries) => {
-        const trackerEvent = entries.find((e) => e.target === this.element);
-        if (!trackerEvent) {
-            return;
-        }
+        const element = this.element;
+        const trackerEvent = entries.find((e) => e.target === element);
+        if (!trackerEvent) return;
+
         this.#trackerHeight = {
             offsetHeight: trackerEvent.contentRect.height,
             clientHeight: this.combatantsElement?.clientHeight ?? 0,
             scrollHeight: this.combatantsElement?.scrollHeight ?? 0,
         };
-        this.element.classList.toggle(
-            "tall",
-            this.#trackerHeight.offsetHeight > window.innerHeight / 2
-        );
+
+        element.classList.toggle("tall", this.#trackerHeight.offsetHeight > window.innerHeight / 2);
+
         this.#updateEffectsPanel();
         this.#scrollToCurrent();
     });
@@ -146,29 +145,27 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         this.#combatantElement = null;
         this.#combatantsElement = null;
 
+        this.#combatTrackerHeightObserver.disconnect();
+
         const effectsPanel = document.getElementById("effects-panel");
         if (effectsPanel) effectsPanel.style.removeProperty("max-height");
 
         super._onClose(options);
     }
 
-    async _onEnable(enabled = this.enabled) {
+    _onEnable(enabled = this.enabled) {
         this.#hoverTokenHook.toggle(enabled);
         this.#targetTokenHook.toggle(enabled);
         this.#combatTrackerHook.toggle(enabled);
         this.#renderEffectsHook.toggle(enabled);
 
         if (enabled && this.combat) {
-            await this.render(true);
+            this.render(true);
         } else if (!enabled && this.rendered) {
-            this.#combatTrackerHeightObserver.disconnect();
             this.close();
         }
 
         // toggleControlTool("pf2e-hud-tracker", enabled);
-        if (this.element) {
-            this.#combatTrackerHeightObserver.observe(this.element);
-        }
 
         if (!canvas.ready) {
             Hooks.once("canvasReady", () => this.#refreshTargetDisplay());
@@ -330,6 +327,10 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
 
     async _renderHTML(context: TrackerContext, options: TrackerRenderOptions): Promise<string> {
         return await this.renderTemplate("tracker", context);
+    }
+
+    _onFirstRender(context: ApplicationRenderContext, options: TrackerRenderOptions): void {
+        this.#combatTrackerHeightObserver.observe(this.element);
     }
 
     _replaceHTML(result: string, content: HTMLElement, options: TrackerRenderOptions): void {
