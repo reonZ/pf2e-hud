@@ -1,3 +1,7 @@
+# 1.13.1
+
+-   changes some template syntax to avoid potential conflicts with other modules helpers
+
 # 1.13.0
 
 -   this release comes with some attempt at improving the performance of the module
