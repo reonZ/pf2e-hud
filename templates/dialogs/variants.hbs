@@ -1,12 +1,12 @@
 <div class="form-group">
-    <strong>{{i18n 'statistic'}}</strong>
+    <strong>{{@root.i18n 'statistic'}}</strong>
     <select name="statistic">
         {{selectOptions statistics selected=statistic }}
     </select>
 </div>
 {{#if dc inclueZero=true}}
 <div class="form-group">
-    <strong>{{i18n 'dc'}}</strong>
+    <strong>{{@root.i18n 'dc'}}</strong>
     <input type="number" name="dc" value="{{dc}}" min="0" max="99">
 </div>
 {{/if}}

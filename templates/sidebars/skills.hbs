@@ -1,10 +1,11 @@
-<div class="item action" data-item-uuid="{{follow.uuid}}" data-filter-value="{{i18n 'follow'}}">
+<div class="item action" data-item-uuid="{{follow.uuid}}"
+    data-filter-value="{{@root.i18n 'follow'}}">
     <div class="image" data-action="send-to-chat">
         <img src="systems/pf2e/icons/actions/Passive.webp">
         <i class="fa-solid fa-message chat"></i>
     </div>
     <div class="name">
-        <a data-action="item-description">{{i18n 'follow'}}</a>
+        <a data-action="item-description">{{@root.i18n 'follow'}}</a>
     </div>
     <div class="controls">
         <a class="use" data-action="follow-the-expert">

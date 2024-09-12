@@ -8,31 +8,31 @@
                 noBrowser}}>
             </button>
             <button class="fa-solid fa-image-portrait" type="button"
-                data-tooltip="{{i18n.path 'src.actor'}}" data-action="use-actor-image">
+                data-tooltip="{{@root.i18n.path 'src.actor'}}" data-action="use-actor-image">
             </button>
             <button class="fa-solid fa-circle-user" type="button"
-                data-tooltip="{{i18n.path 'src.token'}}" data-action="use-token-image" {{disabled
-                noTokenImage}}>
+                data-tooltip="{{@root.i18n.path 'src.token'}}" data-action="use-token-image"
+                {{disabled noTokenImage}}>
             </button>
         </div>
     </div>
     <div class="buttons">
         <button type="button" data-action="save">
             <i class="fa-solid fa-floppy-disk"></i>
-            {{i18n 'save'}}
+            {{@root.i18n 'save'}}
         </button>
         <button type="button" data-action="cancel">
             <i class="fa-solid fa-xmark"></i>
-            {{i18n 'cancel'}}
+            {{@root.i18n 'cancel'}}
         </button>
         <div class="spacer"></div>
         <button type="button" data-action="reset">
             <i class="fa-solid fa-rotate-left"></i>
-            {{i18n 'reset'}}
+            {{@root.i18n 'reset'}}
         </button>
         <button type="button" data-action="contain">
             <i class="fa-solid fa-expand"></i>
-            {{i18n 'contain'}}
+            {{@root.i18n 'contain'}}
         </button>
     </div>
 </form>

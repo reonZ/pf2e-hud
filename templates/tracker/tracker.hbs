@@ -28,7 +28,7 @@
 <ol class="combatants">
     {{#if (and expand.collapsed hasStarted (not hasActive) (not isGM))}}
     <section class="fake">
-        {{i18n 'fake.secret'}}
+        {{@root.i18n 'fake.secret'}}
     </section>
     {{/if}}
 
@@ -153,7 +153,7 @@
 
     {{#if (and expand.collapsed (not hasStarted))}}
     <section class="fake">
-        {{i18n 'fake.nothing'}}
+        {{@root.i18n 'fake.nothing'}}
     </section>
     {{/if}}
 
@@ -208,7 +208,7 @@
     </a>
     {{!-- end if isGM --}}
     {{/if}}
-    <a class="expand" data-action="toggle-expand" data-tooltip="{{i18n.path expand.tooltip}}">
+    <a class="expand" data-action="toggle-expand" data-tooltip="{{@root.i18n.path expand.tooltip}}">
         <i class="{{expand.icon}}"></i>
     </a>
 </footer>

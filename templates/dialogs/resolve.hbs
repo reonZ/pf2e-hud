@@ -3,9 +3,9 @@
         checked>
     <span>
         {{#if hasSteel}}
-        <strong>{{i18n 'breather.label'}}:</strong>
+        <strong>{{@root.i18n 'breather.label'}}:</strong>
         {{/if}}
-        {{i18n 'breather.hint'}}
+        {{@root.i18n 'breather.hint'}}
     </span>
 </label>
 {{#if hasSteel}}
@@ -13,7 +13,7 @@
     <input type="radio" name="pick" value="steel">
     <span>
         <strong>{{localize 'PF2E.Actions.SteelYourResolve.Title'}}:</strong>
-        {{i18n 'steel.hint'}}
+        {{@root.i18n 'steel.hint'}}
     </span>
 </label>
 {{/if}}

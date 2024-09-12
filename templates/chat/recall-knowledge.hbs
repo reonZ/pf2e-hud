@@ -5,7 +5,8 @@
     </h4>
     {{#if target}}
     <div class="target-dc">
-        <span data-visibility="all" data-whose="target">{{i18n 'target'}}: {{target.name}}</span>
+        <span data-visibility="all" data-whose="target">{{@root.i18n 'target'}}:
+            {{target.name}}</span>
     </div>
     {{/if}}
     <div class="tags">
@@ -23,10 +24,10 @@
     <div class="rk-skills" style="--nb-rows: {{add skills.length 2}};">
         <span></span>
         <span></span>
-        <span class="header">{{i18n 'first'}}</span>
-        <span class="header">{{i18n 'second'}}</span>
-        <span class="header">{{i18n 'third'}}</span>
-        <span class="header">{{i18n 'fourth'}}</span>
+        <span class="header">{{@root.i18n 'first'}}</span>
+        <span class="header">{{@root.i18n 'second'}}</span>
+        <span class="header">{{@root.i18n 'third'}}</span>
+        <span class="header">{{@root.i18n 'fourth'}}</span>
 
         <span class="header">{{localize 'PF2E.RecallKnowledge.Skill'}}</span>
         <span></span>
@@ -49,12 +50,12 @@
     <hr>
     <div class="rk-lores" style="--nb-rows: 3;">
         <span class="header">{{localize 'TYPES.Item.lore'}}</span>
-        <span class="header">{{i18n 'first'}}</span>
-        <span class="header">{{i18n 'second'}}</span>
-        <span class="header">{{i18n 'third'}}</span>
-        <span class="header">{{i18n 'fourth'}}</span>
-        <span class="header">{{i18n 'fifth'}}</span>
-        <span class="header">{{i18n 'sixth'}}</span>
+        <span class="header">{{@root.i18n 'first'}}</span>
+        <span class="header">{{@root.i18n 'second'}}</span>
+        <span class="header">{{@root.i18n 'third'}}</span>
+        <span class="header">{{@root.i18n 'fourth'}}</span>
+        <span class="header">{{@root.i18n 'fifth'}}</span>
+        <span class="header">{{@root.i18n 'sixth'}}</span>
 
         {{#each loresDCs as |dcs|}}
         <span>
@@ -73,8 +74,8 @@
     <div class="rk-lores-rolls" style="--nb-rows: {{add lores.length 1}}">
         <span class="header">{{localize 'TYPES.Item.lore'}}</span>
         <span class="header">{{localize 'PF2E.ProficiencyLabel'}}</span>
-        <span class="header">{{i18n 'modifier'}}</span>
-        <span class="header">{{i18n 'result'}}</span>
+        <span class="header">{{@root.i18n 'modifier'}}</span>
+        <span class="header">{{@root.i18n 'result'}}</span>
         {{> skillsRows skills=lores}}
     </div>
     {{/if}}
@@ -83,8 +84,8 @@
     <div class="rk" style="--nb-rows: {{add skills.length 1}}">
         <span class="header">{{localize 'PF2E.RecallKnowledge.Skill'}}</span>
         <span class="header">{{localize 'PF2E.ProficiencyLabel'}}</span>
-        <span class="header">{{i18n 'modifier'}}</span>
-        <span class="header">{{i18n 'result'}}</span>
+        <span class="header">{{@root.i18n 'modifier'}}</span>
+        <span class="header">{{@root.i18n 'result'}}</span>
         {{> skillsRows skills=skills}}
     </div>
     {{!-- end if target --}}

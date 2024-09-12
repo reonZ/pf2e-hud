@@ -1,6 +1,6 @@
 {{#if stances.actions.length}}
 <header data-filter-value="{{filterValue stances.actions key='name'}}">
-    <div class="name">{{i18n 'stances'}}</div>
+    <div class="name">{{@root.i18n 'stances'}}</div>
 </header>
 {{/if}}
 {{#each stances.actions as |stance|}}
@@ -24,7 +24,7 @@
 
 {{#if blasts}}
 <header class="blasts" data-filter-value="{{filterValue blasts key='label' localize=true}}">
-    <div class="name">{{i18n 'blasts'}}</div>
+    <div class="name">{{@root.i18n 'blasts'}}</div>
     <div class="controls">
         {{#each blastActionCost as |suboption|}}
         {{#if suboption.selected}}

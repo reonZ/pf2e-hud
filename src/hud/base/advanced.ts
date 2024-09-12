@@ -86,7 +86,9 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
                 this,
                 options
             )) as AdvancedContext;
+
             context.partial = (key: string) => templatePath("partials", key);
+
             return context;
         }
 

@@ -9,7 +9,7 @@
 </div>
 <div class="double" data-section="stamina" data-tooltip="PF2E.StaminaPointsShortLabel">
     <span><i class="fa-solid fa-heart-pulse"></i></span>
-    {{> (partial 'numbers') name="system.attributes.hp.sp" entry=health.sp}}
+    {{> (@root.partial 'numbers') name="system.attributes.hp.sp" entry=health.sp}}
 </div>
 {{/if}}
 
@@ -37,7 +37,7 @@
 {{!-- hp --}}
 <div class="double" data-section="hp" data-tooltip="PF2E.HitPointsHeader">
     <span><i class="fa-solid fa-heart"></i></span>
-    {{> (partial 'numbers') name="system.attributes.hp" entry=health}}
+    {{> (@root.partial 'numbers') name="system.attributes.hp" entry=health}}
 </div>
 
 {{!-- ac --}}
@@ -65,9 +65,9 @@
 {{!-- adjustment, alliance & notes --}}
 {{else if isNPC}}
 <div class="double npc" data-section>
-    {{> (partial 'three-steps') step=adjustment}}
+    {{> (@root.partial 'three-steps') step=adjustment}}
     {{#if alliance}}
-    {{> (partial 'three-steps') step=alliance}}
+    {{> (@root.partial 'three-steps') step=alliance}}
     {{else}}
     <div></div>
     {{/if}}

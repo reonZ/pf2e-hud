@@ -1,21 +1,21 @@
 <div class="panel top stats-header">
     <div class="name">{{name}}</div>
     <hr>
-    {{> (partial 'stats_header')}}
+    {{> (@root.partial 'stats_header')}}
     {{#unless isCombatant}}
     <div class="double extras">
-        {{> (partial 'stats_level')}}
+        {{> (@root.partial 'stats_level')}}
         {{#if isVehicle}}
-        {{> (partial 'stats_statistics')}}
+        {{> (@root.partial 'stats_statistics')}}
         {{else if isFamiliar}}
-        {{> (partial 'stats_speed')}}
+        {{> (@root.partial 'stats_speed')}}
         {{else if (or isHazard isArmy)}}
-        {{> (partial 'sidebars')}}
+        {{> (@root.partial 'sidebars')}}
         {{/if}}
     </div>
     {{#if isHazard}}
     <div class="triple">
-        {{> (partial 'stats_statistics')}}
+        {{> (@root.partial 'stats_statistics')}}
     </div>
     {{/if}}
     {{/unless}}
@@ -24,12 +24,12 @@
 {{#if isCombatant}}
 <div class="panel left">
     {{#if isCharacter}}
-    {{> (partial 'stats_extras')}}
+    {{> (@root.partial 'stats_extras')}}
     {{/if}}
-    {{> (partial 'stats_level')}}
-    {{> (partial 'stats_speed')}}
+    {{> (@root.partial 'stats_level')}}
+    {{> (@root.partial 'stats_speed')}}
     {{#if (and isCharacter alliance)}}
-    {{> (partial 'three-steps') step=alliance}}
+    {{> (@root.partial 'three-steps') step=alliance}}
     {{/if}}
     {{#if isNPC}}
     <div data-section="recall-knowledge" data-tooltip="PF2E.RecallKnowledge.Label">
@@ -47,16 +47,16 @@
 
 {{#if (or isCombatant isFamiliar)}}
 <div class="panel right">
-    {{> (partial 'stats_statistics')}}
+    {{> (@root.partial 'stats_statistics')}}
 </div>
 {{/if}}
 
 {{#unless isArmy}}
 <div class="panel bottom">
-    {{> (partial 'stats_infos')}}
+    {{> (@root.partial 'stats_infos')}}
     {{#unless noSidebars}}
     <hr>
-    {{> (partial 'sidebars')}}
+    {{> (@root.partial 'sidebars')}}
     {{/unless}}
 </div>
 {{/unless}}
