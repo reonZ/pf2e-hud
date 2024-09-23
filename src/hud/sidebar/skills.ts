@@ -543,6 +543,8 @@ const SF2E_VARIANTS = R.pipe(
     )
 );
 
+const actionLabels: Record<string, string> = {};
+
 function prepareStatisticAction(
     statistic: string | undefined,
     rawAction: SharedAction | RawSkillAction
@@ -609,7 +611,6 @@ function prepareStatisticAction(
 }
 
 let skillsCache: PreparedSkill[] | null = null;
-const actionLabels: Record<string, string> = {};
 function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
     if (!skillsCache) {
         const isPF2e = getActiveModule("starfinder-field-test-for-pf2e");
@@ -912,6 +913,10 @@ async function getStatisticVariants(
     actionId: string,
     { dc, statistic, agile }: { dc?: number; statistic?: string; agile?: boolean }
 ) {
+    if (actionId === "initiative") {
+        actionLabels["initiative"] ??= game.i18n.localize("PF2E.InitiativeLabel");
+    }
+
     return promptDialog<{ statistic: string; agile?: boolean; dc?: number }>(
         {
             title: actionLabels[actionId] ?? localize("dialogs.variants.title"),
@@ -1037,7 +1042,7 @@ type RawSkillAction = {
     actionId: string;
     uuid: string;
     useInstance?: boolean;
-    cost?: ActionCost["value"];
+    cost?: ActionCost["value"] | ActionCost["type"];
     map?: true;
     agile?: true;
     label?: string;
@@ -1089,6 +1094,7 @@ export {
     getStatisticDataFromElement,
     getStatisticDragDataFromElement,
     getStatistics,
+    getStatisticVariants,
     prepareStatisticAction,
     rollStatistic,
 };

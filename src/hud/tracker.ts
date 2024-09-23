@@ -11,6 +11,7 @@ import {
     htmlQueryAll,
     localize,
     render,
+    rollInitiative,
     setFlag,
     templateLocalize,
     unsetFlag,
@@ -19,6 +20,7 @@ import { createTemporaryStyles } from "foundry-pf2e/src/html";
 import Sortable, { SortableEvent } from "sortablejs";
 import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
 import { HealthData, getHealth, userCanObserveActor } from "./shared/base";
+import { getStatisticVariants } from "./sidebar/skills";
 
 // Hooks.on("getSceneControlButtons", (controls) => {
 //     controls[0].tools.push({
@@ -576,12 +578,12 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         const combat = this.combat;
 
         if (this.#toggled && combat?.started) {
-            const currenTurn = combat.turn!;
+            const currentTurn = combat.turn!;
             const { combatantId } = elementDataset(el);
             const turn = combat.turns.findIndex((combatant) => combatant.id === combatantId);
-            if (currenTurn === turn) return;
+            if (currentTurn === turn) return;
 
-            const direction = turn < currenTurn ? -1 : 1;
+            const direction = turn < currentTurn ? -1 : 1;
             Hooks.callAll("combatTurn", combat, { turn }, { direction });
             combat.update({ turn }, { direction });
         } else {
@@ -621,6 +623,27 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
             const jEvent = jQuery.Event(event) as JQuery.ClickEvent;
             tracker._onCombatantControl(jEvent);
         });
+
+        addListenerAll(
+            html,
+            ".combatant-control[data-control='rollInitiative']",
+            "contextmenu",
+            async (event, el) => {
+                event.preventDefault();
+
+                const combatantId = htmlClosest(el, "[data-combatant-id]")?.dataset.combatantId;
+                const actor = this.combat?.combatants.get(combatantId ?? "")?.actor;
+                if (!actor) return;
+
+                const variants = await getStatisticVariants(actor, "initiative", {
+                    statistic: actor.system.initiative?.statistic ?? "perception",
+                });
+
+                if (variants) {
+                    rollInitiative(actor, variants.statistic, event);
+                }
+            }
+        );
 
         addListenerAll(html, ".combatant", "mouseenter", (event) => {
             event.preventDefault();

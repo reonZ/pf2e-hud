@@ -2,12 +2,12 @@ import {
     R,
     confirmDialog,
     dataToDatasetString,
-    eventToRollParams,
     getActiveModule,
     getFlag,
     htmlClosest,
     htmlQueryInClosest,
     localize,
+    rollInitiative,
     setFlag,
 } from "foundry-pf2e";
 import { rollRecallKnowledge } from "../../actions/recall-knowledge";
@@ -155,19 +155,8 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
 
         switch (action) {
             case "roll-initiative": {
-                const ActorInit = actor.initiative?.constructor as typeof ActorInitiative;
                 const statistic = htmlQueryInClosest(target, ".initiative", "select")?.value;
-
-                if (ActorInit && statistic) {
-                    const initiative = new ActorInit(actor, {
-                        statistic,
-                        tiebreakPriority: actor.system.initiative!.tiebreakPriority,
-                    });
-
-                    initiative.roll(eventToRollParams(event, { type: "check" }));
-                }
-
-                break;
+                return rollInitiative(actor, statistic, event);
             }
 
             case "prepare-dailies": {
