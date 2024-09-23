@@ -1,3 +1,10 @@
+# 1.14.0
+
+-   forcibly set the font of the different HUDs to avoid theming modules changing it and messing with the tight layouts
+-   event modifiers (holding `Shift` or `Ctrl`) when using the variants window are now registered when you click on the `Confirm` button instead of when you open the variant window
+-   `Combat Tracker`:
+    -   you can now `[Right Click]` on the big initiative die to open the variants window and select which statistic to use when rolling
+
 # 1.13.1
 
 -   changes some template syntax to avoid potential conflicts with other modules helpers
