@@ -640,7 +640,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
                 });
 
                 if (variants) {
-                    rollInitiative(actor, variants.statistic, event);
+                    rollInitiative(actor, variants.statistic, variants.event ?? event);
                 }
             }
         );
