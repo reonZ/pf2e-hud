@@ -823,7 +823,8 @@ async function rollStatistic(
         return;
     }
 
-    const action = game.pf2e.actions.get(actionId) ?? game.pf2e.actions[actionId];
+    const action: Action | Function | undefined =
+        game.pf2e.actions.get(actionId) ?? game.pf2e.actions[actionId];
 
     const rollOptions = option ? [`action:${option}`] : undefined;
     if (rollOptions && variant) rollOptions.push(`action:${option}:${variant}`);
@@ -834,6 +835,14 @@ async function rollStatistic(
     }
 
     if (requireVariants) {
+        if (
+            typeof dc !== "number" &&
+            isInstanceOf<SingleCheckAction>(action, "SingleCheckAction") &&
+            typeof action.difficultyClass === "object"
+        ) {
+            dc = action.difficultyClass.value;
+        }
+
         const variants = await getStatisticVariants(actor, actionId, {
             dc,
             statistic,
