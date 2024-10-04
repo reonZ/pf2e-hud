@@ -84,6 +84,7 @@ $threat-extreme: red;
                 height: calc(100% - 0.1em);
                 aspect-ratio: 1 / 1;
                 display: flex;
+                overflow: hidden;
 
                 img {
                     position: absolute;
