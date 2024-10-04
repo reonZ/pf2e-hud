@@ -281,6 +281,44 @@ Hooks.on("renderSettingsConfig", (app: SettingsConfig, $html: JQuery) => {
     }
 });
 
+Hooks.on("drawMeasuredTemplate", (template: MeasuredTemplatePF2e) => {
+    if (!template.isPreview) return;
+
+    addFadeOuts(PF2eHudPopup.apps);
+
+    HUDS.token.close();
+    HUDS.persistent.closeSidebar();
+});
+
+Hooks.on("destroyMeasuredTemplate", (template: MeasuredTemplatePF2e) => {
+    if (!template.isPreview) return;
+
+    removeFadeOuts(PF2eHudPopup.apps);
+});
+
+window.addEventListener(
+    "dragstart",
+    () => {
+        addFadeOuts();
+        window.addEventListener("dragend", () => removeFadeOuts(), { once: true, capture: true });
+    },
+    true
+);
+
+function addFadeOuts(elements: ElementsWithClassList = getFadingElements()) {
+    for (const element of elements) {
+        element.classList.add("pf2e-hud-fadeout");
+    }
+}
+
+function removeFadeOuts(elements: ElementsWithClassList = getFadingElements()) {
+    setTimeout(() => {
+        for (const element of getFadingElements()) {
+            element.classList.remove("pf2e-hud-fadeout");
+        }
+    }, 500);
+}
+
 function refreshSidebar() {
     HUDS.token.sidebar?.render();
     HUDS.persistent.sidebar?.render();
@@ -297,26 +335,7 @@ function getFadingElements() {
     return R.pipe(list, R.filter(R.isTruthy));
 }
 
-window.addEventListener(
-    "dragstart",
-    () => {
-        for (const element of getFadingElements()) {
-            element.classList.add("pf2e-hud-fadeout");
-        }
-
-        window.addEventListener(
-            "dragend",
-            () => {
-                setTimeout(() => {
-                    for (const element of getFadingElements()) {
-                        element.classList.remove("pf2e-hud-fadeout");
-                    }
-                }, 500);
-            },
-            { once: true, capture: true }
-        );
-    },
-    true
-);
+type ElementWithClassList = { readonly classList: DOMTokenList };
+type ElementsWithClassList = Array<ElementWithClassList> | Set<ElementWithClassList>;
 
 export { HUDS as hud };
