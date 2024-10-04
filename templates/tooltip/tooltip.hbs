@@ -4,7 +4,7 @@
 </div>
 {{/if}}
 
-{{#if expended}}
+{{#if extended}}
 <div class="inner">
     {{#if name}}
     <header>{{name}}</header>
@@ -78,7 +78,9 @@
     </section>
     {{/if}}
 </div>
-{{else if status}}
+{{/if}}
+
+{{#if status}}
 <div class="status" style="--hue: {{health.total.hue}};" data-section="health-status">
     {{status}}
 </div>

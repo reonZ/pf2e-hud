@@ -69,6 +69,7 @@
         justify-content: center;
         gap: 0.3em var(--inner-gap);
         border: var(--outer-border);
+        margin: auto;
 
         header,
         hr {
@@ -147,6 +148,14 @@
                     }
                 }
             }
+        }
+
+        + .status {
+            width: fit-content;
+            margin: auto;
+            margin-top: -2px;
+            z-index: -1;
+            position: relative;
         }
     }
 }

@@ -80,7 +80,7 @@
             "tooltip": {
                 "title": "Token Tooltip",
                 "status": {
-                    "name": "Health Status",
+                    "name": "Health Status Entries",
                     "hint": "Comma separated strings representing the different divisions of a creature's health state from worst to best. Leave empty to disable.",
                     "default": "Dead, At Death's Door, Not Feeling Good, Seen Better Days, Barely Hurt, Perfectly Fine"
                 },
@@ -91,6 +91,15 @@
                         "never": "Never",
                         "owned": "Owned Only",
                         "observed": "Owned and observed"
+                    }
+                },
+                "showStatus": {
+                    "name": "Display Health Status",
+                    "hint": "When should the creatures' health state be displayed on the tooltip if enabled in you world.",
+                    "choices": {
+                        "never": "Never",
+                        "small": "Small Version Only",
+                        "all": "Always"
                     }
                 },
                 "delay": {

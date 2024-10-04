@@ -64,6 +64,7 @@ const DISTANCES: Record<
 const DELAY_BUFFER = 50;
 const SETTING_POSITION = R.keys(POSITIONS);
 const SETTING_TYPE = ["never", "owned", "observed"] as const;
+const SETTING_SHOW_STATUS = ["never", "small", "all"] as const;
 const SETTING_DISTANCE = ["never", "idiot", "smart", "weird"] as const;
 const SETTING_NO_DEAD = ["none", "small", "full"] as const;
 
@@ -104,6 +105,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
             "status",
             "enabled",
             "type",
+            "showStatus",
             "delay",
             "position",
             "fontSize",
@@ -120,6 +122,13 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
                 type: String,
                 default: undefined,
                 onChange: () => this.enable(),
+            },
+            {
+                key: "showStatus",
+                type: String,
+                choices: SETTING_SHOW_STATUS,
+                default: "small",
+                scope: "client",
             },
             {
                 key: "type",
@@ -323,7 +332,16 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
             return baseData;
         }
 
+        const isOwner = actor.isOwner;
+        const isObserver = userCanObserveActor(actor);
+        const extendedType = this.getSetting("type");
+        const extended =
+            (extendedType === "owned" && isOwner) || (extendedType === "observed" && isObserver);
+
         const status = (() => {
+            const statusType = this.getSetting("showStatus");
+            if (statusType === "never" || (statusType === "small" && extended)) return;
+
             const statuses = this.healthStatuses;
             if (!statuses) return;
 
@@ -345,11 +363,6 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
             return statuses.at(pick - 1);
         })();
 
-        const setting = this.getSetting("type");
-        const isOwner = actor.isOwner;
-        const isObserver = userCanObserveActor(actor);
-
-        const extended = (setting === "owned" && isOwner) || (setting === "observed" && isObserver);
         if (!extended) {
             return {
                 ...baseData,
@@ -376,8 +389,8 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
             statistics: getStatistics(actor),
             distance: baseData.distance,
             health: statsMain.health,
-            expended: extended,
             level: actor.level,
+            extended,
             status,
             name,
             iwr,
@@ -639,7 +652,7 @@ type StatusedTooltipContext = TooltipContextBase & {
 type TooltipContext = StatusedTooltipContext & {
     distance: DistanceContext | undefined;
     status: string | undefined;
-    expended: boolean;
+    extended: boolean;
     level: number;
     name: string | undefined;
     speeds: StatsSpeed[];
@@ -657,6 +670,7 @@ type TooltipSettings = BaseTokenSettings & {
     delay: number;
     status: string;
     drawDistance: number;
+    showStatus: (typeof SETTING_SHOW_STATUS)[number];
     type: (typeof SETTING_TYPE)[number];
     noDead: (typeof SETTING_NO_DEAD)[number];
     position: (typeof SETTING_POSITION)[number];
