@@ -1,3 +1,21 @@
+#
+
+-   `Combat Tracker`:
+    -   now fade out when dragging anything in the page or when placing a template on the scene
+    -   fix image overflow on the last combatant row when `Texture Scaling` is enabled
+-   `Popup`:
+    -   now fade out when placing a template on the scene
+-   `Sidebars`:
+    -   now close when placing a template on the scene
+    -   you can now modify the `DC` value of skill actions that have a default one in the variant popup
+-   `Token HUD`:
+    -   now close when placing a template on the scene
+-   `Token Tooltip`:
+    -   add a new `Display Health Status` client setting
+        -   users can now individually disable the showing of health state on the tooltip
+        -   allows the health state to be shown on the extended version of the tooltip as well as the small one
+    -   rename the `Health Status` setting into `Health Status Entries`
+
 # 1.14.0
 
 -   forcibly set the font of the different HUDs to avoid theming modules changing it and messing with the tight layouts
@@ -26,7 +44,8 @@
         -   using the shortcut will now "retrieve" it instead of using it right away
     -   add a subtitle to stance shortcuts when out of combat to indicate how to force its use
     -   fix shortcut icons being completely black making them almost impossible to distinguish
--   `Popup`:
+-   :
+    -   now fade out when placing a template:
     -   popup now has its own section in the settings
     -   add `Font Size` setting to popup
     -   the popup related settings have been renamed and reset
@@ -45,7 +64,8 @@
 
 -   this is a system `6.3.1` release
 -   fix `Earn Income` skill action not working and move it to the `Extras` sidebar instead
--   fix `Popup` application not having a vertical scrollbar when reaching the viewport's height
+-   fix :
+    -   now fade out when placing a template application not having a vertical scrollbar when reaching the viewport's height
 -   fix `Take Cover` action not removing the effect if it is currently present on the actor
 
 # 1.10.1
@@ -428,7 +448,8 @@
 -   added toggles to the exploration actions
 -   now properly disable attack buttons in the sidebars and shortcuts if they can't be used
 -   added action traits (`mindsmith`) to the actions sidebar
--   the `Popup` is now linked to its originating actor and will be re-rendered on update
+-   the :
+    -   now fade out when placing a template is now linked to its originating actor and will be re-rendered on update
 -   `Persistent HUD`:
     -   added a new effects section that display the effects currently present on the persistent actor even when not selected
     -   added a new `Hold Shift for Effects` setting
@@ -509,7 +530,8 @@
     -   the module still decides whenever a new column needs to be created
 -   `Persistent HUD`:
     -   added a new `Disable Flash` setting
--   `Popup`:
+-   :
+    -   now fade out when placing a template:
     -   the popup can now be minimize and resized
     -   added a new `Popup on Cursor` setting to center the popup on the cursor when first rendered
     -   `@Damage` and `@Check` links aren't usable yet, the system has [plans](https://github.com/foundryvtt/pf2e/pull/15009) for those
@@ -521,7 +543,8 @@
 
 -   `Combat Tracker`
     -   prevent being able to drag & drop combatant when the tracker is collapsed
--   `Popup`
+-   :
+    -   now fade out when placing a template
     -   will now fade out when the user is dragging anything in the page
 -   `Token HUD`
     -   will now fade out when the user is dragging anything in the page
@@ -535,7 +558,8 @@
 # 0.4.0
 
 -   made a complete refactor of the templates across the different HUDs
--   `Popup`
+-   :
+    -   now fade out when placing a template
     -   implemented the fundamentals for the popup application
     -   the popup is an actual foundry application and is persistent (can be moved/minimized)
 -   `Token HUD`
