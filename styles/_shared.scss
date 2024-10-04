@@ -381,10 +381,10 @@ aside.locked-tooltip {
     opacity: 0.1;
     transition: opacity 250ms;
 
-    &#pf2e-hud-token-main {
-        .panel {
-            pointer-events: none;
-        }
+    &.pf2e-hud-popup,
+    &#pf2e-hud-token-main .panel,
+    &#pf2e-hud-tracker {
+        pointer-events: none;
     }
 }
 

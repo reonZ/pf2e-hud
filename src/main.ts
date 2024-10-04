@@ -284,7 +284,7 @@ Hooks.on("renderSettingsConfig", (app: SettingsConfig, $html: JQuery) => {
 Hooks.on("drawMeasuredTemplate", (template: MeasuredTemplatePF2e) => {
     if (!template.isPreview) return;
 
-    addFadeOuts(PF2eHudPopup.apps);
+    addFadeOuts(true);
 
     HUDS.token.close();
     HUDS.persistent.closeSidebar();
@@ -293,7 +293,7 @@ Hooks.on("drawMeasuredTemplate", (template: MeasuredTemplatePF2e) => {
 Hooks.on("destroyMeasuredTemplate", (template: MeasuredTemplatePF2e) => {
     if (!template.isPreview) return;
 
-    removeFadeOuts(PF2eHudPopup.apps);
+    removeFadeOuts(true);
 });
 
 window.addEventListener(
@@ -305,15 +305,15 @@ window.addEventListener(
     true
 );
 
-function addFadeOuts(elements: ElementsWithClassList = getFadingElements()) {
-    for (const element of elements) {
+function addFadeOuts(persistentOnly?: boolean) {
+    for (const element of getFadingElements(persistentOnly)) {
         element.classList.add("pf2e-hud-fadeout");
     }
 }
 
-function removeFadeOuts(elements: ElementsWithClassList = getFadingElements()) {
+function removeFadeOuts(persistentOnly?: boolean) {
     setTimeout(() => {
-        for (const element of getFadingElements()) {
+        for (const element of getFadingElements(persistentOnly)) {
             element.classList.remove("pf2e-hud-fadeout");
         }
     }, 500);
@@ -324,18 +324,19 @@ function refreshSidebar() {
     HUDS.persistent.sidebar?.render();
 }
 
-function getFadingElements() {
-    const list = [
-        HUDS.token.mainElement,
-        ...[HUDS.token, HUDS.persistent].map(
-            (x) => x.sidebar && x.sidebar.key !== "extras" && x.sidebar.element
-        ),
-        ...PF2eHudPopup.apps,
-    ];
-    return R.pipe(list, R.filter(R.isTruthy));
-}
+function getFadingElements(persistentOnly: boolean = false) {
+    const list = persistentOnly
+        ? [...PF2eHudPopup.apps, HUDS.tracker]
+        : [
+              HUDS.token.mainElement,
+              ...[HUDS.token, HUDS.persistent].map(
+                  (x) => x.sidebar && x.sidebar.key !== "extras" && x.sidebar.element
+              ),
+              ...PF2eHudPopup.apps,
+              HUDS.tracker,
+          ];
 
-type ElementWithClassList = { readonly classList: DOMTokenList };
-type ElementsWithClassList = Array<ElementWithClassList> | Set<ElementWithClassList>;
+    return R.filter(list, R.isTruthy);
+}
 
 export { HUDS as hud };
