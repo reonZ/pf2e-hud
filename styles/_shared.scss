@@ -383,7 +383,14 @@ aside.locked-tooltip {
 
     &.pf2e-hud-popup,
     &#pf2e-hud-token-main .panel,
-    &#pf2e-hud-tracker {
+    &#pf2e-hud-tracker,
+    #pf2e-hud-persistent-menu,
+    #pf2e-hud-persistent-portrait,
+    #pf2e-hud-persistent-portrait .panel,
+    #pf2e-hud-persistent-main .app,
+    #hotbar #action-bar,
+    #hotbar #hotbar-directory-controls,
+    #hotbar #hotbar-page-controls {
         pointer-events: none;
     }
 }

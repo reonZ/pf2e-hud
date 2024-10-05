@@ -284,7 +284,7 @@ Hooks.on("renderSettingsConfig", (app: SettingsConfig, $html: JQuery) => {
 Hooks.on("drawMeasuredTemplate", (template: MeasuredTemplatePF2e) => {
     if (!template.isPreview) return;
 
-    addFadeOuts(true);
+    addFadeOuts();
 
     HUDS.token.close();
     HUDS.persistent.closeSidebar();
@@ -293,27 +293,30 @@ Hooks.on("drawMeasuredTemplate", (template: MeasuredTemplatePF2e) => {
 Hooks.on("destroyMeasuredTemplate", (template: MeasuredTemplatePF2e) => {
     if (!template.isPreview) return;
 
-    removeFadeOuts(true);
+    removeFadeOuts();
 });
 
 window.addEventListener(
     "dragstart",
-    () => {
-        addFadeOuts();
-        window.addEventListener("dragend", () => removeFadeOuts(), { once: true, capture: true });
+    (event) => {
+        addFadeOuts(event);
+        window.addEventListener("dragend", () => removeFadeOuts(event), {
+            once: true,
+            capture: true,
+        });
     },
     true
 );
 
-function addFadeOuts(persistentOnly?: boolean) {
-    for (const element of getFadingElements(persistentOnly)) {
+function addFadeOuts(event?: DragEvent) {
+    for (const element of getFadingElements(event)) {
         element?.classList?.add("pf2e-hud-fadeout");
     }
 }
 
-function removeFadeOuts(persistentOnly?: boolean) {
+function removeFadeOuts(event?: DragEvent) {
     setTimeout(() => {
-        for (const element of getFadingElements(persistentOnly)) {
+        for (const element of getFadingElements(event)) {
             element?.classList?.remove("pf2e-hud-fadeout");
         }
     }, 500);
@@ -324,17 +327,25 @@ function refreshSidebar() {
     HUDS.persistent.sidebar?.render();
 }
 
-function getFadingElements(persistentOnly: boolean = false) {
-    return persistentOnly
-        ? [...PF2eHudPopup.apps, HUDS.tracker]
-        : [
-              HUDS.token.mainElement,
-              ...[HUDS.token, HUDS.persistent].map((x) =>
-                  x.sidebar && x.sidebar.key !== "extras" ? x.sidebar.element : undefined
-              ),
-              ...PF2eHudPopup.apps,
-              HUDS.tracker,
-          ];
+function getFadingElements(event?: DragEvent) {
+    const elements: Maybe<{ classList: DOMTokenList | undefined }>[] = [
+        ...PF2eHudPopup.apps,
+        HUDS.tracker,
+    ];
+
+    if (event) {
+        elements.push(HUDS.token.mainElement);
+
+        for (const element of [HUDS.token, HUDS.persistent]) {
+            if (element.sidebar && element.sidebar.key !== "extras") {
+                elements.push(element.sidebar.element);
+            }
+        }
+    } else {
+        elements.push(HUDS.persistent);
+    }
+
+    return elements;
 }
 
 export { HUDS as hud };
