@@ -80,7 +80,7 @@
             "tooltip": {
                 "title": "Podpowiedzi tokena",
                 "status": {
-                    "name": "Stan zdrowia",
+                    "name": "Wpisy stanu zdrowia",
                     "hint": "Oddzielone przecinkami ciągi reprezentujące różne podziały stanu zdrowia stworzenia od najgorszego do najlepszego. Pozostaw puste, aby wyłączyć.",
                     "default": "Martwy, Bliski śmierci, Ciężko ranny, Ranny, Lekko ranny, Bez obrażeń"
                 },
@@ -91,6 +91,15 @@
                         "never": "Nigdy",
                         "owned": "Tylko właściciel",
                         "observed": "Właściciel i obserwator"
+                    }
+                },
+                "showStatus": {
+                    "name": "Wyświetl stan zdrowia",
+                    "hint": "Informacja o tym, kiedy stan zdrowia stworzeń powinien być wyświetlany w podpowiedzi, jeśli jest ona włączona na danym świecie.",
+                    "choices": {
+                        "never": "Nigdy",
+                        "small": "Tylko mała wersja",
+                        "all": "Zawsze"
                     }
                 },
                 "delay": {
@@ -346,7 +355,7 @@
             "join": "Dołącz do tury"
         },
         "resources": {
-            "resource": "Zasoby",
+            "resource": "Zasób",
             "add": "Dodaj nowy zasób",
             "menu": {
                 "title": {
