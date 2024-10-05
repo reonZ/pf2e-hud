@@ -1,4 +1,10 @@
-#
+# 1.15.1
+
+-   `Persistent HUD`:
+    -   now fade out when placing a template on the scene (including the hotbar)
+-   fix fade-out error when some HUDs are disabled on the client
+
+# 1.15.0
 
 -   `Combat Tracker`:
     -   now fade out when dragging anything in the page or when placing a template on the scene
