@@ -307,14 +307,14 @@ window.addEventListener(
 
 function addFadeOuts(persistentOnly?: boolean) {
     for (const element of getFadingElements(persistentOnly)) {
-        element.classList.add("pf2e-hud-fadeout");
+        element?.classList?.add("pf2e-hud-fadeout");
     }
 }
 
 function removeFadeOuts(persistentOnly?: boolean) {
     setTimeout(() => {
         for (const element of getFadingElements(persistentOnly)) {
-            element.classList.remove("pf2e-hud-fadeout");
+            element?.classList?.remove("pf2e-hud-fadeout");
         }
     }, 500);
 }
@@ -325,18 +325,16 @@ function refreshSidebar() {
 }
 
 function getFadingElements(persistentOnly: boolean = false) {
-    const list = persistentOnly
+    return persistentOnly
         ? [...PF2eHudPopup.apps, HUDS.tracker]
         : [
               HUDS.token.mainElement,
-              ...[HUDS.token, HUDS.persistent].map(
-                  (x) => x.sidebar && x.sidebar.key !== "extras" && x.sidebar.element
+              ...[HUDS.token, HUDS.persistent].map((x) =>
+                  x.sidebar && x.sidebar.key !== "extras" ? x.sidebar.element : undefined
               ),
               ...PF2eHudPopup.apps,
               HUDS.tracker,
           ];
-
-    return R.filter(list, R.isTruthy);
 }
 
 export { HUDS as hud };
