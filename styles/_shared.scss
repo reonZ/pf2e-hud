@@ -381,7 +381,6 @@ aside.locked-tooltip {
     opacity: 0.1;
     transition: opacity 250ms;
 
-    &.pf2e-hud-popup,
     &#pf2e-hud-token-main .panel,
     &#pf2e-hud-tracker,
     #pf2e-hud-persistent-menu,
@@ -392,6 +391,12 @@ aside.locked-tooltip {
     #hotbar #hotbar-directory-controls,
     #hotbar #hotbar-page-controls {
         pointer-events: none;
+    }
+
+    &.pf2e-hud-fadeout-forced {
+        &.pf2e-hud-popup {
+            pointer-events: none;
+        }
     }
 }
 

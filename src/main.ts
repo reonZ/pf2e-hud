@@ -310,14 +310,21 @@ window.addEventListener(
 
 function addFadeOuts(event?: DragEvent) {
     for (const element of getFadingElements(event)) {
-        element?.classList?.add("pf2e-hud-fadeout");
+        const classList = element?.classList;
+        if (!classList) continue;
+
+        classList.add("pf2e-hud-fadeout");
+
+        if (!event) {
+            classList.add("pf2e-hud-fadeout-forced");
+        }
     }
 }
 
 function removeFadeOuts(event?: DragEvent) {
     setTimeout(() => {
         for (const element of getFadingElements(event)) {
-            element?.classList?.remove("pf2e-hud-fadeout");
+            element?.classList?.remove("pf2e-hud-fadeout", "pf2e-hud-fadeout-forced");
         }
     }, 500);
 }
