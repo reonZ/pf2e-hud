@@ -1,3 +1,9 @@
+# 1.15.2
+
+-   `Popup`:
+    -   fix not being able to drag inline links out of the popup
+    -   fix property tags being too small
+
 # 1.15.1
 
 -   `Persistent HUD`:
