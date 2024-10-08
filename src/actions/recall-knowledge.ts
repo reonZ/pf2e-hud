@@ -24,7 +24,7 @@ const SUCCESS = {
 } as const;
 
 async function rollRecallKnowledge(actor: CreaturePF2e) {
-    const roll = await new Roll("1d20").evaluate();
+    const roll = await new Roll("1d20").evaluate({ allowInteractive: false });
     const dieResult = roll.dice[0].total!;
     const dieSuccess = dieResult === 1 ? "0" : dieResult === 20 ? "3" : "";
     const lores = Object.values(actor.skills).filter((skill) => skill.lore);
