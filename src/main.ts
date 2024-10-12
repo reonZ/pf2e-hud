@@ -335,10 +335,7 @@ function refreshSidebar() {
 }
 
 function getFadingElements(event?: DragEvent) {
-    const elements: Maybe<{ classList: DOMTokenList | undefined }>[] = [
-        ...PF2eHudPopup.apps,
-        HUDS.tracker,
-    ];
+    const elements: Maybe<{ classList: DOMTokenList | undefined }>[] = [...PF2eHudPopup.apps];
 
     if (event) {
         elements.push(HUDS.token.mainElement);
@@ -349,7 +346,7 @@ function getFadingElements(event?: DragEvent) {
             }
         }
     } else {
-        elements.push(HUDS.persistent);
+        elements.push(HUDS.persistent, HUDS.tracker);
     }
 
     return elements;
