@@ -1,3 +1,9 @@
+# 1.15.3
+
+-   `Combat Tracker`
+    -   no longer fade out when dragging anything on the page
+-   skip manual dice roll input when rolling recall knowledge
+
 # 1.15.2
 
 -   `Popup`:
