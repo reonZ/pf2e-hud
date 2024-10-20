@@ -1,3 +1,11 @@
+# 1.16.0
+
+-   use `string#replace` instead of `string#replaceAll` for compatibility with older browsers
+-   `Sidebars`:
+    -   fix exploration actions which show up in the `skills` sidebar being excluded from the `actions` sidebar
+-   `Token Tooltip`:
+    -   add support for hazards without any "health" data
+
 # 1.15.3
 
 -   `Combat Tracker`
