@@ -107,7 +107,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
 
                 if (
                     (ability.slug === "elemental-blast" && hasKineticAura) ||
-                    (sourceId && !isExploration && excludedUUIDS.includes(sourceId)) ||
+                    (sourceId && excludedUUIDS.includes(sourceId)) ||
                     (ability.isOfType("feat") && !ability.actionCost) ||
                     traits.includes("downtime") ||
                     (!inParty && isExploration)

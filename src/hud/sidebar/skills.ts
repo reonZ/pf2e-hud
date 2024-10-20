@@ -461,6 +461,7 @@ const SKILLS: RawSkill[] = [
             {
                 actionId: "avoid-notice",
                 uuid: "Compendium.pf2e.actionspf2e.Item.IE2nThCmoyhQA0Jn",
+                exclude: false,
             },
             {
                 actionId: "conceal-an-object",
@@ -526,7 +527,9 @@ const SKILLS: RawSkill[] = [
 const SKILL_ACTIONS_UUIDS = R.pipe(
     SKILLS,
     R.flatMap((rawSkill) => rawSkill.actions),
-    R.map((action) => (typeof action === "object" ? action.uuid : undefined)),
+    R.map((action) =>
+        typeof action === "object" && action.exclude !== false ? action.uuid : undefined
+    ),
     R.concat(Object.values(SHARED_ACTIONS).map((action) => action.uuid)),
     R.filter(R.isTruthy),
     R.unique()
@@ -1068,6 +1071,7 @@ type PreparedSkillAction = Omit<RawSkillAction, "variants"> & {
 type RawSkillAction = {
     actionId: string;
     uuid: string;
+    exclude?: boolean;
     useInstance?: boolean;
     cost?: ActionCost["value"] | ActionCost["type"];
     map?: true;
@@ -1112,9 +1116,9 @@ type SkillsContext = SidebarContext & {
 export {
     ACTION_IMAGES,
     ACTION_VARIANTS,
-    PF2eHudSidebarSkills,
     SHARED_ACTIONS,
     SKILL_ACTIONS_UUIDS,
+    PF2eHudSidebarSkills,
     getLoreSlug,
     getMapLabel,
     getSkillVariantName,
