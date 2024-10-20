@@ -146,7 +146,7 @@ $panel-gap: 5px;
             color: var(--icon-color);
         }
 
-        span + span {
+        span + span:not(.separator) {
             min-width: 1.5em;
             text-align: center;
         }
@@ -162,7 +162,7 @@ $panel-gap: 5px;
             align-items: center;
             justify-items: center;
 
-            .separator {
+            input + .separator {
                 margin-left: 0.2em;
             }
         }

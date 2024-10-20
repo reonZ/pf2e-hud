@@ -188,9 +188,9 @@ class PF2eHudToken extends makeAdvancedHUD(
 
         const actor = parentData.actor;
         const statsHeader = getStatsHeader(actor);
-        if (!statsHeader.health) return parentData;
-
         const isHazard = actor.isOfType("hazard");
+        if (!isHazard && !statsHeader.health) return parentData;
+
         const sidebars =
             isHazard || actor.isOfType("army")
                 ? getSidebars(actor).slice(0, 1)
@@ -210,7 +210,7 @@ class PF2eHudToken extends makeAdvancedHUD(
     }
 
     async _renderHTML(context: Partial<TokenContext>, options: TokenRenderOptions) {
-        if (!context.health) return "";
+        if (!context.isHazard && !context.health) return "";
         return this.renderTemplate("hud", context);
     }
 

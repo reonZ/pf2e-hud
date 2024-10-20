@@ -37,7 +37,15 @@
 {{!-- hp --}}
 <div class="double" data-section="hp" data-tooltip="PF2E.HitPointsHeader">
     <span><i class="fa-solid fa-heart"></i></span>
+    {{#if health}}
     {{> (@root.partial 'numbers') name="system.attributes.hp" entry=health}}
+    {{else}}
+    <div class="numbers">
+        <span>——</span>
+        <span class="separator">/</span>
+        <span class="max">——</span>
+    </div>
+    {{/if}}
 </div>
 
 {{!-- ac --}}
