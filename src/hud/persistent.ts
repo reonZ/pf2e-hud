@@ -2265,7 +2265,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                         return {
                             type: shortcutData.variant ? "blast" : "melee",
                             tooltip,
-                            value: tooltip.replaceAll(/[^\d]/g, ""),
+                            value: tooltip.replace(/[^\d]/g, ""),
                         } as const;
                     })();
 
