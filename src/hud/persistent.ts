@@ -85,7 +85,8 @@ import {
     rollStatistic,
 } from "./sidebar/skills";
 
-const PARTS = ["menu", "portrait", "main", "effects"] as const;
+const PARTS_WITHOUT_EFFECT = ["menu", "portrait", "main", "shortcuts"] as const;
+const PARTS = [...PARTS_WITHOUT_EFFECT, "effects"] as const;
 const ROMAN_RANKS = ["", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"] as const;
 
 class PF2eHudPersistent extends makeAdvancedHUD(
@@ -126,13 +127,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         portrait: null,
         main: null,
         effects: null,
+        shortcuts: null,
     };
 
     #hotbar: HTMLElement | null = null;
 
     #parts: Parts = {
         main: {
-            tooltipDirection: "UP",
             prepareContext: this.#prepareMainContext.bind(this),
             activateListeners: this.#activateMainListeners.bind(this),
         },
@@ -144,14 +145,17 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         },
         portrait: {
             classes: ["app"],
-            tooltipDirection: "UP",
             prepareContext: this.#preparePortraitContext.bind(this),
             activateListeners: this.#activatePortraitListeners.bind(this),
         },
         effects: {
-            tooltipDirection: "UP",
             prepareContext: this.#prepareEffectsContext.bind(this),
             activateListeners: this.#activateEffectsListeners.bind(this),
+        },
+        shortcuts: {
+            classes: ["shortcuts"],
+            prepareContext: this.#prepareShortcutsContext.bind(this),
+            activateListeners: this.#activateShortcutsListeners.bind(this),
         },
     };
 
@@ -209,7 +213,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: true,
                 scope: "client",
                 onChange: () => {
-                    this.render({ parts: ["main"] });
+                    this.render({ parts: ["shortcuts"] });
                 },
             },
             {
@@ -218,7 +222,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: true,
                 scope: "client",
                 onChange: () => {
-                    this.render({ parts: ["main"] });
+                    this.render({ parts: ["shortcuts"] });
                 },
             },
             {
@@ -227,7 +231,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: true,
                 scope: "client",
                 onChange: () => {
-                    this.render({ parts: ["main"] });
+                    this.render({ parts: ["shortcuts"] });
                 },
             },
             {
@@ -237,7 +241,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: "one",
                 scope: "client",
                 onChange: () => {
-                    this.render({ parts: ["main"] });
+                    this.render({ parts: ["shortcuts"] });
                 },
             },
             {
@@ -251,7 +255,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     step: 1,
                 },
                 onChange: () => {
-                    this.render({ parts: ["main"] });
+                    this.render({ parts: ["shortcuts"] });
                 },
             },
             {
@@ -261,7 +265,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 scope: "client",
                 gmOnly: true,
                 onChange: () => {
-                    this.render({ parts: ["main"] });
+                    this.render({ parts: ["shortcuts"] });
                 },
             },
             {
@@ -382,6 +386,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         return this.#elements.effects;
     }
 
+    get shortcutsElement() {
+        return this.#elements.shortcuts;
+    }
+
     get hotbarElement() {
         return (this.#hotbar = document.getElementById("hotbar"));
     }
@@ -497,7 +505,18 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         options.showUsers = this.getSetting("showUsers");
         options.showEffects = this.getSetting("showEffects");
 
-        options.parts ??= PARTS.slice();
+        if (options.parts?.length) {
+            const hasShortcutsPart = !!options.parts.findSplice((part) => part === "shortcuts");
+            if (hasShortcutsPart || options.parts.includes("main")) {
+                options.parts.push("shortcuts");
+            }
+
+            if (!options.showEffects) {
+                options.parts.findSplice((x) => x === "effects");
+            }
+        } else {
+            options.parts = options.showEffects ? PARTS.slice() : PARTS_WITHOUT_EFFECT.slice();
+        }
     }
 
     async _prepareContext(
@@ -518,23 +537,14 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         return data;
     }
 
-    async _preFirstRender(context: PersistentContext, options: PersistentRenderOptions) {
-        await super._preFirstRender(context, options);
-        options.parts = PARTS.slice();
-    }
-
     async _renderHTML(
         context: PersistentContext,
         options: PersistentRenderOptions
     ): Promise<PersistentTemplates> {
-        if (!options.showEffects) {
-            options.parts.findSplice((x) => x === "effects");
-        }
-
         return Promise.all(
             options.parts.map(async (partName) => {
                 const part = this.#parts[partName];
-                const tooltipDirection = part.tooltipDirection ?? "DOWN";
+                const tooltipDirection = part.tooltipDirection ?? "UP";
                 const partContext = await part.prepareContext(context, options);
                 const template = await this.renderTemplate(partName, {
                     i18n: templateLocalize(`persistent.${partName}`),
@@ -570,7 +580,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             const oldElement = this.#elements[name];
             const focusName = oldElement?.querySelector<HTMLInputElement>("input:focus")?.name;
 
-            if (oldElement) {
+            if (name === "shortcuts") {
+                this.mainElement
+                    ?.querySelector("#pf2e-hud-persistent-shortcuts")
+                    ?.replaceWith(element);
+            } else if (oldElement) {
                 oldElement.replaceWith(element);
             } else {
                 content.append(element);
@@ -801,7 +815,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
     #onChangeCombatant(combatant: CombatantPF2e) {
         if (this.#hasStances && this.isCurrentActor(combatant.actor)) {
-            this.render({ parts: ["main"] });
+            this.render({ parts: ["shortcuts"] });
         }
     }
 
@@ -809,7 +823,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         if (!this.savedActor && this.getSetting("autoSet") === "combat") {
             this.setActor(null, { skipSave: true, force: true });
         } else if (this.#hasStances) {
-            this.render({ parts: ["main"] });
+            this.render({ parts: ["shortcuts"] });
         }
     }
 
@@ -1089,89 +1103,18 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     async #prepareMainContext(
         context: PersistentContext,
         options: PersistentRenderOptions
-    ): Promise<MainContext | (PersistentContext & { shortcutGroups: ShortcutGroup[] })> {
-        const isGM = game.user.isGM;
+    ): Promise<MainContext | PersistentContext> {
         const actor = this.actor;
-        const nbSlots = this.getSetting("shortcutSlots");
 
         if (!actor) {
-            return {
-                ...context,
-                shortcutGroups: R.range(0, nbSlots).map((n) => {
-                    return {
-                        split: false,
-                        shortcuts: [
-                            {
-                                index: "0",
-                                groupIndex: String(n),
-                                isEmpty: true,
-                            },
-                        ],
-                    } satisfies ShortcutGroup;
-                }),
-            };
-        }
-
-        const worldActor = this.worldActor!;
-        const isNPC = actor.isOfType("npc");
-        const noShortcuts = !getFlag(worldActor, "persistent.shortcuts", game.user.id);
-        const autoFill = isNPC && noShortcuts && this.getSetting("autoFillNpc");
-
-        const shortcutsOwner = (() => {
-            if (!isGM || isNPC || !noShortcuts || !this.getSetting("ownerShortcuts")) return;
-            const owner = getOwner(actor, false)?.id;
-            return owner && getFlag(worldActor, "persistent.shortcuts", owner) ? owner : undefined;
-        })();
-
-        this.#hasStances = false;
-        this.#shortcuts = {};
-        this.#shortcutData = {};
-        this.#isVirtual = !!shortcutsOwner || autoFill;
-
-        const cached: ShortcutCache = {};
-        const shortcutGroups: ShortcutGroup[] = [];
-
-        for (const groupIndex of R.range(0, nbSlots)) {
-            let isAttack = false;
-            const shortcuts: (Shortcut | EmptyShortcut)[] = [];
-
-            for (const index of R.range(0, 4)) {
-                const shortcut: Shortcut | EmptyShortcut = isAttack
-                    ? { index: String(index), groupIndex: String(groupIndex), isEmpty: true }
-                    : autoFill
-                    ? await this.#fillShortcut(groupIndex, index, cached)
-                    : await this.#createShortcutFromFlag(groupIndex, index, cached, shortcutsOwner);
-
-                shortcuts.push(shortcut);
-                this.#shortcuts[`${groupIndex}-${index}`] = shortcut;
-
-                if (index === 0 && !shortcut.isEmpty && shortcut.type === "attack") {
-                    isAttack = true;
-                }
-            }
-
-            const firstShortcut = shortcuts.find(
-                (shortcut): shortcut is Shortcut => "type" in shortcut
-            );
-            const split = !!firstShortcut && firstShortcut.type !== "attack";
-
-            shortcutGroups.push({
-                split,
-                shortcuts: split ? shortcuts : [firstShortcut ?? shortcuts[0]],
-            });
+            return context;
         }
 
         const data: MainContext = {
             ...context,
             ...getAdvancedStats(actor, this),
             sidebars: getSidebars(actor, this.sidebar?.key),
-            shortcutGroups,
-            noShortcuts,
-            isVirtual: this.isVirtual,
-            isAutoFill: autoFill,
-            isOwnerShortcuts: !!shortcutsOwner,
             showEffects: options.showEffects,
-            variantLabel,
         };
 
         return data;
@@ -1263,7 +1206,93 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 }
             }
         });
+    }
 
+    async #prepareShortcutsContext(
+        context: PersistentContext,
+        options: PersistentRenderOptions
+    ): Promise<ShortcutsContext | (PersistentContext & { shortcutGroups: ShortcutGroup[] })> {
+        const actor = this.actor;
+        const nbSlots = this.getSetting("shortcutSlots");
+
+        if (!actor) {
+            return {
+                ...context,
+                shortcutGroups: R.range(0, nbSlots).map((n) => {
+                    return {
+                        split: false,
+                        shortcuts: [
+                            {
+                                index: "0",
+                                groupIndex: String(n),
+                                isEmpty: true,
+                            },
+                        ],
+                    } satisfies ShortcutGroup;
+                }),
+            };
+        }
+
+        const isGM = game.user.isGM;
+        const cached: ShortcutCache = {};
+        const shortcutGroups: ShortcutGroup[] = [];
+        const worldActor = this.worldActor!;
+        const isNPC = actor.isOfType("npc");
+        const noShortcuts = !getFlag(worldActor, "persistent.shortcuts", game.user.id);
+        const autoFill = isNPC && noShortcuts && this.getSetting("autoFillNpc");
+
+        const shortcutsOwner = (() => {
+            if (!isGM || isNPC || !noShortcuts || !this.getSetting("ownerShortcuts")) return;
+            const owner = getOwner(actor, false)?.id;
+            return owner && getFlag(worldActor, "persistent.shortcuts", owner) ? owner : undefined;
+        })();
+
+        this.#hasStances = false;
+        this.#shortcuts = {};
+        this.#shortcutData = {};
+        this.#isVirtual = !!shortcutsOwner || autoFill;
+
+        for (const groupIndex of R.range(0, nbSlots)) {
+            let isAttack = false;
+            const shortcuts: (Shortcut | EmptyShortcut)[] = [];
+
+            for (const index of R.range(0, 4)) {
+                const shortcut: Shortcut | EmptyShortcut = isAttack
+                    ? { index: String(index), groupIndex: String(groupIndex), isEmpty: true }
+                    : autoFill
+                    ? await this.#fillShortcut(groupIndex, index, cached)
+                    : await this.#createShortcutFromFlag(groupIndex, index, cached, shortcutsOwner);
+
+                shortcuts.push(shortcut);
+                this.#shortcuts[`${groupIndex}-${index}`] = shortcut;
+
+                if (index === 0 && !shortcut.isEmpty && shortcut.type === "attack") {
+                    isAttack = true;
+                }
+            }
+
+            const firstShortcut = shortcuts.find(
+                (shortcut): shortcut is Shortcut => "type" in shortcut
+            );
+            const split = !!firstShortcut && firstShortcut.type !== "attack";
+
+            shortcutGroups.push({
+                split,
+                shortcuts: split ? shortcuts : [firstShortcut ?? shortcuts[0]],
+            });
+        }
+
+        const data: ShortcutsContext = {
+            ...context,
+            shortcutGroups,
+            isVirtual: this.isVirtual,
+            variantLabel,
+        };
+
+        return data;
+    }
+
+    #activateShortcutsListeners(html: HTMLElement) {
         const shortcutElements = html.querySelectorAll<HTMLElement>(
             ".stretch .shortcuts .shortcut"
         );
@@ -1282,8 +1311,23 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 );
             });
 
-            shortcutElement.addEventListener("contextmenu", () => {
-                this.#onDeleteShortcut(shortcutElement);
+            shortcutElement.addEventListener("contextmenu", async () => {
+                const { groupIndex, index } = elementDataset(shortcutElement);
+
+                if (this.isVirtual) {
+                    if (this.#shortcutData[groupIndex]?.[index]) {
+                        delete this.#shortcutData[groupIndex][index];
+                    }
+                    this.#overrideShortcutData();
+                } else {
+                    await unsetFlag(
+                        this.worldActor!,
+                        "persistent.shortcuts",
+                        game.user.id,
+                        groupIndex,
+                        index
+                    );
+                }
             });
 
             if (!arrayIncludes(["empty", "disabled", "attack"], classList)) {
@@ -1306,25 +1350,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             for (const auxilaryElement of auxilaryElements) {
                 auxilaryElement.dataset.tooltip = auxilaryElement.innerHTML.trim();
             }
-        }
-    }
-
-    async #onDeleteShortcut(shortcutElement: HTMLElement) {
-        const { groupIndex, index } = elementDataset(shortcutElement);
-
-        if (this.isVirtual) {
-            if (this.#shortcutData[groupIndex]?.[index]) {
-                delete this.#shortcutData[groupIndex][index];
-            }
-            this.#overrideShortcutData();
-        } else {
-            await unsetFlag(
-                this.worldActor!,
-                "persistent.shortcuts",
-                game.user.id,
-                groupIndex,
-                index
-            );
         }
     }
 
@@ -2685,19 +2710,19 @@ type PortraitContext = PersistentContext &
 type MainContext = PersistentContext &
     StatsAdvanced & {
         sidebars: SidebarMenu[];
-        shortcutGroups: ShortcutGroup[];
-        noShortcuts: boolean;
-        isVirtual: boolean;
-        isAutoFill: boolean;
-        isOwnerShortcuts: boolean;
         showEffects: boolean;
         alliance?: ThreeStep;
-        variantLabel: typeof variantLabel;
     };
+
+type ShortcutsContext = PersistentContext & {
+    shortcutGroups: ShortcutGroup[];
+    isVirtual: boolean;
+    variantLabel: typeof variantLabel;
+};
 
 type PersistentTemplates = { name: PartName; element: HTMLElement }[];
 
-type PartName = "menu" | "main" | "portrait" | "effects";
+type PartName = "menu" | "main" | "portrait" | "effects" | "shortcuts";
 
 type PersistentHudActor = CharacterPF2e | NPCPF2e;
 
@@ -2723,6 +2748,7 @@ type Parts = {
     portrait: Part<PortraitContext>;
     main: Part<MainContext>;
     effects: Part<EffectsContext>;
+    shortcuts: Part<ShortcutsContext>;
 };
 
 type PersistentContext = Omit<BaseActorContext<PersistentHudActor>, "actor" | "hasActor"> & {

@@ -1,0 +1,240 @@
+{{#each shortcutGroups as |shortcutGroup|}}
+<div class="shortcut-group{{#if shortcutGroup.split}} split{{/if}}">
+    {{#each shortcutGroup.shortcuts as |shortcut|}}
+    <div class="shortcut app {{shortcut.type}}{{#if shortcut.variant}} use-variant{{/if}}{{#if shortcut.hasVariants}} has-variants{{/if}}{{#if shortcut.isEmpty}} empty{{/if}}{{#if shortcut.isDisabled}} disabled{{/if}}{{#if shortcut.isFadedOut}} faded-out{{/if}}"
+        data-group-index="{{shortcut.groupIndex}}" {{#if shortcut.variant}}
+        data-variant-first="true" {{/if}} data-index="{{shortcut.index}}">
+        {{#unless shortcut.isEmpty}}{{> shortcut shortcut=shortcut}}{{/unless}}</div>
+    {{/each}}
+</div>
+{{/each}}
+
+
+{{#*inline 'shortcut'}}
+<img src="{{shortcut.img}}">
+<div class="name app">{{{shortcut.name}}}</div>
+{{#if shortcut.subtitle}}
+<div class="subtitle app">{{{shortcut.subtitle}}}</div>
+{{/if}}
+{{#if (eq shortcut.type 'consumable')}}
+{{> consumable consumable=shortcut}}
+{{else if (eq shortcut.type 'attack')}}
+{{> attack attack=shortcut}}
+{{else if (eq shortcut.type 'toggle') }}
+{{> toggle toggle=shortcut}}
+{{else if (eq shortcut.type 'action')}}
+{{> action action=shortcut}}
+{{else if (eq shortcut.type 'spell')}}
+{{> spell spell=shortcut}}
+{{else if (eq shortcut.type 'skill')}}
+{{> skill skill=shortcut}}
+{{/if}}
+{{/inline}}
+
+{{#*inline 'skill'}}
+{{> cost cost=skill.cost}}
+{{/inline}}
+
+{{#*inline 'spell'}}
+{{!-- is broken --}}
+{{#if spell.isBroken}}
+<div class="broken">
+    <i class="fa-solid fa-link-slash broken"></i>
+    <i class="fa-solid fa-link-slash broken"></i>
+</div>
+{{!-- is unequipped --}}
+{{else if spell.notCarried}}
+<div class="equip">
+    <i class="fa-solid fa-hand-back-fist"></i>
+    <i class="fa-solid fa-hand-back-fist"></i>
+</div>
+{{!-- not broken nor unequipped --}}
+{{else}}
+<div class="rank boxed">
+    <span>{{spell.rank}}</span>
+</div>
+{{> cost cost=spell.cost}}
+{{#if spell.categoryIcon}}
+<div class="category-icon">
+    <i class="{{spell.categoryIcon}}"></i>
+</div>
+{{/if}}
+{{#if spell.uses}}
+<div class="quantity boxed">
+    <span>{{spell.uses.value}}</span>
+</div>
+{{else if spell.isPrepared}}
+<div class="prepared boxed">
+    <span>{{ifThen spell.isDisabled '-' '+'}}</span>
+</div>
+{{/if}}
+{{!-- end if broken --}}
+{{/if}}
+{{/inline}}
+
+{{#*inline 'consumable'}}
+{{!-- not carried --}}
+{{#if consumable.notCarried}}
+<div class="equip">
+    <i class="fa-solid fa-hand-back-fist"></i>
+    <i class="fa-solid fa-hand-back-fist"></i>
+</div>
+{{!-- carried --}}
+{{else}}
+<div class="quantity boxed">
+    <span>{{consumable.quantity}}</span>
+</div>
+{{#if consumable.isGeneric}}
+<div class="generic">
+    <i class="fa-solid fa-star"></i>
+</div>
+{{/if}}
+{{#if consumable.categoryIcon}}
+<div class="category-icon">
+    <i class="{{consumable.categoryIcon}}"></i>
+</div>
+{{/if}}
+{{#if consumable.rank}}
+<div class="rank boxed">
+    <span>{{consumable.rank}}</span>
+</div>
+{{/if}}
+{{> cost cost=consumable.cost}}
+{{/if}}
+{{!-- end of carried --}}
+{{/inline}}
+
+{{#*inline 'action'}}
+{{#if (ne action.isActive null)}}
+{{> check checked=action.isActive}}
+{{/if}}
+{{> cost cost=action.cost}}
+{{#if action.frequency}}
+<div class="quantity boxed">
+    <span>
+        {{action.frequency.value}}
+    </span>
+</div>
+{{/if}}
+{{#if action.hasEffect}}
+<div class="effect boxed">
+    <i class="fa-solid fa-bolt"></i>
+</div>
+{{/if}}
+{{/inline}}
+
+{{#*inline 'toggle'}}
+{{#unless toggle.isDisabled}}
+{{> check checked=toggle.checked}}
+{{/unless}}
+{{/inline}}
+
+{{#*inline 'attack'}}
+{{#unless attack.isDisabled}}
+<div class="background"></div>
+{{/unless}}
+{{!-- blast --}}
+{{#if attack.isBlast}}
+{{#if attack.blast}}
+<div class="range boxed">
+    {{> (@root.partial 'strike_category') attack.category}}
+    {{attack.category.value}}
+</div>
+{{> (@root.partial 'action_blast-row') blast=attack.blast melee=true}}
+{{> (@root.partial 'action_blast-row') blast=attack.blast melee=false}}
+{{#if attack.versatile}}
+<div class="versatile boxed">
+    <i class="fa-solid fa-fw fa-{{attack.versatile}}"></i>
+</div>
+{{/if}}
+{{else}}
+<div class="variants">
+    <div class="variant wrap" data-action="channel-elements">Channel Elements</div>
+</div>
+{{/if}}
+{{!-- strike --}}
+{{else}}
+{{#if attack.subtitle}}
+<div class="subtitle app">{{attack.subtitle}}</div>
+{{/if}}
+{{!-- strike ready --}}
+{{#if attack.strike.ready}}
+{{#if @root.isCharacter}}
+<div class="range boxed">
+    {{#if attack.variant}}
+    {{> (@root.partial 'strike_category') attack.strike.altUsages.[0].category}}
+    {{attack.strike.altUsages.[0].category.value}}
+    {{else}}
+    {{> (@root.partial 'strike_category') attack.strike.category}}
+    {{attack.strike.category.value}}
+    {{/if}}
+</div>
+{{/if}}
+{{> (@root.partial 'action_strike-row') attack.strike isShortcut=true}}
+{{#if attack.strike.altUsages}}
+{{> (@root.partial 'action_strike-row') attack.strike.altUsages.[0] isAltUsage=true}}
+{{/if}}
+{{#if (and attack.versatile attack.strike.item.dealsDamage)}}
+<div class="versatile boxed">
+    <i class="fa-solid fa-{{attack.versatile}} fa-fw"></i>
+</div>
+{{/if}}
+{{!-- strike not ready --}}
+{{else}}
+<div class="variants">
+    <div class="category"></div>
+    {{> (@root.partial 'strike_auxiliaries') strike=attack.strike}}
+</div>
+{{!-- end strike ready --}}
+{{/if}}
+{{#if attack.strike.ammunition}}
+<div class="quantity boxed">{{attack.strike.item.ammo.quantity}}</div>
+{{/if}}
+{{!-- end strike/blast --}}
+{{/if}}
+{{#unless attack.isDisabled}}
+<div class="controls">
+    {{#if @root.isCharacter}}
+    <a class="extras" data-action="open-attack-popup" data-element-trait="{{attack.elementTrait}}"
+        data-item-id="{{attack.itemId}}" data-slug="{{attack.slug}}"
+        data-type="{{ifThen attack.blast 'blast' 'strike'}}">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+    </a>
+    {{/if}}
+    {{#if (or attack.blast attack.strike.ready)}}
+    <a class="type-toggle attack" data-action="toggle-damage">
+        <i class="fa-solid fa-burst"></i>
+    </a>
+    <a class="type-toggle damage" data-action="toggle-damage">
+        <i class="fa-solid fa-bullseye"></i>
+    </a>
+    {{/if}}
+</div>
+{{/unless}}
+{{/inline}}
+
+{{#*inline 'cost'}}
+{{#if cost}}
+<div class="cost boxed">
+    <span>
+        {{#if (eq cost 'extra')}}
+        <i class="fa-solid fa-ellipsis"></i>
+        {{else}}
+        {{{actionGlyph cost}}}
+        {{/if}}
+    </span>
+</div>
+{{/if}}
+{{/inline}}
+
+{{#*inline 'check'}}
+<div class="check{{#if checked}} active{{/if}}">
+    {{#if checked}}
+    <i class="fa-regular fa-square-check"></i>
+    <i class="fa-solid fa-square-check"></i>
+    {{else}}
+    <i class="fa-regular fa-square"></i>
+    <i class="fa-solid fa-square"></i>
+    {{/if}}
+</div>
+{{/inline}}
