@@ -97,13 +97,13 @@ async function prepareShortcutsContext(
     const cached: ShortcutCache = {};
     const shortcutGroups: ShortcutGroup[] = [];
     const isNPC = actor.isOfType("npc");
-    const noShortcuts = !getFlag(worldActor, "persistent.shortcuts", game.user.id);
+    const noShortcuts = !getShortcuts(worldActor);
     const autoFill = isNPC && noShortcuts && this.getSetting("autoFillNpc");
 
     const shortcutsOwner = (() => {
         if (!isGM || isNPC || !noShortcuts || !this.getSetting("ownerShortcuts")) return;
         const owner = getOwner(actor, false)?.id;
-        return owner && getFlag(worldActor, "persistent.shortcuts", owner) ? owner : undefined;
+        return owner && getShortcuts(worldActor, { owner }) ? owner : undefined;
     })();
 
     GLOBAL.hasStances = false;
@@ -181,18 +181,12 @@ function activateShortcutsListeners(this: PF2eHudPersistent, html: HTMLElement) 
                 if (GLOBAL.shortcutData[groupIndex]?.[index]) {
                     delete GLOBAL.shortcutData[groupIndex][index];
                 }
-                overrideShortcutData.call(this);
+                await overrideShortcutData.call(this);
             } else {
                 const worldActor = this.worldActor;
-                if (!worldActor) return;
-
-                await unsetFlag(
-                    worldActor,
-                    "persistent.shortcuts",
-                    game.user.id,
-                    groupIndex,
-                    index
-                );
+                if (worldActor) {
+                    await deleteShortcuts(worldActor, { groupIndex, index });
+                }
             }
         });
 
@@ -219,7 +213,7 @@ function activateShortcutsListeners(this: PF2eHudPersistent, html: HTMLElement) 
     }
 }
 
-function getShortcut<T extends Shortcut>(
+function getGlobalShortcut<T extends Shortcut>(
     groupIndex: Maybe<number | string>,
     index: Maybe<number | string>
 ) {
@@ -228,7 +222,7 @@ function getShortcut<T extends Shortcut>(
 
 function getShortcutFromElement<T extends Shortcut>(el: HTMLElement) {
     const { groupIndex, index } = el.dataset;
-    return getShortcut<T>(groupIndex, index);
+    return getGlobalShortcut<T>(groupIndex, index);
 }
 
 async function onShortcutClick(
@@ -459,7 +453,7 @@ async function onShortcutDrop(this: PF2eHudPersistent, event: DragEvent, el: HTM
     if (!actor || !worldActor) return;
 
     let { index, groupIndex } = elementDataset(el);
-    const shortcut = getShortcut(groupIndex, index);
+    const shortcut = getGlobalShortcut(groupIndex, index);
 
     let newShortcut: ShortcutData | undefined;
 
@@ -632,16 +626,9 @@ async function onShortcutDrop(this: PF2eHudPersistent, event: DragEvent, el: HTM
 
     if (!newShortcut) return;
 
-    const group = GLOBAL.isVirtual
+    const group: Record<string, any> = GLOBAL.isVirtual
         ? GLOBAL.shortcutData[groupIndex] ?? {}
-        : foundry.utils.deepClone(
-              getFlag<Record<string, any>>(
-                  worldActor,
-                  "persistent.shortcuts",
-                  game.user.id,
-                  groupIndex
-              )
-          ) ?? {};
+        : foundry.utils.deepClone(getShortcuts(worldActor, { groupIndex })) ?? {};
 
     if (newShortcut.type === "attack") {
         const wasSplit =
@@ -674,7 +661,7 @@ async function onShortcutDrop(this: PF2eHudPersistent, event: DragEvent, el: HTM
         GLOBAL.shortcutData[groupIndex] = group;
         overrideShortcutData.call(this);
     } else {
-        await setFlag(worldActor, "persistent.shortcuts", game.user.id, groupIndex, group);
+        await setShortcuts(worldActor, group, { groupIndex });
     }
 }
 
@@ -853,15 +840,7 @@ async function createShortcutFromFlag<T extends Shortcut>(
     owner?: string
 ) {
     const worldActor = this.worldActor;
-    const flag = worldActor
-        ? getFlag<ShortcutData>(
-              worldActor,
-              "persistent.shortcuts",
-              owner ?? game.user.id,
-              String(groupIndex),
-              String(index)
-          )
-        : undefined;
+    const flag = worldActor ? getShortcuts(worldActor, { owner, groupIndex, index }) : undefined;
 
     return createShortcut.call(
         this,
@@ -1304,11 +1283,10 @@ async function overrideShortcutData(this: PF2eHudPersistent) {
     const worldActor = this.worldActor;
     if (!worldActor) return;
 
-    const userId = game.user.id;
     const shortcutData = foundry.utils.deepClone(GLOBAL.shortcutData);
 
-    await unsetFlag(worldActor, "persistent.shortcuts", userId);
-    await setFlag(worldActor, "persistent.shortcuts", userId, shortcutData);
+    await deleteShortcuts(worldActor);
+    await setShortcuts(worldActor, shortcutData);
 }
 
 function confirmShortcut(key: string, titleData: object, contentData: object = titleData) {
@@ -1359,28 +1337,91 @@ function hasStances() {
     return GLOBAL.hasStances;
 }
 
-function deleteShortcuts(actor: ActorPF2e, userId = game.user.id) {
-    return unsetFlag(actor, "persistent.shortcuts", userId);
-}
-
 async function copyOwnerShortcuts(actor: ActorPF2e) {
     const owner = getOwner(actor, false)?.id;
-    const userShortcuts = owner
-        ? getFlag<UserShortcutsData>(actor, "persistent.shortcuts", owner)
-        : undefined;
+    const userShortcuts = owner ? getShortcuts(actor, { owner }) : undefined;
 
     if (!userShortcuts || foundry.utils.isEmpty(userShortcuts)) {
         return warn("persistent.main.shortcut.owner.none");
     }
 
-    await unsetFlag(actor, "persistent.shortcuts", game.user.id);
-    return setFlag(
-        actor,
-        "persistent.shortcuts",
-        game.user.id,
-        foundry.utils.deepClone(userShortcuts)
-    );
+    await deleteShortcuts(actor);
+    return setShortcuts(actor, foundry.utils.deepClone(userShortcuts));
 }
+
+function deleteShortcuts(
+    actor: ActorPF2e,
+    options?: ShortcutOptions
+): Promise<foundry.abstract.Document | undefined> {
+    const key = generateShortcutKey(options);
+    return unsetFlag(actor, key);
+}
+
+function setShortcuts(
+    actor: ActorPF2e,
+    data: ShortcutData,
+    options: { owner?: string; groupIndex: string | number; index: string | number }
+): Promise<foundry.abstract.Document>;
+function setShortcuts(
+    actor: ActorPF2e,
+    data: Record<string, ShortcutData>,
+    options: { owner?: string; groupIndex: string | number; index?: never }
+): Promise<foundry.abstract.Document>;
+function setShortcuts(
+    actor: ActorPF2e,
+    data: UserShortcutsData,
+    options: { owner?: string; groupIndex: never; index?: never }
+): Promise<foundry.abstract.Document>;
+function setShortcuts(
+    actor: ActorPF2e,
+    data: UserShortcutsData,
+    options?: never
+): Promise<foundry.abstract.Document>;
+function setShortcuts(
+    actor: ActorPF2e,
+    data: UserShortcutsData | Record<string, ShortcutData> | ShortcutData,
+    options?: ShortcutOptions
+): Promise<foundry.abstract.Document> {
+    const key = generateShortcutKey(options);
+    return setFlag(actor, key, data);
+}
+
+function getShortcuts(
+    actor: ActorPF2e,
+    options: { owner?: string; groupIndex: string | number; index: string | number }
+): ShortcutData | undefined;
+function getShortcuts(
+    actor: ActorPF2e,
+    options: { owner?: string; groupIndex: string | number; index?: never }
+): Record<string, ShortcutData> | undefined;
+function getShortcuts(
+    actor: ActorPF2e,
+    options: { owner?: string; groupIndex?: never; index?: never }
+): UserShortcutsData | undefined;
+function getShortcuts(actor: ActorPF2e, options?: never): UserShortcutsData | undefined;
+function getShortcuts(
+    actor: ActorPF2e,
+    options?: ShortcutOptions
+): UserShortcutsData | Record<string, ShortcutData> | ShortcutData | undefined {
+    const key = generateShortcutKey(options);
+    return getFlag(actor, key);
+}
+
+function generateShortcutKey({ owner = game.user.id, groupIndex, index }: ShortcutOptions = {}) {
+    let key = `persistent.shortcuts.${owner}`;
+
+    if (groupIndex != null) {
+        key = `${key}.${groupIndex}`;
+    }
+
+    if (index != null) {
+        key = `${key}.${index}`;
+    }
+
+    return key;
+}
+
+type ShortcutOptions = { owner?: string; groupIndex?: string | number; index?: string | number };
 
 type ShortcutActionEvent =
     | "toggle-damage"
