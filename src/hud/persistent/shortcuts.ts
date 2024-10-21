@@ -1359,6 +1359,29 @@ function hasStances() {
     return GLOBAL.hasStances;
 }
 
+function deleteShortcuts(actor: ActorPF2e, userId = game.user.id) {
+    return unsetFlag(actor, "persistent.shortcuts", userId);
+}
+
+async function copyOwnerShortcuts(actor: ActorPF2e) {
+    const owner = getOwner(actor, false)?.id;
+    const userShortcuts = owner
+        ? getFlag<UserShortcutsData>(actor, "persistent.shortcuts", owner)
+        : undefined;
+
+    if (!userShortcuts || foundry.utils.isEmpty(userShortcuts)) {
+        return warn("persistent.main.shortcut.owner.none");
+    }
+
+    await unsetFlag(actor, "persistent.shortcuts", game.user.id);
+    return setFlag(
+        actor,
+        "persistent.shortcuts",
+        game.user.id,
+        foundry.utils.deepClone(userShortcuts)
+    );
+}
+
 type ShortcutActionEvent =
     | "toggle-damage"
     | "open-attack-popup"
@@ -1611,9 +1634,11 @@ type AutoFillSetting = "one" | "two";
 
 export {
     activateShortcutsListeners,
+    copyOwnerShortcuts,
+    deleteShortcuts,
     fillShortcuts,
     hasStances,
     overrideShortcutData,
     prepareShortcutsContext,
 };
-export type { AutoFillSetting, ShortcutsContext, UserShortcutsData };
+export type { AutoFillSetting, ShortcutsContext };

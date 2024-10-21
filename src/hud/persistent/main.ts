@@ -1,20 +1,10 @@
-import {
-    addListener,
-    addListenerAll,
-    confirmDialog,
-    getFlag,
-    getOwner,
-    localize,
-    setFlag,
-    unsetFlag,
-    warn,
-} from "foundry-pf2e";
+import { addListener, addListenerAll, confirmDialog, localize } from "foundry-pf2e";
 import { addSidebarsListeners } from "../base/advanced";
 import { PersistentContext, PersistentRenderOptions, PF2eHudPersistent } from "../persistent";
 import { getAdvancedStats, StatsAdvanced, ThreeStep } from "../shared/advanced";
 import { addStatsAdvancedListeners } from "../shared/listeners";
 import { getSidebars, SidebarMenu } from "../sidebar/base";
-import { fillShortcuts, UserShortcutsData } from "./shortcuts";
+import { copyOwnerShortcuts, deleteShortcuts, fillShortcuts } from "./shortcuts";
 
 async function prepareMainContext(
     this: PF2eHudPersistent,
@@ -64,39 +54,24 @@ function activateMainListeners(this: PF2eHudPersistent, html: HTMLElement) {
 
         switch (action) {
             case "delete-shortcuts": {
-                const confirm = await confirmAction("delete");
-                if (!confirm) return;
-
-                return unsetFlag(worldActor, "persistent.shortcuts", game.user.id);
+                if (await confirmAction("delete")) {
+                    await deleteShortcuts(worldActor);
+                }
+                break;
             }
 
             case "fill-shortcuts": {
-                const confirm = await confirmAction("fill");
-                if (!confirm) return;
-
-                return fillShortcuts.call(this);
+                if (await confirmAction("fill")) {
+                    await fillShortcuts.call(this);
+                }
+                break;
             }
 
             case "copy-owner-shortcuts": {
-                const owner = getOwner(actor, false)?.id;
-                const userShortcuts = owner
-                    ? getFlag<UserShortcutsData>(worldActor, "persistent.shortcuts", owner)
-                    : undefined;
-
-                if (!userShortcuts || foundry.utils.isEmpty(userShortcuts)) {
-                    return warn("persistent.main.shortcut.owner.none");
+                if (await confirmAction("owner")) {
+                    await copyOwnerShortcuts(worldActor);
                 }
-
-                const confirm = await confirmAction("owner");
-                if (!confirm) return;
-
-                await unsetFlag(worldActor, "persistent.shortcuts", game.user.id);
-                return setFlag(
-                    worldActor,
-                    "persistent.shortcuts",
-                    game.user.id,
-                    foundry.utils.deepClone(userShortcuts)
-                );
+                break;
             }
         }
     });
