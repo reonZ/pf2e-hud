@@ -242,7 +242,7 @@ $bottom-width: 542px;
                 gap: var(--panel-gap);
 
                 .sidebars,
-                .shotcut-menus {
+                .shortcut-menus {
                     grid-auto-flow: column;
                     justify-content: start;
                     width: fit-content;
@@ -268,7 +268,7 @@ $bottom-width: 542px;
                     }
                 }
 
-                .shotcut-menus {
+                .shortcut-menus {
                     a {
                         display: block;
 

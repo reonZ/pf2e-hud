@@ -39,7 +39,7 @@ function activateMainListeners(this: PF2eHudPersistent, html: HTMLElement) {
         this.setSetting("showEffects", !this.getSetting("showEffects"));
     });
 
-    addListenerAll(html, ".stretch .shotcut-menus [data-action]", async (event, el) => {
+    addListenerAll(html, ".stretch .shortcut-menus [data-action]", async (event, el) => {
         const action = el.dataset.action as ShortcutMenusAction;
 
         const confirmAction = (key: string) => {
