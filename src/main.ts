@@ -187,24 +187,35 @@ Hooks.once("setup", () => {
     });
 
     for (const hud of huds) {
-        const currentOffset = settings.length;
+        const mainSettingsOrder: string[] = hud.SETTINGS_ORDER;
+        const subSettingsOrder: string[] = hud.SUB_SETTINGS_ORDER;
+        const mainSettings: SettingOptions[] = [];
+        const subSettings: SettingOptions[] = [];
         const orphanSettings: SettingOptions[] = [];
 
         for (const setting of hud.getSettings()) {
             const key = `${hud.key}.${setting.key}`;
-            const index = hud.SETTINGS_ORDER.indexOf(setting.key as any);
 
             if (setting.default === undefined) {
                 setting.default = localize(`settings.${key}.default`);
             }
 
-            setting.key = key;
+            const mainIndex = mainSettingsOrder.indexOf(setting.key);
+            if (mainIndex !== -1) {
+                mainSettings[mainIndex] = setting;
+            } else {
+                const subIndex = subSettingsOrder.indexOf(setting.key);
+                if (subIndex !== -1) {
+                    subSettings[subIndex] = setting;
+                } else {
+                    orphanSettings.push(setting);
+                }
+            }
 
-            if (index !== -1) settings[index + currentOffset] = setting;
-            else orphanSettings.push(setting);
+            setting.key = key;
         }
 
-        settings.push(...orphanSettings);
+        settings.push(...mainSettings, ...orphanSettings, ...subSettings);
     }
 
     for (const setting of settings) {
@@ -245,17 +256,29 @@ Hooks.on("renderSettingsConfig", (app: SettingsConfig, $html: JQuery) => {
     const tab = htmlQuery(html, `.tab[data-tab="${MODULE.id}"]`);
 
     const huds = Object.values(HUDS);
-    const settings = huds.map(({ key }) => key).concat(["popup", "sidebar"]);
+    const settings = huds
+        .map(({ key, SUB_SETTINGS_ORDER }): { key: string; subkey?: string } => ({
+            key,
+            subkey: SUB_SETTINGS_ORDER[0],
+        }))
+        .concat([{ key: "popup" }, { key: "sidebar" }]);
 
-    for (const key of settings) {
+    for (const { key, subkey } of settings) {
         const group = htmlQuery(tab, `[data-setting-id^="${MODULE.id}.${key}."]`);
-        if (!group) continue;
-
-        const titleElement = createHTMLElement("h3", {
+        const title = createHTMLElement("h3", {
             innerHTML: localize("settings", key, "title"),
         });
 
-        group.before(titleElement);
+        group?.before(title);
+
+        if (subkey) {
+            const group = htmlQuery(tab, `[data-setting-id="${MODULE.id}.${key}.${subkey}"]`);
+            const title = createHTMLElement("h3", {
+                innerHTML: localize("settings", key, "subtitle"),
+            });
+
+            group?.before(title);
+        }
     }
 
     for (const hud of huds) {

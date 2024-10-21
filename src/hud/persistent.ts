@@ -172,20 +172,25 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             "autoSet",
             "keepLast",
             "fontSize",
+            "noflash",
+            "closeOnSendToChat",
+            "closeOnSpell",
+            "closeOnSkill",
+            "showAlliance",
+            "shiftEffects",
+        ];
+    }
+
+    get SUB_SETTINGS_ORDER(): (keyof PersistentSettings)[] {
+        return [
             "shortcutSlots",
             "ownerShortcuts",
             "autoFillNpc",
             "autoFillActions",
             "autoFillReactions",
             "autoFillType",
-            "noflash",
             "confirmShortcut",
             "consumableShortcut",
-            "closeOnSendToChat",
-            "closeOnSpell",
-            "closeOnSkill",
-            "showAlliance",
-            "shiftEffects",
         ];
     }
 
