@@ -143,6 +143,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             "autoFillType",
             "confirmShortcut",
             "consumableShortcut",
+            "drawConsumables",
         ];
     }
 
@@ -221,6 +222,15 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 default: true,
                 scope: "client",
                 gmOnly: true,
+                onChange: () => {
+                    this.render({ parts: ["shortcuts"] });
+                },
+            },
+            {
+                key: "drawConsumables",
+                type: Boolean,
+                default: false,
+                scope: "client",
                 onChange: () => {
                     this.render({ parts: ["shortcuts"] });
                 },
@@ -863,6 +873,7 @@ type PersistentSettings = BaseActorSettings &
         autoFillReactions: boolean;
         shortcutSlots: number;
         keepLast: boolean;
+        drawConsumables: boolean;
     };
 
 export { PF2eHudPersistent };

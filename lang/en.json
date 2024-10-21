@@ -248,6 +248,10 @@
                 "shortcutSlots": {
                     "name": "Shortcut Slots",
                     "hint": "The number of shortcut slots available. NOTE: The module was designed to have 4 slots."
+                },
+                "drawConsumables": {
+                    "name": "Must Draw Consumables",
+                    "hint": "When enabled, you will be forced to carry a consumable before being able to use it. This doesn't affect scrolls that were dragged from the spells, only actual consumable items from the inventory."
                 }
             },
             "tracker": {

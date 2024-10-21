@@ -1155,6 +1155,8 @@ async function createShortcut<T extends Shortcut>(
 
             if (!isGeneric && !item) return emptyData;
 
+            cached.mustDrawConsumable ??= this.getSetting("drawConsumables");
+
             const quantity = item?.quantity ?? 0;
             const uses =
                 item?.uses.max && (item.uses.max > 1 || item.category === "wand")
@@ -1171,7 +1173,7 @@ async function createShortcut<T extends Shortcut>(
             const img =
                 item?.system.spell?.img ?? item?.img ?? (shortcutData as { img: string }).img;
 
-            const notCarried = !!item && item.carryType !== "held";
+            const notCarried = !!item && cached.mustDrawConsumable && item.carryType !== "held";
             const annotation = notCarried ? getActionAnnotation(item) : undefined;
 
             let name = item?.name ?? (shortcutData as { name: string }).name;
@@ -1377,6 +1379,7 @@ type CreateShortcutCache = {
     entryLabel?: Record<string, string>;
     canCastRank?: Partial<Record<OneToTen, boolean>>;
     canUseStances?: boolean;
+    mustDrawConsumable?: boolean;
 };
 
 type FillShortcutCache = {
