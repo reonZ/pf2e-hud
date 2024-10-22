@@ -4,6 +4,7 @@ import {
     addListenerAll,
     elementDataset,
     getAlliance,
+    isValidClickEvent,
     render,
     setFlag,
 } from "foundry-pf2e";
@@ -183,7 +184,7 @@ function addStatsAdvancedListeners(actor: ActorPF2e, html: HTMLElement) {
         });
 
         addListenerAll(html, "[data-slider-action]:not(.disabled)", "mousedown", (event, el) => {
-            if (![0, 2].includes(event.button)) return;
+            if (!isValidClickEvent(event)) return;
 
             const action = el.dataset.sliderAction as StatsAdvancedSliderEvent;
             const direction = event.button === 0 ? 1 : -1;

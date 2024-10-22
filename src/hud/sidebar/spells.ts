@@ -7,6 +7,7 @@ import {
     getActiveModule,
     getSummarizedSpellsDataForRender,
     htmlClosest,
+    isValidClickEvent,
     MODULE,
     SummarizedSpellsData,
 } from "foundry-pf2e";
@@ -58,6 +59,8 @@ class PF2eHudSidebarSpells extends PF2eHudSidebar {
 
         if (isCharacter || actor.isOfType("npc")) {
             addListenerAll(html, "[data-slider-action='focus']", "mousedown", (event, el) => {
+                if (!isValidClickEvent(event)) return;
+
                 const direction = event.button === 0 ? 1 : -1;
                 const focusPoints = actor.system.resources.focus;
                 const newValue = Math.clamp(focusPoints.value + direction, 0, focusPoints.max);
