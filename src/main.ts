@@ -186,6 +186,18 @@ Hooks.once("setup", () => {
         onDown: () => HUDS.tracker.toggleMenu(true),
     });
 
+    registerKeybind("previousShortcutsSet", {
+        onDown: () => {
+            HUDS.persistent.changeShortcutsSet(-1);
+        },
+    });
+
+    registerKeybind("nextShortcutsSet", {
+        onDown: () => {
+            HUDS.persistent.changeShortcutsSet(1);
+        },
+    });
+
     for (const hud of huds) {
         const mainSettingsOrder: string[] = hud.SETTINGS_ORDER;
         const subSettingsOrder: string[] = hud.SUB_SETTINGS_ORDER;
