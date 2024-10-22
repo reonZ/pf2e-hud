@@ -3,6 +3,8 @@ import {
     createHTMLElement,
     createHook,
     createTemporaryStyles,
+    getWorldActor,
+    htmlQuery,
     localize,
     templateLocalize,
     warn,
@@ -35,10 +37,14 @@ import {
 } from "./persistent/portrait";
 import {
     AutoFillSetting,
+    SHORTCUTS_LIST_LIMIT,
     ShortcutsContext,
     activateShortcutsListeners,
+    changeShortcutsSet,
+    getShortcutSetIndex,
     hasStances,
     prepareShortcutsContext,
+    setShortcutSet,
 } from "./persistent/shortcuts";
 
 const PARTS_WITHOUT_EFFECT = ["menu", "portrait", "main", "shortcuts"] as const;
@@ -381,7 +387,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     get worldActor() {
-        return this.actor?.token?.baseActor ?? this.actor;
+        return getWorldActor(this.actor);
     }
 
     get savedActor() {
@@ -469,8 +475,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         options.showEffects = this.getSetting("showEffects");
 
         if (options.parts?.length) {
-            const hasShortcutsPart = !!options.parts.findSplice((part) => part === "shortcuts");
-            if (hasShortcutsPart || options.parts.includes("main")) {
+            options.renderMain = options.parts.includes("main");
+            options.renderShortcuts = !!options.parts.findSplice((part) => part === "shortcuts");
+
+            if (options.renderShortcuts || options.renderMain) {
                 options.parts.push("shortcuts");
             }
 
@@ -478,6 +486,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 options.parts.findSplice((x) => x === "effects");
             }
         } else {
+            options.renderShortcuts = true;
+            options.renderMain = true;
             options.parts = options.showEffects ? PARTS.slice() : PARTS_WITHOUT_EFFECT.slice();
         }
     }
@@ -532,6 +542,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         content: HTMLElement,
         options: PersistentRenderOptions
     ) {
+        const actor = this.actor;
         const hotbar = this.hotbarElement;
         const fontSize = `${this.getSetting("fontSize")}px`;
 
@@ -544,9 +555,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             const focusName = oldElement?.querySelector<HTMLInputElement>("input:focus")?.name;
 
             if (name === "shortcuts") {
-                this.mainElement
-                    ?.querySelector("#pf2e-hud-persistent-shortcuts")
-                    ?.replaceWith(element);
+                htmlQuery(this.mainElement, "#pf2e-hud-persistent-shortcuts")?.replaceWith(element);
             } else if (oldElement) {
                 oldElement.replaceWith(element);
             } else {
@@ -565,6 +574,22 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             this.#parts[name].activateListeners(element);
         }
 
+        if (actor && options.renderShortcuts && !options.renderMain) {
+            const selectedSet = getShortcutSetIndex(actor) + 1;
+            const navigation = htmlQuery(this.mainElement, ".shortcuts-navigation");
+
+            htmlQuery(navigation, ".previous")?.classList.toggle("disabled", selectedSet === 1);
+            htmlQuery(navigation, ".next")?.classList.toggle(
+                "disabled",
+                selectedSet === SHORTCUTS_LIST_LIMIT
+            );
+
+            const valueElement = htmlQuery(navigation, ".value");
+            if (valueElement) {
+                valueElement.innerText = String(selectedSet);
+            }
+        }
+
         if (options.showEffects && options.parts.includes("effects") && this.effectsElement) {
             this.mainElement?.append(this.effectsElement);
         }
@@ -577,7 +602,9 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     _onRender(context: PersistentContext, options: PersistentRenderOptions) {
-        this.sidebar?.render(true);
+        if (options.renderMain) {
+            this.sidebar?.render(true);
+        }
     }
 
     _actorCleanup() {
@@ -715,6 +742,20 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         });
     }
 
+    async changeShortcutsSet(direction: 1 | -1) {
+        const actor = this.actor;
+        if (actor && (await changeShortcutsSet(actor, direction, false))) {
+            this.render({ parts: ["shortcuts"] });
+        }
+    }
+
+    async setShortcutSet(value: number) {
+        const actor = this.actor;
+        if (actor && (await setShortcutSet(actor, value, false))) {
+            this.render({ parts: ["shortcuts"] });
+        }
+    }
+
     #onUpdateUser(user: UserPF2e, updates: Partial<UserSourcePF2e>) {
         if (
             user === game.user &&
@@ -822,6 +863,8 @@ type PersistentRenderOptions = Omit<BaseActorRenderOptions, "parts"> & {
     cleaned: boolean;
     showUsers: boolean;
     showEffects: boolean;
+    renderMain: boolean;
+    renderShortcuts: boolean;
 };
 
 type Part<TContext extends PersistentContext> = {

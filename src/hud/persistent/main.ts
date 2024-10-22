@@ -4,7 +4,13 @@ import { PersistentContext, PersistentRenderOptions, PF2eHudPersistent } from ".
 import { getAdvancedStats, StatsAdvanced, ThreeStep } from "../shared/advanced";
 import { addStatsAdvancedListeners } from "../shared/listeners";
 import { getSidebars, SidebarMenu } from "../sidebar/base";
-import { copyOwnerShortcuts, deleteShortcuts, fillShortcuts } from "./shortcuts";
+import {
+    copyOwnerShortcuts,
+    deleteShortcuts,
+    fillShortcuts,
+    getShortcutSetIndex,
+    SHORTCUTS_LIST_LIMIT,
+} from "./shortcuts";
 
 async function prepareMainContext(
     this: PF2eHudPersistent,
@@ -12,8 +18,9 @@ async function prepareMainContext(
     options: PersistentRenderOptions
 ): Promise<MainContext | PersistentContext> {
     const actor = this.actor;
+    const worldActor = this.worldActor;
 
-    if (!actor) {
+    if (!actor || !worldActor) {
         return context;
     }
 
@@ -22,6 +29,11 @@ async function prepareMainContext(
         ...getAdvancedStats(actor, this),
         sidebars: getSidebars(actor, this.sidebar?.key),
         showEffects: options.showEffects,
+        shortcutsList: {
+            value: getShortcutSetIndex(worldActor) + 1,
+            max: SHORTCUTS_LIST_LIMIT,
+            min: 1,
+        },
     };
 
     return data;
@@ -38,6 +50,16 @@ function activateMainListeners(this: PF2eHudPersistent, html: HTMLElement) {
     addListener(html, "[data-action='toggle-effects']", () => {
         this.setSetting("showEffects", !this.getSetting("showEffects"));
     });
+
+    addListener(
+        html,
+        "[data-slider-action='change-shortcuts-list']",
+        "mousedown",
+        async (event, el) => {
+            const direction = event.button === 0 ? 1 : -1;
+            await this.changeShortcutsSet(direction);
+        }
+    );
 
     addListenerAll(html, ".stretch .shortcut-menus [data-action]", async (event, el) => {
         const action = el.dataset.action as ShortcutMenusAction;
@@ -84,6 +106,7 @@ type MainContext = PersistentContext &
         sidebars: SidebarMenu[];
         showEffects: boolean;
         alliance?: ThreeStep;
+        shortcutsList: ValueAndMax & { min: number };
     };
 
 export { activateMainListeners, prepareMainContext };

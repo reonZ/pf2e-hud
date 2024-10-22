@@ -1,5 +1,7 @@
 <a class="slider" data-slider-action="{{action}}">
-    <i class="carret fa-solid fa-angle-left{{#if (eq entry.value 0)}} disabled{{/if}}"></i>
-    <span>{{entry.value}}</span>
-    <i class="carret fa-solid fa-angle-right{{#if (eq entry.value entry.max)}} disabled{{/if}}"></i>
+    <i
+        class="carret previous fa-solid fa-angle-left{{#if (or (eq entry.value 0) (eq entry.value entry.min))}} disabled{{/if}}"></i>
+    <span class="value">{{entry.value}}</span>
+    <i
+        class="carret next fa-solid fa-angle-right{{#if (eq entry.value entry.max)}} disabled{{/if}}"></i>
 </a>

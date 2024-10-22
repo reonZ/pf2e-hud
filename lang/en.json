@@ -330,7 +330,7 @@
                     "noChannelElements": "Could not find the <strong>Channel Elements</strong> action on this character.",
                     "delete": {
                         "title": "Reset Shortcuts",
-                        "message": "Are you sure you want to delete all your shortcuts for <strong>{name}</strong>?"
+                        "message": "Are you sure you want to delete the current shortcuts set for <strong>{name}</strong>?"
                     },
                     "fill": {
                         "title": "Auto-Fill Shortcuts",
@@ -338,9 +338,11 @@
                     },
                     "owner": {
                         "title": "Copy Owner Shortcuts",
-                        "message": "Are you sure you want to copy the shortcuts from <strong>{name}</strong>'s owner?",
-                        "none": "This Character doesn't have any owner with shortcuts set."
-                    }
+                        "message": "Are you sure you want to copy all the shortcuts from <strong>{name}</strong>'s owner?",
+                        "none": "This Character doesn't have any owner with shortcuts set.",
+                        "self": "You are trying to copy from yourself."
+                    },
+                    "changeSet": "Change current shortcuts set"
                 },
                 "effects": {
                     "shift": "Shift",

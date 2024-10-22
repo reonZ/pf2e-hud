@@ -269,14 +269,20 @@ $bottom-width: 542px;
                 }
 
                 .shortcut-menus {
-                    a {
-                        display: block;
+                    > * {
+                        grid-template-columns: auto;
+                    }
 
+                    > a {
                         &.disabled {
                             i {
                                 color: var(--color-disabled);
                             }
                         }
+                    }
+
+                    .shortcuts-navigation {
+                        margin-left: 0.3em;
                     }
                 }
             }
