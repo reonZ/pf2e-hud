@@ -14,6 +14,14 @@
             "filter": {
                 "name": "Użyj filtra paska bocznego",
                 "hint": "Umożliwia filtrowanie bieżącej zawartości paska bocznego."
+            },
+            "previousShortcutsSet": {
+                "name": "Poprzedni zestaw skrótów",
+                "hint": "Zmiana na poprzedni zestaw skrótów."
+            },
+            "nextShortcutsSet": {
+                "name": "Następny zestaw skrótów",
+                "hint": "Zmiana na następny zestaw skrótów."
             }
         },
         "settings": {
@@ -174,6 +182,7 @@
             },
             "persistent": {
                 "title": "Stały HUD",
+                "subtitle": "Stałe skróty",
                 "noflash": {
                     "name": "Wyłączanie błyskania",
                     "hint": "Wyłącza efekt błysku portretu podczas wybierania tokena powiązanego z aktualnie ustawionym stałym aktorem."
@@ -247,6 +256,10 @@
                 "shortcutSlots": {
                     "name": "Miejsca na skróty",
                     "hint": "Liczba dostępnych miejsc na skróty. UWAGA: Moduł został zaprojektowany na 4 miejsca."
+                },
+                "drawConsumables": {
+                    "name": "Musi nosić przedmioty zużywalne",
+                    "hint": "Wymusza noszenie przedmiotów zużywalnych przed użyciem ich skrótu. Nie ma to wpływu na zwoje, które zostały przeciągnięte z zaklęć, a jedynie na rzeczywiste przedmioty z ekwipunku."
                 }
             },
             "tracker": {
@@ -325,7 +338,7 @@
                     "noChannelElements": "Nie można znaleźć akcji <strong>Kanał Żywiołów</strong> na tej postaci.",
                     "delete": {
                         "title": "Resetowanie skrótów",
-                        "message": "Czy na pewno chcesz usunąć wszystkie skróty dla <strong>{name}</strong>?"
+                        "message": "Czy na pewno chcesz usunąć bieżące skróty ustawione dla <strong>{name}</strong>?"
                     },
                     "fill": {
                         "title": "Autouzupełnianie skrótów",
@@ -333,8 +346,16 @@
                     },
                     "owner": {
                         "title": "Kopiowanie skrótów właściciela",
-                        "message": "Czy na pewno chcesz skopiować skróty od <strong>{name}</strong>?",
-                        "none": "Ta postać nie ma żadnego właściciela z ustawionymi skrótami."
+                        "message": "Czy na pewno chcesz skopiować wszystkie zestawy skrótów i ich automatyzację od właściciela <strong>{name}</strong>?",
+                        "none": "Ta postać nie ma żadnego właściciela z ustawionymi skrótami.",
+                        "self": "Próbujesz kopiować od samego siebie."
+                    },
+                    "navigation": "Zmiana bieżącego zestawu skrótów<br>[Środkowe kliknięcie] Automatyzacja ustawień",
+                    "automation": {
+                        "title": "Zestaw skrótów ({set}) - Automatyzacja",
+                        "legend": "UUID makra/efektu",
+                        "hint": "Jeśli efekt aktualnie istnieje na aktorze lub jeśli makro zwróci wartość <strong>true</strong>, ten zestaw skrótów zostanie automatycznie użyty.",
+                        "zero": "Pierwszy zestaw skrótów nie może mieć żadnej automatyzacji."
                     }
                 },
                 "effects": {
@@ -416,14 +437,15 @@
                 "staff": "Kostur",
                 "charges": "Ładunki",
                 "cast": "Rzuć zaklęcie",
-                "draw": "Wyświetlanie materiałów zużywalnych",
+                "draw": "Noszenie przedmiotów zużywalnych",
                 "broken": "Przerwane zaklęcie"
             },
             "skills": {
                 "title": "Umiejętności",
                 "roll": "Rzuć: {name}",
                 "proficient": "Biegłość",
-                "follow": "Podążaj za Ekspertem"
+                "follow": "Podążaj za Ekspertem",
+                "alternate": "Menu wariantów [prawy przycisk myszy]"
             },
             "extras": {
                 "title": "Dodatki",
