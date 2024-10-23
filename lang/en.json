@@ -350,7 +350,13 @@
                         "none": "This Character doesn't have any owner with shortcuts set.",
                         "self": "You are trying to copy from yourself."
                     },
-                    "changeSet": "Change current shortcuts set"
+                    "navigation": "Change current shortcuts set<br>[Middle Click] Setup automation",
+                    "automation": {
+                        "title": "Shortcuts Set ({set}) - Automation",
+                        "legend": "Macro/Effect UUID",
+                        "hint": "If the effect currently exists on the actor or if the macro returns <strong>true</strong>, this shortcuts set will automatically be used.",
+                        "zero": "The first shortcuts set cannot have any automation."
+                    }
                 },
                 "effects": {
                     "shift": "Shift",

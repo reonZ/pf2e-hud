@@ -33,8 +33,8 @@
         {{#if hasActor}}
         <div class="panel app shortcut-menus">
             <div class="shortcuts-navigation" data-section="shortcuts-list-navigation"
-                data-tooltip="{{@root.i18n.path 'shortcut.changeSet'}}">
-                {{> (@root.partial 'slider') entry=@root.shortcutsList
+                data-tooltip="{{@root.i18n.path 'shortcut.navigation'}}">
+                {{> (@root.partial 'slider') entry=@root.shortcutsSets
                 action="change-shortcuts-list"}}
             </div>
             <a {{#if isCharacter}}class="disabled" {{/if}} data-section="fill-shortcuts"

@@ -934,3 +934,29 @@ $bottom-width: 542px;
         justify-content: flex-end;
     }
 }
+
+.application.dialog {
+    .pf2e-hud-persistent-automation {
+        fieldset {
+            gap: 0.3em;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            border: 0;
+            padding: 0.5em 0;
+
+            input {
+                pointer-events: none;
+            }
+
+            .reset {
+                i {
+                    margin: 0;
+                }
+            }
+
+            .hint {
+                grid-column: 1 / -1;
+            }
+        }
+    }
+}

@@ -28,7 +28,7 @@ import {
     activateEffectsListeners,
     prepareEffectsContext,
 } from "./persistent/effects";
-import { activateMainListeners, MainContext, prepareMainContext } from "./persistent/main";
+import { MainContext, activateMainListeners, prepareMainContext } from "./persistent/main";
 import { MenuContext, activateMenuListeners, prepareMenuContext } from "./persistent/menu";
 import {
     PortraitContext,
@@ -574,8 +574,8 @@ class PF2eHudPersistent extends makeAdvancedHUD(
             this.#parts[name].activateListeners(element);
         }
 
-        if (actor && options.renderShortcuts && !options.renderMain) {
-            const selectedSet = getShortcutSetIndex(actor) + 1;
+        if (actor && options.renderShortcuts) {
+            const selectedSet = getShortcutSetIndex() + 1;
             const navigation = htmlQuery(this.mainElement, ".shortcuts-navigation");
 
             htmlQuery(navigation, ".previous")?.classList.toggle("disabled", selectedSet === 1);
@@ -743,15 +743,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     async changeShortcutsSet(direction: 1 | -1) {
-        const actor = this.actor;
-        if (actor && (await changeShortcutsSet(actor, direction, false))) {
+        if (await changeShortcutsSet(direction, false)) {
             this.render({ parts: ["shortcuts"] });
         }
     }
 
     async setShortcutSet(value: number) {
-        const actor = this.actor;
-        if (actor && (await setShortcutSet(actor, value, false))) {
+        if (await setShortcutSet(value, false)) {
             this.render({ parts: ["shortcuts"] });
         }
     }
@@ -920,4 +918,4 @@ type PersistentSettings = BaseActorSettings &
     };
 
 export { PF2eHudPersistent };
-export type { AutoSetSetting, PersistentContext, PersistentRenderOptions };
+export type { AutoSetSetting, PersistentContext, PersistentHudActor, PersistentRenderOptions };
