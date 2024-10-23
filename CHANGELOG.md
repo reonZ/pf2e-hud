@@ -1,3 +1,28 @@
+# 1.17.0
+
+-   `Persistent HUD`:
+    -   you can now drop foundry items (i.e. conditions, effects, equipment) on the portrait avatar
+        -   works the same way you would drop them on a token or an actor sheet
+    -   separate the rendering of shortcuts from the rest
+        -   this is only an internal matter, the user should see no difference
+    -   add support for multiple shortcuts sets
+        -   you can switch between 3 sets
+        -   keybinds have been added to go to the previous or next set
+        -   you can setup automation for sets (except the first set)
+            -   whenever an effect is present on the actor
+            -   whenever a macro returns true
+        -   the `Reset Shortcuts` only affects the current set
+        -   the `Copy Owner Shortcuts` copies all sets from the owner and their automation
+        -   auto-fill will fill up every set the same way
+-   add a new `Persistent Shortcuts` section in the settings
+    -   it is placed right after the `Persistent HUD` section
+    -   all the settings are still part of the `Persistent HUD`, nothing is reset
+    -   add new `Must Draw Consumable` setting (disabled by default)
+        -   forces consumables to be carried before being able to use their shortcut
+        -   this doesn't affect scrolls that were dragged from the spells, only actual consumable items from the inventory
+-   `Sidebars`:
+    -   add series of tooltips to skill actions
+
 # 1.16.0
 
 -   use `string#replace` instead of `string#replaceAll` for compatibility with older browsers
