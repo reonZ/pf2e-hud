@@ -1370,12 +1370,25 @@ async function copyOwnerShortcuts() {
         return warn("persistent.main.shortcut.owner.none");
     }
 
-    return setFlag(
-        GLOBAL.worldActor,
+    const updates = {};
+
+    setFlagProperty(
+        updates,
         "persistent.shortcuts",
         game.user.id,
         foundry.utils.deepClone(shortcutSets)
     );
+
+    const automations = getAutomationUUIDs(owner);
+
+    setFlagProperty(
+        updates,
+        "persistent.automation",
+        game.user.id,
+        foundry.utils.deepClone(automations)
+    );
+
+    return GLOBAL.worldActor.update(updates);
 }
 
 function shortcutsAreEmpty(shortcuts: Maybe<UserShortcutsData>) {

@@ -346,7 +346,7 @@
                     },
                     "owner": {
                         "title": "Copy Owner Shortcuts",
-                        "message": "Are you sure you want to copy all the shortcuts from <strong>{name}</strong>'s owner?",
+                        "message": "Are you sure you want to copy all the shortcuts sets and their automation from <strong>{name}</strong>'s owner?",
                         "none": "This Character doesn't have any owner with shortcuts set.",
                         "self": "You are trying to copy from yourself."
                     },
