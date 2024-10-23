@@ -56,7 +56,7 @@ const EXTRAS_ACTIONS_UUIDS = ACTIONS.map((action) => action.uuid);
 let actionsCache: PreparedSkillAction[] | null = null;
 function getActions(actor: ActorPF2e) {
     actionsCache ??= ACTIONS.map((x) => ({
-        ...prepareStatisticAction(x.statistic, x),
+        ...prepareStatisticAction(x.statistic, x, false),
         proficient: true,
     }));
 

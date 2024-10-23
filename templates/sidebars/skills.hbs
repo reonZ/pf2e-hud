@@ -15,7 +15,8 @@
 </div>
 {{#each skills as |skill|}}
 <header data-filter-value="{{skill.filterValue}}">
-    <a data-action="roll-skill" data-slug="{{skill.slug}}">
+    <a data-action="roll-skill" data-slug="{{skill.slug}}"
+        data-tooltip="{{@root.i18n 'roll' name=skill.label}}">
         <span>{{signedInteger skill.mod}}</span> {{skill.label}}
     </a>
     {{#if @root.isCharacter}}
@@ -40,7 +41,8 @@
 <div class="item lore" data-filter-value="{{lore.slug}}" data-action-id="lore"
     data-item-uuid="{{lore.uuid}}" draggable="true">
     <div class="name">
-        <a data-action="roll-skill" data-slug="{{lore.slug}}">
+        <a data-action="roll-skill" data-slug="{{lore.slug}}"
+            data-tooltip="{{@root.i18n 'roll' name=lore.label}}">
             <span style="width: {{@root.lores.modifierWidth}}ch">
                 {{lore.modifier}}
             </span>

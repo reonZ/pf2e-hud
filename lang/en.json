@@ -444,7 +444,8 @@
                 "title": "Skills",
                 "roll": "Roll: {name}",
                 "proficient": "Proficient",
-                "follow": "Follow the Expert"
+                "follow": "Follow the Expert",
+                "alternate": "[Right Click] Variants Menu"
             },
             "extras": {
                 "title": "Extras",

@@ -9,7 +9,7 @@
         </div>
         <div class="controls">
             {{#unless (or action.variants (not action.proficient))}}
-            <a data-action="roll-statistic-action">
+            <a data-action="roll-statistic-action" data-tooltip="{{action.tooltip}}">
                 <i class="fa-solid fa-dice-d20"></i>
             </a>
             {{/unless}}
@@ -24,7 +24,7 @@
         <div class="variant" data-action="roll-statistic-action" {{#if variant.slug}}
             data-variant="{{variant.slug}}" {{/if}} {{#if variant.map}} data-map="{{variant.map}}"
             {{/if}} {{#if variant.agile}} data-agile="{{variant.agile}}" {{/if}} draggable="true"
-            data-drag-parent=".item"
+            data-drag-parent=".item" data-tooltip="{{variant.tooltip}}"
             data-filter-value="{{variant.label}}|{{../action.label}}{{#if ../skill}}|{{../skill}}{{/if}}">
             {{{variant.label}}}
         </div>

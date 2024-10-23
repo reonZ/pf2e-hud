@@ -551,7 +551,8 @@ const actionLabels: Record<string, string> = {};
 
 function prepareStatisticAction(
     statistic: string | undefined,
-    rawAction: SharedAction | RawSkillAction
+    rawAction: SharedAction | RawSkillAction,
+    withAlternate: boolean
 ) {
     const [actionId, action]: [string, Omit<RawSkillAction, "actionId">] =
         typeof rawAction === "string"
@@ -565,17 +566,22 @@ function prepareStatisticAction(
 
     const variants: ActionVariant[] | MapVariant[] | undefined = (() => {
         if (action.map) {
+            const tooltip = createActionTooltip(label, withAlternate);
+
             return [
                 {
+                    tooltip,
                     label: game.i18n.localize("PF2E.Roll.Normal"),
                 },
                 {
                     map: 1,
+                    tooltip,
                     agile: action.agile,
                     label: getMapLabel(1, !!action.agile),
                 },
                 {
                     map: 2,
+                    tooltip,
                     agile: !!action.agile,
                     label: getMapLabel(2, !!action.agile),
                 },
@@ -583,9 +589,12 @@ function prepareStatisticAction(
         }
 
         return action.variants?.map((slug) => {
+            const label = getSkillVariantName(actionId, slug);
+
             return {
                 slug,
-                label: getSkillVariantName(actionId, slug),
+                label,
+                tooltip: createActionTooltip(label, withAlternate),
             } satisfies ActionVariant;
         });
     })();
@@ -606,12 +615,18 @@ function prepareStatisticAction(
         actionId,
         label,
         dataset,
+        tooltip: createActionTooltip(label, withAlternate),
         filterValue: filterValues.join("|"),
         dragImg:
             ACTION_IMAGES[actionId] ??
             game.pf2e.actions.get(actionId)?.img ??
             getActionIcon(action.cost ?? null),
     } satisfies PreparedSkillAction;
+}
+
+function createActionTooltip(name: string, withAlternate: boolean) {
+    let tooltip = localize("sidebars.skills.roll", { name });
+    return withAlternate ? `${tooltip}<br>${localize("sidebars.skills.alternate")}` : tooltip;
 }
 
 let skillsCache: PreparedSkill[] | null = null;
@@ -622,7 +637,7 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
 
         skillsCache ??= skills.map((rawSkill) => {
             const actions = rawSkill.actions.map((rawAction) =>
-                prepareStatisticAction(rawSkill.slug, rawAction)
+                prepareStatisticAction(rawSkill.slug, rawAction, true)
             );
             const label = game.i18n.localize(
                 rawSkill.slug === "perception"
@@ -1051,6 +1066,7 @@ type PreparedSkill = {
 
 type MapVariant = {
     label: string;
+    tooltip: string;
     map?: number;
     agile?: boolean;
 };
@@ -1058,10 +1074,12 @@ type MapVariant = {
 type ActionVariant = {
     slug: string;
     label: string;
+    tooltip: string;
 };
 
 type PreparedSkillAction = Omit<RawSkillAction, "variants"> & {
     label: string;
+    tooltip: string;
     filterValue: string;
     variants: (MapVariant | ActionVariant)[] | undefined;
     dataset: SkillActionDataset;
