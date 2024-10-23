@@ -34,6 +34,10 @@ function activatePortraitListeners(this: PF2eHudPersistent, html: HTMLElement) {
         editAvatar(actor);
     });
 
+    addListener(html, ".avatar", "drop", (event) => {
+        actor.sheet._onDrop(event);
+    });
+
     if (game.ready) {
         requestAnimationFrame(() => {
             setupAvatar.call(this, html);
