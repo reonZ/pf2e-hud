@@ -1,3 +1,11 @@
+# 1.18.0
+
+-   this is a system `6.5.0` update
+-   `Combat Tracker`:
+    -   reduce the max height of the tracker
+    -   fix effects panel styling
+        -   it will now only have one column and use scrollbar the way the system does
+
 # 1.17.0
 
 -   `Persistent HUD`:
