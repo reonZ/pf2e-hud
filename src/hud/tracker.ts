@@ -448,7 +448,10 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         if (!effectsPanel || !trackerElement) return;
 
         const offsetHeight = this.#trackerHeight.offsetHeight;
-        effectsPanel.style.setProperty("max-height", `calc(100% - ${offsetHeight}px - 2em)`);
+        effectsPanel.style.setProperty(
+            "max-height",
+            `calc(100% - ${offsetHeight}px - (var(--panel-gap) * 3) - 4px)`
+        );
     }
 
     #scrollToCurrent(collapsed = this.getSetting("collapsed")) {

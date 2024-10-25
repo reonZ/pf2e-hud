@@ -12,7 +12,7 @@ $threat-extreme: red;
     right: 0;
     bottom: var(--interface-margin);
     width: 17em;
-    max-height: 66%;
+    max-height: 51%;
     padding: 0;
     text-shadow: 1px 1px 4px var(--color-shadow-dark);
     display: flex;
@@ -368,41 +368,49 @@ $threat-extreme: red;
     }
 
     #effects-panel {
-        display: flex;
-        flex-direction: column;
-        flex-wrap: wrap;
-        gap: 0px 4px;
-        direction: rtl;
+        --cell-width: 52px;
+
+        top: var(--panel-gap);
         max-height: calc(100% - var(--combatant-height) * 2 - 4em);
 
-        .effect-item {
-            direction: ltr;
-            position: relative;
+        .effects-list {
+            hr {
+                width: calc(var(--cell-width) - 6px);
+                margin-inline: auto;
+            }
 
-            .effect-info {
-                background-color: #000;
-                z-index: 1;
-                position: absolute;
-                right: 100%;
-                width: max-content;
-                margin-right: 0;
+            .effect-item {
+                direction: ltr;
+                position: relative;
+
+                .effect-info {
+                    background-color: #000;
+                    z-index: 1;
+                    position: absolute;
+                    right: 100%;
+                    width: max-content;
+                    margin-right: 0;
+                }
             }
         }
     }
 
     &.hud-tracker-tall {
         #effects-panel {
-            hr {
-                width: 44px;
-                margin-block: 5px;
-            }
+            --cell-width: 44px;
 
-            .effect-item {
-                height: 48px;
+            .effects-list {
+                hr {
+                    margin-block: 0.3em;
+                }
 
-                .icon {
-                    height: 44px;
-                    width: 44px;
+                .effect-item {
+                    height: var(--cell-width);
+
+                    .icon {
+                        height: calc(var(--cell-width) - 4px);
+                        width: calc(var(--cell-width) - 4px);
+                    }
                 }
             }
         }
