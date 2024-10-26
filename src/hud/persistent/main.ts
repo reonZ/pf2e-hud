@@ -9,163 +9,160 @@ import {
     subLocalize,
 } from "foundry-pf2e";
 import { addSidebarsListeners } from "../base/advanced";
-import { PersistentContext, PersistentRenderOptions, PF2eHudPersistent } from "../persistent";
+import { PersistentContext, PersistentRenderOptions } from "../persistent";
 import { getAdvancedStats, StatsAdvanced, ThreeStep } from "../shared/advanced";
 import { addStatsAdvancedListeners } from "../shared/listeners";
 import { getSidebars, SidebarMenu } from "../sidebar/base";
-import {
-    copyOwnerShortcuts,
-    deleteShortcuts,
-    fillShortcuts,
-    getAutomationUUID,
-    getShortcutSetIndex,
-    setAutomationUUID,
-    SHORTCUTS_LIST_LIMIT,
-} from "./shortcuts";
+import { PersistentPart } from "./part";
 
 const localize = subLocalize("persistent.main.shortcut");
 
-async function prepareMainContext(
-    this: PF2eHudPersistent,
-    context: PersistentContext,
-    options: PersistentRenderOptions
-): Promise<MainContext | PersistentContext> {
-    const actor = this.actor;
-    const worldActor = this.worldActor;
-
-    if (!actor || !worldActor) {
-        return context;
+class PersistentMain extends PersistentPart<MainContext | PersistentContext> {
+    get shortcuts() {
+        return this.hud.shortcuts;
     }
 
-    const data: MainContext = {
-        ...context,
-        ...getAdvancedStats(actor, this),
-        sidebars: getSidebars(actor, this.sidebar?.key),
-        showEffects: options.showEffects,
-        shortcutsSets: {
-            value: 0,
-            max: SHORTCUTS_LIST_LIMIT,
-            min: 1,
-        },
-    };
+    async prepareContext(
+        context: PersistentContext,
+        options: PersistentRenderOptions
+    ): Promise<PersistentContext | MainContext> {
+        const actor = this.actor;
+        const worldActor = this.worldActor;
 
-    return data;
-}
+        if (!actor || !worldActor) {
+            return context;
+        }
 
-function activateMainListeners(this: PF2eHudPersistent, html: HTMLElement) {
-    const actor = this.actor;
-    const worldActor = this.worldActor;
-    if (!actor || !worldActor) return;
+        const data: MainContext = {
+            ...context,
+            ...getAdvancedStats(actor, this),
+            sidebars: getSidebars(actor, this.sidebar?.key),
+            showEffects: options.showEffects,
+            shortcutsSets: {
+                value: 0,
+                max: this.shortcuts.SHORTCUTS_LIST_LIMIT,
+                min: 1,
+            },
+        };
 
-    addStatsAdvancedListeners(this.actor, html);
-    addSidebarsListeners(this, html);
+        return data;
+    }
 
-    addListener(html, "[data-action='toggle-effects']", () => {
-        this.setSetting("showEffects", !this.getSetting("showEffects"));
-    });
+    activateListeners(html: HTMLElement): void {
+        const actor = this.actor;
+        const worldActor = this.worldActor;
+        if (!actor || !worldActor) return;
 
-    addListener(
-        html,
-        "[data-slider-action='change-shortcuts-list']",
-        "mousedown",
-        async (event, el) => {
-            if (event.button === 1) {
-                const selectedIndex = getShortcutSetIndex();
+        addStatsAdvancedListeners(actor, html);
+        addSidebarsListeners(this.hud, html);
 
-                if (selectedIndex === 0) {
-                    localize.warn("automation.zero");
+        addListener(html, "[data-action='toggle-effects']", () => {
+            this.setSetting("showEffects", !this.getSetting("showEffects"));
+        });
+
+        addListener(
+            html,
+            "[data-slider-action='change-shortcuts-list']",
+            "mousedown",
+            async (event, el) => {
+                if (event.button === 1) {
+                    const selectedIndex = this.shortcuts.shortcutSetIndex;
+
+                    if (selectedIndex === 0) {
+                        localize.warn("automation.zero");
+                        return;
+                    }
+
+                    const value = this.shortcuts.automationUUID;
+                    const legend = localize("automation.legend");
+                    const hint = localize("automation.hint");
+
+                    const content = `<fieldset>
+                        <legend>${legend}</legend>
+                        <input type="text" name="uuid" value="${value}">
+                        <button type="button" class="reset">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <p class="hint">${hint}</p>
+                    </fieldset>`;
+
+                    const onRender = (_event: Event, html: HTMLDialogElement) => {
+                        const input = htmlQuery(html, "input");
+                        if (!input) return;
+
+                        addListener(html, ".reset", () => {
+                            input.value = "";
+                        });
+
+                        addListener(html, "fieldset", "drop", (event) => {
+                            const { type, uuid } = TextEditor.getDragEventData(event);
+                            if ((type === "Macro" || type === "Item") && R.isString(uuid)) {
+                                input.value = uuid;
+                            }
+                        });
+                    };
+
+                    const result = await promptDialog<{ uuid: string }>(
+                        {
+                            title: localize("automation.title", { set: selectedIndex + 1 }),
+                            content,
+                            classes: ["pf2e-hud-persistent-automation"],
+                            render: onRender,
+                        },
+                        { width: 420 }
+                    );
+
+                    if (result) {
+                        await this.shortcuts.setAutomationUUID(result.uuid);
+                    }
+
                     return;
                 }
 
-                const value = getAutomationUUID() ?? "";
-                const legend = localize("automation.legend");
-                const hint = localize("automation.hint");
+                if (!isValidClickEvent(event)) return;
 
-                const content = `<fieldset>
-                    <legend>${legend}</legend>
-                    <input type="text" name="uuid" value="${value}">
-                    <button type="button" class="reset">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                    <p class="hint">${hint}</p>
-                </fieldset>`;
+                const direction = event.button === 0 ? 1 : -1;
+                await this.hud.changeShortcutsSet(direction);
+            }
+        );
 
-                const onRender = (_event: Event, html: HTMLDialogElement) => {
-                    const input = htmlQuery(html, "input");
-                    if (!input) return;
+        addListenerAll(html, ".stretch .shortcut-menus [data-action]", async (event, el) => {
+            const action = el.dataset.action as ShortcutMenusAction;
 
-                    addListener(html, ".reset", () => {
-                        input.value = "";
-                    });
+            const confirmAction = (key: string) => {
+                const name = actor.name;
+                const title = localize(key, "title");
 
-                    addListener(html, "fieldset", "drop", (event) => {
-                        const { type, uuid } = TextEditor.getDragEventData(event);
-                        if ((type === "Macro" || type === "Item") && R.isString(uuid)) {
-                            input.value = uuid;
-                        }
-                    });
-                };
+                return confirmDialog({
+                    title: `${name} - ${title}`,
+                    content: localize(key, "message", { name }),
+                });
+            };
 
-                const result = await promptDialog<{ uuid: string }>(
-                    {
-                        title: localize("automation.title", { set: selectedIndex + 1 }),
-                        content,
-                        classes: ["pf2e-hud-persistent-automation"],
-                        render: onRender,
-                    },
-                    { width: 420 }
-                );
-
-                if (result) {
-                    await setAutomationUUID(result.uuid);
+            switch (action) {
+                case "delete-shortcuts": {
+                    if (await confirmAction("delete")) {
+                        await this.shortcuts.deleteShortcuts();
+                    }
+                    break;
                 }
 
-                return;
-            }
-
-            if (!isValidClickEvent(event)) return;
-
-            const direction = event.button === 0 ? 1 : -1;
-            await this.changeShortcutsSet(direction);
-        }
-    );
-
-    addListenerAll(html, ".stretch .shortcut-menus [data-action]", async (event, el) => {
-        const action = el.dataset.action as ShortcutMenusAction;
-
-        const confirmAction = (key: string) => {
-            const name = actor.name;
-            const title = localize(key, "title");
-
-            return confirmDialog({
-                title: `${name} - ${title}`,
-                content: localize(key, "message", { name }),
-            });
-        };
-
-        switch (action) {
-            case "delete-shortcuts": {
-                if (await confirmAction("delete")) {
-                    await deleteShortcuts();
+                case "fill-shortcuts": {
+                    if (await confirmAction("fill")) {
+                        await this.shortcuts.fillShortcuts();
+                    }
+                    break;
                 }
-                break;
-            }
 
-            case "fill-shortcuts": {
-                if (await confirmAction("fill")) {
-                    await fillShortcuts.call(this);
+                case "copy-owner-shortcuts": {
+                    if (await confirmAction("owner")) {
+                        await this.shortcuts.copyOwnerShortcuts();
+                    }
+                    break;
                 }
-                break;
             }
-
-            case "copy-owner-shortcuts": {
-                if (await confirmAction("owner")) {
-                    await copyOwnerShortcuts();
-                }
-                break;
-            }
-        }
-    });
+        });
+    }
 }
 
 type ShortcutMenusAction = "delete-shortcuts" | "fill-shortcuts" | "copy-owner-shortcuts";
@@ -178,5 +175,4 @@ type MainContext = PersistentContext &
         shortcutsSets: ValueAndMax & { min: number };
     };
 
-export { activateMainListeners, prepareMainContext };
-export type { MainContext };
+export { PersistentMain };

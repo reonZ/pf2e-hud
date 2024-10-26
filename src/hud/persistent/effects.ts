@@ -5,129 +5,164 @@ import {
     getRemainingDurationLabel,
     htmlClosest,
     isInstanceOf,
+    localize,
     PersistentDamageDialog,
+    R,
 } from "foundry-pf2e";
 import { PersistentContext, PersistentRenderOptions, PF2eHudPersistent } from "../persistent";
+import { PersistentPart } from "./part";
 
-async function prepareEffectsContext(
-    this: PF2eHudPersistent,
-    context: PersistentContext,
-    options: PersistentRenderOptions
-): Promise<PersistentContext | EffectsContext> {
-    const actor = this.actor;
-    if (!actor) return context;
+class PersistentEffects extends PersistentPart<EffectsContext | PersistentContext> {
+    #effectsInstructions: Record<string, string> | null = null;
+    #effectsShiftInstructions: Record<string, string> | null = null;
 
-    const expiredLabel = game.i18n.localize("PF2E.EffectPanel.Expired");
-    const untileEndLabel = game.i18n.localize("PF2E.EffectPanel.UntilEncounterEnds");
-    const unlimitedLabel = game.i18n.localize("PF2E.EffectPanel.UnlimitedDuration");
+    get effectsInstructions() {
+        this.#effectsInstructions ??= R.pipe(
+            {
+                rollDamage: "PF2E.EffectPanel.RollDamageToolTip",
+                increment: "PF2E.EffectPanel.IncrementToolTip",
+                decrement: "PF2E.EffectPanel.DecrementToolTip",
+                remove: "PF2E.EffectPanel.RemoveToolTip",
+            },
+            R.mapValues((value) => game.i18n.localize(value))
+        );
 
-    const effects = actor.itemTypes.effect.map((effect) => {
-        const duration = effect.totalDuration;
-        const { system } = effect;
-        if (duration === Infinity) {
-            if (system.duration.unit === "encounter") {
-                system.remaining = system.expired ? expiredLabel : untileEndLabel;
-            } else {
-                system.remaining = unlimitedLabel;
-            }
-        } else {
-            const duration = effect.remainingDuration;
-            system.remaining = system.expired
-                ? expiredLabel
-                : getRemainingDurationLabel(
-                      duration.remaining,
-                      system.start.initiative ?? 0,
-                      system.duration.expiry
-                  );
+        return this.#effectsInstructions;
+    }
+
+    get effectsShiftInstructions() {
+        if (this.#effectsShiftInstructions) return this.#effectsShiftInstructions;
+
+        const shiftLabel = localize("persistent.main.effects.shift");
+        this.#effectsShiftInstructions ??= R.mapValues(this.effectsInstructions, (value) =>
+            value.replace(/^\[/, `[${shiftLabel} + `)
+        );
+
+        return this.#effectsShiftInstructions;
+    }
+
+    async prepareContext(
+        context: PersistentContext,
+        options: PersistentRenderOptions
+    ): Promise<EffectsContext | PersistentContext> {
+        const actor = this.actor;
+
+        if (!actor) {
+            return context;
         }
-        return effect;
-    });
 
-    const conditions = actor.conditions.active;
-    const afflictions = actor.itemTypes.affliction ?? [];
+        const expiredLabel = game.i18n.localize("PF2E.EffectPanel.Expired");
+        const untileEndLabel = game.i18n.localize("PF2E.EffectPanel.UntilEncounterEnds");
+        const unlimitedLabel = game.i18n.localize("PF2E.EffectPanel.UnlimitedDuration");
 
-    const descriptions = {
-        afflictions: await getEnrichedDescriptions(afflictions),
-        conditions: await getEnrichedDescriptions(conditions),
-        effects: await getEnrichedDescriptions(effects),
-    };
+        const effects = actor.itemTypes.effect.map((effect) => {
+            const duration = effect.totalDuration;
+            const { system } = effect;
+            if (duration === Infinity) {
+                if (system.duration.unit === "encounter") {
+                    system.remaining = system.expired ? expiredLabel : untileEndLabel;
+                } else {
+                    system.remaining = unlimitedLabel;
+                }
+            } else {
+                const duration = effect.remainingDuration;
+                system.remaining = system.expired
+                    ? expiredLabel
+                    : getRemainingDurationLabel(
+                          duration.remaining,
+                          system.start.initiative ?? 0,
+                          system.duration.expiry
+                      );
+            }
+            return effect;
+        });
 
-    const instructions = this.getSetting("shiftEffects")
-        ? this.effectsShiftInstructions
-        : this.effectsInstructions;
+        const conditions = actor.conditions.active;
+        const afflictions = actor.itemTypes.affliction ?? [];
 
-    const data: EffectsContext = {
-        ...context,
-        afflictions,
-        conditions,
-        descriptions,
-        effects,
-        actor,
-        instructions,
-        user: { isGM: context.isGM },
-    };
+        const descriptions = {
+            afflictions: await getEnrichedDescriptions(afflictions),
+            conditions: await getEnrichedDescriptions(conditions),
+            effects: await getEnrichedDescriptions(effects),
+        };
 
-    return data;
-}
+        const instructions = this.getSetting("shiftEffects")
+            ? this.effectsShiftInstructions
+            : this.effectsInstructions;
 
-function activateEffectsListeners(this: PF2eHudPersistent, html: HTMLElement) {
-    const actor = this.actor as ActorPF2e;
-    if (!actor) return;
+        const data: EffectsContext = {
+            ...context,
+            afflictions,
+            conditions,
+            descriptions,
+            effects,
+            actor,
+            instructions,
+            user: { isGM: context.isGM },
+        };
 
-    const getEffect = (el: HTMLElement) => {
-        const itemId = htmlClosest(el, "[data-item-id]")!.dataset.itemId ?? "";
-        return actor.conditions.get(itemId) ?? actor?.items.get(itemId);
-    };
+        return data;
+    }
 
-    addListenerAll(html, ".effect-item[data-item-id] .icon", "mousedown", (event, el) => {
-        if (![0, 2].includes(event.button)) return;
+    activateListeners(html: HTMLElement): void {
+        const actor = this.actor as ActorPF2e;
+        if (!actor) return;
 
-        if (!event.shiftKey && this.getSetting("shiftEffects")) return;
+        const getEffect = (el: HTMLElement) => {
+            const itemId = htmlClosest(el, "[data-item-id]")!.dataset.itemId ?? "";
+            return actor.conditions.get(itemId) ?? actor?.items.get(itemId);
+        };
 
-        const effect = getEffect(el);
-        if (!effect) return;
+        addListenerAll(html, ".effect-item[data-item-id] .icon", "mousedown", (event, el) => {
+            if (![0, 2].includes(event.button)) return;
 
-        const isAbstract = isInstanceOf(effect, "AbstractEffectPF2e");
+            if (!event.shiftKey && this.getSetting("shiftEffects")) return;
 
-        if (event.button === 0) {
+            const effect = getEffect(el);
+            if (!effect) return;
+
+            const isAbstract = isInstanceOf(effect, "AbstractEffectPF2e");
+
+            if (event.button === 0) {
+                if (effect.isOfType("condition") && effect.slug === "persistent-damage") {
+                    const token = getFirstActiveToken(actor, false, true);
+                    effect.onEndTurn({ token });
+                } else if (isAbstract) {
+                    effect.increase();
+                }
+            } else if (event.button === 2) {
+                if (isAbstract) {
+                    effect.decrease();
+                } else {
+                    // Failover in case of a stale effect
+                    this.render();
+                }
+            }
+        });
+
+        addListenerAll(html, "[data-action=recover-persistent-damage]", (event, el) => {
+            const effect = getEffect(el);
+            if (effect?.isOfType("condition")) {
+                effect.rollRecovery();
+            }
+        });
+
+        addListenerAll(html, "[data-action=edit]", (event, el) => {
+            const effect = getEffect(el);
+            if (!effect) return;
+
             if (effect.isOfType("condition") && effect.slug === "persistent-damage") {
-                const token = getFirstActiveToken(actor, false, true);
-                effect.onEndTurn({ token });
-            } else if (isAbstract) {
-                effect.increase();
-            }
-        } else if (event.button === 2) {
-            if (isAbstract) {
-                effect.decrease();
+                new PersistentDamageDialog(actor, { editing: effect.id }).render(true);
             } else {
-                // Failover in case of a stale effect
-                this.render();
+                effect.sheet.render(true);
             }
-        }
-    });
+        });
 
-    addListenerAll(html, "[data-action=recover-persistent-damage]", (event, el) => {
-        const effect = getEffect(el);
-        if (effect?.isOfType("condition")) {
-            effect.rollRecovery();
-        }
-    });
-
-    addListenerAll(html, "[data-action=edit]", (event, el) => {
-        const effect = getEffect(el);
-        if (!effect) return;
-
-        if (effect.isOfType("condition") && effect.slug === "persistent-damage") {
-            new PersistentDamageDialog(actor, { editing: effect.id }).render(true);
-        } else {
-            effect.sheet.render(true);
-        }
-    });
-
-    addListenerAll(html, "[data-action=send-to-chat]", (event, el) => {
-        const effect = getEffect(el);
-        effect?.toMessage();
-    });
+        addListenerAll(html, "[data-action=send-to-chat]", (event, el) => {
+            const effect = getEffect(el);
+            effect?.toMessage();
+        });
+    }
 }
 
 type EffectsContext = PersistentContext & {
@@ -143,5 +178,4 @@ type EffectsContext = PersistentContext & {
     user: { isGM: boolean };
 };
 
-export type { EffectsContext };
-export { activateEffectsListeners, prepareEffectsContext };
+export { PersistentEffects };

@@ -23,29 +23,11 @@ import {
     CLOSE_SETTINGS,
     makeAdvancedHUD,
 } from "./base/advanced";
-import {
-    EffectsContext,
-    activateEffectsListeners,
-    prepareEffectsContext,
-} from "./persistent/effects";
-import { MainContext, activateMainListeners, prepareMainContext } from "./persistent/main";
-import { MenuContext, activateMenuListeners, prepareMenuContext } from "./persistent/menu";
-import {
-    PortraitContext,
-    activatePortraitListeners,
-    preparePortraitContext,
-} from "./persistent/portrait";
-import {
-    AutoFillSetting,
-    SHORTCUTS_LIST_LIMIT,
-    ShortcutsContext,
-    activateShortcutsListeners,
-    changeShortcutsSet,
-    getShortcutSetIndex,
-    hasStances,
-    prepareShortcutsContext,
-    setShortcutSet,
-} from "./persistent/shortcuts";
+import { PersistentMenu } from "./persistent/menu";
+import { PersistentPortrait } from "./persistent/portrait";
+import { PersistentEffects } from "./persistent/effects";
+import { PersistentMain } from "./persistent/main";
+import { AutoFillSetting, PersistentShortcuts } from "./persistent/shortcuts";
 
 const PARTS_WITHOUT_EFFECT = ["menu", "portrait", "main", "shortcuts"] as const;
 const PARTS = [...PARTS_WITHOUT_EFFECT, "effects"] as const;
@@ -77,9 +59,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #isUserCharacter: boolean = false;
     #actor: PersistentHudActor | null = null;
 
-    #effectsInstructions: Record<string, string> | null = null;
-    #effectsShiftInstructions: Record<string, string> | null = null;
-
     #elements: Record<PartName, HTMLElement | null> = {
         menu: null,
         portrait: null,
@@ -91,30 +70,11 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #hotbar: HTMLElement | null = null;
 
     #parts: Parts = {
-        main: {
-            prepareContext: prepareMainContext.bind(this),
-            activateListeners: activateMainListeners.bind(this),
-        },
-        menu: {
-            classes: ["app"],
-            tooltipDirection: "RIGHT",
-            prepareContext: prepareMenuContext.bind(this),
-            activateListeners: activateMenuListeners.bind(this),
-        },
-        portrait: {
-            classes: ["app"],
-            prepareContext: preparePortraitContext.bind(this),
-            activateListeners: activatePortraitListeners.bind(this),
-        },
-        effects: {
-            prepareContext: prepareEffectsContext.bind(this),
-            activateListeners: activateEffectsListeners.bind(this),
-        },
-        shortcuts: {
-            classes: ["shortcuts"],
-            prepareContext: prepareShortcutsContext.bind(this),
-            activateListeners: activateShortcutsListeners.bind(this),
-        },
+        main: new PersistentMain(this),
+        menu: new PersistentMenu(this),
+        portrait: new PersistentPortrait(this),
+        effects: new PersistentEffects(this),
+        shortcuts: new PersistentShortcuts(this),
     };
 
     static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
@@ -371,6 +331,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         return this.mainElement?.querySelector<HTMLElement>(".sidebars") ?? null;
     }
 
+    get shortcuts() {
+        return this.#parts.shortcuts;
+    }
+
     get anchor(): AdvancedHudAnchor {
         const sidebars = this.mainElement?.querySelector(".sidebars");
         if (!sidebars) return { x: 100, y: 100 };
@@ -394,31 +358,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         const uuid = this.getUserSetting("selected") ?? "";
         const actor = fromUuidSync<ActorPF2e>(uuid);
         return this.isValidActor(actor) ? actor : null;
-    }
-
-    get effectsInstructions() {
-        this.#effectsInstructions ??= R.pipe(
-            {
-                rollDamage: "PF2E.EffectPanel.RollDamageToolTip",
-                increment: "PF2E.EffectPanel.IncrementToolTip",
-                decrement: "PF2E.EffectPanel.DecrementToolTip",
-                remove: "PF2E.EffectPanel.RemoveToolTip",
-            },
-            R.mapValues((value) => game.i18n.localize(value))
-        );
-
-        return this.#effectsInstructions;
-    }
-
-    get effectsShiftInstructions() {
-        if (this.#effectsShiftInstructions) return this.#effectsShiftInstructions;
-
-        const shiftLabel = localize("persistent.main.effects.shift");
-        this.#effectsShiftInstructions ??= R.mapValues(this.effectsInstructions, (value) =>
-            value.replace(/^\[/, `[${shiftLabel} + `)
-        );
-
-        return this.#effectsShiftInstructions;
     }
 
     _onEnable(enabled: boolean = this.enabled) {
@@ -575,13 +514,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         }
 
         if (actor && options.renderShortcuts) {
-            const selectedSet = getShortcutSetIndex() + 1;
+            const selectedSet = this.shortcuts.shortcutSetIndex + 1;
             const navigation = htmlQuery(this.mainElement, ".shortcuts-navigation");
 
             htmlQuery(navigation, ".previous")?.classList.toggle("disabled", selectedSet === 1);
             htmlQuery(navigation, ".next")?.classList.toggle(
                 "disabled",
-                selectedSet === SHORTCUTS_LIST_LIMIT
+                selectedSet === this.shortcuts.SHORTCUTS_LIST_LIMIT
             );
 
             const valueElement = htmlQuery(navigation, ".value");
@@ -743,13 +682,13 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     async changeShortcutsSet(direction: 1 | -1) {
-        if (await changeShortcutsSet(direction, false)) {
+        if (await this.shortcuts.changeShortcutsSet(direction, false)) {
             this.render({ parts: ["shortcuts"] });
         }
     }
 
     async setShortcutSet(value: number) {
-        if (await setShortcutSet(value, false)) {
+        if (await this.shortcuts.setShortcutSet(value, false)) {
             this.render({ parts: ["shortcuts"] });
         }
     }
@@ -804,7 +743,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     #onChangeCombatant(combatant: CombatantPF2e) {
-        if (hasStances() && this.isCurrentActor(combatant.actor)) {
+        if (this.shortcuts.hasStances && this.isCurrentActor(combatant.actor)) {
             this.render({ parts: ["shortcuts"] });
         }
     }
@@ -812,7 +751,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     #onDeleteCombat() {
         if (!this.savedActor && this.getSetting("autoSet") === "combat") {
             this.setActor(null, { skipSave: true, force: true });
-        } else if (hasStances()) {
+        } else if (this.shortcuts.hasStances) {
             this.render({ parts: ["shortcuts"] });
         }
     }
@@ -852,7 +791,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
 
 type PersistentTemplates = { name: PartName; element: HTMLElement }[];
 
-type PartName = "menu" | "main" | "portrait" | "effects" | "shortcuts";
+type PartName = (typeof PARTS)[number];
 
 type PersistentHudActor = CharacterPF2e | NPCPF2e;
 
@@ -865,22 +804,12 @@ type PersistentRenderOptions = Omit<BaseActorRenderOptions, "parts"> & {
     renderShortcuts: boolean;
 };
 
-type Part<TContext extends PersistentContext> = {
-    tooltipDirection?: "UP" | "DOWN" | "LEFT" | "RIGHT";
-    classes?: string[];
-    prepareContext: (
-        context: PersistentContext,
-        options: PersistentRenderOptions
-    ) => Promise<TContext | PersistentContext> | TContext | PersistentContext;
-    activateListeners: (html: HTMLElement) => void;
-};
-
 type Parts = {
-    menu: Part<MenuContext>;
-    portrait: Part<PortraitContext>;
-    main: Part<MainContext>;
-    effects: Part<EffectsContext>;
-    shortcuts: Part<ShortcutsContext>;
+    main: PersistentMain;
+    menu: PersistentMenu;
+    portrait: PersistentPortrait;
+    effects: PersistentEffects;
+    shortcuts: PersistentShortcuts;
 };
 
 type PersistentContext = Omit<BaseActorContext<PersistentHudActor>, "actor" | "hasActor"> & {
@@ -918,4 +847,11 @@ type PersistentSettings = BaseActorSettings &
     };
 
 export { PF2eHudPersistent };
-export type { AutoSetSetting, PersistentContext, PersistentHudActor, PersistentRenderOptions };
+
+export type {
+    AutoSetSetting,
+    PersistentContext,
+    PersistentHudActor,
+    PersistentRenderOptions,
+    PersistentSettings,
+};

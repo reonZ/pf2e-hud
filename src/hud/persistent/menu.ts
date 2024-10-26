@@ -1,68 +1,85 @@
 import { addListener, addListenerAll, localize } from "foundry-pf2e";
 import { PersistentContext, PersistentRenderOptions, PF2eHudPersistent } from "../persistent";
+import { PersistentPart } from "./part";
 
-function prepareMenuContext(
-    this: PF2eHudPersistent,
-    context: PersistentContext,
-    options: PersistentRenderOptions
-): MenuContext {
-    const setTooltipParts = [["setActor", "leftClick"]];
-    const hasSavedActor = !!this.savedActor;
-    if (hasSavedActor) setTooltipParts.push(["unsetActor", "rightClick"]);
+class PersistentMenu extends PersistentPart<MenuContext> {
+    get classes() {
+        return ["app"];
+    }
 
-    const setActorTooltip = setTooltipParts
-        .map(([key, click]) => {
-            let msg = localize("persistent.menu", key);
-            if (hasSavedActor) msg = `${localize(click)} ${msg}`;
-            return `<div>${msg}</div>`;
-        })
-        .join("");
+    get tooltipDirection(): "RIGHT" {
+        return "RIGHT";
+    }
 
-    return {
-        ...context,
-        hasSavedActor,
-        setActorTooltip,
-        hotbarLocked: ui.hotbar.locked,
-    };
-}
+    async prepareContext(
+        context: PersistentContext,
+        options: PersistentRenderOptions
+    ): Promise<MenuContext> {
+        const setTooltipParts = [["setActor", "leftClick"]];
+        const hasSavedActor = !!this.hud.savedActor;
 
-function activateMenuListeners(this: PF2eHudPersistent, html: HTMLElement) {
-    const actor = this.actor;
-
-    addListener(html, "[data-action='select-actor']", "contextmenu", () => {
-        this.setActor(null, { force: true });
-    });
-
-    addListenerAll(html, "[data-action]", (event, el) => {
-        const action = el.dataset.action as MenuActionEvent;
-
-        switch (action) {
-            case "toggle-users": {
-                this.setSetting("showUsers", !this.getSetting("showUsers"));
-                break;
-            }
-            case "open-macros": {
-                ui.macros.renderPopout(true);
-                break;
-            }
-            case "toggle-hotbar-lock": {
-                ui.hotbar._toggleHotbarLock();
-                break;
-            }
-            case "open-sheet": {
-                actor?.sheet.render(true);
-                break;
-            }
-            case "select-actor": {
-                this.setSelectedToken();
-                break;
-            }
-            case "toggle-clean": {
-                this.setSetting("cleanPortrait", !this.getSetting("cleanPortrait"));
-                break;
-            }
+        if (hasSavedActor) {
+            setTooltipParts.push(["unsetActor", "rightClick"]);
         }
-    });
+
+        const setActorTooltip = setTooltipParts
+            .map(([key, click]) => {
+                let msg = localize("persistent.menu", key);
+
+                if (hasSavedActor) {
+                    msg = `${localize(click)} ${msg}`;
+                }
+
+                return `<div>${msg}</div>`;
+            })
+            .join("");
+
+        return {
+            ...context,
+            hasSavedActor,
+            setActorTooltip,
+            hotbarLocked: ui.hotbar.locked,
+        };
+    }
+
+    activateListeners(html: HTMLElement): void {
+        const actor = this.actor;
+
+        addListener(html, "[data-action='select-actor']", "contextmenu", () => {
+            this.setActor(null, { force: true });
+        });
+
+        addListenerAll(html, "[data-action]", (event, el) => {
+            const action = el.dataset.action as MenuActionEvent;
+
+            switch (action) {
+                case "toggle-users": {
+                    this.setSetting("showUsers", !this.getSetting("showUsers"));
+                    break;
+                }
+                case "open-macros": {
+                    ui.macros.renderPopout(true);
+                    break;
+                }
+                case "toggle-hotbar-lock": {
+                    ui.hotbar._toggleHotbarLock();
+                    break;
+                }
+                case "open-sheet": {
+                    actor?.sheet.render(true);
+                    break;
+                }
+                case "select-actor": {
+                    this.hud.setSelectedToken();
+                    break;
+                }
+                case "toggle-clean": {
+                    this.setSetting("cleanPortrait", !this.getSetting("cleanPortrait"));
+                    break;
+                }
+            }
+        });
+    }
 }
 
 type MenuActionEvent =
@@ -79,5 +96,4 @@ type MenuContext = PersistentContext & {
     setActorTooltip: string;
 };
 
-export type { MenuContext };
-export { activateMenuListeners, prepareMenuContext };
+export { PersistentMenu };

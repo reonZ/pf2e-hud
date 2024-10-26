@@ -115,8 +115,11 @@ abstract class PF2eHudBase<
 
     getSetting<K extends keyof TSettings & string>(key: K): TSettings[K];
     getSetting<K extends keyof GlobalSettings & string>(key: K): GlobalSettings[K];
-    getSetting<K extends (keyof TSettings | keyof GlobalSettings) & string>(key: K) {
-        if (GLOBAL_SETTINGS.includes(key)) return getSetting(key);
+    getSetting(key: (keyof TSettings | keyof GlobalSettings) & string) {
+        if (GLOBAL_SETTINGS.includes(key)) {
+            return getSetting(key);
+        }
+
         return getSetting(`${this.key}.${key}`);
     }
 
