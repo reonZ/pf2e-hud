@@ -1,12 +1,4 @@
-import {
-    R,
-    createHTMLElement,
-    createHook,
-    createWrapper,
-    htmlQuery,
-    libWrapper,
-    render,
-} from "foundry-pf2e";
+import { R, createHTMLElement, createHook, createWrapper, htmlQuery, render } from "foundry-pf2e";
 import { hud } from "../main";
 import {
     AdvancedHudAnchor,
