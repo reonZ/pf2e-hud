@@ -1,4 +1,6 @@
-$panel-gap: 5px;
+:root {
+    --pf2e-hud-panel-gap: 5px;
+}
 
 .pf2e-hud {
     --icon-width: 1.4em;
@@ -6,7 +8,7 @@ $panel-gap: 5px;
 
     --inline-gap: 0.2em;
     --section-gap: 0.1em 0.4em;
-    --interface-margin: var(--panel-gap);
+    --interface-margin: var(--pf2e-hud-panel-gap);
 
     --outer-background: url("../../../ui/denim075.png") repeat #4d4d4d;
     --outer-box-shadow: 0 0 20px var(--color-shadow-dark);
@@ -14,7 +16,6 @@ $panel-gap: 5px;
     --outer-border: var(--outer-border-width) solid var(--color-border-dark);
     --outer-border-radius: 4px;
 
-    --panel-gap: #{$panel-gap};
     --panel-padding-block: 0.2em;
     --panel-padding-inline: 0.3em;
 
@@ -314,12 +315,12 @@ $panel-gap: 5px;
 }
 
 #interface.has-hud-persistent {
-    --panel-gap: #{$panel-gap};
+    --panel-gap: var(--pf2e-hud-panel-gap);
 }
 
 #interface.has-hud-tracker {
     #fps {
-        --panel-gap: #{$panel-gap};
+        --panel-gap: var(--pf2e-hud-panel-gap);
 
         margin: 0 18em var(--panel-gap) 0;
     }

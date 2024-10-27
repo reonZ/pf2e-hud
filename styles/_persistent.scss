@@ -1,4 +1,6 @@
-$bottom-width: 542px;
+:root {
+    --pf2e-hud-hotbar-width: 542px;
+}
 
 #pf2e-hud-persistent {
     --hud-height: 8em;
@@ -6,10 +8,10 @@ $bottom-width: 542px;
     display: flex;
     align-items: flex-start;
     font-size: var(--font-size);
-    gap: var(--panel-gap);
+    gap: var(--pf2e-hud-panel-gap);
     width: var(--players-width);
     height: calc(var(--hotbar-height) + var(--hud-height));
-    margin: 0 var(--panel-gap) var(--interface-margin) 15px;
+    margin: 0 var(--pf2e-hud-panel-gap) var(--interface-margin) 15px;
     padding: 0;
     z-index: var(--z-index-app);
 
@@ -28,9 +30,9 @@ $bottom-width: 542px;
         position: absolute;
         top: 100%;
         left: 0;
-        width: $bottom-width;
+        width: var(--pf2e-hud-hotbar-width);
         margin-left: -2px;
-        margin-bottom: var(--panel-gap);
+        margin-bottom: var(--pf2e-hud-panel-gap);
         font-size: var(--font-size-14);
 
         #macro-list,
@@ -197,12 +199,12 @@ $bottom-width: 542px;
     display: flex;
     width: fit-content;
     height: var(--hud-height);
-    gap: var(--panel-gap);
+    gap: var(--pf2e-hud-panel-gap);
 
     .group {
         display: grid;
         grid-template-rows: var(--one-three-rows);
-        gap: var(--panel-gap);
+        gap: var(--pf2e-hud-panel-gap);
 
         .panel {
             padding: var(--panel-padding-block) calc(var(--panel-padding-inline) + 0.1em)
@@ -239,7 +241,7 @@ $bottom-width: 542px;
 
             .top {
                 display: flex;
-                gap: var(--panel-gap);
+                gap: var(--pf2e-hud-panel-gap);
 
                 .sidebars,
                 .shortcut-menus {
@@ -290,7 +292,7 @@ $bottom-width: 542px;
             .bottom {
                 grid-row: 2 / 3;
                 display: flex;
-                gap: var(--panel-gap);
+                gap: var(--pf2e-hud-panel-gap);
             }
         }
     }
@@ -299,7 +301,7 @@ $bottom-width: 542px;
 #pf2e-hud-persistent-shortcuts {
     flex: 1;
     display: grid;
-    gap: var(--panel-gap);
+    gap: var(--pf2e-hud-panel-gap);
     justify-content: start;
     grid-auto-rows: 1fr;
     grid-auto-flow: column;
@@ -777,8 +779,8 @@ $bottom-width: 542px;
     pointer-events: auto;
     justify-content: unset;
     align-items: end;
-    max-width: calc($bottom-width + 3px);
-    margin-bottom: var(--panel-gap);
+    max-width: calc(var(--pf2e-hud-hotbar-width) + 3px);
+    margin-bottom: var(--pf2e-hud-panel-gap);
     gap: 0.2em;
     flex-wrap: wrap-reverse;
 

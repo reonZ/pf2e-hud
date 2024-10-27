@@ -450,7 +450,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         const offsetHeight = this.#trackerHeight.offsetHeight;
         effectsPanel.style.setProperty(
             "max-height",
-            `calc(100% - ${offsetHeight}px - (var(--panel-gap) * 3) - 4px)`
+            `calc(100% - ${offsetHeight}px - (var(--pf2e-hud-panel-gap) * 3) - 4px)`
         );
     }
 

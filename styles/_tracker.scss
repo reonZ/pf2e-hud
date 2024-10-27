@@ -1,8 +1,10 @@
-$threat-trivial: aqua;
-$threat-low: lime;
-$threat-moderate: yellow;
-$threat-severe: orange;
-$threat-extreme: red;
+:root {
+    --pf2e-hud-threat-trivial: aqua;
+    --pf2e-hud-threat-low: lime;
+    --pf2e-hud-threat-moderate: yellow;
+    --pf2e-hud-threat-severe: orange;
+    --pf2e-hud-threat-extreme: red;
+}
 
 #pf2e-hud-tracker {
     --border-top: 1px solid rgba(255, 255, 255, 0.06);
@@ -270,23 +272,23 @@ $threat-extreme: red;
                 text-shadow: 1px 1px 4px var(--color-shadow-dark);
 
                 &.trivial {
-                    color: $threat-trivial;
+                    color: var(--pf2e-hud-threat-trivial);
                 }
 
                 &.low {
-                    color: $threat-low;
+                    color: var(--pf2e-hud-threat-low);
                 }
 
                 &.moderate {
-                    color: $threat-moderate;
+                    color: var(--pf2e-hud-threat-moderate);
                 }
 
                 &.severe {
-                    color: $threat-severe;
+                    color: var(--pf2e-hud-threat-severe);
                 }
 
                 &.extreme {
-                    color: $threat-extreme;
+                    color: var(--pf2e-hud-threat-extreme);
                 }
             }
         }
@@ -370,7 +372,9 @@ $threat-extreme: red;
     #effects-panel {
         --cell-width: 52px;
 
-        top: var(--panel-gap);
+        top: var(--pf2e-hud-panel-gap);
+        right: calc(var(--pf2e-hud-panel-gap) * -1);
+
         max-height: calc(100% - var(--combatant-height) * 2 - 4em);
 
         .effects-list {
@@ -428,23 +432,23 @@ aside.locked-tooltip {
 
         .threat {
             &.trivial {
-                color: $threat-trivial;
+                color: var(--pf2e-hud-threat-trivial);
             }
 
             &.low {
-                color: $threat-low;
+                color: var(--pf2e-hud-threat-low);
             }
 
             &.moderate {
-                color: $threat-moderate;
+                color: var(--pf2e-hud-threat-moderate);
             }
 
             &.severe {
-                color: $threat-severe;
+                color: var(--pf2e-hud-threat-severe);
             }
 
             &.extreme {
-                color: $threat-extreme;
+                color: var(--pf2e-hud-threat-extreme);
             }
         }
 
