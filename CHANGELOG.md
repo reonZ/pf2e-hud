@@ -1,3 +1,8 @@
+# 1.18.1
+
+-   add a few global css variables to `:root`
+-   fix effects panel position when the persistent hud is not enabled
+
 # 1.18.0
 
 -   this is a system `6.5.0` update
