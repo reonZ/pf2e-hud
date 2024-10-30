@@ -5,6 +5,7 @@ import {
     elementDataset,
     getActionIcon,
     getActiveModule,
+    getItemSource,
     getItemWithSourceId,
     getSetting,
     getTranslatedSkills,
@@ -820,7 +821,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
                     return exist.delete();
                 }
 
-                const source = (await fromUuid<EffectPF2e>(FOLLOW_THE_EXPERT_EFFECT))?.toObject();
+                const source = await getItemSource(FOLLOW_THE_EXPERT_EFFECT, "EffectPF2e");
                 if (!source) return;
 
                 actor.createEmbeddedDocuments("Item", [source]);
