@@ -20,7 +20,7 @@
                 "hint": "Change to the previous shortcuts set."
             },
             "nextShortcutsSet": {
-                "name": "Previous Shortcuts Set",
+                "name": "Next Shortcuts Set",
                 "hint": "Change to the next shortcuts set."
             }
         },
