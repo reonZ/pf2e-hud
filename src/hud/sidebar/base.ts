@@ -11,6 +11,7 @@ import {
     isOwnedItem,
     localize,
     render,
+    setupDragElement,
     templateLocalize,
     templatePath,
     unownedItemtoMessage,
@@ -362,6 +363,40 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         return maxHeight;
     }
 
+    getDragData(target: HTMLElement) {
+        const el = target.dataset.dragParent
+            ? htmlClosest(target, target.dataset.dragParent)!
+            : target;
+
+        const { label, domain, option } = el.dataset;
+        const item = (() => {
+            const item = getItemFromElement(el, this.actor);
+            return item instanceof Item ? item : null;
+        })();
+
+        const baseDragData: Record<string, JSONValue> = {
+            actorId: this.actor.id,
+            actorUUID: this.actor.uuid,
+            sceneId: canvas.scene?.id ?? null,
+            tokenId: this.actor.token?.id ?? null,
+            fromSidebar: true,
+            ...item?.toDragData(),
+        };
+
+        const extraDragData = this._getDragData?.(target, baseDragData, item);
+        const toggleDragData =
+            item && label && domain && option ? { type: "RollOption", ...el.dataset } : undefined;
+
+        return {
+            imgSrc: el.querySelector<HTMLImageElement>(".drag-img")?.src ?? item?.img ?? "",
+            data: {
+                ...baseDragData,
+                ...extraDragData,
+                ...toggleDragData,
+            },
+        };
+    }
+
     #activateListeners(html: HTMLElement) {
         const actor = this.actor;
 
@@ -390,47 +425,8 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         });
 
         addListenerAll(html, "[draggable='true']", "dragstart", async (event, target) => {
-            if (!event.dataTransfer) return;
-
-            const el = target.dataset.dragParent
-                ? htmlClosest(target, target.dataset.dragParent)!
-                : target;
-            const { label, domain, option } = el.dataset;
-            const item = (() => {
-                const item = getItemFromElement(el, this.actor);
-                return item instanceof Item ? item : null;
-            })();
-
-            const imgSrc = el.querySelector<HTMLImageElement>(".drag-img")?.src ?? item?.img ?? "";
-            const draggable = createHTMLElement("div", {
-                classes: ["pf2e-hud-draggable"],
-                innerHTML: `<img src="${imgSrc}">`,
-            });
-
-            document.body.append(draggable);
-            event.dataTransfer.setDragImage(draggable, 16, 16);
-
-            const baseDragData: Record<string, JSONValue> = {
-                actorId: this.actor.id,
-                actorUUID: this.actor.uuid,
-                sceneId: canvas.scene?.id ?? null,
-                tokenId: this.actor.token?.id ?? null,
-                fromSidebar: true,
-                ...item?.toDragData(),
-            };
-
-            const extraDragData = this._getDragData?.(target, baseDragData, item);
-            const toggleDragData =
-                item && label && domain && option
-                    ? { type: "RollOption", ...el.dataset }
-                    : undefined;
-
-            event.dataTransfer.setData(
-                "text/plain",
-                JSON.stringify({ ...baseDragData, ...extraDragData, ...toggleDragData })
-            );
-
-            target.addEventListener("dragend", () => draggable.remove(), { once: true });
+            const { imgSrc, data } = this.getDragData(target);
+            setupDragElement(event, target, imgSrc, data, { classes: ["pf2e-hud-draggable"] });
         });
 
         addListenerAll(html, "[data-action='item-description']", async (event, el) => {
