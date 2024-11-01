@@ -9,7 +9,8 @@
         </div>
         <div class="controls">
             {{#unless (or action.variants (not action.proficient))}}
-            <a data-action="roll-statistic-action" data-tooltip="{{action.tooltip}}">
+            <a data-action="roll-statistic-action" data-tooltip="{{action.tooltip}}"
+                data-drag-parent=".item">
                 <i class="fa-solid fa-dice-d20"></i>
             </a>
             {{/unless}}

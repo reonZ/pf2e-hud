@@ -707,6 +707,13 @@ class PersistentShortcuts extends PersistentPart<
                     name += ` (${mapLabel})`;
                 }
 
+                if (shortcutData.dc) {
+                    const dcLabel = localize("persistent.main.shortcut.dc", {
+                        dc: shortcutData.dc,
+                    });
+                    name += ` ${dcLabel}`;
+                }
+
                 const isLore = item.isOfType("lore");
 
                 if (isLore) {
@@ -1190,9 +1197,10 @@ class PersistentShortcuts extends PersistentPart<
                         actionId: dropData.actionId,
                         statistic: dropData.statistic,
                         map: dropData.map ? (Number(dropData.map) as 1 | 2) : undefined,
-                        agile: dropData.agile === "true",
+                        agile: dropData.agile === true || dropData.agile === "true",
                         variant: dropData.variant ?? undefined,
                         option: dropData.option,
+                        dc: dropData.dc,
                     } satisfies SkillShortcutData;
                 } else if (item.isOfType("action", "feat")) {
                     newShortcut = {
@@ -1676,6 +1684,7 @@ type SkillShortcutData = ShortcutDataBase<"skill"> & {
     map: 1 | 2 | undefined;
     agile: boolean;
     option: string | undefined;
+    dc: number | undefined;
 };
 
 type ActionShortcutData = ShortcutDataBase<"action"> & {

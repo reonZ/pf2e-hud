@@ -1,6 +1,7 @@
 import {
     R,
     createDialogData,
+    createHTMLElement,
     dataToDatasetString,
     elementDataset,
     getActionIcon,
@@ -11,13 +12,21 @@ import {
     getTranslatedSkills,
     hasItemWithSourceId,
     htmlClosest,
+    htmlQuery,
     isInstanceOf,
     localize,
     promptDialog,
+    setupDragElement,
     signedInteger,
     templateLocalize,
 } from "foundry-pf2e";
-import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
+import {
+    PF2eHudSidebar,
+    SidebarContext,
+    SidebarDragData,
+    SidebarName,
+    SidebarRenderOptions,
+} from "./base";
 
 const FOLLOW_THE_EXPERT = "Compendium.pf2e.actionspf2e.Item.tfa4Sh7wcxCEqL29";
 const FOLLOW_THE_EXPERT_EFFECT = "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3XWMkd3";
@@ -807,7 +816,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
 
             case "roll-statistic-action": {
                 rollStatistic(actor, event, getStatisticDataFromElement(target), {
-                    requireVariants: event.button === 2,
+                    requireVariants: event.button === 2 ? this.getDragData(target) : false,
                     onRoll: () => {
                         this.parentHUD.closeIf("roll-skill");
                     },
@@ -836,7 +845,10 @@ async function rollStatistic(
     actor: ActorPF2e,
     event: MouseEvent,
     { variant, agile, map, option, actionId, statistic, dc }: StatisticData,
-    { requireVariants, onRoll }: { requireVariants?: boolean; onRoll?: Function } = {}
+    {
+        requireVariants,
+        onRoll,
+    }: { requireVariants?: boolean | SidebarDragData; onRoll?: Function } = {}
 ) {
     if ((actionId === "recall-knowledge" && !statistic) || actionId === "earnIncome") {
         return;
@@ -866,6 +878,7 @@ async function rollStatistic(
             dc,
             statistic,
             agile: map ? agile : undefined,
+            dragData: typeof requireVariants === "object" ? requireVariants : undefined,
         });
         if (!variants) return;
 
@@ -941,7 +954,17 @@ function getLoreSlug(lore: LorePF2e) {
 async function getStatisticVariants(
     actor: ActorPF2e,
     actionId: string,
-    { dc, statistic, agile }: { dc?: number; statistic?: string; agile?: boolean }
+    {
+        dc,
+        statistic,
+        agile,
+        dragData,
+    }: {
+        dc?: number;
+        statistic?: string;
+        agile?: boolean;
+        dragData?: SidebarDragData;
+    }
 ) {
     if (actionId === "initiative") {
         actionLabels["initiative"] ??= game.i18n.localize("PF2E.InitiativeLabel");
@@ -958,6 +981,46 @@ async function getStatisticVariants(
                 statistic,
                 agile,
                 dc,
+            },
+            render: (event, html) => {
+                if (!dragData) return;
+
+                const { data, imgSrc } = dragData;
+                const dcEl = htmlQuery<HTMLInputElement>(html, "[name='dc']");
+                const agileEl = htmlQuery<HTMLInputElement>(html, "[name='agile']");
+                const statisticEl = htmlQuery<HTMLInputElement>(html, "[name='statistic']");
+
+                const img = createHTMLElement("img", {
+                    classes: ["drag-img"],
+                    dataset: { tooltip: localize("dialogs.variants.drag") },
+                });
+
+                img.draggable = true;
+                img.src = imgSrc;
+
+                htmlQuery(html, ".form-footer")?.append(img);
+
+                img.addEventListener("dragstart", (event) => {
+                    const newStatistic = statisticEl?.value;
+                    const newAgile = agileEl?.checked;
+                    const newDc = dcEl?.valueAsNumber;
+
+                    if (R.isString(statistic)) {
+                        data.statistic = newStatistic;
+                    }
+
+                    if (R.isNumber(newDc)) {
+                        data.dc = newDc;
+                    }
+
+                    if (R.isBoolean(newAgile)) {
+                        data.agile = newAgile;
+                    }
+
+                    setupDragElement(event, img, imgSrc, data, {
+                        classes: ["pf2e-hud-draggable"],
+                    });
+                });
             },
             callback: async (event, btn, html) => {
                 const data = createDialogData(html) as StatisticVariantData;
@@ -999,13 +1062,14 @@ function getMapLabel(map: 1 | 2, agile: boolean) {
 
 function getStatisticDataFromElement(el: HTMLElement): StatisticData {
     const actionElement = htmlClosest(el, ".item.statistic");
-    const { agile, map, variant } = el.dataset as SkillVariantDataset;
+    const { agile, map, variant, dc } = el.dataset as SkillVariantDataset;
 
     return {
         ...(actionElement?.dataset as SkillActionDataset),
         map: map ? (Number(map) as 1 | 2) : undefined,
-        agile: agile === "true",
+        agile: agile === true || agile === "true",
         variant,
+        dc,
     };
 }
 
@@ -1039,7 +1103,8 @@ type SkillActionDataset = {
 type SkillVariantDataset = {
     variant?: string;
     map?: "1" | "2";
-    agile?: StringBoolean;
+    agile?: StringBoolean | boolean;
+    dc?: number;
 };
 
 type SharedAction = keyof typeof SHARED_ACTIONS;

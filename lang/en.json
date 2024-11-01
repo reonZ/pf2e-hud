@@ -324,6 +324,7 @@
             },
             "main": {
                 "shortcut": {
+                    "dc": "DC {dc}",
                     "wrongActor": "You can only create shortcuts from the same persistent actor.",
                     "wrongType": "You cannot create a shortcut of that type.",
                     "wrongOrigin": "Only spells from a HUD sidebar can be turned into shortcuts.",
@@ -506,7 +507,8 @@
             "variants": {
                 "title": "Action Variants",
                 "statistic": "Statistic",
-                "dc": "Difficulty Class"
+                "dc": "Difficulty Class",
+                "drag": "Drag to create a shortcut"
             },
             "resolve": {
                 "full": "{name} is full of stamina and doesn't need to rest.",

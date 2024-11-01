@@ -36,4 +36,13 @@
         text-align: center;
         padding: 0;
     }
+
+    .form-footer {
+        .drag-img {
+            height: calc(1.25 * var(--input-height));
+            border-color: var(--color-light-5);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    }
 }

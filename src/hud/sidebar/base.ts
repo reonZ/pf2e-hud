@@ -363,7 +363,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         return maxHeight;
     }
 
-    getDragData(target: HTMLElement) {
+    getDragData(target: HTMLElement): SidebarDragData {
         const el = target.dataset.dragParent
             ? htmlClosest(target, target.dataset.dragParent)!
             : target;
@@ -374,7 +374,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
             return item instanceof Item ? item : null;
         })();
 
-        const baseDragData: Record<string, JSONValue> = {
+        const baseDragData = {
             actorId: this.actor.id,
             actorUUID: this.actor.uuid,
             sceneId: canvas.scene?.id ?? null,
@@ -510,6 +510,18 @@ interface PF2eHudSidebar {
     _activateListeners?(html: HTMLElement): void;
 }
 
+type SidebarDragData = {
+    imgSrc: string;
+    data: {
+        type?: string;
+        actorId: string;
+        actorUUID: string;
+        sceneId: string | null;
+        tokenId: string | null;
+        fromSidebar: boolean;
+    } & { [k: string]: any };
+};
+
 type SidebarContext = {
     i18n: ReturnType<typeof templateLocalize>;
     partial: (template: string) => string;
@@ -538,4 +550,11 @@ type SidebarMenu = {
 };
 
 export { PF2eHudSidebar, getAnnotationTooltip, getSidebars };
-export type { SidebarContext, SidebarEvent, SidebarMenu, SidebarName, SidebarRenderOptions };
+export type {
+    SidebarContext,
+    SidebarDragData,
+    SidebarEvent,
+    SidebarMenu,
+    SidebarName,
+    SidebarRenderOptions,
+};
