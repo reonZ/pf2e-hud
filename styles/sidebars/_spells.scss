@@ -3,6 +3,13 @@
 
     .item {
         .details {
+            .name {
+                i.signature {
+                    font-size: 0.9em;
+                    width: unset;
+                }
+            }
+
             .extras {
                 a:has(i) {
                     line-height: 1;

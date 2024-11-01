@@ -22,6 +22,11 @@
     <div class="details">
         {{!-- name --}}
         <div class="name">
+            {{#if (and item.isAnimistEntry (not item.isCantrip) (not item.isVirtual))}}
+            <a data-action="toggle-signature">
+                <i class="fa-{{ifThen item.signature 'solid' 'regular'}} fa-star signature"></i>
+            </a>
+            {{/if}}
             <a data-action="item-description">{{item.name}}</a>
         </div>
         {{!-- extras --}}

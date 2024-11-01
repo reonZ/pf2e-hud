@@ -118,10 +118,17 @@ class PF2eHudSidebarSpells extends PF2eHudSidebar {
                 }
 
                 case "draw-item": {
-                    const { parentId, annotation } = elementDataset<SpallDrawData>(el);
+                    const { parentId, annotation } = elementDataset<SpellDrawData>(el);
                     const item = actor.inventory.get(parentId, { strict: true });
                     if (!item) return;
                     return changeCarryType(actor, item, 1, annotation);
+                }
+
+                case "toggle-signature": {
+                    const { spell } = getSpellFromElement(actor, el);
+                    return spell.update({
+                        "system.location.signature": !spell.system.location.signature,
+                    });
                 }
             }
         });
@@ -143,12 +150,12 @@ function getSpellFromElement(actor: CreaturePF2e, target: HTMLElement) {
     };
 }
 
-type SpallDrawData = {
+type SpellDrawData = {
     parentId: string;
     annotation: NonNullable<AuxiliaryActionPurpose>;
 };
 
-type SpellsActionEvent = "cast-spell" | "toggle-slot-expended" | "draw-item";
+type SpellsActionEvent = "cast-spell" | "toggle-slot-expended" | "draw-item" | "toggle-signature";
 
 interface PF2eHudSidebarSpells {
     get actor(): CreaturePF2e;
