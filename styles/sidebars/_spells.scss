@@ -1,4 +1,6 @@
 #pf2e-hud-sidebar .inner.spells {
+    --virtual-color: #31ff0012;
+
     .item {
         .details {
             .extras {
@@ -43,6 +45,10 @@
                     text-decoration: line-through;
                 }
             }
+        }
+
+        &.virtual {
+            background: var(--virtual-color);
         }
     }
 }

@@ -10,8 +10,8 @@
 </header>
 {{!-- spell --}}
 {{#each entry as |item|}}
-<div class="item{{#if item.virtual}} virtual{{/if}}"
-    data-item-type="spell{{#if item.virtual}}-slot-group{{/if}}" data-item-id="{{item.itemId}}"
+<div class="item{{#if item.isVirtual}} virtual{{/if}}"
+    data-item-type="spell{{#if item.isVirtual}}-slot-group{{/if}}" data-item-id="{{item.itemId}}"
     data-entry-id="{{item.entryId}}" data-cast-rank="{{item.castRank}}"
     data-group-id="{{item.groupId}}" {{#if item.isPrepared}}data-slot-id="{{item.slotId}}" {{/if}}
     {{#if item.expended}}data-slot-expended{{/if}} draggable="true"
