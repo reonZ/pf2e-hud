@@ -324,6 +324,7 @@
             },
             "main": {
                 "shortcut": {
+                    "dc": "ST {dc}",
                     "wrongActor": "Skróty można tworzyć tylko od tego samego stałego aktora.",
                     "wrongType": "Nie można utworzyć skrótu tego typu.",
                     "wrongOrigin": "Tylko zaklęcia z paska bocznego HUD mogą zostać przekształcone w skróty.",
@@ -506,7 +507,8 @@
             "variants": {
                 "title": "Warianty akcji",
                 "statistic": "Statystyka",
-                "dc": "Klasa trudności"
+                "dc": "Klasa trudności",
+                "drag": "Przeciągnij, aby utworzyć skrót"
             },
             "resolve": {
                 "full": "{name} ma pełną staminę i nie potrzebuje odpoczynku.",
