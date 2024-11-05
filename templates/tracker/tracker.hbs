@@ -123,16 +123,20 @@
                 {{/if}}
             </div>
             {{!-- if health --}}
-            {{#if health}}
+            {{#if combatant.health}}
             <div class="health">
-                {{#if health.useStamina}}
+                {{#if (and canObserve combatant.health.useStamina)}}
                 <span class="sp" data-tooltip="PF2E.StaminaPointsShortLabel">
-                    <span style="--hue: {{health.sp.hue}};">{{health.sp.value}}</span>
+                    <span style="--hue: {{combatant.health.sp.hue}};">
+                        {{combatant.health.sp.value}}
+                    </span>
                     <i class="fa-solid fa-heart-pulse"></i>
                 </span>
                 {{/if}}
-                <span class="hp" data-tooltip="PF2E.HitPointsHeader">
-                    <span style="--hue: {{health.hue}};">{{health.value}}</span>
+                <span class="hp" data-tooltip="{{combatant.health.tooltip}}">
+                    <span style="--hue: {{combatant.health.hue}};">
+                        {{combatant.health.value}}
+                    </span>
                     <i class="fa-solid fa-heart"></i>
                 </span>
             </div>

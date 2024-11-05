@@ -203,6 +203,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         let canRoll = false;
         let canRollNPCs = false;
 
+        const statuses = this.getHealthStatusEntries();
         const hideNameLabel = game.i18n.localize("PF2E.Encounter.HideName");
         const revealNameLabel = game.i18n.localize("PF2E.Encounter.RevealName");
 
@@ -217,6 +218,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
             const hasPlayerOwner = !!actor?.hasPlayerOwner;
             const playersCanSeeName = !tokenSetsNameVisibility || combatant.playersCanSeeName;
             const dispositionColor = getDispositionColor(actor);
+            const canObserve = !!actor && userCanObserveActor(actor);
 
             const texture: TrackerTexture = {
                 ...((useTextureScaling && combatant.token?.texture) || { scaleX: 1, scaleY: 1 }),
@@ -247,6 +249,25 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
             if (!combatant.visible) css.push("not-visible");
             if (!isGM && canRollThis) css.push("can-roll");
 
+            const health = (() => {
+                if (!actor || (!canObserve && !statuses)) return;
+
+                const health = getHealth(actor);
+                if (!health) return;
+
+                const trackerHealth = health as TrackerHealth;
+
+                trackerHealth.tooltip = canObserve
+                    ? game.i18n.localize("PF2E.HitPointsHeader")
+                    : this.getSelectedHealthStatusEntry(health, statuses)!;
+
+                if (!canObserve) {
+                    trackerHealth.value = trackerHealth.sp.value = "???";
+                }
+
+                return trackerHealth;
+            })();
+
             const turn: TrackerTurn = {
                 index: i,
                 id: combatant.id,
@@ -261,7 +282,8 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
                 canPing: canPing && combatant.sceneId === canvas.scene?.id,
                 css: css.join(" "),
                 isOwner,
-                health: actor && userCanObserveActor(actor) ? getHealth(actor) : undefined,
+                canObserve,
+                health,
                 color: dispositionColor.rgb.map((x) => x * 255).join(", "),
             };
 
@@ -727,6 +749,12 @@ type TrackerTexture = {
     mask?: string;
 };
 
+type TrackerHealth = Omit<HealthData, "value" | "sp"> & {
+    value: number | "???";
+    tooltip: string;
+    sp: Omit<HealthData["sp"], "value"> & { value: number | "???" };
+};
+
 type TrackerTurn = {
     id: string;
     index: number;
@@ -738,7 +766,8 @@ type TrackerTurn = {
     initiative: string;
     isDelayed: boolean;
     hasRolled: boolean;
-    health: HealthData | undefined;
+    health: TrackerHealth | undefined;
+    canObserve: boolean;
     css: string;
     texture: TrackerTexture;
     toggleName: Maybe<{
