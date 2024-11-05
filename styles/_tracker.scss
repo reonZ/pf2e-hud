@@ -160,7 +160,7 @@
 
                 .health {
                     display: flex;
-                    gap: 0.2em;
+                    gap: 0.5em;
                 }
 
                 .sp,
@@ -171,7 +171,6 @@
                     align-items: center;
 
                     span {
-                        width: 1.6em;
                         text-align: end;
                         color: hsl(var(--hue) 75% 40%);
                     }
