@@ -132,7 +132,16 @@ class PersistentEffects extends PersistentPart<EffectsContext | PersistentContex
                 }
             } else if (event.button === 2) {
                 if (isAbstract) {
-                    effect.decrease();
+                    if (
+                        event.shiftKey &&
+                        effect.badge &&
+                        !effect.isLocked &&
+                        effect.badge.type === "counter"
+                    ) {
+                        effect.delete();
+                    } else {
+                        effect.decrease();
+                    }
                 } else {
                     // Failover in case of a stale effect
                     this.render();
