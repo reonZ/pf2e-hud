@@ -101,7 +101,6 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
 
     get SETTINGS_ORDER(): (keyof TooltipSettings)[] {
         return [
-            "status",
             "enabled",
             "type",
             "showStatus",
@@ -116,12 +115,6 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
 
     getSettings() {
         return super.getSettings().concat([
-            {
-                key: "status",
-                type: String,
-                default: undefined,
-                onChange: () => this.enable(),
-            },
             {
                 key: "showStatus",
                 type: String,
@@ -203,7 +196,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
     get enabled(): boolean {
         return (
             this.getSetting("enabled") &&
-            (this.getSetting("showDistance") !== "never" || !!this.healthStatuses)
+            (this.getSetting("showDistance") !== "never" || !!this.getHealthStatusEntries())
         );
     }
 
@@ -236,15 +229,6 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
             multiplier,
             unit: localize("tooltip.distance", unit),
         };
-    }
-
-    get healthStatuses() {
-        const statuses = R.pipe(
-            this.getSetting("status").split(","),
-            R.map((status) => status.trim()),
-            R.filter(R.isTruthy)
-        );
-        return statuses.length >= 3 ? statuses : null;
     }
 
     _onEnable(enabled = this.enabled) {
@@ -341,25 +325,8 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
             const statusType = this.getSetting("showStatus");
             if (statusType === "never" || (statusType === "small" && extended)) return;
 
-            const statuses = this.healthStatuses;
-            if (!statuses) return;
-
-            let { value, max, ratio } = statsMain.health.total;
-            value = Math.clamp(value, 0, max);
-
-            if (value === 0) {
-                return statuses.at(0)!;
-            }
-
-            if (value === max) {
-                return statuses.at(-1)!;
-            }
-
-            statuses.shift();
-            statuses.pop();
-
-            const pick = Math.ceil(ratio * statuses.length);
-            return statuses.at(pick - 1);
+            const statuses = this.getHealthStatusEntries();
+            return this.getSelectedHealthStatusEntry(statsMain.health, statuses);
         })();
 
         if (!extended) {
@@ -667,7 +634,6 @@ type TooltipContext = StatusedTooltipContext & {
 
 type TooltipSettings = BaseTokenSettings & {
     delay: number;
-    status: string;
     drawDistance: number;
     showStatus: (typeof SETTING_SHOW_STATUS)[number];
     type: (typeof SETTING_TYPE)[number];

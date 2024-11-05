@@ -14,6 +14,17 @@ function registerModuleSettings() {
     const settings: SettingOptions[] = [];
 
     registerSetting({
+        key: "healthStatus",
+        type: String,
+        default: localize(`settings.healthStatus.default`),
+        scope: "world",
+        onChange: () => {
+            HUDS.tracker.render();
+            HUDS.tooltip.render();
+        },
+    });
+
+    registerSetting({
         key: "partyAsObserved",
         type: Boolean,
         default: false,
@@ -144,12 +155,8 @@ function registerModuleSettings() {
 
         for (const setting of hud.getSettings()) {
             const key = `${hud.key}.${setting.key}`;
-
-            if (setting.default === undefined) {
-                setting.default = localize(`settings.${key}.default`);
-            }
-
             const mainIndex = mainSettingsOrder.indexOf(setting.key);
+
             if (mainIndex !== -1) {
                 mainSettings[mainIndex] = setting;
             } else {

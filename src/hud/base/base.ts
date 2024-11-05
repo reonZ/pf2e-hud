@@ -1,16 +1,20 @@
 import {
     getFlag,
     getSetting,
+    R,
     render,
     setFlag,
     setSetting,
     settingPath,
     templatePath,
 } from "foundry-pf2e";
+import { HealthData } from "../shared/base";
 
 const GLOBAL_SETTINGS: ReadonlyArray<keyof GlobalSettings> = [
     "highestSpeed",
     "useModifiers",
+    "partyAsObserved",
+    "healthStatus",
 ] as const;
 
 abstract class PF2eHudBase<
@@ -137,11 +141,45 @@ abstract class PF2eHudBase<
     ) {
         return setFlag(game.user, this.key, key, value);
     }
+
+    getHealthStatusEntries() {
+        const statuses = R.pipe(
+            this.getSetting("healthStatus").split(","),
+            R.map((status) => status.trim()),
+            R.filter(R.isTruthy)
+        );
+        return statuses.length >= 3 ? statuses : null;
+    }
+
+    getSelectedHealthStatusEntry(health: HealthData, statuses?: string[] | null) {
+        statuses = statuses === undefined ? this.getHealthStatusEntries() : statuses;
+        if (!statuses) return;
+
+        let { value, max, ratio } = health.total;
+        value = Math.clamp(value, 0, max);
+
+        if (value === 0) {
+            return statuses.at(0)!;
+        }
+
+        if (value === max) {
+            return statuses.at(-1)!;
+        }
+
+        statuses.shift();
+        statuses.pop();
+
+        const pick = Math.ceil(ratio * statuses.length);
+
+        return statuses.at(pick - 1)!;
+    }
 }
 
 type GlobalSettings = {
     useModifiers: boolean;
     highestSpeed: boolean;
+    partyAsObserved: boolean;
+    healthStatus: string;
 };
 
 type BaseSettings = {

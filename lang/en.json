@@ -25,6 +25,11 @@
             }
         },
         "settings": {
+            "healthStatus": {
+                "name": "Health Status Entries",
+                "hint": "Comma separated strings representing the different divisions of a creature's health state from worst to best. Leave empty to disable.",
+                "default": "Dead, At Death's Door, Not Feeling Good, Seen Better Days, Barely Hurt, Perfectly Fine"
+            },
             "partyAsObserved": {
                 "name": "Party Alliance as Observed",
                 "hint": "Consider actors in the 'Party' alliance to be observed by players for the sake of extending the tooltip or showing health details in the combat tracker. Not to be confused with the 'Party' actor."
@@ -87,11 +92,6 @@
             },
             "tooltip": {
                 "title": "Token Tooltip",
-                "status": {
-                    "name": "Health Status Entries",
-                    "hint": "Comma separated strings representing the different divisions of a creature's health state from worst to best. Leave empty to disable.",
-                    "default": "Dead, At Death's Door, Not Feeling Good, Seen Better Days, Barely Hurt, Perfectly Fine"
-                },
                 "type": {
                     "name": "Extended Tooltip",
                     "hint": "If/when the extended version of the tooltip should be used.",

@@ -25,6 +25,11 @@
             }
         },
         "settings": {
+            "status": {
+                "name": "Wpisy stanu zdrowia",
+                "hint": "Oddzielone przecinkami ciągi reprezentujące różne podziały stanu zdrowia stworzenia od najgorszego do najlepszego. Pozostaw puste, aby wyłączyć.",
+                "default": "Martwy, Bliski śmierci, Ciężko ranny, Ranny, Lekko ranny, Bez obrażeń"
+            },
             "partyAsObserved": {
                 "name": "Drużyna sojuszników jako Obserwowani",
                 "hint": "Aktorzy w sojuszu „Drużyna” mogą być obserwowani przez graczy w celu rozszerzenia podpowiedzi lub pokazania szczegółów zdrowia w śledzeniu walki. Nie mylić z aktorem „Drużyny”."
@@ -87,11 +92,6 @@
             },
             "tooltip": {
                 "title": "Podpowiedzi tokena",
-                "status": {
-                    "name": "Wpisy stanu zdrowia",
-                    "hint": "Oddzielone przecinkami ciągi reprezentujące różne podziały stanu zdrowia stworzenia od najgorszego do najlepszego. Pozostaw puste, aby wyłączyć.",
-                    "default": "Martwy, Bliski śmierci, Ciężko ranny, Ranny, Lekko ranny, Bez obrażeń"
-                },
                 "type": {
                     "name": "Rozszerzone podpowiedzi",
                     "hint": "Czy/kiedy powinna być używana rozszerzona wersja podpowiedzi.",
