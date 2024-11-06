@@ -158,29 +158,27 @@
                 align-items: flex-end;
                 z-index: 1;
 
-                .health {
+                .group {
                     display: flex;
                     gap: 0.5em;
-                }
 
-                .sp,
-                .hp,
-                .initiative {
-                    display: flex;
-                    gap: 0.1em;
-                    align-items: center;
-
-                    span {
-                        text-align: end;
-                        color: hsl(var(--hue) 75% 40%);
-                    }
-                }
-
-                .initiative {
-                    a {
+                    .entry {
                         display: flex;
+                        gap: 0.1em;
                         align-items: center;
-                        justify-content: center;
+
+                        span {
+                            text-align: end;
+                            color: hsl(var(--hue) 75% 40%);
+                        }
+                    }
+
+                    .initiative {
+                        a {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
                     }
                 }
 

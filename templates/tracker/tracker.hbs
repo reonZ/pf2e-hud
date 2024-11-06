@@ -100,40 +100,47 @@
         <div class="extras">
             {{!-- if hasRolled --}}
             {{#if hasRolled}}
-            <div class="initiative" data-tooltip="PF2E.InitiativeLabel">
-                <span>{{combatant.initiative}}</span>
-                {{!-- is GM --}}
-                {{#if @root.isGM}}
-                <a class="delay" data-action="delay-turn">
-                    {{#if combatant.isDelayed}}
-                    <i class="fa-solid fa-hourglass-start"
-                        data-tooltip="{{@root.i18n.path 'join'}}"></i>
+            <div class="group">
+                <span class="entry initiative" data-tooltip="PF2E.InitiativeLabel">
+                    <span>{{combatant.initiative}}</span>
+                    {{!-- is GM --}}
+                    {{#if @root.isGM}}
+                    <a class="delay" data-action="delay-turn">
+                        {{#if combatant.isDelayed}}
+                        <i class="fa-solid fa-hourglass-start"
+                            data-tooltip="{{@root.i18n.path 'join'}}"></i>
+                        {{else}}
+                        <i class="fa-solid fa-dice-d20"
+                            data-tooltip="{{@root.i18n.path 'delay'}}"></i>
+                        {{/if}}
+                    </a>
+                    {{!-- is not GM --}}
                     {{else}}
-                    <i class="fa-solid fa-dice-d20" data-tooltip="{{@root.i18n.path 'delay'}}"></i>
+                    {{#if combatant.isDelayed}}
+                    <i class="fa-solid fa-hourglass-start"></i>
+                    {{else}}
+                    <i class="fa-solid fa-dice-d20"></i>
                     {{/if}}
-                </a>
-                {{!-- is not GM --}}
-                {{else}}
-                {{#if combatant.isDelayed}}
-                <i class="fa-solid fa-hourglass-start"></i>
-                {{else}}
-                <i class="fa-solid fa-dice-d20"></i>
-                {{/if}}
-                {{!-- end is GM --}}
-                {{/if}}
+                    {{!-- end is GM --}}
+                    {{/if}}
+                </span>
             </div>
             {{!-- if health --}}
             {{#if combatant.health}}
-            <div class="health">
-                {{#if (and canObserve combatant.health.useStamina)}}
-                <span class="sp" data-tooltip="PF2E.StaminaPointsShortLabel">
+            <div class="group">
+                {{#if canObserve}}
+                {{!-- has stamina --}}
+                {{#if combatant.health.useStamina}}
+                <span class="entry" data-tooltip="PF2E.StaminaPointsShortLabel">
                     <span style="--hue: {{combatant.health.sp.hue}};">
                         {{combatant.health.sp.value}}
                     </span>
                     <i class="fa-solid fa-heart-pulse"></i>
                 </span>
+                {{!-- end of has stamina --}}
                 {{/if}}
-                <span class="hp" data-tooltip="{{combatant.health.tooltip}}">
+                {{/if}}
+                <span class="entry" data-tooltip="{{combatant.health.tooltip}}">
                     <span style="--hue: {{combatant.health.hue}};">
                         {{combatant.health.value}}
                     </span>
