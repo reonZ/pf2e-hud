@@ -17,7 +17,7 @@
             }
         },
         "settings": {
-            "status": {
+            "healthStatus": {
                 "name": "État de santé",
                 "hint": "liste de termes, séparés par une virgules, indiquant les différents états de santé de la créature, du pire au meilleur. Laisser vide pour désactiver.",
                 "default": "Mort, Aux portes de la mort, Ne se sent pas bien, A vu des jours meilleurs, À peine blessé, En pleine santé"
