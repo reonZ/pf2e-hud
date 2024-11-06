@@ -25,7 +25,7 @@
             }
         },
         "settings": {
-            "status": {
+            "healthStatus": {
                 "name": "Wpisy stanu zdrowia",
                 "hint": "Oddzielone przecinkami ciągi reprezentujące różne podziały stanu zdrowia stworzenia od najgorszego do najlepszego. Pozostaw puste, aby wyłączyć.",
                 "default": "Martwy, Bliski śmierci, Ciężko ranny, Ranny, Lekko ranny, Bez obrażeń"
