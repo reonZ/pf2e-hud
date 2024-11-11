@@ -222,7 +222,11 @@
 
             &.defeated {
                 .details .name {
-                    color: #b32019;
+                    color: #d91b12;
+
+                    &.gm-only {
+                        color: #9afaff;
+                    }
                 }
             }
 
