@@ -1,3 +1,14 @@
+# 1.21.0
+
+-   `Combat Tracker`:
+    -   add new defeated image over the combatant image
+    -   fix dead anonymous combatant name color
+-   `Persistent HUD`:
+    -   change shortcuts methods to be public for third party use, noteworthy mentions are:
+        -   `getShortcut`
+        -   `getShortcutFromElement`
+        -   `shortcutsAreEmpty`
+
 # 1.20.0
 
 -   move the `Health Status` world setting outside the `Token Tooltip` context
