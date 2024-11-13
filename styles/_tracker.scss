@@ -88,24 +88,38 @@
                 display: flex;
                 overflow: hidden;
 
-                img {
+                > * {
                     position: absolute;
+                    display: flex;
+                }
+
+                img {
+                    inset: 0;
                     border: none;
                     pointer-events: none;
-                    transform: scale(var(--scaleX), var(--scaleY));
-                    mask-image: var(--mask);
+
+                    &.token-img {
+                        z-index: 0;
+                        transform: scale(var(--scaleX), var(--scaleY));
+                        mask-image: var(--mask);
+                    }
+
+                    &.defeated-img {
+                        z-index: 1;
+                        filter: invert(19%) sepia(93%) saturate(6259%) hue-rotate(357deg)
+                            brightness(70%) contrast(130%) drop-shadow(0px 0px 2px black);
+                    }
                 }
 
                 .alt {
-                    display: flex;
+                    inset: 0;
+                    z-index: 2;
                     font-size: 1.8em;
                     align-items: center;
-                    z-index: 1;
                 }
 
                 .targets {
-                    position: absolute;
-                    display: flex;
+                    z-index: 3;
                     justify-content: center;
                     gap: 1px;
 

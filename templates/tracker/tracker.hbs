@@ -37,8 +37,11 @@
         data-initiative="{{combatant.initiative}}" style="--disposition-color: {{color}}">
 
         <div class="avatar">
-            <img src="{{combatant.texture.img}}"
+            <img class="token-img" src="{{combatant.texture.img}}"
                 style="--scaleX: {{combatant.texture.scaleX}}; --scaleY: {{combatant.texture.scaleY}}; --mask: {{combatant.texture.mask}};">
+            {{#if combatant.defeated}}
+            <img class="defeated-img" src="systems/pf2e/icons/damage/double.svg">
+            {{/if}}
             <div class="alt">
                 <i class="fa-solid fa-arrow-right-to-bracket"></i>
             </div>
