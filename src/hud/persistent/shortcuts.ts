@@ -82,7 +82,7 @@ class PersistentShortcuts extends PersistentPart<
     }
 
     get automationUUID() {
-        return this.#getAutomationUUIDs(game.user.id).at(this.#selectedSet) || "";
+        return this.getAutomationUUIDs(game.user.id).at(this.#selectedSet) || "";
     }
 
     get hasStances() {
@@ -135,9 +135,9 @@ class PersistentShortcuts extends PersistentPart<
         const shortcutGroups: ShortcutGroup[] = [];
         const isNPC = actor.isOfType("npc");
 
-        const selfSetIndex = this.#getSetIndex();
-        const selfAutomatedSetIndex = await this.#getAutomatedSetIndex();
-        const selfShortcutsSet = this.#getShortcutsSets().at(selfAutomatedSetIndex || selfSetIndex);
+        const selfSetIndex = this.getSetIndex();
+        const selfAutomatedSetIndex = await this.getAutomatedSetIndex();
+        const selfShortcutsSet = this.getShortcutsSets().at(selfAutomatedSetIndex || selfSetIndex);
         const noShortcuts = !selfShortcutsSet;
         const autoFill = isNPC && noShortcuts && this.getSetting("autoFillNpc");
 
@@ -147,12 +147,12 @@ class PersistentShortcuts extends PersistentPart<
             const id = getOwner(actor, false)?.id;
             if (!id) return;
 
-            const automatedSetIndex = await this.#getAutomatedSetIndex(id);
-            const shortcutsSet = this.#getShortcutsSets(id).at(
+            const automatedSetIndex = await this.getAutomatedSetIndex(id);
+            const shortcutsSet = this.getShortcutsSets(id).at(
                 automatedSetIndex || selfAutomatedSetIndex || selfSetIndex
             );
 
-            if (this.#shortcutsAreEmpty(shortcutsSet)) return;
+            if (this.shortcutsAreEmpty(shortcutsSet)) return;
 
             return { id, automatedSetIndex, shortcutsSet };
         })();
@@ -266,7 +266,7 @@ class PersistentShortcuts extends PersistentPart<
         if (!worldActor) return;
 
         const owner = game.user.id;
-        const list = this.#getAutomationUUIDs(owner);
+        const list = this.getAutomationUUIDs(owner);
         const current = list[this.#selectedSet];
         const newValue = value || undefined;
 
@@ -310,7 +310,7 @@ class PersistentShortcuts extends PersistentPart<
         const worldActor = this.worldActor;
         if (!worldActor) return;
 
-        const shortcutSets = this.#getShortcutsSets();
+        const shortcutSets = this.getShortcutsSets();
 
         if (groupIndex == null) {
             shortcutSets[this.#selectedSet] = undefined;
@@ -333,11 +333,11 @@ class PersistentShortcuts extends PersistentPart<
         }
 
         let hasShortcuts = false;
-        const shortcutSets = owner ? this.#getShortcutsSets(owner) : [];
+        const shortcutSets = owner ? this.getShortcutsSets(owner) : [];
 
         for (let i = 0; i < this.SHORTCUTS_LIST_LIMIT; i++) {
             const shortcuts = shortcutSets[i];
-            if (!this.#shortcutsAreEmpty(shortcuts)) {
+            if (!this.shortcutsAreEmpty(shortcuts)) {
                 hasShortcuts = true;
                 break;
             }
@@ -356,7 +356,7 @@ class PersistentShortcuts extends PersistentPart<
             foundry.utils.deepClone(shortcutSets)
         );
 
-        const automations = this.#getAutomationUUIDs(owner);
+        const automations = this.getAutomationUUIDs(owner);
 
         setFlagProperty(
             updates,
@@ -386,7 +386,18 @@ class PersistentShortcuts extends PersistentPart<
         return true;
     }
 
-    #getShortcutsSets(owner = game.user.id) {
+    getShortcut<T extends Shortcut>(
+        groupIndex: Maybe<number | string>,
+        index: Maybe<number | string>
+    ) {
+        return this.#shortcuts[`${groupIndex}-${index}`] as T | undefined;
+    }
+    getShortcutFromElement<T extends Shortcut>(el: HTMLElement) {
+        const { groupIndex, index } = el.dataset;
+        return this.getShortcut<T>(groupIndex, index);
+    }
+
+    getShortcutsSets(owner = game.user.id) {
         const worldActor = this.worldActor;
         if (!worldActor) return [];
 
@@ -401,7 +412,7 @@ class PersistentShortcuts extends PersistentPart<
             : [shortcutSets];
     }
 
-    #getSetIndex(owner = game.user.id) {
+    getSetIndex(owner = game.user.id) {
         const worldActor = this.worldActor;
 
         if (!worldActor) {
@@ -412,11 +423,11 @@ class PersistentShortcuts extends PersistentPart<
         return Math.clamp(value, 0, this.SHORTCUTS_LIST_LIMIT - 1);
     }
 
-    async #getAutomatedSetIndex(owner = game.user.id) {
+    async getAutomatedSetIndex(owner = game.user.id) {
         const worldActor = this.worldActor;
         if (!worldActor) return;
 
-        const list = this.#getAutomationUUIDs(owner);
+        const list = this.getAutomationUUIDs(owner);
 
         for (let i = 0; i < this.SHORTCUTS_LIST_LIMIT; i++) {
             const uuid = list.at(i);
@@ -432,6 +443,70 @@ class PersistentShortcuts extends PersistentPart<
                 return i;
             }
         }
+    }
+
+    shortcutsAreEmpty(shortcuts: Maybe<UserShortcutsData>) {
+        if (!shortcuts) return true;
+
+        for (const group of Object.values(shortcuts)) {
+            if (!foundry.utils.isEmpty(group)) return false;
+        }
+
+        return true;
+    }
+
+    getConsumableRank(item: Maybe<ConsumablePF2e>, roman: true): RomanRank | undefined;
+    getConsumableRank(item: Maybe<ConsumablePF2e>, roman?: false): OneToTen | undefined;
+    getConsumableRank(
+        item: Maybe<ConsumablePF2e>,
+        roman?: boolean
+    ): RomanRank | OneToTen | undefined {
+        const rank = item?.system.spell
+            ? item.system.spell.system.location.heightenedLevel ??
+              item.system.spell.system.level.value
+            : undefined;
+        return rank && roman ? ROMAN_RANKS[rank] : rank;
+    }
+
+    getItemSlug(item: ItemPF2e) {
+        if (item.isOfType("consumable") && item.system.spell) {
+            const spell = item.system.spell;
+            const baseSlug = spell.system.slug ?? game.pf2e.system.sluggify(spell.name);
+            const rank = this.getConsumableRank(item);
+            return `${baseSlug}-rank-${rank}`;
+        }
+        return item.slug ?? game.pf2e.system.sluggify(item.name);
+    }
+
+    getActionCost(costAction: { value: string | number } | ActionCost | undefined | null) {
+        if (costAction == null) return undefined;
+
+        const value = costAction.value;
+        const type = "type" in costAction ? costAction.type : undefined;
+        const cost = type && type !== "action" ? type : value;
+
+        if (cost === null) return;
+        if (typeof cost === "number") return cost;
+        if (["reaction", "free"].includes(cost)) return cost;
+
+        const costValue = Number(cost);
+        return isNaN(costValue) ? (cost ? "extra" : undefined) : costValue;
+    }
+
+    getAutomationUUIDs(owner = game.user.id) {
+        const worldActor = this.worldActor;
+        if (!worldActor) return [];
+
+        const flag = getFlag<(string | undefined)[]>(worldActor, "persistent.automation", owner);
+        return flag?.map((x) => x || undefined) ?? [];
+    }
+
+    isUsableAction(item: FeatPF2e | AbilityItemPF2e) {
+        return (
+            item.system.selfEffect ||
+            item.frequency?.max ||
+            foundry.utils.getProperty(item, "flags.pf2e-toolbelt.actionable.macro")
+        );
     }
 
     #createStrikeShortcutData(
@@ -450,16 +525,6 @@ class PersistentShortcuts extends PersistentPart<
             img: strike.item.img,
             name: `${game.i18n.localize("PF2E.WeaponStrikeLabel")}: ${strike.label}`,
         };
-    }
-
-    #shortcutsAreEmpty(shortcuts: Maybe<UserShortcutsData>) {
-        if (!shortcuts) return true;
-
-        for (const group of Object.values(shortcuts)) {
-            if (!foundry.utils.isEmpty(group)) return false;
-        }
-
-        return true;
     }
 
     async #fillShortcut(
@@ -597,44 +662,6 @@ class PersistentShortcuts extends PersistentPart<
         return this.#createShortcut(shortcutData, cached) as Promise<T | EmptyShortcut>;
     }
 
-    #getConsumableRank(item: Maybe<ConsumablePF2e>, roman: true): RomanRank | undefined;
-    #getConsumableRank(item: Maybe<ConsumablePF2e>, roman?: false): OneToTen | undefined;
-    #getConsumableRank(
-        item: Maybe<ConsumablePF2e>,
-        roman?: boolean
-    ): RomanRank | OneToTen | undefined {
-        const rank = item?.system.spell
-            ? item.system.spell.system.location.heightenedLevel ??
-              item.system.spell.system.level.value
-            : undefined;
-        return rank && roman ? ROMAN_RANKS[rank] : rank;
-    }
-
-    #getItemSlug(item: ItemPF2e) {
-        if (item.isOfType("consumable") && item.system.spell) {
-            const spell = item.system.spell;
-            const baseSlug = spell.system.slug ?? game.pf2e.system.sluggify(spell.name);
-            const rank = this.#getConsumableRank(item);
-            return `${baseSlug}-rank-${rank}`;
-        }
-        return item.slug ?? game.pf2e.system.sluggify(item.name);
-    }
-
-    #getActionCost(costAction: { value: string | number } | ActionCost | undefined | null) {
-        if (costAction == null) return undefined;
-
-        const value = costAction.value;
-        const type = "type" in costAction ? costAction.type : undefined;
-        const cost = type && type !== "action" ? type : value;
-
-        if (cost === null) return;
-        if (typeof cost === "number") return cost;
-        if (["reaction", "free"].includes(cost)) return cost;
-
-        const costValue = Number(cost);
-        return isNaN(costValue) ? (cost ? "extra" : undefined) : costValue;
-    }
-
     async #createShortcut<T extends Shortcut>(
         shortcutData: ShortcutData | { groupIndex: string; index: string },
         cached: CreateShortcutCache
@@ -739,7 +766,7 @@ class PersistentShortcuts extends PersistentPart<
                     item,
                     name,
                     img,
-                    cost: this.#getActionCost(actionCost),
+                    cost: this.getActionCost(actionCost),
                 } satisfies SkillShortcut as T;
             }
 
@@ -779,7 +806,7 @@ class PersistentShortcuts extends PersistentPart<
                     name: frequency ? `${name} - ${frequency.label}` : name,
                     frequency,
                     hasEffect,
-                    cost: this.#getActionCost(item?.actionCost),
+                    cost: this.getActionCost(item?.actionCost),
                     subtitle: cannotUseStances
                         ? localize("sidebars.actions.outOfCombat")
                         : undefined,
@@ -918,7 +945,7 @@ class PersistentShortcuts extends PersistentPart<
                     isBroken,
                     castRank: castRank,
                     isPrepared: isPrepared && !isFlexible && !isCantrip,
-                    cost: this.#getActionCost(spell.system.time),
+                    cost: this.getActionCost(spell.system.time),
                     notCarried,
                     isStaff,
                     parentItem,
@@ -931,7 +958,7 @@ class PersistentShortcuts extends PersistentPart<
                 const isGeneric = "slug" in shortcutData;
                 const item = isGeneric
                     ? actor.itemTypes.consumable.find(
-                          (item) => this.#getItemSlug(item) === shortcutData.slug
+                          (item) => this.getItemSlug(item) === shortcutData.slug
                       )
                     : actor.items.get<ConsumablePF2e<CreaturePF2e>>(shortcutData.itemId);
 
@@ -966,7 +993,7 @@ class PersistentShortcuts extends PersistentPart<
                 return returnShortcut({
                     ...shortcutData,
                     isDisabled: item?.isAmmo || isOutOfStock,
-                    rank: this.#getConsumableRank(item, true),
+                    rank: this.getConsumableRank(item, true),
                     quantity: uses ?? quantity,
                     categoryIcon,
                     isFadedOut: isOutOfStock || notCarried,
@@ -978,7 +1005,7 @@ class PersistentShortcuts extends PersistentPart<
                     item,
                     name,
                     img,
-                    cost: this.#getActionCost(item?.system.spell?.system.time),
+                    cost: this.getActionCost(item?.system.spell?.system.time),
                 } satisfies ConsumableShortcut as T);
             }
 
@@ -1108,7 +1135,7 @@ class PersistentShortcuts extends PersistentPart<
         if (!actor) return;
 
         let { index, groupIndex } = elementDataset(el);
-        const shortcut = this.#getGlobalShortcut(groupIndex, index);
+        const shortcut = this.getShortcut(groupIndex, index);
 
         let newShortcut: ShortcutData | undefined;
 
@@ -1172,7 +1199,7 @@ class PersistentShortcuts extends PersistentPart<
                             groupIndex,
                             img: item.system.spell?.img ?? item.img,
                             name: item.name,
-                            slug: this.#getItemSlug(item),
+                            slug: this.getItemSlug(item),
                         } satisfies GenericConsumableShortcutData;
                     } else {
                         newShortcut = {
@@ -1286,7 +1313,7 @@ class PersistentShortcuts extends PersistentPart<
         const group: Record<string, any> = this.#isVirtual
             ? this.#shortcutData[groupIndex] ?? {}
             : foundry.utils.deepClone(
-                  this.#getShortcutsSets().at(this.#selectedSet)?.[groupIndex]
+                  this.getShortcutsSets().at(this.#selectedSet)?.[groupIndex]
               ) ?? {};
 
         if (newShortcut.type === "attack") {
@@ -1347,7 +1374,7 @@ class PersistentShortcuts extends PersistentPart<
         const worldActor = this.worldActor;
         if (!worldActor) return;
 
-        const shortcutSets = this.#getShortcutsSets();
+        const shortcutSets = this.getShortcutsSets();
 
         if (groupIndex == null) {
             shortcutSets[this.#selectedSet] = data as UserShortcutsData;
@@ -1365,31 +1392,11 @@ class PersistentShortcuts extends PersistentPart<
         return setFlag(worldActor, "persistent.shortcuts", game.user.id, shortcutSets);
     }
 
-    #getGlobalShortcut<T extends Shortcut>(
-        groupIndex: Maybe<number | string>,
-        index: Maybe<number | string>
-    ) {
-        return this.#shortcuts[`${groupIndex}-${index}`] as T | undefined;
-    }
-
     async #overrideShortcutData() {
         if (!this.worldActor) return;
 
         const shortcutData = foundry.utils.deepClone(this.#shortcutData);
         await this.#setShortcuts(shortcutData);
-    }
-
-    #getShortcutFromElement<T extends Shortcut>(el: HTMLElement) {
-        const { groupIndex, index } = el.dataset;
-        return this.#getGlobalShortcut<T>(groupIndex, index);
-    }
-
-    #isUsableAction(item: FeatPF2e | AbilityItemPF2e) {
-        return (
-            item.system.selfEffect ||
-            item.frequency?.max ||
-            foundry.utils.getProperty(item, "flags.pf2e-toolbelt.actionable.macro")
-        );
     }
 
     #confirmShortcut(key: string, titleData: object, contentData: object = titleData) {
@@ -1402,7 +1409,7 @@ class PersistentShortcuts extends PersistentPart<
     async #onShortcutClick(event: MouseEvent, shortcutElement: HTMLElement) {
         const actor = this.actor;
         const shortcut =
-            this.#getShortcutFromElement<Exclude<Shortcut, AttackShortcut>>(shortcutElement);
+            this.getShortcutFromElement<Exclude<Shortcut, AttackShortcut>>(shortcutElement);
         if (!actor || !shortcut || shortcut.isEmpty || shortcut.isDisabled) return;
 
         const confirmUse = (item: ItemPF2e) => {
@@ -1464,7 +1471,7 @@ class PersistentShortcuts extends PersistentPart<
                 const item = shortcut.item;
                 if (!item) return;
 
-                if (!this.#isUsableAction(item)) {
+                if (!this.isUsableAction(item)) {
                     return new PF2eHudItemPopup({ actor, item, event }).render(true);
                 }
 
@@ -1522,7 +1529,7 @@ class PersistentShortcuts extends PersistentPart<
         const action = el.dataset.action as ShortcutActionEvent;
 
         const getStrike = async <T extends StrikeData>(el: HTMLElement, readyOnly = false) => {
-            const shortcut = this.#getShortcutFromElement<StrikeShortcut>(shortcutElement);
+            const shortcut = this.getShortcutFromElement<StrikeShortcut>(shortcutElement);
             if (!shortcut?.strike || shortcut.isEmpty) return null;
             return getStrikeVariant<T>(shortcut.strike, el, readyOnly);
         };
@@ -1544,7 +1551,7 @@ class PersistentShortcuts extends PersistentPart<
             }
 
             case "blast-attack": {
-                const shortcut = this.#getShortcutFromElement<BlastShortcut>(shortcutElement);
+                const shortcut = this.getShortcutFromElement<BlastShortcut>(shortcutElement);
                 if (!shortcut?.blast || shortcut.isEmpty) return;
 
                 const mapIncreases = Math.clamp(Number(el.dataset.mapIncreases), 0, 2);
@@ -1552,7 +1559,7 @@ class PersistentShortcuts extends PersistentPart<
             }
 
             case "blast-damage": {
-                const shortcut = this.#getShortcutFromElement<BlastShortcut>(shortcutElement);
+                const shortcut = this.getShortcutFromElement<BlastShortcut>(shortcutElement);
                 if (!shortcut?.blast || shortcut.isEmpty) return;
                 return shortcut.blast.damage(event, el);
             }
@@ -1588,14 +1595,6 @@ class PersistentShortcuts extends PersistentPart<
                 return useAction(event, action);
             }
         }
-    }
-
-    #getAutomationUUIDs(owner = game.user.id) {
-        const worldActor = this.worldActor;
-        if (!worldActor) return [];
-
-        const flag = getFlag<(string | undefined)[]>(worldActor, "persistent.automation", owner);
-        return flag?.map((x) => x || undefined) ?? [];
     }
 }
 
