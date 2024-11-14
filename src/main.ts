@@ -51,11 +51,53 @@ Hooks.once("setup", () => {
     };
 
     // @ts-ignore
-    game.hud = {
-        ...HUDS,
-        actions,
-        utils,
-    };
+    game.hud = Object.defineProperties(
+        {},
+        {
+            actions: {
+                value: actions,
+                writable: false,
+                configurable: false,
+                enumerable: false,
+            },
+            utils: {
+                value: utils,
+                writable: false,
+                configurable: false,
+                enumerable: false,
+            },
+            tooltip: {
+                value: HUDS.tooltip,
+                writable: false,
+                configurable: false,
+                enumerable: false,
+            },
+            token: {
+                value: HUDS.token,
+                writable: false,
+                configurable: false,
+                enumerable: false,
+            },
+            persistent: {
+                value: HUDS.persistent,
+                writable: false,
+                configurable: false,
+                enumerable: false,
+            },
+            tracker: {
+                value: HUDS.tracker,
+                writable: false,
+                configurable: false,
+                enumerable: false,
+            },
+            resources: {
+                value: HUDS.resources,
+                writable: false,
+                configurable: false,
+                enumerable: false,
+            },
+        }
+    );
 
     for (const hud of Object.values(HUDS)) {
         hud.enable();
