@@ -1,3 +1,9 @@
+# 1.21.1
+
+-   `Sidebars`:
+    -   add public methods to retrieve items from sidebars DOM elements
+-   fix `Hero Points` tooltip
+
 # 1.21.0
 
 -   `Combat Tracker`:
