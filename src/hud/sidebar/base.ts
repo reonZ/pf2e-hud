@@ -20,7 +20,6 @@ import { PF2eHudBaseActor } from "../base/actor";
 import { IPF2eHudAdvanced } from "../base/advanced";
 import { PF2eHudItemPopup } from "../popup/item";
 import { addDragoverListener } from "../shared/advanced";
-import { getItemFromElement } from "../shared/base";
 import { addEnterKeyListeners } from "../shared/listeners";
 
 const SIDEBARS = [
@@ -340,6 +339,30 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         return super.close(options);
     }
 
+    getItemFromElement<T extends ItemPF2e>(el: HTMLElement): T | null | Promise<T | null> {
+        const actor = this.actor;
+        const element = htmlClosest(el, ".item");
+        if (!element) return null;
+
+        const { parentId, itemId, itemUuid, itemType, actionIndex, entryId } = element.dataset;
+
+        const item = parentId
+            ? actor.inventory.get(parentId, { strict: true }).subitems.get(itemId, { strict: true })
+            : itemUuid
+            ? fromUuid<T>(itemUuid)
+            : entryId
+            ? actor.spellcasting?.collections
+                  .get(entryId, { strict: true })
+                  .get(itemId, { strict: true }) ?? null
+            : itemType === "condition"
+            ? actor.conditions.get(itemId, { strict: true })
+            : actionIndex
+            ? actor.system.actions?.[Number(actionIndex)].item ?? null
+            : actor.items.get(itemId ?? "") ?? null;
+
+        return item as T | null | Promise<T | null>;
+    }
+
     getMaxHeight(inner?: boolean) {
         const { limits } = this.parentHUD.anchor;
         const maxHeightRatio = PF2eHudSidebar.getSetting("maxHeight") / 100;
@@ -370,7 +393,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
         const { label, domain, option } = el.dataset;
         const item = (() => {
-            const item = getItemFromElement(el, this.actor);
+            const item = this.getItemFromElement(el);
             return item instanceof Item ? item : null;
         })();
 
@@ -407,7 +430,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
         }
 
         addListenerAll(html, "[data-action='send-to-chat']", async (event, el) => {
-            const item = await getItemFromElement(el, actor);
+            const item = await this.getItemFromElement(el);
             if (!item) return;
 
             if (!isOwnedItem(item)) {
@@ -431,7 +454,7 @@ abstract class PF2eHudSidebar extends foundry.applications.api
 
         addListenerAll(html, "[data-action='item-description']", async (event, el) => {
             const actor = this.actor;
-            const item = await getItemFromElement(el, actor);
+            const item = await this.getItemFromElement(el);
             if (!item) return;
             new PF2eHudItemPopup({ actor, item, event }).render(true);
         });

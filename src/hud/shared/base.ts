@@ -1,4 +1,4 @@
-import { R, canObserveActor, getSetting, htmlClosest, signedInteger } from "foundry-pf2e";
+import { R, canObserveActor, getSetting, signedInteger } from "foundry-pf2e";
 
 const IWR_DATA = [
     { type: "immunities", icon: "fa-solid fa-ankh", label: "PF2E.ImmunitiesLabel" },
@@ -120,32 +120,6 @@ function getStatistics(actor: ActorPF2e) {
     );
 }
 
-function getItemFromElement<T extends ItemPF2e>(
-    el: HTMLElement,
-    actor: ActorPF2e
-): T | null | Promise<T | null> {
-    const element = htmlClosest(el, ".item");
-    if (!element) return null;
-
-    const { parentId, itemId, itemUuid, itemType, actionIndex, entryId } = element.dataset;
-
-    const item = parentId
-        ? actor.inventory.get(parentId, { strict: true }).subitems.get(itemId, { strict: true })
-        : itemUuid
-        ? fromUuid<T>(itemUuid)
-        : entryId
-        ? actor.spellcasting?.collections
-              .get(entryId, { strict: true })
-              .get(itemId, { strict: true }) ?? null
-        : itemType === "condition"
-        ? actor.conditions.get(itemId, { strict: true })
-        : actionIndex
-        ? actor.system.actions?.[Number(actionIndex)].item ?? null
-        : actor.items.get(itemId ?? "") ?? null;
-
-    return item as T | null | Promise<T | null>;
-}
-
 function userCanObserveActor(actor: ActorPF2e) {
     return (
         canObserveActor(actor, true) ||
@@ -200,13 +174,5 @@ type HealthData = {
     max: number;
 };
 
-export {
-    IWR_DATA,
-    getHealth,
-    getItemFromElement,
-    getSpeeds,
-    getStatistics,
-    getStatsHeader,
-    userCanObserveActor,
-};
+export { IWR_DATA, getHealth, getSpeeds, getStatistics, getStatsHeader, userCanObserveActor };
 export type { HealthData, StatsHeader, StatsSpeed, StatsSpeeds, StatsStatistic };

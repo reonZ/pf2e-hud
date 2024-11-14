@@ -23,7 +23,6 @@ import {
 } from "foundry-pf2e";
 import { getNpcStrikeImage } from "../../utils/npc-attacks";
 import { PF2eHudTextPopup } from "../popup/text";
-import { getItemFromElement } from "../shared/base";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 import { EXTRAS_ACTIONS_UUIDS } from "./extras";
 import { SKILL_ACTIONS_UUIDS } from "./skills";
@@ -261,41 +260,38 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
         }
     }
 
+    getBlastFromElement(el: HTMLElement) {
+        const { elementTraits, damageTypes } = CONFIG.PF2E;
+        const melee = el.dataset.melee === "true";
+        const blast = new game.pf2e.ElementalBlast(this.actor as CharacterPF2e);
+        const itemRow = htmlClosest(el, ".item")!;
+        const element = itemRow.dataset.element;
+        const damageType = el.dataset.value || itemRow.dataset.damageType;
+
+        if (!objectHasKey(elementTraits, element)) {
+            throw ErrorPF2e("Unexpected error retrieve element");
+        }
+        if (!objectHasKey(damageTypes, damageType)) {
+            throw ErrorPF2e("Unexpected error retrieving damage type");
+        }
+
+        return [blast, { element, damageType, melee }] as const;
+    }
+
+    getStrikeFromElement<T extends StrikeData>(el: HTMLElement, readyOnly = false): T | null {
+        const actionIndex = Number(htmlClosest(el, ".item")?.dataset.actionIndex ?? "NaN");
+        const strike = this.actor.system.actions?.at(actionIndex) ?? null;
+        return getStrikeVariant<T>(strike, el, readyOnly);
+    }
+
     _activateListeners(html: HTMLElement) {
         const actor = this.actor;
-        const { elementTraits, damageTypes } = CONFIG.PF2E;
-
-        const getBlast = (button: HTMLElement, itemRow: HTMLElement) => {
-            const melee = button.dataset.melee === "true";
-            const blast = new game.pf2e.ElementalBlast(actor as CharacterPF2e);
-            const element = itemRow.dataset.element;
-            const damageType = button.dataset.value || itemRow.dataset.damageType;
-
-            if (!objectHasKey(elementTraits, element)) {
-                throw ErrorPF2e("Unexpected error retrieve element");
-            }
-            if (!objectHasKey(damageTypes, damageType)) {
-                throw ErrorPF2e("Unexpected error retrieving damage type");
-            }
-
-            return [blast, { element, damageType, melee }] as const;
-        };
-
-        const getStrike = <T extends StrikeData>(
-            button: HTMLElement,
-            readyOnly = false
-        ): T | null => {
-            const actionIndex = Number(htmlClosest(button, ".item")?.dataset.actionIndex ?? "NaN");
-            const strike = this.actor.system.actions?.at(actionIndex) ?? null;
-            return getStrikeVariant<T>(strike, button, readyOnly);
-        };
 
         const getUUID = (button: HTMLElement) => {
             return elementDataset(htmlClosest(button, ".item")!).uuid;
         };
 
         addListenerAll(html, "[data-action]", async (event, button) => {
-            const itemRow = htmlClosest(button, ".item")!;
             const action = button.dataset.action as Action;
 
             switch (action) {
@@ -311,7 +307,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                 }
 
                 case "toggle-trait": {
-                    const item = await getItemFromElement(button, actor);
+                    const item = await this.getItemFromElement(button);
                     if (!isOwnedItem(item) || !item.isOfType("action", "feat")) return;
 
                     const trait = button.dataset.trait as "mindshift";
@@ -336,20 +332,20 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                 }
 
                 case "blast-attack": {
-                    const [blast, data] = getBlast(button, itemRow);
+                    const [blast, data] = this.getBlastFromElement(button);
                     const mapIncreases = Math.clamp(Number(button.dataset.mapIncreases), 0, 2);
                     return blast.attack({ ...data, mapIncreases, event });
                 }
 
                 case "blast-damage": {
-                    const [blast, data] = getBlast(button, itemRow);
+                    const [blast, data] = this.getBlastFromElement(button);
                     const outcome =
                         button.dataset.outcome === "success" ? "success" : "criticalSuccess";
                     return blast.damage({ ...data, outcome, event });
                 }
 
                 case "blast-set-damage-type": {
-                    const [blast, data] = getBlast(button, itemRow);
+                    const [blast, data] = this.getBlastFromElement(button);
                     return blast.setDamageType(data);
                 }
 
@@ -358,14 +354,14 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                         ? button.dataset.altUsage
                         : null;
 
-                    const strike = getStrike(button, true);
+                    const strike = this.getStrikeFromElement(button, true);
                     const variantIndex = Number(button.dataset.variantIndex);
                     return strike?.variants[variantIndex]?.roll({ event, altUsage });
                 }
 
                 case "strike-damage":
                 case "strike-critical": {
-                    const strike = getStrike(button);
+                    const strike = this.getStrikeFromElement(button);
                     const method =
                         button.dataset.action === "strike-damage" ? "damage" : "critical";
                     return strike?.[method]?.({ event });
@@ -373,14 +369,14 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
 
                 case "auxiliary-action": {
                     const auxiliaryActionIndex = Number(button.dataset.auxiliaryActionIndex ?? NaN);
-                    const strike = getStrike<CharacterStrike>(button);
+                    const strike = this.getStrikeFromElement<CharacterStrike>(button);
                     const selection = htmlQuery(button, "select")?.value ?? null;
                     strike?.auxiliaryActions?.at(auxiliaryActionIndex)?.execute({ selection });
                     break;
                 }
 
                 case "toggle-weapon-trait": {
-                    const weapon = getStrike<CharacterStrike>(button)?.item;
+                    const weapon = this.getStrikeFromElement<CharacterStrike>(button)?.item;
                     const trait = button.dataset.trait;
                     const errorMessage = "Unexpected failure while toggling weapon trait";
 
@@ -464,12 +460,12 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                 }
 
                 case "use-action": {
-                    const item = await getItemFromElement<ActionItem>(button, actor);
+                    const item = await this.getItemFromElement<ActionItem>(button);
                     return item?.isOfType("feat", "action") && useAction(event, item);
                 }
 
                 case "reset-action": {
-                    const item = await getItemFromElement<ActionItem>(button, actor);
+                    const item = await this.getItemFromElement<ActionItem>(button);
                     const frequency = item?.frequency;
                     if (!item || !frequency?.max) return;
                     return item.update({ "system.frequency.value": frequency.max });
@@ -483,7 +479,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             "change",
             (event, ammoSelect: HTMLSelectElement) => {
                 event.stopPropagation();
-                const action = getStrike<CharacterStrike>(ammoSelect);
+                const action = this.getStrikeFromElement<CharacterStrike>(ammoSelect);
                 const weapon = action?.item;
                 const ammo = this.actor.items.get(ammoSelect.value);
                 weapon?.update({ system: { selectedAmmoId: ammo?.id ?? null } });

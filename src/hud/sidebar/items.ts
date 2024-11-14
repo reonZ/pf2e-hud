@@ -10,7 +10,6 @@ import {
     htmlClosest,
     tupleHasValue,
 } from "foundry-pf2e";
-import { getItemFromElement } from "../shared/base";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 
 class PF2eHudSidebarItems extends PF2eHudSidebar {
@@ -81,7 +80,7 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
 
         addListenerAll(html, "[data-action]:not(disabled)", async (event, el) => {
             const action = el.dataset.action as ItemsActionEvent;
-            const item = await getItemFromElement(el, actor);
+            const item = await this.getItemFromElement(el);
             if (!item?.isOfType("physical")) return;
 
             switch (action) {
