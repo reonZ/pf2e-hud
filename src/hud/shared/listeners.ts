@@ -130,7 +130,7 @@ function addStatsHeaderListeners(actor: ActorPF2e, html: HTMLElement, token?: To
     }
 }
 
-function addAllianceListener(actor: ActorPF2e, html: HTMLElement) {
+function addAllianceListener(actor: CharacterPF2e | NPCPF2e, html: HTMLElement) {
     addListener(html, "[data-step-action='alliance']", "mousedown", (event) => {
         if (![0, 2].includes(event.button)) return;
 
