@@ -1,4 +1,11 @@
-import { getSetting } from "foundry-pf2e";
+import {
+    ActorPF2e,
+    ApplicationClosingOptions,
+    ApplicationConfiguration,
+    ApplicationRenderContext,
+    ApplicationRenderOptions,
+    getSetting,
+} from "module-helpers";
 import { addDragoverListener } from "../shared/advanced";
 
 abstract class PF2eHudPopup<TConfig extends PopupConfig = PopupConfig> extends foundry.applications
@@ -11,7 +18,7 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig = PopupConfig> extends f
         return getSetting(`popup.${key}`);
     }
 
-    constructor(config: TConfig, options?: PartialApplicationConfiguration) {
+    constructor(config: TConfig, options?: DeepPartial<ApplicationConfiguration>) {
         super(options);
 
         this.#config = config;
@@ -20,7 +27,7 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig = PopupConfig> extends f
         PF2eHudPopup.apps.add(this);
     }
 
-    static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
+    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         id: "pf2e-hud-popup-{id}",
         window: {
             positioned: true,

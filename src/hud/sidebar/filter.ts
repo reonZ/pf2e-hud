@@ -1,17 +1,24 @@
-import { addListener, render, templateLocalize } from "foundry-pf2e";
+import {
+    addListener,
+    ApplicationClosingOptions,
+    ApplicationConfiguration,
+    ApplicationRenderOptions,
+    render,
+    templateLocalize,
+} from "module-helpers";
 import { PF2eHudSidebar } from "./base";
 
 class PF2eHudFilter extends foundry.applications.api.ApplicationV2 {
     #sidebar: PF2eHudSidebar;
 
-    constructor(sidebar: PF2eHudSidebar, options?: PartialApplicationConfiguration) {
+    constructor(sidebar: PF2eHudSidebar, options?: DeepPartial<ApplicationConfiguration>) {
         super(options);
 
         this.#sidebar = sidebar;
         sidebar.addEventListener("close", this.#onSidebarClose, { once: true });
     }
 
-    static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
+    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         id: "pf2e-hud-sidebar-filter",
         window: {
             positioned: false,

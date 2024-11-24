@@ -1,4 +1,4 @@
-import { addListener, addListenerAll, localize } from "foundry-pf2e";
+import { addListener, addListenerAll, localize } from "module-helpers";
 import { PersistentContext, PersistentRenderOptions, PF2eHudPersistent } from "../persistent";
 import { PersistentPart } from "./part";
 
@@ -62,6 +62,7 @@ class PersistentMenu extends PersistentPart<MenuContext> {
                     break;
                 }
                 case "toggle-hotbar-lock": {
+                    // @ts-expect-error
                     ui.hotbar._toggleHotbarLock();
                     break;
                 }

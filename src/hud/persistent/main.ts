@@ -7,7 +7,8 @@ import {
     promptDialog,
     R,
     subLocalize,
-} from "foundry-pf2e";
+    ValueAndMax,
+} from "module-helpers";
 import { addSidebarsListeners } from "../base/advanced";
 import { PersistentContext, PersistentRenderOptions } from "../persistent";
 import { getAdvancedStats, StatsAdvanced, ThreeStep } from "../shared/advanced";

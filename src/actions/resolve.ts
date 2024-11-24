@@ -1,4 +1,11 @@
-import { hasItemWithSourceId, localize, promptDialog, templateLocalize, warn } from "foundry-pf2e";
+import { CharacterPF2e } from "module-helpers";
+import {
+    hasItemWithSourceId,
+    localize,
+    promptDialog,
+    templateLocalize,
+    warn,
+} from "module-helpers";
 
 const RESOLVE_UUID = "Compendium.pf2e.feats-srd.Item.jFmdevE4nKevovzo";
 

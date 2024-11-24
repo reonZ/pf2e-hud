@@ -1,4 +1,23 @@
-import { R, createHTMLElement, createHook, createWrapper, htmlQuery, render } from "foundry-pf2e";
+import {
+    ActorInstances,
+    ActorPF2e,
+    ActorSheetPF2e,
+    ActorType,
+    ApplicationClosingOptions,
+    ApplicationConfiguration,
+    ApplicationRenderContext,
+    ApplicationRenderOptions,
+    LootPF2e,
+    PartyPF2e,
+    R,
+    TokenDocumentPF2e,
+    TokenPF2e,
+    createHTMLElement,
+    createHook,
+    createWrapper,
+    htmlQuery,
+    render,
+} from "module-helpers";
 import { hud } from "../main";
 import {
     AdvancedHudAnchor,
@@ -52,13 +71,15 @@ class PF2eHudToken extends makeAdvancedHUD(
     );
 
     #canvasPanHook = createHook("canvasPan", this.#onCanvasPan.bind(this));
-    #renderTokenHudHook = createHook("renderTokenHUD", () => this.close());
     #canvasTearDownHook = createHook("canvasTearDown", () => this.setToken(null));
     #renderActorSheetHook = createHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
+    #renderTokenHudHook = createHook("renderTokenHUD", () => {
+        this.close();
+    });
 
     #mainElement: HTMLElement | null = null;
 
-    static DEFAULT_OPTIONS: Partial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         id: "pf2e-hud-token",
     };
 
@@ -77,7 +98,14 @@ class PF2eHudToken extends makeAdvancedHUD(
     }
 
     getSettings() {
-        return super.getSettings().concat([
+        const parentSettings = super.getSettings();
+        const enabledSetting = parentSettings.find((setting) => setting.key === "enabled");
+
+        if (enabledSetting) {
+            enabledSetting.requiresReload = true;
+        }
+
+        return parentSettings.concat([
             {
                 key: "mode",
                 type: String,
@@ -249,6 +277,7 @@ class PF2eHudToken extends makeAdvancedHUD(
     _insertElement(element: HTMLElement) {
         element.dataset.tooltipDirection = "UP";
         super._insertElement(element);
+        return element;
     }
 
     _onRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
@@ -377,7 +406,7 @@ class PF2eHudToken extends makeAdvancedHUD(
         return true;
     }
 
-    #onRenderActorSheet(sheet: ActorSheetPF2e) {
+    #onRenderActorSheet(sheet: ActorSheetPF2e<ActorPF2e>) {
         if (this.isCurrentActor(sheet.actor)) this.close();
     }
 
@@ -389,7 +418,7 @@ class PF2eHudToken extends makeAdvancedHUD(
     #tokenClickLeft(
         token: TokenPF2e,
         wrapped: libWrapper.RegisterCallback,
-        event: PIXI.FederatedMouseEvent
+        event: PIXI.FederatedEvent & MouseEvent
     ) {
         wrapped(event);
 
@@ -411,7 +440,7 @@ class PF2eHudToken extends makeAdvancedHUD(
     #tokenLayerClickLeft(
         canvas: Canvas,
         wrapped: libWrapper.RegisterCallback,
-        event: PIXI.FederatedMouseEvent
+        event: PIXI.FederatedEvent & MouseEvent
     ) {
         wrapped(event);
 
@@ -443,7 +472,7 @@ interface PF2eHudToken {
     get actor(): TokenHudActor;
 }
 
-type TokenHudActor = Exclude<ActorInstances[ActorType], LootPF2e | PartyPF2e>;
+type TokenHudActor = Exclude<ActorInstances<TokenDocumentPF2e>[ActorType], LootPF2e | PartyPF2e>;
 
 type TokenRenderOptions = BaseTokenRenderOptions;
 

@@ -1,5 +1,12 @@
 import {
+    ActorInitiative,
+    ActorPF2e,
+    CharacterPF2e,
+    CreaturePF2e,
+    ItemPF2e,
+    MacroPF2e,
     R,
+    SkillSlug,
     confirmDialog,
     dataToDatasetString,
     getActiveModule,
@@ -9,7 +16,7 @@ import {
     localize,
     rollInitiative,
     setFlag,
-} from "foundry-pf2e";
+} from "module-helpers";
 import { rollRecallKnowledge } from "../../actions/recall-knowledge";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 import {

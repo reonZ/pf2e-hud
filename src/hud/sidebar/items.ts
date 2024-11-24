@@ -1,7 +1,12 @@
 import {
+    ActorPF2e,
+    CharacterPF2e,
     ErrorPF2e,
     ITEM_CARRY_TYPES,
     IdentifyItemPopup,
+    InventoryItem,
+    ItemPF2e,
+    SheetInventory,
     addListenerAll,
     consumeItem,
     createHTMLElement,
@@ -9,7 +14,7 @@ import {
     getActiveModule,
     htmlClosest,
     tupleHasValue,
-} from "foundry-pf2e";
+} from "module-helpers";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
 
 class PF2eHudSidebarItems extends PF2eHudSidebar {
@@ -23,6 +28,7 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
         const inventory = actor.inventory;
         const parentData = await super._prepareContext(options);
 
+        // @ts-expect-error
         const inventoryData = actor.sheet.prepareInventory();
         inventoryData.sections = inventoryData.sections
             .filter((section): section is ItemList => !!section.items.length)
@@ -91,6 +97,7 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
                 }
 
                 case "delete-item": {
+                    // @ts-expect-error
                     return actor.sheet.deleteItem(item, event);
                 }
 

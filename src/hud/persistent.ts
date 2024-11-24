@@ -1,5 +1,16 @@
 import {
+    ActorPF2e,
+    ActorSheetPF2e,
+    ActorType,
+    ApplicationClosingOptions,
+    ApplicationConfiguration,
+    CharacterPF2e,
+    CombatantPF2e,
+    NPCPF2e,
     R,
+    TokenDocumentPF2e,
+    UserPF2e,
+    UserSourcePF2e,
     createHTMLElement,
     createHook,
     createTemporaryStyles,
@@ -8,7 +19,7 @@ import {
     localize,
     templateLocalize,
     warn,
-} from "foundry-pf2e";
+} from "module-helpers";
 import { hud } from "../main";
 import {
     BaseActorContext,
@@ -23,10 +34,10 @@ import {
     CLOSE_SETTINGS,
     makeAdvancedHUD,
 } from "./base/advanced";
-import { PersistentMenu } from "./persistent/menu";
-import { PersistentPortrait } from "./persistent/portrait";
 import { PersistentEffects } from "./persistent/effects";
 import { PersistentMain } from "./persistent/main";
+import { PersistentMenu } from "./persistent/menu";
+import { PersistentPortrait } from "./persistent/portrait";
 import { AutoFillSetting, PersistentShortcuts } from "./persistent/shortcuts";
 
 const PARTS_WITHOUT_EFFECT = ["menu", "portrait", "main", "shortcuts"] as const;
@@ -77,7 +88,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         shortcuts: new PersistentShortcuts(this),
     };
 
-    static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
+    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         window: {
             positioned: false,
         },
@@ -716,7 +727,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         }
     }
 
-    #onRenderActorSheet(sheet: ActorSheetPF2e, $html: JQuery) {
+    #onRenderActorSheet(sheet: ActorSheetPF2e<ActorPF2e>, $html: JQuery) {
         const actor = sheet.actor;
         if (!this.isValidActor(actor)) return;
 

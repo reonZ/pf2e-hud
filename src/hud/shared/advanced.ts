@@ -1,4 +1,15 @@
-import { R, getAlliance, getFlag, getItemWithSourceId, getSetting, localize } from "foundry-pf2e";
+import {
+    ActorPF2e,
+    HeldShieldData,
+    MovementType,
+    R,
+    ValueAndMax,
+    getAlliance,
+    getFlag,
+    getItemWithSourceId,
+    getSetting,
+    localize,
+} from "module-helpers";
 import { IWR_DATA, StatsSpeed, StatsStatistic, getSpeeds, getStatistics } from "./base";
 
 const COVER_UUID = "Compendium.pf2e.other-effects.Item.I9lfZUiCwMiGogVi";
@@ -242,7 +253,7 @@ type StatsAdvanced = {
     isCharacter: boolean;
     isCombatant: boolean;
     alliance?: ThreeStep;
-    recall: number | undefined;
+    recall: { dc: number; skills: string } | undefined;
     dying: ValueAndMax | undefined;
     wounded: ValueAndMax | undefined;
     heroPoints: ValueAndMax | undefined;

@@ -1,15 +1,22 @@
 import {
+    ActorPF2e,
     addListenerAll,
+    AfflictionPF2e,
+    CharacterPF2e,
+    ConditionPF2e,
+    CreaturePF2e,
+    EffectPF2e,
     getEnrichedDescriptions,
     getFirstActiveToken,
     getRemainingDurationLabel,
     htmlClosest,
     isInstanceOf,
     localize,
+    NPCPF2e,
     PersistentDamageDialog,
     R,
-} from "foundry-pf2e";
-import { PersistentContext, PersistentRenderOptions, PF2eHudPersistent } from "../persistent";
+} from "module-helpers";
+import { PersistentContext, PersistentRenderOptions } from "../persistent";
 import { PersistentPart } from "./part";
 
 class PersistentEffects extends PersistentPart<EffectsContext | PersistentContext> {
@@ -55,27 +62,31 @@ class PersistentEffects extends PersistentPart<EffectsContext | PersistentContex
         const untileEndLabel = game.i18n.localize("PF2E.EffectPanel.UntilEncounterEnds");
         const unlimitedLabel = game.i18n.localize("PF2E.EffectPanel.UnlimitedDuration");
 
-        const effects = actor.itemTypes.effect.map((effect) => {
-            const duration = effect.totalDuration;
-            const { system } = effect;
-            if (duration === Infinity) {
-                if (system.duration.unit === "encounter") {
-                    system.remaining = system.expired ? expiredLabel : untileEndLabel;
+        const effects = actor.itemTypes.effect.map(
+            (effect: EffectPF2e<CreaturePF2e> & { system: { remaining?: string } }) => {
+                const duration = effect.totalDuration;
+                const { system } = effect;
+
+                if (duration === Infinity) {
+                    if (system.duration.unit === "encounter") {
+                        system.remaining = system.expired ? expiredLabel : untileEndLabel;
+                    } else {
+                        system.remaining = unlimitedLabel;
+                    }
                 } else {
-                    system.remaining = unlimitedLabel;
+                    const duration = effect.remainingDuration;
+                    system.remaining = system.expired
+                        ? expiredLabel
+                        : getRemainingDurationLabel(
+                              duration.remaining,
+                              system.start.initiative ?? 0,
+                              system.duration.expiry
+                          );
                 }
-            } else {
-                const duration = effect.remainingDuration;
-                system.remaining = system.expired
-                    ? expiredLabel
-                    : getRemainingDurationLabel(
-                          duration.remaining,
-                          system.start.initiative ?? 0,
-                          system.duration.expiry
-                      );
+
+                return effect;
             }
-            return effect;
-        });
+        );
 
         const conditions = actor.conditions.active;
         const afflictions = actor.itemTypes.affliction ?? [];

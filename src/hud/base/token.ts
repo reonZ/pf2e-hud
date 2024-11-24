@@ -1,4 +1,11 @@
-import { createHook } from "foundry-pf2e";
+import {
+    ActorPF2e,
+    ApplicationClosingOptions,
+    ApplicationConfiguration,
+    createHook,
+    TokenDocumentPF2e,
+    TokenPF2e,
+} from "module-helpers";
 import {
     BaseActorContext,
     BaseActorRenderOptions,
@@ -19,7 +26,7 @@ abstract class PF2eHudBaseToken<
 
     #token: TokenPF2e | null = null;
 
-    static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
+    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         window: {
             positioned: true,
         },

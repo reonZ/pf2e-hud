@@ -5,7 +5,7 @@ import {
     MODULE,
     registerSetting,
     userIsGM,
-} from "foundry-pf2e";
+} from "module-helpers";
 import { PF2eHudPopup } from "./hud/popup/base";
 import { hud as HUDS } from "./main";
 

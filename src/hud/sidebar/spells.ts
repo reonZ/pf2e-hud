@@ -1,16 +1,20 @@
 import {
+    ActorPF2e,
     addListenerAll,
     changeCarryType,
     coerceToSpellGroupId,
+    CreaturePF2e,
     elementDataset,
     ErrorPF2e,
     getActiveModule,
     getSummarizedSpellsDataForRender,
     htmlClosest,
     isValidClickEvent,
+    ItemPF2e,
     MODULE,
+    OneToTen,
     SummarizedSpellsData,
-} from "foundry-pf2e";
+} from "module-helpers";
 import {
     getAnnotationTooltip,
     PF2eHudSidebar,

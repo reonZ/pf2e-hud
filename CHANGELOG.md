@@ -1,3 +1,13 @@
+#
+
+-   `Combat Tracker`:
+    -   make sure to dispose of `Sortable` listeners to improve long term performances
+-   `Token HUD`:
+    -   force reload when enabling/disabling the hud
+-   `Token Tooltip`:
+    -   fix health status wrapping into a second line
+-   fix `Resolve` tooltip localization key
+
 # 1.21.1
 
 -   `Sidebars`:

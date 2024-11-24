@@ -1,6 +1,20 @@
 import {
+    Action,
+    ActionCost,
+    ActionVariantUseOptions,
+    ActorPF2e,
+    CreaturePF2e,
+    ItemPF2e,
+    LorePF2e,
+    ModifierPF2e,
     R,
-    createDialogData,
+    SingleCheckAction,
+    SingleCheckActionVariantData,
+    SkillActionOptions,
+    SkillSlug,
+    StatisticRollParameters,
+    ZeroToFour,
+    createFormData,
     createHTMLElement,
     dataToDatasetString,
     elementDataset,
@@ -19,7 +33,7 @@ import {
     setupDragElement,
     signedInteger,
     templateLocalize,
-} from "foundry-pf2e";
+} from "module-helpers";
 import {
     PF2eHudSidebar,
     SidebarContext,
@@ -809,7 +823,7 @@ class PF2eHudSidebarSkills extends PF2eHudSidebar {
         switch (action) {
             case "roll-skill": {
                 const { slug } = elementDataset<{ slug: SkillSlug }>(target);
-                actor.getStatistic(slug)?.roll({ event });
+                actor.getStatistic(slug)?.roll({ event } as StatisticRollParameters);
                 this.parentHUD.closeIf("roll-skill");
                 break;
             }
@@ -908,7 +922,7 @@ async function rollStatistic(
 
     if (!action) {
         actor.getStatistic(statistic ?? "")?.roll(options);
-    } else if (isInstanceOf<BaseAction>(action, "BaseAction")) {
+    } else if (isInstanceOf<Action>(action, "BaseAction")) {
         (options as SingleCheckActionVariantData).statistic = statistic;
         action.use(options);
     } else if (action) {
@@ -1023,7 +1037,7 @@ async function getStatisticVariants(
                 });
             },
             callback: async (event, btn, html) => {
-                const data = createDialogData(html) as StatisticVariantData;
+                const data = createFormData(html) as StatisticVariantData;
 
                 if (event instanceof MouseEvent) {
                     data.event = event;
@@ -1200,16 +1214,16 @@ type SkillsContext = SidebarContext & {
 export {
     ACTION_IMAGES,
     ACTION_VARIANTS,
+    PF2eHudSidebarSkills,
     SHARED_ACTIONS,
     SKILL_ACTIONS_UUIDS,
-    PF2eHudSidebarSkills,
     getLoreSlug,
     getMapLabel,
     getSkillVariantName,
     getStatisticDataFromElement,
     getStatisticDragDataFromElement,
-    getStatistics,
     getStatisticVariants,
+    getStatistics,
     prepareStatisticAction,
     rollStatistic,
 };

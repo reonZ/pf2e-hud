@@ -1,4 +1,10 @@
 import {
+    ActorPF2e,
+    ApplicationClosingOptions,
+    ApplicationConfiguration,
+    ApplicationRenderContext,
+    ApplicationRenderOptions,
+    ItemPF2e,
     MODULE,
     R,
     addListenerAll,
@@ -15,7 +21,7 @@ import {
     templateLocalize,
     templatePath,
     unownedItemtoMessage,
-} from "foundry-pf2e";
+} from "module-helpers";
 import { PF2eHudBaseActor } from "../base/actor";
 import { IPF2eHudAdvanced } from "../base/advanced";
 import { PF2eHudItemPopup } from "../popup/item";
@@ -63,13 +69,12 @@ const ROLLOPTIONS_PLACEMENT = {
     extras: undefined,
 } as const;
 
-abstract class PF2eHudSidebar extends foundry.applications.api
-    .ApplicationV2<ApplicationConfiguration> {
+abstract class PF2eHudSidebar extends foundry.applications.api.ApplicationV2 {
     #innerElement!: HTMLElement;
     #parentHud: IPF2eHudAdvanced & PF2eHudBaseActor;
     #filter: string = "";
 
-    static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
+    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         id: "pf2e-hud-sidebar",
         window: {
             positioned: true,
@@ -78,7 +83,6 @@ abstract class PF2eHudSidebar extends foundry.applications.api
             frame: false,
         },
         position: {
-            width: "auto",
             height: "auto",
         },
         classes: ["pf2e-hud", "pf2e-hud-colors"],

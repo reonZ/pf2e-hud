@@ -1,4 +1,5 @@
-import { DegreeOfSuccess, R, render, signedInteger, templateLocalize } from "foundry-pf2e";
+import { CreaturePF2e, NPCPF2e, Statistic, ZeroToFour, ZeroToThree } from "module-helpers";
+import { DegreeOfSuccess, R, render, signedInteger, templateLocalize } from "module-helpers";
 
 const SKILLS = [
     "arcana",

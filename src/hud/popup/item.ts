@@ -1,15 +1,20 @@
 import {
+    ActorPF2e,
     addListener,
+    ApplicationConfiguration,
+    ApplicationRenderOptions,
     createHTMLElement,
     getRankLabel,
     htmlClosest,
     isOwnedItem,
+    ItemPF2e,
     unownedItemtoMessage,
-} from "foundry-pf2e";
+    ZeroToTen,
+} from "module-helpers";
 import { PF2eHudPopup, PopupConfig } from "./base";
 
 class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
-    static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
+    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         actions: {
             sendToChat: this.#sendToChat,
         },
@@ -34,7 +39,7 @@ class PF2eHudItemPopup extends PF2eHudPopup<ItemPopupConfig> {
     }
 
     get item() {
-        return this.config.item;
+        return this.config.item as ItemPF2e<ActorPF2e>;
     }
 
     get dataset() {

@@ -1,3 +1,4 @@
+import { ActorPF2e, ActorType, ApplicationClosingOptions } from "module-helpers";
 import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base";
 
 abstract class PF2eHudBaseActor<

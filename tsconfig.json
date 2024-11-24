@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
         "target": "ESNext",
-        "module": "NodeNext",
-        "moduleResolution": "nodenext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
         "isolatedModules": true,
         "esModuleInterop": true,
         "experimentalDecorators": true,
@@ -15,7 +15,7 @@
         "strictPropertyInitialization": true,
         "strictBindCallApply": true,
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
-        "types": ["foundry-pf2e", "@types/sortablejs"],
+        "types": ["module-helpers", "@types/sortablejs"],
         "rootDir": "src",
         "outDir": "scripts"
     },

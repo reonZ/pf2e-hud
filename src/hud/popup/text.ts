@@ -1,4 +1,4 @@
-import { createHTMLElement } from "foundry-pf2e";
+import { ApplicationRenderOptions, createHTMLElement } from "module-helpers";
 import { PF2eHudPopup, PopupConfig } from "./base";
 
 class PF2eHudTextPopup extends PF2eHudPopup<TextPopupConfig> {

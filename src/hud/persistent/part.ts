@@ -1,3 +1,4 @@
+import { ActorPF2e } from "module-helpers";
 import { GlobalSettings } from "../base/base";
 import {
     PersistentContext,

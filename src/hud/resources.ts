@@ -1,5 +1,6 @@
 import {
     addListenerAll,
+    ApplicationConfiguration,
     createHTMLElement,
     elementDataset,
     getFlagProperty,
@@ -11,8 +12,10 @@ import {
     settingPath,
     templateLocalize,
     toggleControlTool,
+    UserPF2e,
+    UserSourcePF2e,
     waitDialog,
-} from "foundry-pf2e";
+} from "module-helpers";
 import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
 
 const DEFAULT_POSITION = { left: 150, top: 100 };
@@ -51,7 +54,7 @@ class PF2eHudResources extends PF2eHudBase<
 > {
     #initialized: boolean = false;
 
-    static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
+    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         id: "pf2e-hud-resources",
         window: {
             positioned: true,
@@ -409,7 +412,7 @@ class PF2eHudResources extends PF2eHudBase<
             toggle: true,
             visible: true,
             active: this.getUserSetting("showTracker"),
-            onClick: (active) => {
+            onClick: (active: boolean) => {
                 this.setUserSetting("showTracker", active);
             },
         });

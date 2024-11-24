@@ -1,4 +1,14 @@
-import { R, canObserveActor, getSetting, signedInteger } from "foundry-pf2e";
+import {
+    ActorPF2e,
+    CharacterAttributes,
+    CreatureSpeeds,
+    LabeledSpeed,
+    MovementType,
+    R,
+    canObserveActor,
+    getSetting,
+    signedInteger,
+} from "module-helpers";
 
 const IWR_DATA = [
     { type: "immunities", icon: "fa-solid fa-ankh", label: "PF2E.ImmunitiesLabel" },
@@ -24,7 +34,7 @@ const STATISTICS = [
 ] as const;
 
 function getHealth(actor: ActorPF2e): HealthData | undefined {
-    const hp = actor.attributes.hp as CharacterHitPoints | undefined;
+    const hp = actor.attributes.hp as CharacterAttributes["hp"] | undefined;
     if (!hp?.max) return;
 
     const isCharacter = actor.isOfType("character");
@@ -76,7 +86,9 @@ function getStatsHeader(actor: ActorPF2e): StatsHeader {
 function getSpeeds(actor: ActorPF2e): StatsSpeeds {
     const speeds = actor.isOfType("creature")
         ? R.pipe(
-              [actor.attributes.speed, ...actor.attributes.speed.otherSpeeds] as const,
+              [actor.attributes.speed, ...actor.attributes.speed.otherSpeeds] as (CreatureSpeeds & {
+                  type: MovementType;
+              })[],
               R.filter(
                   ({ total, type }) => type === "land" || (typeof total === "number" && total > 0)
               ),
@@ -92,7 +104,7 @@ function getSpeeds(actor: ActorPF2e): StatsSpeeds {
     const speedNote = actor.isOfType("npc")
         ? actor.attributes.speed.details
         : actor.isOfType("vehicle")
-        ? actor.system.details.speed
+        ? String(actor.system.details.speed)
         : undefined;
 
     return {

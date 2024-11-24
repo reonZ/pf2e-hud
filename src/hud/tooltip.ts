@@ -1,12 +1,18 @@
 import {
+    ActorPF2e,
+    ApplicationClosingOptions,
+    ApplicationConfiguration,
+    ApplicationRenderContext,
+    ApplicationRenderOptions,
     R,
+    TokenPF2e,
     createGlobalEvent,
     createHook,
     createTimeout,
     createWrapper,
     isHoldingModifierKeys,
     localize,
-} from "foundry-pf2e";
+} from "module-helpers";
 import { hud } from "../main";
 import {
     BaseTokenContext,
@@ -91,7 +97,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
     #targetToken: TokenPF2e | null = null;
     #graphics: PIXI.Graphics | null = null;
 
-    static DEFAULT_OPTIONS: Partial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         id: "pf2e-hud-tooltip",
         position: {
             width: "auto",

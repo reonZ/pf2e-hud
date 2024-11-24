@@ -1,8 +1,18 @@
 import {
+    ApplicationClosingOptions,
+    ApplicationConfiguration,
+    ApplicationRenderContext,
+    EffectsPanel,
+    EncounterPF2e,
+    EncounterTrackerPF2e,
     R,
+    RolledCombatant,
+    TokenPF2e,
+    UserPF2e,
     addListener,
     addListenerAll,
     createHook,
+    createTemporaryStyles,
     elementDataset,
     getDispositionColor,
     getFlag,
@@ -15,8 +25,7 @@ import {
     setFlag,
     templateLocalize,
     unsetFlag,
-} from "foundry-pf2e";
-import { createTemporaryStyles } from "foundry-pf2e/src/html";
+} from "module-helpers";
 import Sortable, { SortableEvent } from "sortablejs";
 import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
 import { HealthData, getHealth, userCanObserveActor } from "./shared/base";
@@ -37,6 +46,8 @@ import { getStatisticVariants } from "./sidebar/skills";
 // });
 
 class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOptions> {
+    #sortable: Sortable | null = null;
+
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
     #targetTokenHook = createHook("targetToken", this.#refreshTargetDisplay.bind(this));
     #renderEffectsHook = createHook("renderEffectsPanel", this.#onRenderEffectsPanel.bind(this));
@@ -75,7 +86,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
     #combatantsElement: HTMLElement | null = null;
     #contextMenus: EntryContextOption[] = [];
 
-    static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
+    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         id: "pf2e-hud-tracker",
         classes: ["app"],
         window: {
@@ -142,8 +153,10 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
     get contextMenus() {
         if (this.#contextMenus.length) return this.#contextMenus;
 
+        // @ts-expect-error
         const menuItems = ui.combat._getEntryContextOptions();
-        ui.combat._callHooks((className) => `get${className}EntryContext`, menuItems);
+        // @ts-expect-error
+        ui.combat._callHooks((className: string) => `get${className}EntryContext`, menuItems);
 
         return (this.#contextMenus = menuItems);
     }
@@ -159,6 +172,8 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         effectsPanel?.style.removeProperty("max-height");
 
         this.#temporaryStyles.clear();
+
+        this.#clearSortable();
 
         super._onClose(options);
     }
@@ -222,6 +237,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
 
             const texture: TrackerTexture = {
                 ...((useTextureScaling && combatant.token?.texture) || { scaleX: 1, scaleY: 1 }),
+                // @ts-expect-error
                 img: await this.tracker._getCombatantThumbnail(combatant),
             };
 
@@ -383,6 +399,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
     _insertElement(element: HTMLElement) {
         element.dataset.tooltipDirection = "UP";
         document.getElementById("ui-top")?.after(element);
+        return element;
     }
 
     _onRender(context: TrackerContext, options: TrackerRenderOptions) {
@@ -416,12 +433,12 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         newOrder.splice(currentIndex + 1, 0, combatant);
 
         return this.#newInitiativeOrder(
-            newOrder.filter((c): c is RolledCombatant => hasRolledInitiative(c)),
+            newOrder.filter((c): c is RolledCombatant<EncounterPF2e> => hasRolledInitiative(c)),
             combatant
         );
     }
 
-    #onRenderCombatTracker(tracker: EncounterTrackerPF2e) {
+    #onRenderCombatTracker(tracker: EncounterTrackerPF2e<EncounterPF2e | null>) {
         const combat = tracker.viewed;
         if (
             combat &&
@@ -538,6 +555,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
 
     #onSortableUpdate(event: SortableEvent) {
         const tracker = this.tracker;
+        // @ts-expect-error
         tracker.validateDrop(event);
 
         const encounter = tracker.viewed;
@@ -556,13 +574,18 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
             htmlQueryAll(event.target, "li.combatant"),
             R.map((row) => row.getAttribute("data-combatant-id") ?? ""),
             R.map((id) => encounter.combatants.get(id, { strict: true })),
-            R.filter((combatant): combatant is RolledCombatant => hasRolledInitiative(combatant))
+            R.filter((combatant): combatant is RolledCombatant<EncounterPF2e> =>
+                hasRolledInitiative(combatant)
+            )
         );
 
         return this.#newInitiativeOrder(newOrder, dropped);
     }
 
-    #newInitiativeOrder(newOrder: RolledCombatant[], combatant: RolledCombatant) {
+    #newInitiativeOrder(
+        newOrder: RolledCombatant<EncounterPF2e>[],
+        combatant: RolledCombatant<EncounterPF2e>
+    ) {
         const tracker = this.tracker;
         const encounter = tracker.viewed;
         if (!encounter) return;
@@ -575,7 +598,9 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
 
         this.#cancelScroll = true;
 
+        // @ts-expect-error
         tracker.setInitiativeFromDrop(newOrder, combatant);
+        // @ts-expect-error
         return tracker.saveNewOrder(newOrder);
     }
 
@@ -612,6 +637,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
             Hooks.callAll("combatTurn", combat, { turn }, { direction });
             combat.update({ turn }, { direction });
         } else {
+            // @ts-expect-error
             this.tracker._onCombatantMouseDown(event);
         }
     }
@@ -632,13 +658,21 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         this.#updateEffectsPanel(html);
     }
 
+    #clearSortable() {
+        this.#sortable?.destroy();
+        this.#sortable = null;
+    }
+
     #activateListeners(html: HTMLElement, options: TrackerRenderOptions) {
         const tracker = this.tracker;
+
+        this.#clearSortable();
 
         addListenerAll(html, ".combat-control", (event) => {
             event.preventDefault();
             // @ts-ignore
             const jEvent = jQuery.Event(event) as JQuery.ClickEvent;
+            // @ts-expect-error
             tracker._onCombatControl(jEvent);
         });
 
@@ -646,6 +680,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
             event.preventDefault();
             // @ts-ignore
             const jEvent = jQuery.Event(event) as JQuery.ClickEvent;
+            // @ts-expect-error
             tracker._onCombatantControl(jEvent);
         });
 
@@ -672,11 +707,13 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
 
         addListenerAll(html, ".combatant", "mouseenter", (event) => {
             event.preventDefault();
+            // @ts-expect-error
             tracker._onCombatantHoverIn(event);
         });
 
         addListenerAll(html, ".combatant", "mouseleave", (event) => {
             event.preventDefault();
+            // @ts-expect-error
             tracker._onCombatantHoverOut(event);
         });
 
@@ -724,7 +761,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         addListenerAll(html, ".combatant", this.#onCombatantClick.bind(this));
 
         if (this.combatantsElement && !options.collapsed) {
-            Sortable.create(this.combatantsElement, {
+            this.#sortable = Sortable.create(this.combatantsElement, {
                 animation: 200,
                 dragClass: "drag",
                 ghostClass: "ghost",

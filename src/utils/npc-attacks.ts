@@ -1,4 +1,5 @@
-import { imagePath } from "foundry-pf2e";
+import { imagePath, StrikeData } from "module-helpers";
+import { ActionStrike } from "../hud/sidebar/actions";
 
 const DEFAULT_NPC_STRIKE_ICON = "systems/pf2e/icons/default-icons/melee.svg";
 
@@ -239,7 +240,7 @@ const NPC_STRIKE_ICONS: Record<string, string> = {
     shears: "systems/pf2e/icons/equipment/weapons/shears.webp",
 };
 
-function getNpcStrikeImage(strike: StrikeData) {
+function getNpcStrikeImage(strike: StrikeData | ActionStrike) {
     const isDefaultIcon = strike.item.img === DEFAULT_NPC_STRIKE_ICON;
     if (!isDefaultIcon) return strike.item.img;
 

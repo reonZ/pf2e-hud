@@ -1,4 +1,4 @@
-import { registerKeybind } from "foundry-pf2e";
+import { registerKeybind } from "module-helpers";
 import { hud as HUDS } from "./main";
 import { PF2eHudFilter } from "./hud/sidebar/filter";
 

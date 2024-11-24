@@ -1,4 +1,12 @@
-import { addListenerAll, settingPath, templatePath } from "foundry-pf2e";
+import {
+    ActorPF2e,
+    addListenerAll,
+    ApplicationClosingOptions,
+    ApplicationRenderContext,
+    ApplicationRenderOptions,
+    settingPath,
+    templatePath,
+} from "module-helpers";
 import { hud } from "../../main";
 import { PF2eHudSidebarActions } from "../sidebar/actions";
 import { PF2eHudSidebar, SidebarEvent, SidebarName } from "../sidebar/base";

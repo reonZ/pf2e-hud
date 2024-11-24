@@ -1,11 +1,20 @@
 import {
+    AbilityItemPF2e,
+    ActionCost,
+    ActorPF2e,
     addListenerAll,
     arrayIncludes,
     canUseStances,
     changeCarryType,
+    CharacterPF2e,
+    CharacterStrike,
     confirmDialog,
+    ConsumablePF2e,
     consumeItem,
+    CreaturePF2e,
     elementDataset,
+    ElementTrait,
+    FeatPF2e,
     getActionAnnotation,
     getActionImg,
     getActiveModule,
@@ -15,16 +24,31 @@ import {
     hasItemWithSourceId,
     isInstanceOf,
     isValidStance,
+    ItemPF2e,
     localize,
+    LorePF2e,
     MODULE,
+    NPCPF2e,
+    NPCStrike,
     objectHasKey,
+    OneToTen,
+    PhysicalItemPF2e,
     R,
     resolveMacroActor,
+    RollOptionToggle,
     setFlag,
     setFlagProperty,
+    SkillSlug,
+    SpellcastingSheetData,
+    SpellcastingSheetDataWithCharges,
+    SpellCollection,
+    SpellPF2e,
+    StatisticRollParameters,
+    StrikeData,
     toggleStance,
+    ValueAndMax,
     warn,
-} from "foundry-pf2e";
+} from "module-helpers";
 import { rollRecallKnowledge } from "../../actions/recall-knowledge";
 import {
     PersistentContext,
@@ -457,10 +481,7 @@ class PersistentShortcuts extends PersistentPart<
 
     getConsumableRank(item: Maybe<ConsumablePF2e>, roman: true): RomanRank | undefined;
     getConsumableRank(item: Maybe<ConsumablePF2e>, roman?: false): OneToTen | undefined;
-    getConsumableRank(
-        item: Maybe<ConsumablePF2e>,
-        roman?: boolean
-    ): RomanRank | OneToTen | undefined {
+    getConsumableRank(item: Maybe<ConsumablePF2e>, roman?: boolean) {
         const rank = item?.system.spell
             ? item.system.spell.system.location.heightenedLevel ??
               item.system.spell.system.level.value
@@ -837,7 +858,9 @@ class PersistentShortcuts extends PersistentPart<
 
                 cached.spellcasting ??= {};
                 cached.spellcasting[entryId] ??= await entry.getSheetData();
-                const entrySheetData = cached.spellcasting[entryId] as SpellcastingSheetData;
+                const entrySheetData = cached.spellcasting[
+                    entryId
+                ] as SpellcastingSheetDataWithCharges;
 
                 cached.dailiesModule ??= getActiveModule("pf2e-dailies");
                 const dailiesModule = cached.dailiesModule as Maybe<PF2eDailiesModule>;
@@ -1088,10 +1111,10 @@ class PersistentShortcuts extends PersistentPart<
             case "toggle": {
                 const { domain, option } = shortcutData;
                 const item = actor.items.get(shortcutData.itemId);
-                const toggle = foundry.utils.getProperty<RollOptionToggle>(
+                const toggle = foundry.utils.getProperty(
                     actor,
                     `synthetics.toggles.${domain}.${option}`
-                );
+                ) as RollOptionToggle;
                 const disabled = !item || !toggle?.enabled;
                 const checked = !!toggle?.checked;
                 const label = game.i18n.localize(
@@ -1422,7 +1445,7 @@ class PersistentShortcuts extends PersistentPart<
 
                 if (shortcut.item.isOfType("lore")) {
                     const slug = getLoreSlug(shortcut.item);
-                    return actor.getStatistic(slug)?.roll({ event });
+                    return actor.getStatistic(slug)?.roll({ event } as StatisticRollParameters);
                 } else if (shortcut.actionId === "recall-knowledge" && !shortcut.statistic) {
                     return rollRecallKnowledge(actor);
                 } else if (shortcut.actionId === "earnIncome") {

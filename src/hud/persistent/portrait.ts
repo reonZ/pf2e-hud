@@ -1,4 +1,4 @@
-import { addListener, getFlag, htmlQuery } from "foundry-pf2e";
+import { addListener, getFlag, htmlQuery } from "module-helpers";
 import { PersistentContext, PersistentRenderOptions, PF2eHudPersistent } from "../persistent";
 import { getStatsHeaderExtras, StatsHeaderExtras } from "../shared/advanced";
 import { getStatsHeader, StatsHeader } from "../shared/base";

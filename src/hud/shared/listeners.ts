@@ -1,5 +1,13 @@
 import {
+    ActionUseOptions,
+    ActorPF2e,
+    CharacterPF2e,
+    CreaturePF2e,
+    MovementType,
+    NPCPF2e,
     R,
+    StatisticRollParameters,
+    TokenPF2e,
     addListener,
     addListenerAll,
     elementDataset,
@@ -7,7 +15,8 @@ import {
     isValidClickEvent,
     render,
     setFlag,
-} from "foundry-pf2e";
+    traitSlugToObject,
+} from "module-helpers";
 import { useResolve } from "../../actions/resolve";
 import { PF2eHudTextPopup } from "../popup/text";
 import { getCoverEffect } from "./advanced";
@@ -71,11 +80,7 @@ function addStatsHeaderListeners(actor: ActorPF2e, html: HTMLElement, token?: To
                 const traits = R.pipe(
                     system.traits.value,
                     R.filter((trait) => whitelist.includes(trait)),
-                    R.map((trait) => ({
-                        label: game.i18n.localize(CONFIG.PF2E.creatureTraits[trait]) ?? trait,
-                        description:
-                            game.i18n.localize(CONFIG.PF2E.traitsDescriptions[trait]) ?? "",
-                    }))
+                    R.map((trait) => traitSlugToObject(trait, CONFIG.PF2E.creatureTraits))
                 );
 
                 const content = await render("popup/show-notes", {
@@ -157,7 +162,9 @@ function addStatsAdvancedListeners(actor: ActorPF2e, html: HTMLElement) {
                     ? ["secret"]
                     : [];
 
-                actor.getStatistic(statistic)?.roll({ event, extraRollOptions });
+                actor
+                    .getStatistic(statistic)
+                    ?.roll({ event, extraRollOptions } as StatisticRollParameters);
                 break;
             }
             case "change-speed": {

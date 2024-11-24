@@ -1,7 +1,22 @@
 import {
+    AbilityItemPF2e,
+    ActionType,
+    ActorPF2e,
+    CharacterPF2e,
+    CharacterSheetData,
+    CharacterStrike,
+    CheckRoll,
+    DamageRoll,
+    ElementTrait,
     ErrorPF2e,
+    FeatPF2e,
+    ItemPF2e,
     MODULE,
+    MeleePF2e,
     R,
+    StrikeData,
+    TraitToggleViewData,
+    WeaponPF2e,
     actorItems,
     addListenerAll,
     canUseStances,
@@ -20,7 +35,7 @@ import {
     objectHasKey,
     toggleStance,
     tupleHasValue,
-} from "foundry-pf2e";
+} from "module-helpers";
 import { getNpcStrikeImage } from "../../utils/npc-attacks";
 import { PF2eHudTextPopup } from "../popup/text";
 import { PF2eHudSidebar, SidebarContext, SidebarName, SidebarRenderOptions } from "./base";
@@ -207,7 +222,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             )
                 return;
 
-            const hidden = !!actor.getFlag<boolean>("pf2e", "hideStowed");
+            const hidden = !!actor.getFlag("pf2e", "hideStowed");
 
             return {
                 tooltip: MODULE.path("sidebars.actions.stowedWeapons", hidden ? "hidden" : "shown"),
@@ -622,7 +637,7 @@ async function getStrikeData(
     return options ? strikes[0] : strikes;
 }
 
-function getStrikeImage(strike: StrikeData, isNPC: boolean) {
+function getStrikeImage(strike: StrikeData | ActionStrike, isNPC: boolean) {
     return isNPC ? getNpcStrikeImage(strike) : strike.item.img;
 }
 
@@ -648,7 +663,10 @@ function getActionCategory(actor: ActorPF2e, item: WeaponPF2e<ActorPF2e> | Melee
     };
 }
 
-async function getActionData(action: StrikeData, actor: ActorPF2e): Promise<ActionStrikeUsage> {
+async function getActionData<TStrikeData extends StrikeData>(
+    action: TStrikeData,
+    actor: ActorPF2e
+): Promise<ActionStrikeUsage<TStrikeData>> {
     return {
         ...action,
         damageFormula: String(await action.damage?.({ getFormula: true })),
@@ -662,7 +680,7 @@ function variantLabel(label: string) {
 }
 
 function getStrikeVariant<T extends StrikeData>(
-    strike: Maybe<StrikeData>,
+    strike: Maybe<StrikeData | ActionStrike>,
     el: HTMLElement,
     readyOnly = false
 ) {
@@ -717,7 +735,12 @@ async function useAction(event: Event, item: ActionItem) {
 
 type ActionItem = FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>;
 
-type ActionStrikeUsage<T extends StrikeData = StrikeData> = T & {
+type RawStrikeData<T extends StrikeData = StrikeData> = Omit<
+    T,
+    "roll" | "attack" | "damage" | "critical"
+>;
+
+type ActionStrikeUsage<T extends StrikeData = StrikeData> = RawStrikeData<T> & {
     damageFormula: string;
     criticalFormula: string;
     category: Maybe<{
@@ -726,11 +749,13 @@ type ActionStrikeUsage<T extends StrikeData = StrikeData> = T & {
     }>;
 };
 
-type ActionStrike<T extends StrikeData = StrikeData> = ActionStrikeUsage<T> & {
+type ActionStrike<T extends StrikeData = StrikeData> = Omit<ActionStrikeUsage<T>, "altUsages"> & {
     index: number;
     img: string;
     visible: boolean;
+    quantity?: number;
     description: string;
+    altUsages?: Omit<RawStrikeData<StrikeData>, "altUsages">[];
 };
 
 type ActionBlast = ElementalBlastSheetConfig & {

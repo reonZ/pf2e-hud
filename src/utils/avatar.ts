@@ -1,12 +1,18 @@
 import {
+    ActorPF2e,
     addListener,
     addListenerAll,
+    ApplicationConfiguration,
+    ApplicationRenderContext,
+    ApplicationRenderOptions,
+    CharacterPF2e,
     getFlag,
     htmlQuery,
+    NPCPF2e,
     render,
     setFlag,
     subLocalize,
-} from "foundry-pf2e";
+} from "module-helpers";
 
 const localize = subLocalize("utils.avatar");
 
@@ -20,7 +26,7 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
     #offsetX!: number;
     #offsetY!: number;
 
-    static DEFAULT_OPTIONS: PartialApplicationConfiguration = {
+    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         window: {
             resizable: false,
             minimizable: true,
@@ -32,7 +38,10 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
         classes: ["pf2e-hud"],
     };
 
-    constructor(actor: CharacterPF2e | NPCPF2e, options: PartialApplicationConfiguration = {}) {
+    constructor(
+        actor: CharacterPF2e | NPCPF2e,
+        options: DeepPartial<ApplicationConfiguration> = {}
+    ) {
         foundry.utils.mergeObject(options, {
             window: {
                 title: localize("title", { name: actor.name }),
@@ -58,7 +67,7 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
         return {
             placeholder: actor.img,
             noBrowser: !game.user.can("FILES_BROWSE"),
-            noTokenImage: VideoHelper.hasVideoExtension(actor.prototypeToken.texture.src),
+            noTokenImage: VideoHelper.hasVideoExtension(actor.prototypeToken.texture.src ?? ""),
         };
     }
 
@@ -220,7 +229,7 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
                     const current = input.src || input.placeholder;
 
                     new FilePicker({
-                        callback: (src) => this.changeImage(src),
+                        callback: (path: string) => this.changeImage(path),
                         allowUpload: false,
                         type: "image",
                         current,
@@ -235,7 +244,7 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
                 }
 
                 case "use-token-image": {
-                    this.changeImage(actor.prototypeToken.texture.src);
+                    this.changeImage(actor.prototypeToken.texture.src ?? "");
                     break;
                 }
 
@@ -265,7 +274,7 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
 }
 
 function editAvatar(actor: ActorPF2e) {
-    const worldActor = actor.token?.baseActor ?? actor;
+    const worldActor = (actor.token?.baseActor ?? actor) as ActorPF2e;
 
     if (!worldActor.isOfType("character", "npc")) {
         return;

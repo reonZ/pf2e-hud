@@ -1,4 +1,4 @@
-import { MODULE } from "foundry-pf2e";
+import { MeasuredTemplatePF2e, MODULE } from "module-helpers";
 import { rollRecallKnowledge } from "./actions/recall-knowledge";
 import { useResolve } from "./actions/resolve";
 import { PF2eHudPersistent } from "./hud/persistent";
