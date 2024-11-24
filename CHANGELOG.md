@@ -1,12 +1,14 @@
-#
+# 1.22.0
 
 -   `Combat Tracker`:
     -   make sure to dispose of `Sortable` listeners to improve long term performances
 -   `Token HUD`:
-    -   force reload when enabling/disabling the hud
+    -   now force reload when enabling/disabling the hud
+    -   now show the skill names when hovering over the recall knowledge icon of a NPC
 -   `Token Tooltip`:
-    -   fix health status wrapping into a second line
+    -   fix rare occurence of health status wrapping into a second line
 -   fix `Resolve` tooltip localization key
+-   some internal changes
 
 # 1.21.1
 
