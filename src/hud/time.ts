@@ -6,11 +6,11 @@ import {
     getShortDateTime,
     getTimeWithSeconds,
     htmlQuery,
-    runWhenReady,
 } from "module-helpers";
-import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
+import { BaseRenderOptions, BaseSettings } from "./base/base";
+import { PF2eHudDirectory } from "./base/directory";
 
-class PF2eHudTime extends PF2eHudBase<TimeSettings, any, TimeRenderOptions> {
+class PF2eHudTime extends PF2eHudDirectory<TimeSettings, TimeRenderOptions> {
     #worldTimeHook = createHook("updateWorldTime", () => {
         this.render();
     });
@@ -20,7 +20,7 @@ class PF2eHudTime extends PF2eHudBase<TimeSettings, any, TimeRenderOptions> {
     };
 
     get SETTINGS_ORDER(): (keyof TimeSettings)[] {
-        return ["enabled", "fontSize"];
+        return ["enabled", "fontSize", "short"];
     }
 
     get key(): "time" {
@@ -51,12 +51,7 @@ class PF2eHudTime extends PF2eHudBase<TimeSettings, any, TimeRenderOptions> {
 
     _onEnable(enabled = this.enabled) {
         this.#worldTimeHook.toggle(enabled);
-
-        if (enabled && !this.rendered) {
-            runWhenReady(() => this.render(true));
-        } else if (!enabled && this.rendered) {
-            this.close();
-        }
+        super._onEnable(enabled);
     }
 
     async _prepareContext(options: BaseRenderOptions): Promise<TimeContext> {
