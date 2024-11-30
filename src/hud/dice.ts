@@ -28,7 +28,7 @@ class PF2eHudDice extends PF2eHudDirectory<DiceSettings, DiceRenderOptions> {
     }
 
     get templates(): string[] {
-        return ["hud"];
+        return ["panel"];
     }
 
     _onEnable(enabled = this.enabled): void {
@@ -51,7 +51,7 @@ class PF2eHudDice extends PF2eHudDirectory<DiceSettings, DiceRenderOptions> {
     }
 
     async _renderHTML(context: DiceContext, options: DiceRenderOptions): Promise<string> {
-        return await this.renderTemplate("hud", context);
+        return await this.renderTemplate("panel", context);
     }
 
     _replaceHTML(result: string, content: HTMLElement, options: DiceRenderOptions): void {
