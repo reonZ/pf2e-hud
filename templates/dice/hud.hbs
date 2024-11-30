@@ -1,0 +1,20 @@
+<div class="dice">
+    {{#each dice as |die|}}
+    <a class="die" data-action="roll-die" data-face="{{die.face}}" data-tooltip="{{die.label}}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <g transform="translate(0,0)">
+                <path d="{{die.path}}" fill-opacity="1"></path>
+            </g>
+        </svg>
+    </a>
+    {{/each}}
+    <a class="die" data-action="roll-die" data-face="100" data-tooltip="d100">
+        {{#times 2}}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <g transform="translate(0,0)">
+                <path d="{{@root.dten}}" fill-opacity="1"></path>
+            </g>
+        </svg>
+        {{/times}}
+    </a>
+</div>

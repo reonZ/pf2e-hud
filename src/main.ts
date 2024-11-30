@@ -12,6 +12,7 @@ import { onRenderSettingsConfig, registerModuleSettings } from "./settings";
 import { editAvatar } from "./utils/avatar";
 import { getNpcStrikeImage } from "./utils/npc-attacks";
 import { PF2eHudTime } from "./hud/time";
+import { PF2eHudDice } from "./hud/dice";
 
 MODULE.register("pf2e-hud", "PF2e HUD");
 
@@ -22,6 +23,7 @@ const HUDS = {
     tracker: new PF2eHudTracker(),
     resources: new PF2eHudResources(),
     time: new PF2eHudTime(),
+    dice: new PF2eHudDice(),
 };
 
 Hooks.once("canvasReady", () => {

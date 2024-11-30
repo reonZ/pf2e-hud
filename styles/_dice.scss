@@ -1,0 +1,62 @@
+#pf2e-hud-dice {
+    --die-fill: white;
+    --die-behind-fill: grey;
+    --die-highlight-fill: #dd6767;
+    --die-behind-highlight-fill: #774949;
+
+    flex: 0;
+    margin-block: 0.2rem;
+    border-top: 2px groove #000000;
+    border-bottom: 2px groove #000000;
+
+    .dice {
+        display: grid;
+        grid-template-columns: repeat(7, 2rem);
+
+        .die {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            fill: var(--die-fill);
+
+            &[data-face="4"] {
+                svg {
+                    height: 1.8rem;
+                }
+            }
+
+            &[data-face="6"] {
+                svg {
+                    height: 1.6rem;
+                }
+            }
+
+            &[data-face="100"] {
+                position: relative;
+
+                svg {
+                    height: 1.6rem;
+                    position: absolute;
+
+                    &:first-child {
+                        left: 0;
+                        top: calc(50% - 0.1rem);
+                        transform: translateY(-50%);
+                        fill: var(--die-behind-fill);
+                    }
+
+                    &:last-child {
+                        right: 0;
+                        bottom: calc(50% - 0.1rem);
+                        transform: translateY(50%);
+                    }
+                }
+            }
+
+            &:hover {
+                --die-fill: var(--die-highlight-fill);
+                --die-behind-fill: var(--die-behind-highlight-fill);
+            }
+        }
+    }
+}

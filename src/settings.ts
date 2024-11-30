@@ -215,6 +215,15 @@ function onRenderSettingsConfig(app: SettingsConfig, $html: JQuery) {
         const reloadLabel = localize("reload");
 
         for (const setting of hud.getSettings()) {
+            const key = `${MODULE.id}.${hud.key}.${setting.key}`;
+            const groupEl = htmlQuery(tab, `[data-setting-id="${key}"]`);
+            if (!groupEl) continue;
+
+            if (setting.hide) {
+                groupEl.remove();
+                continue;
+            }
+
             const nameExtras: string[] = [];
 
             if (setting.gmOnly) nameExtras.push(gmOnlyLabel);
@@ -222,8 +231,7 @@ function onRenderSettingsConfig(app: SettingsConfig, $html: JQuery) {
 
             if (!nameExtras.length) continue;
 
-            const key = `${MODULE.id}.${hud.key}.${setting.key}`;
-            const labelElement = htmlQuery(tab, `[data-setting-id="${key}"] > label`);
+            const labelElement = htmlQuery(groupEl, ":scope > label");
             const extraElement = createHTMLElement("span", {
                 innerHTML: ` (${nameExtras.join(", ")})`,
             });
