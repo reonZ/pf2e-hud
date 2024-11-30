@@ -82,6 +82,7 @@ class PF2eHudTime extends PF2eHudDirectory<TimeSettings, TimeRenderOptions> {
 
     protected _insertElement(element: HTMLElement): HTMLElement {
         document.getElementById("sidebar")?.prepend(element);
+        element.classList.toggle("is-gm", game.user.isGM);
         return element;
     }
 

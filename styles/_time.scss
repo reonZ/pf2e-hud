@@ -10,22 +10,6 @@
     .header {
         text-align: center;
         width: calc(100% - 1rem);
-
-        &.is-gm {
-            height: 1.25rem;
-
-            &:not(:hover) {
-                .slider {
-                    display: none;
-                }
-            }
-
-            &:hover {
-                .date {
-                    display: none;
-                }
-            }
-        }
     }
 
     .details {
@@ -45,6 +29,30 @@
 
         .time {
             padding-inline: 0.5em;
+        }
+    }
+
+    &.is-gm {
+        .header {
+            height: 1.25rem;
+
+            &:not(:hover) {
+                .slider {
+                    display: none;
+                }
+            }
+
+            &:hover {
+                .date {
+                    display: none;
+                }
+            }
+        }
+
+        .details {
+            .time {
+                margin-top: -2px;
+            }
         }
     }
 }
