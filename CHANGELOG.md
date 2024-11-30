@@ -1,3 +1,22 @@
+# 1.23.0
+
+-   add new `Dice Panel` HUD:
+    -   you can find it right above the chat input field
+    -   depending on which key (`Shift` or `Ctrl`) is held while clicking, the behaviour will differ
+        -   [None]: the die will be rolled right away and displayed in chat
+        -   [Ctrl]: the die will be rolled right away and displayed in chat as a `Private` roll
+        -   [Shift]: will update the chat and give it focus subsequently
+            -   if nothing is present in the chat, a new `/r 1dx` will be added to it
+            -   if the chat consists of a `/r 1dx` syntax, its dice will be updated with the clicked one
+            -   if anything else is found in the chat:
+                -   if it ends with a `[[/r 1dx]]` syntax, its dice will be updated with the clicked one
+                -   if no `[[/r 1dx]]` is found at the end of the message, a new one will be generated
+-   add new `Time Tracker` HUD:
+    -   you can find it at the top of the directories sidebar
+    -   you can click on the `time` to toggle its display with a shortened version
+    -   the GM have access to buttons to advance or rewind time in `10-min`, `1-hour` and `1-day` increments
+    -   the GM has access to a slider when hovering over the date (in the expanded version) to quickly move time in the current day
+
 # 1.22.0
 
 -   `Combat Tracker`:
@@ -6,7 +25,7 @@
     -   now force reload when enabling/disabling the hud
     -   now show the skill names when hovering over the recall knowledge icon of a NPC
 -   `Token Tooltip`:
-    -   fix rare occurence of health status wrapping into a second line
+    -   fix rare occurrence of health status wrapping into a second line
 -   fix `Resolve` tooltip localization key
 -   some internal changes
 
@@ -14,7 +33,7 @@
 
 -   `Sidebars`:
     -   add public methods to retrieve items from sidebars DOM elements
--   fix `Hero Points` tooltip
+-   fix `Hero Points` tooltip localization key
 
 # 1.21.0
 
