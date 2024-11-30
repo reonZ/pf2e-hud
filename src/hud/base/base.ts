@@ -36,7 +36,7 @@ abstract class PF2eHudBase<
     };
 
     abstract get key(): string;
-    abstract get templates(): string[] | ReadonlyArray<string>;
+    abstract get templates(): string[];
     abstract get SETTINGS_ORDER(): (keyof TSettings)[];
 
     get SUB_SETTINGS_ORDER(): (keyof TSettings)[] {

@@ -1,0 +1,39 @@
+{{#unless short}}
+<div class="date" data-action="toggle-short">
+    {{date}}
+</div>
+{{/unless}}
+<div class="details">
+    <div class="left controls">
+        {{#if isGM}}
+        {{> 'increments' sign="-"}}
+        {{/if}}
+    </div>
+    <div class="time" data-action="toggle-short" {{#if short}} data-tooltip="{{date}}" {{/if}}>
+        {{#if short}}
+        {{short.date}} {{short.time}}
+        {{else}}
+        {{time}}
+        {{/if}}
+    </div>
+    <div class="right controls">
+        {{#if isGM}}
+        {{> 'increments' sign="+"}}
+        {{/if}}
+    </div>
+</div>
+
+{{#*inline 'increments'}}
+<a data-action="increment-time" data-increment="600" data-direction="{{sign}}"
+    data-tooltip="{{sign}}{{localize 'PF2E.WorldClock.Button.AddTenMinutes'}}">
+    <i class="fa-solid fa-angle-right"></i>
+</a>
+<a data-action="increment-time" data-increment="3600" data-direction="{{sign}}"
+    data-tooltip="{{sign}}{{localize 'PF2E.WorldClock.Button.AddOneHour'}}">
+    <i class="fa-duotone fa-solid fa-angles-right"></i>
+</a>
+<a data-action="increment-time" data-increment="86400" data-direction="{{sign}}"
+    data-tooltip="{{sign}}{{localize 'PF2E.WorldClock.Button.AddOneDay'}}">
+    <i class="fa-solid fa-angles-right"></i>
+</a>
+{{/inline}}

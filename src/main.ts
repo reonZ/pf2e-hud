@@ -11,6 +11,7 @@ import { registerModuleKeybinds } from "./keybinds";
 import { onRenderSettingsConfig, registerModuleSettings } from "./settings";
 import { editAvatar } from "./utils/avatar";
 import { getNpcStrikeImage } from "./utils/npc-attacks";
+import { PF2eHudTime } from "./hud/time";
 
 MODULE.register("pf2e-hud", "PF2e HUD");
 
@@ -20,6 +21,7 @@ const HUDS = {
     persistent: new PF2eHudPersistent(),
     tracker: new PF2eHudTracker(),
     resources: new PF2eHudResources(),
+    time: new PF2eHudTime(),
 };
 
 Hooks.once("canvasReady", () => {

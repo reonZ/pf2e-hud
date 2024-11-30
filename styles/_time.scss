@@ -1,0 +1,29 @@
+#pf2e-hud-time {
+    flex: 0;
+    padding-block: 0.2rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.1rem;
+
+    .details {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .controls {
+            &.left {
+                direction: rtl;
+
+                i {
+                    transform: rotateY(180deg);
+                }
+            }
+        }
+
+        .time {
+            padding-inline: 0.5em;
+        }
+    }
+}

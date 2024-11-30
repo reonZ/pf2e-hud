@@ -193,7 +193,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
     }
 
     get templates() {
-        return ["tooltip"] as const;
+        return ["tooltip"];
     }
 
     get allowedActorTypes() {

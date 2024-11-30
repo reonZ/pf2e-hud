@@ -154,7 +154,7 @@ class PF2eHudToken extends makeAdvancedHUD(
         return "token";
     }
 
-    get templates(): ["hud"] {
+    get templates() {
         return ["hud"];
     }
 
