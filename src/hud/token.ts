@@ -5,6 +5,7 @@ import {
     ActorType,
     ApplicationClosingOptions,
     ApplicationConfiguration,
+    ApplicationPosition,
     ApplicationRenderContext,
     ApplicationRenderOptions,
     LootPF2e,

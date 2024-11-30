@@ -2,6 +2,7 @@ import {
     ActorPF2e,
     ApplicationClosingOptions,
     ApplicationConfiguration,
+    ApplicationPosition,
     createHook,
     TokenDocumentPF2e,
     TokenPF2e,
@@ -59,8 +60,8 @@ abstract class PF2eHudBaseToken<
     }
 
     async render(
-        options: boolean | Partial<TRenderOptions> = {},
-        _options: Partial<TRenderOptions> = {}
+        options: boolean | DeepPartial<TRenderOptions> = {},
+        _options: DeepPartial<TRenderOptions> = {}
     ) {
         if (!this.actor) return this;
 
@@ -68,7 +69,7 @@ abstract class PF2eHudBaseToken<
             options = Object.assign(_options, { force: options });
         }
 
-        options.position = {};
+        options.position = {} as ApplicationPosition;
 
         return super.render(options);
     }

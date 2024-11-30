@@ -2,6 +2,7 @@ import {
     ActorPF2e,
     ApplicationClosingOptions,
     ApplicationConfiguration,
+    ApplicationPosition,
     ApplicationRenderContext,
     ApplicationRenderOptions,
     ItemPF2e,

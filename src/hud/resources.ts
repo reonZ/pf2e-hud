@@ -1,6 +1,7 @@
 import {
     addListenerAll,
     ApplicationConfiguration,
+    ApplicationPosition,
     createHTMLElement,
     elementDataset,
     getFlagProperty,
@@ -154,7 +155,7 @@ class PF2eHudResources extends PF2eHudBase<
 
     _onFirstRender(context: ResourcesContext, options: ResourcesRenderOptions) {
         const { left, top } = this.getSetting("position");
-        options.position ??= {};
+        options.position ??= {} as ApplicationPosition;
         options.position.left = left;
         options.position.top = top;
     }

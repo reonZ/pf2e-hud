@@ -104,7 +104,10 @@ abstract class PF2eHudBase<
         this._onEnable?.(enabled);
     }, 1);
 
-    async render(options?: boolean | Partial<TRenderOptions>, _options?: Partial<TRenderOptions>) {
+    async render(
+        options?: boolean | DeepPartial<TRenderOptions>,
+        _options?: DeepPartial<TRenderOptions>
+    ) {
         if (!this.enabled) return this;
         return super.render(options, _options);
     }

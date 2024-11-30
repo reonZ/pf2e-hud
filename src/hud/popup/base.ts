@@ -2,6 +2,7 @@ import {
     ActorPF2e,
     ApplicationClosingOptions,
     ApplicationConfiguration,
+    ApplicationPosition,
     ApplicationRenderContext,
     ApplicationRenderOptions,
     getSetting,
@@ -69,7 +70,7 @@ abstract class PF2eHudPopup<TConfig extends PopupConfig = PopupConfig> extends f
         const event = this.event;
         const bounds = this.element.getBoundingClientRect();
 
-        options.position ??= {};
+        options.position ??= {} as ApplicationPosition;
         options.position.left = event.clientX - bounds.width / 2;
         options.position.top = event.clientY - bounds.height / 2 - 50;
     }
