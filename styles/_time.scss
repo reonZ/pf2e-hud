@@ -56,3 +56,11 @@
         }
     }
 }
+
+#sidebar {
+    &.collapsed {
+        #pf2e-hud-time {
+            display: none;
+        }
+    }
+}
