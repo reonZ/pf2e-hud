@@ -4,6 +4,8 @@ import {
     ApplicationConfiguration,
     createHook,
     getShortDateTime,
+    getTimeWithSeconds,
+    htmlQuery,
     runWhenReady,
 } from "module-helpers";
 import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
@@ -27,6 +29,10 @@ class PF2eHudTime extends PF2eHudBase<TimeSettings, any, TimeRenderOptions> {
 
     get templates() {
         return ["hud"];
+    }
+
+    get worldTime() {
+        return game.pf2e.worldClock.worldTime;
     }
 
     getSettings() {
@@ -54,12 +60,19 @@ class PF2eHudTime extends PF2eHudBase<TimeSettings, any, TimeRenderOptions> {
     }
 
     async _prepareContext(options: BaseRenderOptions): Promise<TimeContext> {
+        const isGM = game.user.isGM;
+        const worldTime = this.worldTime;
         const short = this.getSetting("short") ? getShortDateTime() : undefined;
+        const { time, date } = game.pf2e.worldClock.getData();
+
+        const slider = isGM ? worldTime.hour * 3600 + worldTime.minute * 60 : undefined;
 
         return {
-            ...game.pf2e.worldClock.getData(),
+            isGM,
+            date,
+            time,
             short,
-            isGM: game.user.isGM,
+            slider,
         };
     }
 
@@ -95,6 +108,31 @@ class PF2eHudTime extends PF2eHudBase<TimeSettings, any, TimeRenderOptions> {
                 }
             }
         });
+
+        const slider = htmlQuery<HTMLInputElement>(html, "input[name='time-slider']");
+        const timeSpan = htmlQuery(html, ".time span");
+
+        if (slider && timeSpan) {
+            const worldTime = this.worldTime;
+            const extraSeconds = worldTime.second;
+            const originalValue = Number(slider.dataset.value);
+
+            const getDiff = (milliseconds?: boolean) => {
+                const newValue = slider.valueAsNumber;
+                const diff = newValue - originalValue - extraSeconds;
+                return milliseconds ? diff * 1000 : diff;
+            };
+
+            slider.addEventListener("input", () => {
+                const time = worldTime.plus(getDiff(true));
+                timeSpan.innerText = getTimeWithSeconds(time);
+            });
+
+            slider.addEventListener("change", () => {
+                const diff = getDiff();
+                advanceTime(Math.abs(diff), diff < 0 ? "-" : "+");
+            });
+        }
     }
 }
 
@@ -104,6 +142,7 @@ type TimeContext = {
     isGM: boolean;
     date: string;
     time: string;
+    slider: number | undefined;
     short: { date: string; time: string } | undefined;
 };
 

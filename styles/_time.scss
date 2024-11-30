@@ -7,6 +7,27 @@
     align-items: center;
     gap: 0.1rem;
 
+    .header {
+        text-align: center;
+        width: calc(100% - 1rem);
+
+        &.is-gm {
+            height: 1.25rem;
+
+            &:not(:hover) {
+                .slider {
+                    display: none;
+                }
+            }
+
+            &:hover {
+                .date {
+                    display: none;
+                }
+            }
+        }
+    }
+
     .details {
         display: flex;
         align-items: center;

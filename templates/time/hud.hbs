@@ -1,6 +1,14 @@
 {{#unless short}}
-<div class="date" data-action="toggle-short">
-    {{date}}
+<div class="header{{#if isGM}} is-gm{{/if}}">
+    {{#if isGM}}
+    <div class="slider">
+        <input type="range" name="time-slider" min="0" max="86400" step="1800" value="{{slider}}"
+            data-value="{{slider}}">
+    </div>
+    {{/if}}
+    <div class="date">
+        {{date}}
+    </div>
 </div>
 {{/unless}}
 <div class="details">
@@ -9,13 +17,15 @@
         {{> 'increments' sign="-"}}
         {{/if}}
     </div>
-    <div class="time" data-action="toggle-short" {{#if short}} data-tooltip="{{date}}" {{/if}}>
-        {{#if short}}
-        {{short.date}} {{short.time}}
-        {{else}}
-        {{time}}
-        {{/if}}
+    {{#if short}}
+    <div class="time short" data-action="toggle-short" data-tooltip="{{date}}">
+        {{short.date}} <span>{{short.time}}</span>
     </div>
+    {{else}}
+    <div class="time" data-action="toggle-short">
+        <span>{{time}}</span>
+    </div>
+    {{/if}}
     <div class="right controls">
         {{#if isGM}}
         {{> 'increments' sign="+"}}
