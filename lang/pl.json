@@ -278,6 +278,16 @@
                 "enabled": {
                     "hint": "Umożliwia śledzenie niestandardowych zasobów w świecie gry."
                 }
+            },
+            "time": {
+                "title": "Śledzenie czasu",
+                "short": {
+                    "name": "Skrócona data i godzina",
+                    "hint": "Po włączeniu wyświetlany będzie pojedynczy wiersz ze skróconą wersją daty i godziny. Możesz kliknąć godzinę, aby przełączać się między obydwoma trybami."
+                }
+            },
+            "dice": {
+                "title": "Panel rzutów"
             }
         },
         "hud": {
