@@ -1,3 +1,8 @@
+# 1.23.1
+
+-   `Time Tracker`:
+    -   fix short date year value when not using the `Unthemed (Gregorian Calendar)`
+
 # 1.23.0
 
 -   add new `Dice Panel` HUD:
