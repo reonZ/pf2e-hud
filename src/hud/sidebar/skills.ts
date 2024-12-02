@@ -1231,6 +1231,7 @@ export {
     SKILL_ACTIONS_UUIDS,
     getLoreSlug,
     getMapLabel,
+    getMapValue,
     getSkillVariantName,
     getStatisticDataFromElement,
     getStatisticDragDataFromElement,

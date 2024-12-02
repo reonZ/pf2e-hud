@@ -50,12 +50,8 @@ import {
     warn,
 } from "module-helpers";
 import { rollRecallKnowledge } from "../../actions/recall-knowledge";
-import {
-    PersistentContext,
-    PersistentHudActor,
-    PersistentRenderOptions,
-    PF2eHudPersistent,
-} from "../persistent";
+import { BaseActorContext } from "../base/actor";
+import { PersistentContext, PersistentHudActor, PersistentRenderOptions } from "../persistent";
 import { PF2eHudItemPopup } from "../popup/item";
 import {
     ActionBlast,
@@ -74,12 +70,12 @@ import {
     ACTION_VARIANTS,
     getLoreSlug,
     getMapLabel,
+    getMapValue,
     getSkillVariantName,
     rollStatistic,
     SkillVariantDataset,
 } from "../sidebar/skills";
 import { PersistentPart } from "./part";
-import { BaseActorContext } from "../base/actor";
 
 const ROMAN_RANKS = ["", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"] as const;
 
@@ -780,6 +776,10 @@ class PersistentShortcuts extends PersistentPart<
                       game.pf2e.actions.get(shortcutData.actionId)?.img ??
                       getActionImg(item);
 
+                const mapLabel = shortcutData.map
+                    ? getMapValue(shortcutData.map, shortcutData.agile)
+                    : undefined;
+
                 return {
                     ...shortcutData,
                     isDisabled: false,
@@ -787,6 +787,7 @@ class PersistentShortcuts extends PersistentPart<
                     item,
                     name,
                     img,
+                    mapLabel,
                     cost: this.getActionCost(actionCost),
                 } satisfies SkillShortcut as T;
             }
@@ -1772,6 +1773,7 @@ type SkillShortcut = BaseShortCut<"skill"> &
     SkillShortcutData & {
         item: AbilityItemPF2e | FeatPF2e | LorePF2e;
         cost: CostValue;
+        mapLabel: number | undefined;
     };
 
 type ActionShortcut = BaseShortCut<"action"> &

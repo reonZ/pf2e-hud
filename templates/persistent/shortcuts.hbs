@@ -33,6 +33,11 @@
 
 {{#*inline 'skill'}}
 {{> cost cost=skill.cost}}
+{{#if skill.mapLabel}}
+<div class="quantity boxed">
+    <span>{{skill.mapLabel}}</span>
+</div>
+{{/if}}
 {{/inline}}
 
 {{#*inline 'spell'}}
