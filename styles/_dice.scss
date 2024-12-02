@@ -16,10 +16,11 @@
     .spacer {
         display: flex;
         justify-content: center;
+        align-items: center;
 
         .separator {
             border-right: 2px groove #000;
-            height: calc(100% - 1px);
+            height: calc(100% - 2px);
         }
     }
 
