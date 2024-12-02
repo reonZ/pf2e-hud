@@ -1,3 +1,8 @@
+# 1.24.1
+
+-   `Skills Sidebar`:
+    -   add `Halfling Ingenuity` & `Eclectic Skill` to the feats allowing you to use skill actions requiring to be tained
+
 # 1.24.0
 
 -   `Dice Panel`:
