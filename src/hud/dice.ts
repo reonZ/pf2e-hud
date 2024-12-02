@@ -1,4 +1,11 @@
-import { addListenerAll, ApplicationConfiguration, getDamageRollClass, R } from "module-helpers";
+import {
+    ActorPF2e,
+    addListenerAll,
+    ApplicationConfiguration,
+    getActor,
+    getDamageRollClass,
+    R,
+} from "module-helpers";
 import { BaseRenderOptions, BaseSettings } from "./base/base";
 import { PF2eHudDirectory } from "./base/directory";
 
@@ -47,6 +54,7 @@ class PF2eHudDice extends PF2eHudDirectory<DiceSettings, DiceRenderOptions> {
         return {
             dice,
             dten: dice[3].path,
+            flats: [5, 11].map((dc) => ({ dc, label: this.#flatCheckLabel(dc) })),
         };
     }
 
@@ -65,6 +73,12 @@ class PF2eHudDice extends PF2eHudDirectory<DiceSettings, DiceRenderOptions> {
         return element;
     }
 
+    #flatCheckLabel(dc: number) {
+        const flatLabel = game.i18n.localize("PF2E.FlatCheck");
+        const dcLabel = game.i18n.format("PF2E.InlineAction.Check.DC", { dc });
+        return `${flatLabel} ${dcLabel}`;
+    }
+
     #activateListeners(html: HTMLElement) {
         addListenerAll(html, "[data-action]", (event, el) => {
             const action = el.dataset.action as EventAction;
@@ -78,6 +92,24 @@ class PF2eHudDice extends PF2eHudDirectory<DiceSettings, DiceRenderOptions> {
                     } else {
                         rollDie(face, event.ctrlKey);
                     }
+
+                    break;
+                }
+
+                case "roll-flat": {
+                    const dc = Number(el.dataset.dc);
+
+                    game.pf2e.Check.roll(
+                        new game.pf2e.StatisticModifier(this.#flatCheckLabel(dc), []),
+                        {
+                            actor: getActor() ?? ({} as ActorPF2e),
+                            type: "flat-check",
+                            dc: { value: dc },
+                            options: new Set(["flat-check"]),
+                            createMessage: true,
+                            skipDialog: true,
+                        }
+                    );
 
                     break;
                 }
@@ -146,11 +178,12 @@ async function rollDie(face: number, secret: boolean) {
     roll.toMessage(undefined, options);
 }
 
-type EventAction = "roll-die";
+type EventAction = "roll-die" | "roll-flat";
 
 type DiceContext = {
     dice: { face: string; label: string; path: string }[];
     dten: string;
+    flats: { dc: number; label: string }[];
 };
 
 type DiceSettings = BaseSettings;
