@@ -45,7 +45,10 @@ import {
 const FOLLOW_THE_EXPERT = "Compendium.pf2e.actionspf2e.Item.tfa4Sh7wcxCEqL29";
 const FOLLOW_THE_EXPERT_EFFECT = "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3XWMkd3";
 
-const UNTRAINED_IMPROVISATION = "Compendium.pf2e.feats-srd.Item.9jGaBxLUtevZYcZO";
+const UNTRAINED_IMPROVISATION = [
+    "Compendium.pf2e.feats-srd.Item.KcbSxOPYC5CUqbZQ", // Cleaver Improviser
+    "Compendium.pf2e.feats-srd.Item.73JyUrJnH3nOQJM5", // Ceremony of Knowledge
+];
 
 const ACTION_IMAGES: Record<string, string> = {
     lore: "systems/pf2e/icons/spells/divine-decree.webp",
@@ -682,9 +685,10 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
     }
 
     const isCharacter = actor.isOfType("character");
-    const hideUntrained =
-        getSetting("sidebar.hideUntrained") &&
-        !hasItemWithSourceId(actor, UNTRAINED_IMPROVISATION, "feat");
+    const canUseTrained = isCharacter
+        ? hasItemWithSourceId(actor, UNTRAINED_IMPROVISATION, "feat")
+        : false;
+    const hideUntrained = getSetting("sidebar.hideUntrained");
 
     return skillsCache.map((skill) => {
         const { mod, rank, proficient } = actor.getStatistic(skill.slug)!;
@@ -704,7 +708,7 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
                     ...action,
                     hasInstance: !!item,
                     dataset: dataToDatasetString(action.dataset),
-                    proficient: !isCharacter || proficient || !action.trained,
+                    proficient: !isCharacter || proficient || !action.trained || canUseTrained,
                 } satisfies FinalizedSkillAction;
             })
             .filter((action) => {
@@ -713,7 +717,7 @@ function finalizeSkills(actor: ActorPF2e): FinalizedSkill[] {
                 }
 
                 return (
-                    (!action.trained || !hideUntrained || proficient) &&
+                    (!hideUntrained || action.proficient) &&
                     (!action.useInstance || action.hasInstance) &&
                     (typeof action.condition !== "function" || action.condition(actor))
                 );
