@@ -1,8 +1,8 @@
-import { addListenerAll, ApplicationConfiguration, getDamageRollClass } from "module-helpers";
+import { addListenerAll, ApplicationConfiguration, getDamageRollClass, R } from "module-helpers";
 import { BaseRenderOptions, BaseSettings } from "./base/base";
 import { PF2eHudDirectory } from "./base/directory";
 
-const ROLL_REGEX = /^\/(?:r|roll|publicroll|pr|gmroll|grm|blindroll|broll|br|selfroll|sr) (.+)/i;
+const ROLL_REGEX = /^\/(?:r|roll|publicroll|pr|gmroll|gm|blindroll|broll|br|selfroll|sr) (.+)/i;
 const INLINE_REGEX = /\[\[\/r ([\dd+ -]+)\]\]$/i;
 
 const DICE = {
@@ -76,7 +76,7 @@ class PF2eHudDice extends PF2eHudDirectory<DiceSettings, DiceRenderOptions> {
                     if (event.shiftKey) {
                         addDieToChat(face);
                     } else {
-                        processDie(face, event.ctrlKey);
+                        rollDie(face, event.ctrlKey);
                     }
 
                     break;
@@ -120,17 +120,18 @@ function processChatRoll(face: number, str: string) {
     const DIE_REGEX = new RegExp(`(?<!- *)(\\d+)d${face}`, "i");
     const match = str.match(DIE_REGEX);
 
-    if (!match) {
+    if (!R.isNumber(match?.index)) {
         return str + ` + 1d${face}`;
     }
 
-    const index = match.index ?? 0;
+    const index = match.index;
     const value = Number(match[1]);
+    const ln = match[1].length;
 
-    return str.substring(0, index) + (value + 1) + str.substring(index + 1);
+    return str.substring(0, index) + (value + 1) + str.substring(index + ln);
 }
 
-async function processDie(face: number, secret: boolean) {
+async function rollDie(face: number, secret: boolean) {
     const RollCls = face === 20 ? Roll : getDamageRollClass();
     const roll = await new RollCls(`1d${face}`).evaluate();
     const options: { rollMode?: RollMode; create?: boolean } = {};
