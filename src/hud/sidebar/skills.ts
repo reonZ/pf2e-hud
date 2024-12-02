@@ -50,6 +50,8 @@ const CHIRURGEON = "Compendium.pf2e.classfeatures.Item.eNZnx4LISDNftbx2";
 const UNTRAINED_IMPROVISATION = [
     "Compendium.pf2e.feats-srd.Item.KcbSxOPYC5CUqbZQ", // Cleaver Improviser
     "Compendium.pf2e.feats-srd.Item.73JyUrJnH3nOQJM5", // Ceremony of Knowledge
+    "Compendium.pf2e.feats-srd.Item.jNrpvEqfncdGZPak", // Halfling Ingenuity
+    "Compendium.pf2e.feats-srd.Item.TOyqtUUnOkOLl1Pm", // Eclectic Skill
 ];
 
 const ACTION_IMAGES: Record<string, string> = {
