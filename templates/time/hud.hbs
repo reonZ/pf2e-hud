@@ -11,14 +11,14 @@
     </div>
 </div>
 {{/unless}}
-<div class="details">
+<div class="details{{#if (and isGM short encrypt.encrypted)}} encrypted{{/if}}">
+    {{#if isGM}}
     <div class="left controls">
-        {{#if isGM}}
         {{> 'increments' sign="-"}}
-        {{/if}}
     </div>
+    {{/if}}
     {{#if short}}
-    <div class="time short" data-action="toggle-short" data-tooltip="{{date}}">
+    <div class="time" data-action="toggle-short" data-tooltip="{{date}}">
         {{short.date}} <span>{{short.time}}</span>
     </div>
     {{else}}
@@ -26,11 +26,21 @@
         <span>{{time}}</span>
     </div>
     {{/if}}
+    {{#if isGM}}
     <div class="right controls">
-        {{#if isGM}}
         {{> 'increments' sign="+"}}
-        {{/if}}
     </div>
+    {{#unless short}}
+    <a class="encrypt{{#if encrypt.encrypted}} encrypted{{/if}}" data-action="toggle-encrypted"
+        data-tooltip="{{encrypt.tooltip}}">
+        {{#if encrypt.encrypted}}
+        <i class="fa-solid fa-binary-lock"></i>
+        {{else}}
+        <i class="fa-duotone fa-solid fa-binary-circle-check"></i>
+        {{/if}}
+    </a>
+    {{/unless}}
+    {{/if}}
 </div>
 
 {{#*inline 'increments'}}

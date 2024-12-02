@@ -1,4 +1,6 @@
 #pf2e-hud-time {
+    --icon-width: 1.2rem;
+
     flex: 0;
     padding-block: 0.2rem 0.5rem;
     display: flex;
@@ -6,13 +8,19 @@
     flex-wrap: nowrap;
     align-items: center;
     gap: 0.1rem;
+    padding-inline: 0.5rem;
+
+    .header,
+    .details {
+        width: 100%;
+    }
 
     .header {
         text-align: center;
-        width: calc(100% - 1rem);
     }
 
     .details {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -28,7 +36,23 @@
         }
 
         .time {
-            padding-inline: 0.5em;
+            padding-inline: 0.5rem;
+        }
+
+        .encrypt {
+            position: absolute;
+            right: -0.2rem;
+
+            &:not(.encrypted) {
+                display: none;
+            }
+        }
+
+        &.encrypted {
+            .time {
+                background: #ffffff1c;
+                outline: 1px dotted rgb(205 205 205 / 50%);
+            }
         }
     }
 
@@ -52,6 +76,12 @@
         .details {
             .time {
                 margin-top: -2px;
+            }
+        }
+
+        &:hover {
+            .encrypt {
+                display: block;
             }
         }
     }
