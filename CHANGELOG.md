@@ -6,21 +6,21 @@
         -   this means that inline rolls will be evaluated when the chat message is added
         -   will however keep the `/r` if it is already present in the inline brackets
     -   fix parsing of dice number with more than one digit
--   `Persistent SHortcuts`:
+-   `Persistent Shortcuts`:
     -   now display the map modifier (if any) on the skill action shortcuts
+-   `Skills Sidebar`:
+    -   add support for `Chirurgeon`
+        -   `medicine` skill actions will all be displayed as usable even if not trained in it
+    -   fix `Untrained Improviser` mixup
+        -   the module was just not hiding the skill actions that required to be trained if you had `Untrained Improviser`
+        -   the module now gives you the ability to roll any skill action if you have the `Cleaver Improviser` or `Ceremony of Knowledge` feats and no longer care about `Untrained Improviser`
+    -   NOTE that the system `Treat Wounds` action will not work when using `medicine` because it double checks if you are trained in it and does not care for those feats
 -   `Time Tracker`:
     -   add new `Encrypt` button for the GM
         -   it only shows up on the expanded version when hovering over the tracker
         -   makes the date & time unreadable for the players
         -   stays visible when enabled to indicate if the data is encrypted
         -   if encrypted and switching to the short version, the date+time will have a gm-only style applied
--   `Skills Sidebar`:
-    -   add support for `Chirurgeon`
-        -   `medicine` skill actions will all be displayed as usable even if not trained in it
-    -   fix `Untrained Improviser` mixup
-        -   the module was just not hidding the skill actions that required to be trained if you had `Untrained Improviser`
-        -   the module now gives you the ability to roll any skill action if you have the `Cleaver Improviser` or `Ceremony of Knowledge` feats and no longer care about `Untrained Improviser`
-    -   NOTE that the system `Treat Wounds` action will not work when using `medicine` because it double checks if you are trained in it and does not care for those feats
 
 # 1.23.1
 
