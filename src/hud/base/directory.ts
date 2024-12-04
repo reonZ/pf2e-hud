@@ -18,7 +18,15 @@ abstract class PF2eHudDirectory<
 
     _onEnable(enabled = this.enabled) {
         if (enabled && !this.rendered) {
-            runWhenReady(() => this.render(true));
+            runWhenReady(() => {
+                if (ui.chat.rendered) {
+                    this.render(true);
+                } else {
+                    Hooks.once("renderChatLog", () => {
+                        this.render(true);
+                    });
+                }
+            });
         } else if (!enabled && this.rendered) {
             this.close();
         }
