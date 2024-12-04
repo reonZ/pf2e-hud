@@ -1,3 +1,8 @@
+# 1.24.3
+
+-   `Dice Panel`:
+    -   fix panel being squished when rendered while being on another directory tab
+
 # 1.24.2
 
 -   make sure `ChatLog` is rendered before trying to inject the `Dice Panel` & `Time Tracker` HUDs
