@@ -1,3 +1,9 @@
+# 1.24.2
+
+-   make sure `ChatLog` is rendered before trying to inject the `Dice Panel` & `Time Tracker` HUDs
+-   `Dice Panel`:
+    -   slight styling adjustment
+
 # 1.24.1
 
 -   `Skills Sidebar`:
