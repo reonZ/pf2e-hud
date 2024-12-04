@@ -418,6 +418,12 @@
             "step2": "[Shift-Kliknięcie]",
             "step3": "[Ctrl-Kliknięcie]"
         },
+        "time": {
+            "encrypt": {
+                "encrypted": "Dane są zaszyfrowane dla graczy",
+                "clear": "Dane są dostępne do odczytu przez graczy"
+            }
+        },
         "sidebars": {
             "actions": {
                 "title": "Akcje",
