@@ -1,4 +1,4 @@
-import { runWhenReady } from "module-helpers";
+import { ApplicationPosition, runWhenReady } from "module-helpers";
 import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base";
 
 abstract class PF2eHudDirectory<
@@ -30,6 +30,11 @@ abstract class PF2eHudDirectory<
         } else if (!enabled && this.rendered) {
             this.close();
         }
+    }
+
+    protected _updatePosition(position: ApplicationPosition): ApplicationPosition {
+        Object.assign(this.element.style, { height: "", width: "100%" });
+        return position;
     }
 }
 
