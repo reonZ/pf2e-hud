@@ -34,7 +34,6 @@ function makeAdvancedHUD<C extends abstract new (...args: any[]) => {}>(construc
                 "stats_speed",
                 "stats_level",
                 "stats_extras",
-                "numbers",
                 "slider",
                 "sidebars",
                 "three-steps",

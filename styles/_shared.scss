@@ -67,7 +67,8 @@
         }
     }
 
-    input[type="number"] {
+    input[type="number"],
+    input[type="text"].text-number {
         text-align: center;
         border: none;
         padding: 0;

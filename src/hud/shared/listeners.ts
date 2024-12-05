@@ -33,31 +33,79 @@ function addEnterKeyListeners(html: HTMLElement) {
 function addStatsHeaderListeners(actor: ActorPF2e, html: HTMLElement, token?: TokenPF2e | null) {
     addEnterKeyListeners(html);
 
-    addListenerAll(html, "input[type='number']", "change", (event, el: HTMLInputElement) => {
-        let path = el.name;
-        let value = Math.max(el.valueAsNumber, 0);
+    const textNumbers = html.querySelectorAll<HTMLInputElement>("input[type='text'].text-number");
+    for (const el of textNumbers) {
+        const cursor = foundry.utils.getProperty(actor, el.name);
+        if (cursor === undefined) continue;
 
-        const cursor = foundry.utils.getProperty(actor, path);
-        if (cursor === undefined || Number.isNaN(value)) return;
-
-        if (
+        const cursorIsObject =
             R.isObjectType<{ value: number; max: number } | null>(cursor) &&
             "value" in cursor &&
-            "max" in cursor
-        ) {
-            path += ".value";
-            value = Math.min(el.valueAsNumber, cursor.max);
-        }
+            "max" in cursor;
 
-        if (path === "system.attributes.shield.hp.value") {
-            const heldShield = actor.heldShield;
-            if (heldShield) {
-                heldShield.update({ "system.hp.value": value });
+        const path = cursorIsObject ? `${el.name}.value` : el.name;
+        const min = Number(el.dataset.min) || 0;
+        const step = Number(el.dataset.step) || 1;
+        const max = cursorIsObject ? cursor.max : Number(el.dataset.max) || Infinity;
+
+        const wheelListener = (event: WheelEvent) => {
+            const value = Number(el.value);
+            const direction = event.deltaY >= 0 ? -1 : +1;
+            const newValue = Math.clamp(value + step * direction, min, max);
+
+            el.value = String(newValue);
+        };
+
+        el.addEventListener("focus", (event) => {
+            el.setSelectionRange(0, -1);
+            el.addEventListener("wheel", wheelListener);
+        });
+
+        el.addEventListener("blur", (event) => {
+            el.removeEventListener("wheel", wheelListener);
+
+            const input = el.value;
+            const current: number = foundry.utils.getProperty(actor, path) ?? 0;
+            const isNegative = input.startsWith("-");
+            const isDelta = input.startsWith("+") || isNegative;
+            const isPercent = input.endsWith("%");
+            const valueStr = input.slice(isDelta ? 1 : 0, isPercent ? -1 : undefined);
+            const valueNum = Math.abs(Number(valueStr));
+
+            if (isNaN(valueNum)) {
+                el.value = String(current);
+                return;
             }
-        } else {
-            actor.update({ [path]: value });
-        }
-    });
+
+            const calculatedValue = isPercent
+                ? cursorIsObject
+                    ? Math.floor(max * (valueNum / 100))
+                    : Math.floor(Math.abs(current) * (valueNum / 100))
+                : valueNum;
+
+            const processedValue = isDelta
+                ? current + calculatedValue * (isNegative ? -1 : 1)
+                : calculatedValue;
+
+            const value = Math.clamp(processedValue, min, max);
+
+            if (value === current) {
+                el.value = String(current);
+                return;
+            }
+
+            el.value = String(value);
+
+            if (path === "system.attributes.shield.hp.value") {
+                const heldShield = actor.heldShield;
+                if (heldShield) {
+                    heldShield.update({ "system.hp.value": value });
+                }
+            } else {
+                actor.update({ [path]: value });
+            }
+        });
+    }
 
     addListenerAll(html, "[data-action]:not(.disabled)", async (event, el) => {
         const action = el.dataset.action as StatsHeaderActionEvent;
