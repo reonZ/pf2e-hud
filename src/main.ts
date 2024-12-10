@@ -14,7 +14,7 @@ import { getNpcStrikeImage } from "./utils/npc-attacks";
 import { PF2eHudTime } from "./hud/time";
 import { PF2eHudDice } from "./hud/dice";
 
-MODULE.register("pf2e-hud", "PF2e HUD");
+MODULE.register("pf2e-hud");
 
 const HUDS = {
     tooltip: new PF2eHudTooltip(),
