@@ -30,10 +30,7 @@ class PF2eHudSidebarSpells extends PF2eHudSidebar {
 
     async _prepareContext(options: SidebarRenderOptions): Promise<SpellsContext> {
         const parentData = await super._prepareContext(options);
-        const summarizedData = await getSummarizedSpellsDataForRender(this.actor, false, {
-            staff: MODULE.path("sidebars.spells.staff"),
-            charges: MODULE.path("sidebars.spells.charges"),
-        });
+        const summarizedData = await getSummarizedSpellsDataForRender(this.actor, false);
 
         const filterValues = summarizedData.spells.map((spells) =>
             spells.map((spell) => spell.name).join("|")
