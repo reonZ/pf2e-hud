@@ -11,7 +11,6 @@ import {
     htmlClosest,
     isValidClickEvent,
     ItemPF2e,
-    MODULE,
     OneToTen,
     SummarizedSpellsData,
 } from "module-helpers";

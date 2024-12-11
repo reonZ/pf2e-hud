@@ -858,13 +858,11 @@ class PersistentShortcuts extends PersistentPart<
                 const name = `${spell.name} - ${cached.rankLabel[castRank]}`;
 
                 cached.spellcasting ??= {};
-                cached.spellcasting[entryId] ??= await entry.getSheetData();
-                const entrySheetData = cached.spellcasting[
-                    entryId
-                ] as SpellcastingSheetDataWithCharges;
+                cached.spellcasting[entryId] ??= await entry.getSheetData({ spells: collection });
+                const entrySheetData = cached.spellcasting[entryId];
 
                 cached.dailiesModule ??= getActiveModule("pf2e-dailies");
-                const dailiesModule = cached.dailiesModule as Maybe<PF2eDailiesModule>;
+                const dailiesModule = cached.dailiesModule;
 
                 cached.entryLabel ??= {};
                 cached.entryLabel[entryId] ??= entrySheetData.statistic?.dc.value
@@ -903,7 +901,11 @@ class PersistentShortcuts extends PersistentPart<
                         ? (group.uses as ValueAndMax)
                         : undefined;
 
-                const active = slotId != null ? group?.active[slotId] : undefined;
+                const active = isConsumable
+                    ? group?.active[0]
+                    : slotId != null
+                    ? group?.active[slotId]
+                    : undefined;
 
                 const uses =
                     isCantrip || isConsumable || (isPrepared && !isFlexible)
@@ -930,16 +932,15 @@ class PersistentShortcuts extends PersistentPart<
                     ? "fa-solid fa-scroll"
                     : undefined;
 
-                const expended =
-                    isCantrip || isConsumable
-                        ? false
-                        : isStaff
-                        ? !canCastRank
-                        : uses
-                        ? isCharges
-                            ? uses.value < castRank
-                            : uses.value === 0
-                        : !!active?.expended;
+                const expended = isCantrip
+                    ? false
+                    : isStaff
+                    ? !canCastRank
+                    : uses
+                    ? isCharges
+                        ? uses.value < castRank
+                        : uses.value === 0
+                    : !!active?.expended;
 
                 const notCarried = isConsumable
                     ? spell.parentItem?.carryType !== "held"
@@ -1637,7 +1638,7 @@ type ShortcutType = "action" | "attack" | "consumable" | "spell" | "toggle" | "s
 
 type CreateShortcutCache = {
     rankLabel?: Partial<Record<OneToTen, string>>;
-    spellcasting?: Record<string, SpellcastingSheetData>;
+    spellcasting?: Record<string, SpellcastingSheetDataWithCharges>;
     dailiesModule?: Maybe<PF2eDailiesModule>;
     entryLabel?: Record<string, string>;
     canCastRank?: Partial<Record<OneToTen, boolean>>;
