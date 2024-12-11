@@ -864,6 +864,11 @@ class PersistentShortcuts extends PersistentPart<
                 cached.dailiesModule ??= getActiveModule("pf2e-dailies");
                 const dailiesModule = cached.dailiesModule;
 
+                cached.animistVesselsData ??= actor.isOfType("character")
+                    ? dailiesModule?.api.getAnimistVesselsData(actor)
+                    : undefined;
+                const animistVesselsData = cached.animistVesselsData;
+
                 cached.entryLabel ??= {};
                 cached.entryLabel[entryId] ??= entrySheetData.statistic?.dc.value
                     ? `${entry.name} - ${game.i18n.format("PF2E.DCWithValue", {
@@ -882,6 +887,8 @@ class PersistentShortcuts extends PersistentPart<
                 const isStaff = !!entrySheetData.isStaff;
                 const isBroken = !isCantrip && isCharges && !dailiesModule;
                 const isInnate = entrySheetData.isInnate;
+                const isVessel = !!animistVesselsData && animistVesselsData.entry.id === entryId;
+                const isPrimary = isVessel && animistVesselsData.primary.includes(itemId);
 
                 const canCastRank = (() => {
                     if (!isStaff || !dailiesModule) return false;
@@ -955,16 +962,25 @@ class PersistentShortcuts extends PersistentPart<
                 const annotation =
                     notCarried && parentItem ? getActionAnnotation(parentItem) : undefined;
 
+                const isDisabled = expended || isBroken || (isVessel && !isPrimary);
+
+                const shortcutName = annotation
+                    ? `${getAnnotationTooltip(annotation)} - ${name}`
+                    : name;
+
                 return returnShortcut({
                     ...shortcutData,
-                    isDisabled: expended || isBroken,
-                    isFadedOut: expended || isBroken || notCarried,
+                    isDisabled,
+                    isFadedOut: isDisabled || notCarried,
                     rank: ROMAN_RANKS[castRank],
                     img: spell.img,
                     categoryIcon,
                     collection,
                     item: spell,
-                    name: annotation ? `${getAnnotationTooltip(annotation)} - ${name}` : name,
+                    name:
+                        isVessel && !isPrimary
+                            ? `${shortcutName} (${localize("persistent.main.shortcut.unassigned")})`
+                            : shortcutName,
                     uses,
                     entryLabel,
                     isBroken,
@@ -1639,11 +1655,12 @@ type ShortcutType = "action" | "attack" | "consumable" | "spell" | "toggle" | "s
 type CreateShortcutCache = {
     rankLabel?: Partial<Record<OneToTen, string>>;
     spellcasting?: Record<string, SpellcastingSheetDataWithCharges>;
-    dailiesModule?: Maybe<PF2eDailiesModule>;
+    dailiesModule?: PF2eDailiesModule;
     entryLabel?: Record<string, string>;
     canCastRank?: Partial<Record<OneToTen, boolean>>;
     canUseStances?: boolean;
     mustDrawConsumable?: boolean;
+    animistVesselsData?: dailies.AnimistVesselsData;
 };
 
 type FillShortcutCache = {
