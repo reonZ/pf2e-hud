@@ -1,6 +1,27 @@
 {
     "pf2e-hud": {
         "SHARED": {
+            "migration": {
+                "warning": {
+                    "title": "Module Migration",
+                    "start": "Start Migration",
+                    "cancel": "Cancel",
+                    "content": {
+                        "modules": "The following module(s) must migrate data:",
+                        "wait": "If the system is migrating its own data, please wait before starting"
+                    }
+                },
+                "summary": {
+                    "title": "Migration Summary",
+                    "content": "The following documents were migrated",
+                    "nothing": "No document needed to be migrated."
+                },
+                "error": {
+                    "actors": "An error occured while migrating data for world actors.",
+                    "token": "An error occured while migrating data for the token actor {uuid}.",
+                    "users": "An error occured while migrating data for users."
+                }
+            },
             "spellcasting": {
                 "staff": "Staff",
                 "charges": "Charges"

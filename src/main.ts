@@ -13,8 +13,9 @@ import { editAvatar } from "./utils/avatar";
 import { getNpcStrikeImage } from "./utils/npc-attacks";
 import { PF2eHudTime } from "./hud/time";
 import { PF2eHudDice } from "./hud/dice";
+import * as migrations from "./migrations";
 
-MODULE.register("pf2e-hud");
+MODULE.register("pf2e-hud", migrations);
 
 const HUDS = {
     tooltip: new PF2eHudTooltip(),
