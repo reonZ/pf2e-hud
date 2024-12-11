@@ -4,6 +4,7 @@ import {
     ApplicationPosition,
     createHTMLElement,
     elementDataset,
+    getFlag,
     getFlagProperty,
     htmlClosest,
     htmlQuery,
@@ -79,32 +80,13 @@ class PF2eHudResources extends PF2eHudBase<
         return ["enabled", "fontSize"];
     }
 
-    get worldResources() {
-        return this.getSetting("worldResources").slice();
-    }
-
-    get userResources() {
-        return this.getUserSetting("userResources")?.slice() ?? [];
-    }
-
     getSettings() {
         const parentSettings = super.getSettings();
 
         const enabledSetting = parentSettings.find((x) => x.key === "enabled")!;
-        enabledSetting.scope = "world";
-        enabledSetting.hint = settingPath("resources.enabled.hint");
         enabledSetting.requiresReload = true;
 
         return parentSettings.concat([
-            {
-                key: "worldResources",
-                type: Array,
-                default: [],
-                config: false,
-                onChange: () => {
-                    this.render();
-                },
-            },
             {
                 key: "position",
                 type: Object,
@@ -119,36 +101,46 @@ class PF2eHudResources extends PF2eHudBase<
         if (this.#initialized) return;
         this.#initialized = true;
 
-        const enabled = this.enabled;
-        if (!enabled) return;
+        if (!this.enabled) return;
 
         Hooks.on("updateUser", this.#onUpdateUser.bind(this));
         Hooks.on("getSceneControlButtons", this.#onGetSceneControlButtons.bind(this));
+        Hooks.on("userConnected", () => {
+            this.render();
+        });
 
-        if (this.getUserSetting("showTracker")) this.render(true);
+        if (this.getUserSetting("showTracker")) {
+            this.render(true);
+        }
     }
 
     async _prepareContext(options: ResourcesRenderOptions): Promise<ResourcesContext> {
-        const resourceContext = (resource: Resource) => {
+        const resourceContext = (resource: Resource, withTooltip: boolean) => {
             const validated = this.validateResource(resource) as ContextResource;
 
             validated.ratio = (validated.value - validated.min) / (validated.max - validated.min);
 
-            validated.increase = createStepTooltip(validated, "increase");
-            validated.decrease = createStepTooltip(validated, "decrease");
+            if (withTooltip) {
+                validated.increase = createStepTooltip(validated, "increase");
+                validated.decrease = createStepTooltip(validated, "decrease");
+            }
 
             return validated;
         };
 
-        const isGM = game.user.isGM;
-        const worldResources = isGM
-            ? this.worldResources
-            : this.worldResources.filter((resource) => resource.visible);
+        const thisUser = game.user;
+        const userResources = this.getUserResources(thisUser).map((resource) =>
+            resourceContext(resource, true)
+        );
+        const sharedResources = R.pipe(
+            game.users.filter((user): user is Active<UserPF2e> => user !== thisUser && user.active),
+            R.flatMap((user) => this.getUserResources(user, true)),
+            R.map((resource) => resourceContext(resource, false))
+        );
 
         return {
-            isGM,
-            worldResources: worldResources.map((resource) => resourceContext(resource)),
-            userResources: this.userResources.map((resource) => resourceContext(resource)),
+            sharedResources,
+            userResources,
             i18n: templateLocalize("resources"),
         };
     }
@@ -201,10 +193,9 @@ class PF2eHudResources extends PF2eHudBase<
 
         const updateResource = (negative: boolean) => {
             const parent = htmlClosest(target, "[data-resource-id]")!;
-            const { resourceId, isWorld } = elementDataset(parent);
+            const { resourceId } = elementDataset(parent);
             this.moveResourceByStep(
                 resourceId,
-                isWorld === "true",
                 event.ctrlKey ? 3 : event.shiftKey ? 2 : 1,
                 negative
             );
@@ -212,7 +203,7 @@ class PF2eHudResources extends PF2eHudBase<
 
         switch (action) {
             case "add-resource": {
-                this.createResource(game.user.isGM);
+                this.createResource();
                 break;
             }
 
@@ -228,15 +219,16 @@ class PF2eHudResources extends PF2eHudBase<
         }
     }
 
-    getResource(id: string, isWorld: boolean) {
-        const resources = isWorld ? this.worldResources : this.userResources;
-        const resource = resources.find((x) => x.id === id);
-        return resource ? this.validateResource(resource) : null;
+    getUserResources(user = game.user, sharedOnly?: boolean) {
+        const resources = getFlag<Resource[]>(user, this.key, "userResources")?.slice() ?? [];
+        return sharedOnly ? resources.filter((resource) => resource.shared) : resources;
     }
 
-    async createResource(isWorld: boolean) {
-        if (isWorld && !game.user.isGM) return;
+    getResource(id: string) {
+        return this.getUserResources().find((x) => x.id === id);
+    }
 
+    async createResource() {
         const id = foundry.utils.randomID();
         const resource = await this.#openResourceMenu({
             id,
@@ -244,7 +236,6 @@ class PF2eHudResources extends PF2eHudBase<
             max: 100,
             min: 0,
             value: 100,
-            world: isWorld,
             step1: 1,
         });
 
@@ -254,31 +245,42 @@ class PF2eHudResources extends PF2eHudBase<
     }
 
     addResource(resource: Resource) {
-        if (resource.world && !game.user.isGM) return;
-
-        const resources = resource.world ? this.worldResources : this.userResources;
+        const resources = this.getUserResources();
         resources.push(resource);
-
-        return this.setResources(resources, resource.world);
+        return this.setUserSetting("userResources", resources);
     }
 
-    moveResourceByStep(resourceId: string, isWorld: boolean, step: 1 | 2 | 3, negative: boolean) {
-        const resource = this.getResource(resourceId, isWorld);
+    async editResource(id: string) {
+        const resource = this.getResource(id);
+        if (!resource) return;
+
+        const editedResource = await this.#openResourceMenu(resource, true);
+        if (!editedResource) return;
+
+        if (editedResource.delete) {
+            return this.deleteResource(id);
+        } else {
+            delete editedResource.delete;
+            return this.updateResource(editedResource);
+        }
+    }
+
+    updateResource(resource: Resource) {
+        const resources = this.getUserResources();
+        const found = resources.findSplice((x) => x.id === resource.id, resource);
+        if (!found) return;
+
+        return this.setUserSetting("userResources", resources);
+    }
+
+    moveResourceByStep(resourceId: string, step: 1 | 2 | 3, negative: boolean) {
+        const resource = this.getResource(resourceId);
         if (!resource) return;
 
         const stepValue =
             step === 3 ? resource.step3 : step === 2 ? resource.step2 : resource.step1;
 
-        const nb = stepValue || resource.step1 || 1;
-        this.changeResourceQuantity(resourceId, isWorld, negative ? nb * -1 : nb);
-    }
-
-    changeResourceQuantity(id: string, isWorld: boolean, nb: number) {
-        if (isWorld && !game.user.isGM) return;
-
-        const resource = this.getResource(id, isWorld);
-        if (!resource) return;
-
+        const nb = (stepValue || resource.step1 || 1) * (negative ? -1 : 1);
         const currentValue = Math.clamp(resource.value, resource.min, resource.max);
         const newValue = Math.clamp(currentValue + nb, resource.min, resource.max);
         if (newValue === resource.value) return;
@@ -287,51 +289,12 @@ class PF2eHudResources extends PF2eHudBase<
         return this.updateResource(resource);
     }
 
-    updateResource(resource: Resource) {
-        if (resource.world && !game.user.isGM) return;
-
-        const resources = resource.world ? this.worldResources : this.userResources;
-        const found = resources.findSplice((x) => x.id === resource.id, resource);
-        if (!found) return;
-
-        return this.setResources(resources, resource.world);
-    }
-
-    async editResource(id: string, isWorld: boolean) {
-        if (isWorld && !game.user.isGM) return;
-
-        const resource = this.getResource(id, isWorld);
-        if (!resource) return;
-
-        const editedResource = await this.#openResourceMenu(resource, true);
-        if (!editedResource) return;
-
-        if (editedResource.delete) {
-            return this.deleteResource(id, isWorld);
-        } else {
-            delete editedResource.delete;
-            return this.updateResource(editedResource);
-        }
-    }
-
-    deleteResource(id: string, isWorld: boolean) {
-        if (isWorld && !game.user.isGM) return;
-
-        const resources = isWorld ? this.worldResources : this.userResources;
+    deleteResource(id: string) {
+        const resources = this.getUserResources();
         const found = resources.findSplice((x) => x.id === id);
         if (!found) return;
 
-        return this.setResources(resources, isWorld);
-    }
-
-    setResources(resources: Resource[], isWorld: boolean) {
-        if (isWorld && !game.user.isGM) return;
-
-        if (isWorld) {
-            return this.setSetting("worldResources", resources);
-        } else {
-            return this.setUserSetting("userResources", resources);
-        }
+        return this.setUserSetting("userResources", resources);
     }
 
     validateResource<T extends Resource>(resource: T): T {
@@ -366,44 +329,30 @@ class PF2eHudResources extends PF2eHudBase<
                 isEdit,
                 i18n: templateLocalize("resources"),
             },
-            render: (event, html) => {
-                const btn = createHTMLElement("a", {
-                    dataset: {
-                        tooltip: resource.id,
-                        tooltipDirection: "UP",
-                    },
-                    innerHTML: resource.world
-                        ? "<i class='fa-solid fa-earth-americas'></i>"
-                        : "<i class='fa-solid fa-user'></i>",
-                });
-
-                btn.style.marginLeft = "0.3em";
-
-                btn.addEventListener("click", (event) => {
-                    event.preventDefault();
-                    game.clipboard.copyPlainText(resource.id);
-                    ui.notifications.info(
-                        game.i18n.format("DOCUMENT.IdCopiedClipboard", {
-                            label: localize("resources.resource"),
-                            type: "id",
-                            id: resource.id,
-                        })
-                    );
-                });
-
-                html.querySelector(".window-header .window-title")?.append(btn);
-            },
         });
 
         return editedResource ? this.validateResource(editedResource) : null;
     }
 
-    #setPositionDebounce = foundry.utils.debounce(() => {
-        const newPosition = foundry.utils.mergeObject(DEFAULT_POSITION, this.position, {
-            inplace: false,
-        });
-        this.setSetting("position", newPosition);
-    }, 1000);
+    #onUpdateUser(user: UserPF2e, updates: Partial<UserSourcePF2e>) {
+        if (user !== game.user) {
+            this.render();
+        }
+
+        const showTracker = getFlagProperty<boolean>(updates, "resources.showTracker");
+
+        if (showTracker !== undefined) {
+            toggleControlTool("pf2e-hud-resources", showTracker);
+
+            if (showTracker) {
+                this.render(true);
+            } else {
+                this.close();
+            }
+        } else {
+            this.render();
+        }
+    }
 
     #onGetSceneControlButtons(controls: SceneControl[]) {
         controls[0].tools.push({
@@ -419,29 +368,17 @@ class PF2eHudResources extends PF2eHudBase<
         });
     }
 
-    #onUpdateUser(user: UserPF2e, updates: Partial<UserSourcePF2e>) {
-        if (user !== game.user) return;
-
-        const showTracker = getFlagProperty<boolean>(updates, "resources.showTracker");
-        if (showTracker !== undefined) {
-            toggleControlTool("pf2e-hud-resources", showTracker);
-
-            if (showTracker) this.render(true);
-            else this.close();
-
-            return;
-        }
-
-        const resources = getFlagProperty(updates, "resources.userResources");
-        if (resources !== undefined) {
-            this.render();
-        }
-    }
+    #setPositionDebounce = foundry.utils.debounce(() => {
+        const newPosition = foundry.utils.mergeObject(DEFAULT_POSITION, this.position, {
+            inplace: false,
+        });
+        this.setSetting("position", newPosition);
+    }, 1000);
 
     #activateListeners(html: HTMLElement) {
         addListenerAll(html, "[data-resource-id]", "contextmenu", async (event, el) => {
-            const { resourceId, isWorld } = elementDataset(el);
-            this.editResource(resourceId, isWorld === "true");
+            const { resourceId } = elementDataset(el);
+            this.editResource(resourceId);
         });
     }
 }
@@ -449,10 +386,9 @@ class PF2eHudResources extends PF2eHudBase<
 type RecourcesActionEvent = "add-resource" | "decrease-resource" | "increase-resource";
 
 type ResourcesContext = {
-    isGM: boolean;
     i18n: ReturnType<typeof templateLocalize>;
     userResources: ContextResource[];
-    worldResources: ContextResource[];
+    sharedResources: ContextResource[];
 };
 
 type ResourcesRenderOptions = BaseRenderOptions;
@@ -463,8 +399,7 @@ type Resource = {
     min: number;
     max: number;
     value: number;
-    world: boolean;
-    visible?: boolean;
+    shared?: boolean;
     step1?: number;
     step2?: number;
     step3?: number;

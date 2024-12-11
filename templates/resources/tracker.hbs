@@ -1,7 +1,7 @@
-{{#each worldResources as |resource|}}
-{{> 'resource-row' resource=resource isOwner=@root.isGM}}
+{{#each sharedResources as |resource|}}
+{{> 'resource-row' resource=resource}}
 {{/each}}
-{{#if (and worldResources.length userResources.length)}}
+{{#if (and sharedResources.length userResources.length)}}
 <hr>
 {{/if}}
 {{#each userResources as |resource|}}
@@ -12,8 +12,12 @@
 <div class="resource" data-resource-id="{{resource.id}}" data-is-world="{{resource.world}}"
     style="--ratio: {{resource.ratio}};">
     <div class="name">
-        {{#if (and @root.isGM resource.world)}}
-        <i class="{{#if resource.visible}}visible {{/if}}fa-solid fa-eye"></i>
+        {{#if resource.shared}}
+        {{#if isOwner}}
+        <i class="fa-solid fa-eye"></i>
+        {{else}}
+        <i class="fa-sharp-duotone fa-solid fa-earth-americas"></i>
+        {{/if}}
         {{/if}}
         {{resource.name}}
     </div>

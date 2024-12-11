@@ -248,10 +248,7 @@
                 }
             },
             "resources": {
-                "title": "Suivi de resources",
-                "enabled": {
-                    "hint": "Active le suivi de ressources spécifiques à votre monde."
-                }
+                "title": "Suivi de resources"
             }
         },
         "hud": {

@@ -1,5 +1,4 @@
 <input class="hidden" type="text" name="id" value="{{resource.id}}">
-<input class="hidden" type="checkbox" name="world" {{checked resource.world}}>
 <div class="form-group">
     <label>{{@root.i18n 'menu.name.label'}}</label>
     <div class="form-fields">
@@ -43,14 +42,12 @@
         <input type="number" name="step3" value="{{resource.step3}}" min="1" step="1">
     </div>
 </div>
-{{#if resource.world}}
 <div class="form-group">
-    <label>{{@root.i18n 'menu.visible'}}</label>
+    <label>{{@root.i18n 'menu.shared'}}</label>
     <div class="form-fields">
-        <input type="checkbox" name="visible" {{checked resource.visible}}>
+        <input type="checkbox" name="shared" {{checked resource.shared}}>
     </div>
 </div>
-{{/if}}
 {{#if isEdit}}
 <div class="delete">
     <label>{{@root.i18n 'menu.delete'}}</label>

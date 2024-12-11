@@ -280,10 +280,7 @@
                 }
             },
             "resources": {
-                "title": "Resources Tracker",
-                "enabled": {
-                    "hint": "Enables the tracking of custom resources in your world."
-                }
+                "title": "Resources Tracker"
             },
             "time": {
                 "title": "Time Tracker",
@@ -405,7 +402,7 @@
                 "min": "Minimum Value",
                 "max": "Maximum Value",
                 "current": "Current Value",
-                "visible": "Visible to players?",
+                "shared": "Visible to others?",
                 "name": {
                     "label": "Resource Name",
                     "default": "New Resource"

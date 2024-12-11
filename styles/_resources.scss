@@ -69,10 +69,6 @@
                 i {
                     font-size: 0.86em;
                     margin-inline: -0.1em;
-
-                    &:not(.visible) {
-                        color: var(--color-disabled);
-                    }
                 }
             }
 

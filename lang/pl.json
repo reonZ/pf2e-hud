@@ -280,10 +280,7 @@
                 }
             },
             "resources": {
-                "title": "Śledzenie zasobów",
-                "enabled": {
-                    "hint": "Umożliwia śledzenie niestandardowych zasobów w świecie gry."
-                }
+                "title": "Śledzenie zasobów"
             },
             "time": {
                 "title": "Śledzenie czasu",
