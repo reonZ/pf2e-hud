@@ -1,5 +1,11 @@
 {
     "pf2e-hud": {
+        "SHARED": {
+            "spellcasting": {
+                "staff": "Staff",
+                "charges": "Charges"
+            }
+        },
         "gmOnly": "GM Only",
         "reload": "Requires  Reload",
         "keybindings": {
@@ -451,8 +457,6 @@
             },
             "spells": {
                 "title": "Spellcasting",
-                "staff": "Staff",
-                "charges": "Charges",
                 "cast": "Cast the Spell",
                 "draw": "Draw Consumable",
                 "broken": "Broken Spell"

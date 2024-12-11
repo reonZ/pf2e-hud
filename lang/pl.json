@@ -1,5 +1,11 @@
 {
     "pf2e-hud": {
+        "SHARED": {
+            "spellcasting": {
+                "staff": "Kostur",
+                "charges": "Ładunki"
+            }
+        },
         "gmOnly": "Tylko MG",
         "reload": "Wymaga przeładowania",
         "keybindings": {
@@ -451,8 +457,6 @@
             },
             "spells": {
                 "title": "Rzucanie zaklęć",
-                "staff": "Kostur",
-                "charges": "Ładunki",
                 "cast": "Rzuć zaklęcie",
                 "draw": "Noszenie przedmiotów zużywalnych",
                 "broken": "Przerwane zaklęcie"
