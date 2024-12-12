@@ -34,12 +34,16 @@
                     text-align: center;
                 }
 
-                a {
-                    background: var(--variant-background);
-                }
-
                 span {
-                    @include variant-selected;
+                    &:not(.selected) {
+                        background: var(--variant-background);
+                    }
+
+                    &.selected {
+                        @include variant-selected;
+
+                        cursor: revert;
+                    }
                 }
             }
         }

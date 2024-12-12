@@ -1133,10 +1133,15 @@ class PersistentShortcuts extends PersistentPart<
                     `synthetics.toggles.${domain}.${option}`
                 ) as Maybe<RollOptionToggle>;
                 const disabled = !item || !toggle?.enabled;
-                const subOption = toggle?.suboptions.find((sub) => sub.value === optionSelection);
-                const checked =
-                    (!optionSelection || !!subOption?.selected) &&
-                    (alwaysActive || !!toggle?.checked);
+                const isBlast = domain === "elemental-blast" && option === "action-cost";
+                const selection = isBlast
+                    ? actor.rollOptions["elemental-blast"]?.["action-cost:2"]
+                        ? "2"
+                        : "1"
+                    : optionSelection;
+                const subOption = toggle?.suboptions.find((sub) => sub.value === selection);
+                const selected = !!subOption?.selected;
+                const checked = (!selection || selected) && (alwaysActive || !!toggle?.checked);
 
                 const name = (() => {
                     if (!toggle) {
@@ -1152,6 +1157,8 @@ class PersistentShortcuts extends PersistentPart<
                     return `${toggle.label} (${enabled})`;
                 })();
 
+                const subtitle = subOption ? game.i18n.localize(subOption.label) : undefined;
+
                 return returnShortcut({
                     ...shortcutData,
                     isDisabled: disabled,
@@ -1159,8 +1166,10 @@ class PersistentShortcuts extends PersistentPart<
                     checked,
                     name,
                     item,
-                    subtitle: subOption ? game.i18n.localize(subOption.label) : undefined,
+                    subtitle,
+                    isBlast,
                     img: item?.img ?? shortcutData.img,
+                    optionSelection: selection,
                 } satisfies ToggleShortcut as T);
             }
         }
@@ -1525,7 +1534,7 @@ class PersistentShortcuts extends PersistentPart<
             }
 
             case "toggle": {
-                const { domain, itemId, option, optionSelection, alwaysActive } = shortcut;
+                const { domain, itemId, option, optionSelection, alwaysActive, isBlast } = shortcut;
                 const value = alwaysActive
                     ? true
                     : optionSelection
@@ -1537,7 +1546,7 @@ class PersistentShortcuts extends PersistentPart<
                     option,
                     itemId ?? null,
                     value,
-                    optionSelection
+                    isBlast ? (optionSelection === "2" ? "1" : "2") : optionSelection
                 );
             }
 
@@ -1852,6 +1861,7 @@ type ToggleShortcut = BaseShortCut<"toggle"> &
     ToggleShortcutData & {
         item: ItemPF2e | undefined;
         checked: boolean;
+        isBlast: boolean;
     };
 
 type SkillDropData = Partial<SkillVariantDataset> & {

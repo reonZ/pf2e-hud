@@ -198,19 +198,40 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             return list.map((x) => (localize ? game.i18n.localize(x[key]) : x[key])).join("|");
         };
 
-        const blastActionCost = (() => {
+        const elementalBlasts = await (async () => {
             if (!isCharacter) return;
 
             const blastOption = actor.synthetics.toggles["elemental-blast"]?.["action-cost"];
             if (!blastOption) return;
 
-            return blastOption.suboptions.map(({ selected, value, label }) => ({
-                selected,
-                cost: value,
-                label: value === "1" ? "Ⅰ" : "Ⅱ",
-                tooltip: label,
+            const blasts = await getBlastData(actor);
+            if (!blasts) return;
+
+            let cost = "1";
+
+            const costs = blastOption.suboptions.map(({ selected, value, label }) => {
+                if (selected) {
+                    cost = value;
+                }
+
+                return {
+                    selected,
+                    cost: value,
+                    label: value === "1" ? "Ⅰ" : "Ⅱ",
+                    tooltip: label,
+                };
+            });
+
+            const item = blasts[0].item;
+
+            return {
+                cost,
+                costs,
                 itemId: blastOption.itemId,
-            }));
+                img: item.img,
+                label: item.name,
+                blasts: blasts.sort((a, b) => a.label.localeCompare(b.label, game.i18n.lang)),
+            };
         })();
 
         const stowedWeapons = (() => {
@@ -230,7 +251,6 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             };
         })();
 
-        const blasts = isCharacter ? await getBlastData(actor) : undefined;
         const strikes = await getStrikeData(actor);
 
         const data: ActionsContext = {
@@ -240,9 +260,8 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             heroActions,
             stowedWeapons,
             actionSections,
-            blasts: blasts?.sort((a, b) => a.label.localeCompare(b.label, game.i18n.lang)),
+            elementalBlasts,
             strikes: strikes.sort((a, b) => a.index - b.index),
-            blastActionCost,
             isCharacter,
             variantLabel,
             filterValue,
@@ -317,7 +336,13 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
 
                 case "toggle-blast-action-cost": {
                     const { itemId, cost } = button.dataset;
-                    actor.toggleRollOption("elemental-blast", "action-cost", itemId, true, cost);
+                    actor.toggleRollOption(
+                        "elemental-blast",
+                        "action-cost",
+                        itemId,
+                        true,
+                        cost === "1" ? "2" : "1"
+                    );
                     break;
                 }
 
@@ -543,6 +568,7 @@ async function getBlastData(
 
             return {
                 ...config,
+                item: blastData.item!,
                 attack: (event: MouseEvent, mapIncreases: number, el: HTMLElement) => {
                     return blastData.attack({
                         event,
@@ -760,6 +786,7 @@ type ActionStrike<T extends StrikeData = StrikeData> = Omit<ActionStrikeUsage<T>
 
 type ActionBlast = ElementalBlastSheetConfig & {
     reach: string;
+    item: AbilityItemPF2e;
     attack: (
         event: MouseEvent,
         mapIncreases: number,
@@ -813,17 +840,21 @@ type ActionsContext = SidebarContext & {
     isCharacter: boolean;
     showUnreadyStrikes: boolean;
     variantLabel: (label: string) => string;
-    blasts: ActionBlast[] | undefined;
     strikes: ActionStrike[];
     stowedWeapons: Maybe<{ tooltip: string; hidden: boolean }>;
-    blastActionCost: Maybe<
-        {
+    elementalBlasts: Maybe<{
+        cost: string;
+        costs: {
             selected: boolean;
             cost: string;
             label: string;
-            itemId: string;
-        }[]
-    >;
+            tooltip: string;
+        }[];
+        img: string;
+        label: string;
+        itemId: string;
+        blasts: ActionBlast[];
+    }>;
     actionSections: {
         type: "action" | "exploration" | "free" | "reaction" | "passive";
         label: string;

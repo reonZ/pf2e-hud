@@ -22,23 +22,22 @@
 </div>
 {{/each}}
 
-{{#if blasts}}
-<header class="blasts" data-filter-value="{{filterValue blasts key='label' localize=true}}">
+{{#if elementalBlasts}}
+<header class="blasts"
+    data-filter-value="{{filterValue elementalBlasts.blasts key='label' localize=true}}">
     <div class="name">{{@root.i18n 'blasts'}}</div>
-    <div class="controls">
-        {{#each blastActionCost as |suboption|}}
-        {{#if suboption.selected}}
-        <span data-tooltip="{{suboption.tooltip}}">{{suboption.label}}</span>
-        {{else}}
-        <a data-action="toggle-blast-action-cost" data-cost="{{suboption.cost}}"
-            data-item-id="{{suboption.itemId}}"
-            data-tooltip="{{suboption.tooltip}}">{{suboption.label}}</a>
-        {{/if}}
+    <a class="controls item" draggable="true" data-action="toggle-blast-action-cost"
+        data-item-id="{{elementalBlasts.itemId}}" data-domain="elemental-blast"
+        data-label="{{elementalBlasts.label}}" data-option="action-cost" data-always-active="true"
+        data-cost="{{elementalBlasts.cost}}">
+        {{#each elementalBlasts.costs as |suboption|}}
+        <span {{#if suboption.selected}} class="selected" {{/if}}
+            data-tooltip="{{suboption.tooltip}}">{{suboption.label}}</span>
         {{/each}}
-    </div>
+        <img src="{{elementalBlasts.img}}" class="drag-img">
+    </a>
 </header>
-{{/if}}
-{{#each blasts as |blast|}}
+{{#each elementalBlasts.blasts as |blast|}}
 <div class="item attack ready" data-element="{{blast.element}}"
     data-damage-type={{blast.damageType}} data-item-id="{{blast.item.id}}"
     data-item-type="{{blast.item.type}}" draggable="true"
@@ -64,6 +63,8 @@
     <img src="{{blast.img}}" class="drag-img">
 </div>
 {{/each}}
+{{/if}}
+
 
 {{#if strikes.length}}
 <header data-filter-value="{{filterValue strikes key='label'}}">

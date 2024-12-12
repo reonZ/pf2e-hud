@@ -129,9 +129,13 @@
 {{/inline}}
 
 {{#*inline 'toggle'}}
-{{#unless toggle.isDisabled}}
+{{#if isBlast}}
+<div class="center">
+    {{ifThen (eq optionSelection '2') "Ⅱ" "Ⅰ"}}
+</div>
+{{else if (not toggle.isDisabled)}}
 {{> check checked=toggle.checked}}
-{{/unless}}
+{{/if}}
 {{/inline}}
 
 {{#*inline 'attack'}}

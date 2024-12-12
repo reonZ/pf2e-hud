@@ -523,6 +523,17 @@
                 }
             }
 
+            .center {
+                font-size: 1.8em;
+                background: #000000ab;
+                line-height: 1;
+                padding-inline: 0.1em;
+                border-radius: 4px;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+            }
+
             .generic {
                 top: -0.35em;
                 left: -0.35em;
