@@ -39,7 +39,6 @@ import {
     setFlag,
     setFlagProperty,
     SkillSlug,
-    SpellcastingSheetData,
     SpellcastingSheetDataWithCharges,
     SpellCollection,
     SpellPF2e,
@@ -1512,11 +1511,17 @@ class PersistentShortcuts extends PersistentPart<
                 const item = shortcut.item;
                 if (!item) return;
 
-                if (!this.isUsableAction(item)) {
+                const isUsable = this.isUsableAction(item);
+
+                if (!isUsable && game.user.isGM) {
                     return new PF2eHudItemPopup({ actor, item, event }).render(true);
                 }
 
                 if (this.getSetting("confirmShortcut") && !(await confirmUse(item))) return;
+
+                if (!isUsable) {
+                    return item.toMessage(event);
+                }
 
                 if (!shortcut.effectUuid || !isValidStance(item)) {
                     return useAction(event, item);
