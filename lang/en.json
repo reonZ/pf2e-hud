@@ -7,7 +7,7 @@
                     "start": "Start Migration",
                     "cancel": "Cancel",
                     "content": {
-                        "modules": "The following module(s) must migrate data:",
+                        "modules": "The following module(s) may need to migrate data:",
                         "wait": "If the system is migrating its own data, please wait before starting"
                     }
                 },
