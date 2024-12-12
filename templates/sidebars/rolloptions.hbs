@@ -1,8 +1,9 @@
 {{#each toggles as |toggle|}}
-<div class="option-toggle{{#unless toggle.alwaysActive}} item{{/unless}}"
-    data-item-id="{{toggle.itemId}}" data-domain="{{toggle.domain}}" data-option="{{toggle.option}}"
-    data-label="{{toggle.label}}" data-placement="{{toggle.placement}}" {{#unless
-    toggle.alwaysActive}} draggable="true" {{/unless}} data-filter-value="{{toggle.label}}">
+<div class="option-toggle item" data-item-id="{{toggle.itemId}}" data-domain="{{toggle.domain}}"
+    data-option="{{toggle.option}}" data-label="{{toggle.label}}"
+    data-placement="{{toggle.placement}}" draggable="true"
+    data-option-selection="{{toggle.selection}}" data-filter-value="{{toggle.label}}" {{#if
+    toggle.alwaysActive}} data-always-active="true" {{/if}}>
     <label>
         <input type="checkbox" {{#if toggle.alwaysActive}} class="hidden"
             {{/if}}data-action="toggle-roll-option" {{disabled (or toggle.alwaysActive (not
@@ -20,8 +21,6 @@
         {{/each}}
     </select>
     {{/if}}
-    {{#unless toggle.alwaysActive}}
     <img src="{{toggle.img}}" class="drag-img">
-    {{/unless}}
 </div>
 {{/each}}

@@ -1126,26 +1126,41 @@ class PersistentShortcuts extends PersistentPart<
             }
 
             case "toggle": {
-                const { domain, option } = shortcutData;
+                const { domain, option, optionSelection, alwaysActive } = shortcutData;
                 const item = actor.items.get(shortcutData.itemId);
                 const toggle = foundry.utils.getProperty(
                     actor,
                     `synthetics.toggles.${domain}.${option}`
-                ) as RollOptionToggle;
+                ) as Maybe<RollOptionToggle>;
                 const disabled = !item || !toggle?.enabled;
-                const checked = !!toggle?.checked;
-                const label = game.i18n.localize(
-                    `PF2E.SETTINGS.EnabledDisabled.${checked ? "Enabled" : "Disabled"}`
-                );
+                const subOption = toggle?.suboptions.find((sub) => sub.value === optionSelection);
+                const checked =
+                    (!optionSelection || !!subOption?.selected) &&
+                    (alwaysActive || !!toggle?.checked);
+
+                const name = (() => {
+                    if (!toggle) {
+                        return shortcutData.name;
+                    }
+
+                    const enabled = alwaysActive
+                        ? localize("persistent.main.shortcut.alwaysEnabled")
+                        : game.i18n.localize(
+                              `PF2E.SETTINGS.EnabledDisabled.${checked ? "Enabled" : "Disabled"}`
+                          );
+
+                    return `${toggle.label} (${enabled})`;
+                })();
 
                 return returnShortcut({
                     ...shortcutData,
                     isDisabled: disabled,
                     isFadedOut: disabled,
                     checked,
+                    name,
                     item,
+                    subtitle: subOption ? game.i18n.localize(subOption.label) : undefined,
                     img: item?.img ?? shortcutData.img,
-                    name: toggle ? `${toggle.label} (${label})` : shortcutData.name,
                 } satisfies ToggleShortcut as T);
             }
         }
@@ -1181,7 +1196,12 @@ class PersistentShortcuts extends PersistentPart<
 
         switch (dropData.type) {
             case "RollOption": {
-                const { label, domain, option } = dropData as RollOptionData;
+                const { label, domain, option, alwaysActive, optionSelection } =
+                    dropData as RollOptionData & {
+                        optionSelection: string | undefined;
+                        alwaysActive: `${boolean}`;
+                    };
+
                 if (
                     typeof label !== "string" ||
                     !label.length ||
@@ -1202,9 +1222,11 @@ class PersistentShortcuts extends PersistentPart<
                     groupIndex,
                     domain,
                     option,
+                    optionSelection,
+                    alwaysActive: alwaysActive === "true",
                     img: item.img,
                     itemId: item.id,
-                    name: label,
+                    name: optionSelection ? `${label} - ` : label,
                 } satisfies ToggleShortcutData;
 
                 break;
@@ -1503,8 +1525,20 @@ class PersistentShortcuts extends PersistentPart<
             }
 
             case "toggle": {
-                const { domain, itemId, option } = shortcut;
-                return actor.toggleRollOption(domain, option, itemId ?? null);
+                const { domain, itemId, option, optionSelection, alwaysActive } = shortcut;
+                const value = alwaysActive
+                    ? true
+                    : optionSelection
+                    ? !actor.rollOptions[domain]?.[`${option}:${optionSelection}`]
+                    : !actor.rollOptions[domain]?.[option];
+
+                return actor.toggleRollOption(
+                    domain,
+                    option,
+                    itemId ?? null,
+                    value,
+                    optionSelection
+                );
             }
 
             case "action": {
@@ -1700,6 +1734,8 @@ type ToggleShortcutData = ShortcutDataBase<"toggle"> & {
     itemId: string;
     domain: string;
     option: string;
+    optionSelection: string | undefined;
+    alwaysActive: boolean;
     name: string;
     img: string;
 };

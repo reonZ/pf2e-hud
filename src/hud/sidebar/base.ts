@@ -222,11 +222,14 @@ abstract class PF2eHudSidebar extends foundry.applications.api.ApplicationV2 {
                         placement === tabPlacement &&
                         !(domain === "elemental-blast" && option === "action-cost")
                 ),
-                R.map((toggle) => ({
-                    ...toggle,
-                    label: game.i18n.localize(toggle.label),
-                    img: actor.items.get(toggle.itemId)?.img,
-                }))
+                R.map((toggle) => {
+                    return {
+                        ...toggle,
+                        selection: toggle.suboptions[0]?.rule.selection,
+                        label: game.i18n.localize(toggle.label),
+                        img: actor.items.get(toggle.itemId)?.img,
+                    };
+                })
             );
 
             if (toggles.length) {
