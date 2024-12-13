@@ -1,6 +1,27 @@
 {
     "pf2e-hud": {
         "SHARED": {
+            "migration": {
+                "warning": {
+                    "title": "Migracja modułu",
+                    "start": "Rozpoczęcie migracji",
+                    "cancel": "Anuluj",
+                    "content": {
+                        "modules": "Następujące moduły mogą wymagać migracji danych:",
+                        "wait": "Jeśli system przeprowadza migrację własnych danych, należy poczekać przed jej rozpoczęciem"
+                    }
+                },
+                "summary": {
+                    "title": "Podsumowanie migracji",
+                    "content": "Następujące dokumenty zostały zmigrowane",
+                    "nothing": "Żaden dokument nie wymagał migracji."
+                },
+                "error": {
+                    "actors": "Wystąpił błąd podczas migracji danych aktorów świata.",
+                    "token": "Wystąpił błąd podczas migracji danych dla aktora tokenu {uuid}.",
+                    "users": "Wystąpił błąd podczas migracji danych użytkowników."
+                }
+            },
             "spellcasting": {
                 "staff": "Kostur",
                 "charges": "Ładunki"
@@ -338,6 +359,8 @@
             "main": {
                 "shortcut": {
                     "dc": "ST {dc}",
+                    "unassigned": "nieprzypisany",
+                    "alwaysEnabled": "Zawsze włączony",
                     "wrongActor": "Skróty można tworzyć tylko od tego samego stałego aktora.",
                     "wrongType": "Nie można utworzyć skrótu tego typu.",
                     "wrongOrigin": "Tylko zaklęcia z paska bocznego HUD mogą zostać przekształcone w skróty.",
@@ -401,7 +424,7 @@
                 "min": "Wartość minimalna",
                 "max": "Wartość maksymalna",
                 "current": "Bieżąca wartość",
-                "visible": "Widoczne dla graczy?",
+                "shared": "Widoczny dla innych?",
                 "name": {
                     "label": "Nazwa zasobu",
                     "default": "Nowy zasób"
