@@ -6,12 +6,18 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        max-width: var(--max-column-width);
 
         &.dailies {
             > span {
                 color: var(--color-disabled);
             }
         }
+    }
+
+    .resource {
+        min-width: 15em;
+        margin-right: -0.2em;
     }
 
     .initiative {

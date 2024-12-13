@@ -7,6 +7,8 @@ import {
     MacroPF2e,
     R,
     SkillSlug,
+    SpecialResourceRuleElement,
+    addListenerAll,
     confirmDialog,
     dataToDatasetString,
     getActiveModule,
@@ -59,31 +61,6 @@ const ACTIONS: (RawSkillAction & { statistic?: SkillSlug | "perception" })[] = [
 ];
 
 const EXTRAS_ACTIONS_UUIDS = ACTIONS.map((action) => action.uuid);
-
-let actionsCache: PreparedSkillAction[] | null = null;
-function getActions(actor: ActorPF2e) {
-    actionsCache ??= ACTIONS.map((x) => ({
-        ...prepareStatisticAction(x.statistic, x, false),
-        proficient: true,
-    }));
-
-    const isCharacter = actor.isOfType("character");
-
-    return R.pipe(
-        actionsCache,
-        R.map((action) => ({
-            ...action,
-            dataset: dataToDatasetString(action.dataset),
-        })),
-        R.filter((action) => {
-            if (!isCharacter) {
-                return typeof action.condition !== "function";
-            }
-            return typeof action.condition === "function" ? action.condition(actor) : true;
-        }),
-        R.sortBy(R.prop("label"))
-    );
-}
 
 class PF2eHudSidebarExtras extends PF2eHudSidebar {
     get key(): SidebarName {
@@ -140,6 +117,7 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
             initiative: actor.initiative,
             statistics: getStatistics(actor),
             isCharacter: actor.isOfType("character"),
+            specialResources: Object.values(actor.synthetics.resources),
         };
 
         return data;
@@ -234,6 +212,8 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
     }
 
     _activateListeners(html: HTMLElement) {
+        const actor = this.actor;
+
         html.addEventListener("drop", async (event) => {
             const { type, uuid } = TextEditor.getDragEventData(event);
             if (type !== "Macro" || typeof uuid !== "string" || !fromUuidSync(uuid)) return;
@@ -247,7 +227,44 @@ class PF2eHudSidebarExtras extends PF2eHudSidebar {
             await setFlag(actor, flag, macros);
             this.parentHUD.render();
         });
+
+        addListenerAll(html, "[data-resource]", "change", (event, el: HTMLInputElement) => {
+            const resourceSlug = el.dataset.resource ?? "";
+            const resource = this.actor.getResource(resourceSlug);
+            if (!resource) return;
+
+            const value = Math.clamp(el.valueAsNumber, 0, resource.max);
+
+            if (value !== resource.value) {
+                actor.updateResource(resourceSlug, value);
+            }
+        });
     }
+}
+
+let actionsCache: PreparedSkillAction[] | null = null;
+function getActions(actor: ActorPF2e) {
+    actionsCache ??= ACTIONS.map((x) => ({
+        ...prepareStatisticAction(x.statistic, x, false),
+        proficient: true,
+    }));
+
+    const isCharacter = actor.isOfType("character");
+
+    return R.pipe(
+        actionsCache,
+        R.map((action) => ({
+            ...action,
+            dataset: dataToDatasetString(action.dataset),
+        })),
+        R.filter((action) => {
+            if (!isCharacter) {
+                return typeof action.condition !== "function";
+            }
+            return typeof action.condition === "function" ? action.condition(actor) : true;
+        }),
+        R.sortBy(R.prop("label"))
+    );
 }
 
 interface PF2eHudSidebarExtras {
@@ -273,6 +290,7 @@ type ExtrasContext = SidebarContext & {
         value: string;
         label: string;
     }[];
+    specialResources: SpecialResourceRuleElement[];
 };
 
 export { EXTRAS_ACTIONS_UUIDS, PF2eHudSidebarExtras };

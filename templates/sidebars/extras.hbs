@@ -1,5 +1,6 @@
+{{!-- initiative --}}
 {{#if initiative}}
-<div class="initiative" data-filter-value="{{localize 'PF2E.InitiativeLabel'}}">
+<div class="row initiative" data-filter-value="{{localize 'PF2E.InitiativeLabel'}}">
     <a data-action="roll-initiative">
         <i class="fa-solid fa-dice-d20"></i>
         {{localize 'PF2E.InitiativeLabel'}}
@@ -10,6 +11,7 @@
 </div>
 <hr>
 {{/if}}
+{{!-- rest & daily preps --}}
 {{#if isCharacter}}
 <div class="row" data-filter-value="{{localize 'PF2E.Actor.Character.Rest.Label'}}">
     <a data-action="rest-for-the-night">
@@ -36,16 +38,31 @@
 {{/if}}
 <hr>
 {{/if}}
+{{!-- special resources --}}
+{{#if specialResources.length}}
+{{#each specialResources as |resource|}}
+<div class="row resource" data-section="{{resource.slug}}">
+    <span>{{resource.label}}</span>
+    <div class="numbers">
+        <input type="number" data-resource="{{resource.slug}}" value="{{resource.value}}">
+        <span class="separator">/</span>
+        <span class="max">{{resource.max}}</span>
+    </div>
+</div>
+{{/each}}
+<hr>
+{{/if}}
+{{!-- actions --}}
 {{#each actions as |action|}}
 {{> (@root.partial 'statistic-action') action=action}}
 {{/each}}
 <hr>
+{{!-- macros --}}
 {{#if macros.length}}
 {{#each macros as |macro|}}
 <div class="item macro" data-uuid="{{macro.uuid}}" data-filter-value="{{macro.name}}">
     <div class="image">
         <img src="{{macro.img}}">
-
     </div>
     <div class="details">
         <div class="name">{{macro.name}}</div>
