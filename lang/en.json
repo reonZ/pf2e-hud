@@ -509,6 +509,7 @@
         "leftClick": "[Left Click]",
         "rightClick": "[Right Click]",
         "actions": {
+            "crafting": "There is currently no way to reproduce crafting actions from a module.",
             "borrowArcaneSpell": "Borrow an Arcane Spell",
             "recall-knowledge": {
                 "result": "Result",

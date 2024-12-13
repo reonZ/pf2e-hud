@@ -3,7 +3,6 @@ import {
     ActionType,
     ActorPF2e,
     CharacterPF2e,
-    CharacterSheetData,
     CharacterStrike,
     CheckRoll,
     DamageRoll,
@@ -22,6 +21,7 @@ import {
     canUseStances,
     createSelfEffectMessage,
     elementDataset,
+    error,
     eventToRollMode,
     getActionGlyph,
     getActionIcon,
@@ -147,6 +147,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                     if (
                         !frequency &&
                         !ability.system.selfEffect &&
+                        !ability.crafting &&
                         (!actionableEnabled ||
                             !(await toolbelt!.api.actionable.getActionMacro(ability)))
                     )
@@ -736,10 +737,23 @@ function getActionFrequency(action: FeatPF2e | AbilityItemPF2e) {
     };
 }
 
+async function getActionMacro(item: ActionItem) {
+    const toolbelt = getActiveModule("pf2e-toolbelt");
+    return toolbelt?.getSetting("actionable.enabled")
+        ? toolbelt.api.actionable.getActionMacro(item)
+        : null;
+}
+
 async function useAction(event: Event, item: ActionItem) {
-    const frequency = item.frequency;
-    if (frequency?.max && frequency.value) {
-        item.update({ "system.frequency.value": frequency.value - 1 });
+    if (item.system.frequency && item.system.frequency.value > 0) {
+        const newValue = item.system.frequency.value - 1;
+        await item.update({ "system.frequency.value": newValue });
+    }
+
+    // TODO maybe we can remove that someday
+    if (item.crafting) {
+        error("actions.crafting");
+        return;
     }
 
     if (item.system.selfEffect) {
@@ -747,10 +761,7 @@ async function useAction(event: Event, item: ActionItem) {
         return;
     }
 
-    const toolbelt = getActiveModule("pf2e-toolbelt");
-    const macro = toolbelt?.getSetting("actionable.enabled")
-        ? await toolbelt.api.actionable.getActionMacro(item)
-        : undefined;
+    const macro = await getActionMacro(item);
 
     if (macro) {
         macro.execute({ actor: item.actor, item });
@@ -883,6 +894,7 @@ type ActionsContext = SidebarContext & {
 export {
     PF2eHudSidebarActions,
     getActionFrequency,
+    getActionMacro,
     getBlastData,
     getStrikeData,
     getStrikeImage,

@@ -56,6 +56,7 @@ import {
     ActionBlast,
     ActionStrike,
     getActionFrequency,
+    getActionMacro,
     getBlastData,
     getStrikeData,
     getStrikeImage,
@@ -519,9 +520,7 @@ class PersistentShortcuts extends PersistentPart<
 
     isUsableAction(item: FeatPF2e | AbilityItemPF2e) {
         return (
-            item.system.selfEffect ||
-            item.frequency?.max ||
-            foundry.utils.getProperty(item, "flags.pf2e-toolbelt.actionable.macro")
+            item.system.selfEffect || item.frequency?.max || item.crafting || getActionMacro(item)
         );
     }
 
