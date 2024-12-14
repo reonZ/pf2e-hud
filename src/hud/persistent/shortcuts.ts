@@ -1,6 +1,7 @@
 import {
     AbilityItemPF2e,
     ActionCost,
+    ActionItem,
     ActorPF2e,
     addListenerAll,
     arrayIncludes,
@@ -17,6 +18,7 @@ import {
     FeatPF2e,
     getActionAnnotation,
     getActionImg,
+    getActionMacro,
     getActiveModule,
     getFlag,
     getOwner,
@@ -45,24 +47,21 @@ import {
     StatisticRollParameters,
     StrikeData,
     toggleStance,
+    useAction,
     ValueAndMax,
     warn,
 } from "module-helpers";
 import { rollRecallKnowledge } from "../../actions/recall-knowledge";
 import { BaseActorContext } from "../base/actor";
 import { PersistentContext, PersistentHudActor, PersistentRenderOptions } from "../persistent";
-import { PF2eHudItemPopup } from "../popup/item";
 import {
     ActionBlast,
-    ActionItem,
     ActionStrike,
     getActionFrequency,
-    getActionMacro,
     getBlastData,
     getStrikeData,
     getStrikeImage,
     getStrikeVariant,
-    useAction,
     variantLabel,
 } from "../sidebar/actions";
 import { getAnnotationTooltip } from "../sidebar/base";
@@ -77,6 +76,7 @@ import {
     SkillVariantDataset,
 } from "../sidebar/skills";
 import { PersistentPart } from "./part";
+import { PF2eHudItemPopup } from "../popup/item";
 
 const ROMAN_RANKS = ["", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"] as const;
 
@@ -1559,15 +1559,11 @@ class PersistentShortcuts extends PersistentPart<
 
                 if (this.getSetting("confirmShortcut") && !(await confirmUse(item))) return;
 
-                if (!isUsable) {
-                    return item.toMessage(event);
+                if (shortcut.effectUuid && isValidStance(item)) {
+                    return toggleStance(actor as CharacterPF2e, shortcut.effectUuid, event.ctrlKey);
                 }
 
-                if (!shortcut.effectUuid || !isValidStance(item)) {
-                    return useAction(event, item);
-                }
-
-                return toggleStance(actor as CharacterPF2e, shortcut.effectUuid, event.ctrlKey);
+                return useAction(item, event);
             }
 
             case "spell": {

@@ -1,5 +1,6 @@
 import {
     AbilityItemPF2e,
+    ActionItem,
     ActionType,
     ActorPF2e,
     CharacterPF2e,
@@ -19,10 +20,7 @@ import {
     actorItems,
     addListenerAll,
     canUseStances,
-    createSelfEffectMessage,
     elementDataset,
-    error,
-    eventToRollMode,
     getActionGlyph,
     getActionIcon,
     getActionImg,
@@ -35,6 +33,7 @@ import {
     objectHasKey,
     toggleStance,
     tupleHasValue,
+    useAction,
 } from "module-helpers";
 import { getNpcStrikeImage } from "../../utils/npc-attacks";
 import { PF2eHudTextPopup } from "../popup/text";
@@ -502,7 +501,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
 
                 case "use-action": {
                     const item = await this.getItemFromElement<ActionItem>(button);
-                    return item?.isOfType("feat", "action") && useAction(event, item);
+                    return item?.isOfType("feat", "action") && useAction(item, event);
                 }
 
                 case "reset-action": {
@@ -737,41 +736,6 @@ function getActionFrequency(action: FeatPF2e | AbilityItemPF2e) {
     };
 }
 
-async function getActionMacro(item: ActionItem) {
-    const toolbelt = getActiveModule("pf2e-toolbelt");
-    return toolbelt?.getSetting("actionable.enabled")
-        ? toolbelt.api.actionable.getActionMacro(item)
-        : null;
-}
-
-async function useAction(event: Event, item: ActionItem) {
-    if (item.system.frequency && item.system.frequency.value > 0) {
-        const newValue = item.system.frequency.value - 1;
-        await item.update({ "system.frequency.value": newValue });
-    }
-
-    // TODO maybe we can remove that someday
-    if (item.crafting) {
-        error("actions.crafting");
-        return;
-    }
-
-    if (item.system.selfEffect) {
-        createSelfEffectMessage(item, eventToRollMode(event));
-        return;
-    }
-
-    const macro = await getActionMacro(item);
-
-    if (macro) {
-        macro.execute({ actor: item.actor, item });
-    } else {
-        item.toMessage(event);
-    }
-}
-
-type ActionItem = FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>;
-
 type RawStrikeData<T extends StrikeData = StrikeData> = Omit<
     T,
     "roll" | "attack" | "damage" | "critical"
@@ -894,12 +858,10 @@ type ActionsContext = SidebarContext & {
 export {
     PF2eHudSidebarActions,
     getActionFrequency,
-    getActionMacro,
     getBlastData,
     getStrikeData,
     getStrikeImage,
     getStrikeVariant,
-    useAction,
     variantLabel,
 };
-export type { ActionBlast, ActionItem, ActionStrike };
+export type { ActionBlast, ActionStrike };
