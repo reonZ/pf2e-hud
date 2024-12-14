@@ -39,7 +39,9 @@
         height: 1.4em;
     }
 
+    a[disabled],
     a.disabled {
+        --icon-color: var(--color-disabled);
         color: var(--color-disabled);
     }
 
