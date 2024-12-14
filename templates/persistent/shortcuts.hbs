@@ -164,9 +164,8 @@
 {{#if attack.subtitle}}
 <div class="subtitle app">{{attack.subtitle}}</div>
 {{/if}}
-{{!-- strike ready --}}
-{{#if attack.strike.ready}}
-{{#if @root.isCharacter}}
+{{!-- range --}}
+{{#if (and strike.quantity @root.isCharacter)}}
 <div class="range boxed">
     {{#if attack.variant}}
     {{> (@root.partial 'strike_category') attack.strike.altUsages.[0].category}}
@@ -177,6 +176,8 @@
     {{/if}}
 </div>
 {{/if}}
+{{!-- strike ready --}}
+{{#if attack.strike.ready}}
 {{> (@root.partial 'action_strike-row') attack.strike isShortcut=true}}
 {{#if attack.strike.altUsages}}
 {{> (@root.partial 'action_strike-row') attack.strike.altUsages.[0] isAltUsage=true}}
@@ -194,7 +195,10 @@
 </div>
 {{!-- end strike ready --}}
 {{/if}}
-{{#if attack.strike.ammunition}}
+{{!-- quantity --}}
+{{#if attack.strike.isAlchemical}}
+<div class="quantity boxed">{{attack.strike.quantity}}</div>
+{{else if attack.strike.ammunition}}
 <div class="quantity boxed">{{attack.strike.item.ammo.quantity}}</div>
 {{/if}}
 {{!-- end strike/blast --}}

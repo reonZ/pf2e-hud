@@ -612,10 +612,13 @@ async function getBlastData(
     return elementTrait ? blasts[0] : blasts;
 }
 
-function isAlchemicalStrike(
-    strike: StrikeData
-): strike is StrikeData & { item: WeaponPF2e<ActorPF2e> } {
-    return strike.item.isOfType("weapon") && strike.item.isAlchemical && strike.item.isTemporary;
+function isAlchemicalStrike(strike: StrikeData): strike is WeaponStrike {
+    return (
+        strike.item.isOfType("weapon") &&
+        strike.item.isAlchemical &&
+        strike.item.traits.has("bomb") &&
+        strike.item.isTemporary
+    );
 }
 
 async function getStrikeData(
@@ -637,20 +640,24 @@ async function getStrikeData(
             (strike) => strike.item.id === options.id && strike.slug === options.slug
         );
 
+        const otherAlchemicalStrike = (strike: WeaponStrike) => {
+            return actorStrikes.find((other) => {
+                return (
+                    other !== exactMatch &&
+                    other.slug === options.slug &&
+                    isAlchemicalStrike(other) &&
+                    other.item.quantity > 0
+                );
+            });
+        };
+
         if (exactMatch) {
             if (!isAlchemicalStrike(exactMatch) || exactMatch.item.quantity) {
                 return [exactMatch];
             }
 
             // we look for another alchemical strike with the same slug
-            const other = actorStrikes.find((strike) => {
-                return (
-                    strike !== exactMatch &&
-                    strike.slug === options.slug &&
-                    isAlchemicalStrike(strike) &&
-                    strike.item.quantity > 0
-                );
-            });
+            const other = otherAlchemicalStrike(exactMatch);
 
             if (other) return [other];
             else return [exactMatch];
@@ -661,6 +668,12 @@ async function getStrikeData(
         if (!match) return [];
 
         if (isAlchemicalStrike(match)) {
+            if (!match.item.quantity) {
+                // again we look for another alchemical strike with some quantity
+                const other = otherAlchemicalStrike(match);
+                if (other) return [other];
+            }
+
             return [match];
         }
 
@@ -692,6 +705,7 @@ async function getStrikeData(
                 visible: !isCharacter || (strike as CharacterStrike).visible,
                 description,
                 altUsages,
+                isAlchemical: isAlchemicalStrike(strike),
             };
         })
     );
@@ -807,6 +821,7 @@ type ActionStrike<T extends StrikeData = StrikeData> = Omit<ActionStrikeUsage<T>
     quantity?: number;
     description: string;
     altUsages?: Omit<RawStrikeData<StrikeData>, "altUsages">[];
+    isAlchemical: boolean;
 };
 
 type ActionBlast = ElementalBlastSheetConfig & {
@@ -899,6 +914,8 @@ type ActionsContext = SidebarContext & {
         options: { hash: { key: TKey; localize?: boolean } }
     ) => string;
 };
+
+type WeaponStrike = StrikeData & { item: WeaponPF2e<ActorPF2e> };
 
 export {
     PF2eHudSidebarActions,
