@@ -44,7 +44,8 @@
 <div class="row resource" data-section="{{resource.slug}}">
     <span>{{resource.label}}</span>
     <div class="numbers">
-        <input type="number" data-resource="{{resource.slug}}" value="{{resource.value}}">
+        <input type="number" data-resource="{{resource.slug}}" value="{{resource.value}}" min="0"
+            max="{{resource.max}}">
         <span class="separator">/</span>
         <span class="max">{{resource.max}}</span>
     </div>
