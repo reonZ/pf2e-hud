@@ -199,7 +199,8 @@
 {{#if attack.strike.isAlchemical}}
 <div class="quantity boxed">{{attack.strike.quantity}}</div>
 {{else if attack.strike.ammunition}}
-<div class="quantity boxed">{{attack.strike.item.ammo.quantity}}</div>
+<div class="quantity boxed">{{ifThen attack.strike.item.ammo.quantity
+    attack.strike.item.ammo.quantity '0'}}</div>
 {{/if}}
 {{!-- end strike/blast --}}
 {{/if}}
