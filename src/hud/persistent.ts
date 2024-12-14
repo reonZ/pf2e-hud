@@ -335,7 +335,10 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     get hotbarElement() {
-        return (this.#hotbar = document.getElementById("hotbar"));
+        if (!this.#hotbar) {
+            this.#hotbar = document.getElementById("hotbar");
+        }
+        return this.#hotbar;
     }
 
     get sidebars() {
