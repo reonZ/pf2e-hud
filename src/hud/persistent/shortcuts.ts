@@ -58,6 +58,7 @@ import {
     ActionBlast,
     ActionStrike,
     getActionFrequency,
+    getActionResource,
     getBlastData,
     getStrikeData,
     getStrikeImage,
@@ -791,11 +792,12 @@ class PersistentShortcuts extends PersistentPart<
             case "action": {
                 const item = actor.items.get(shortcutData.itemId);
                 if (item && !item.isOfType("action", "feat")) return throwError();
-
                 const name = item?.name ?? shortcutData.name;
-                const frequency = item ? getActionFrequency(item) : undefined;
+                const resource = item
+                    ? getActionResource(item) ?? getActionFrequency(item)
+                    : undefined;
                 const isStance = !!item && actor.isOfType("character") && isValidStance(item);
-                const disabled = !item || frequency?.value === 0;
+                const disabled = !item || resource?.value === 0;
 
                 const isActive = (() => {
                     const effectUUID = shortcutData.effectUuid;
@@ -814,6 +816,10 @@ class PersistentShortcuts extends PersistentPart<
 
                 const cannotUseStances = isStance && !canUseStances(actor);
 
+                const subtitle = cannotUseStances
+                    ? localize("sidebars.actions.outOfCombat")
+                    : undefined;
+
                 return returnShortcut({
                     ...shortcutData,
                     isDisabled: disabled,
@@ -821,13 +827,11 @@ class PersistentShortcuts extends PersistentPart<
                     item,
                     isActive,
                     img: item ? getActionImg(item, true) : shortcutData.img,
-                    name: frequency ? `${name} - ${frequency.label}` : name,
-                    frequency,
+                    name: resource ? `${name} - ${resource.label}` : name,
+                    resource,
                     hasEffect,
                     cost: this.getActionCost(item?.actionCost),
-                    subtitle: cannotUseStances
-                        ? localize("sidebars.actions.outOfCombat")
-                        : undefined,
+                    subtitle,
                 } satisfies ActionShortcut as T);
             }
 
@@ -1843,11 +1847,7 @@ type ActionShortcut = BaseShortCut<"action"> &
         cost: CostValue;
         isActive: boolean | null;
         hasEffect: boolean;
-        frequency: Maybe<{
-            max: number;
-            value: number;
-            label: string;
-        }>;
+        resource: Maybe<ValueAndMax>;
     };
 
 type ToggleShortcut = BaseShortCut<"toggle"> &

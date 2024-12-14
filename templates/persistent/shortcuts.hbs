@@ -114,11 +114,9 @@
 {{> check checked=action.isActive}}
 {{/if}}
 {{> cost cost=action.cost}}
-{{#if action.frequency}}
+{{#if action.resource}}
 <div class="quantity boxed">
-    <span>
-        {{action.frequency.value}}
-    </span>
+    <span>{{action.resource.value}}</span>
 </div>
 {{/if}}
 {{#if action.hasEffect}}
