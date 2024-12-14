@@ -16,6 +16,7 @@ import {
     R,
     StrikeData,
     TraitToggleViewData,
+    ValueAndMax,
     WeaponPF2e,
     actorItems,
     addListenerAll,
@@ -140,6 +141,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                 };
 
                 const frequency = getActionFrequency(ability);
+                const resource = getActionResource(ability);
 
                 const usage = await (async () => {
                     if (isExploration) return;
@@ -152,7 +154,10 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                     )
                         return;
 
-                    const disabled = frequency?.value === 0;
+                    const disabled = ability.crafting
+                        ? resource?.value === 0
+                        : frequency?.value === 0;
+
                     const label = (() => {
                         if (disabled) {
                             return MODULE.path("sidebars.actions.reset");
@@ -173,6 +178,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
                 sections[type].actions.push({
                     id,
                     usage,
+                    resource,
                     frequency,
                     isExploration,
                     name: ability.name,
@@ -723,8 +729,8 @@ function getStrikeVariant<T extends StrikeData>(
     return strikeVariant?.ready || !readyOnly ? (strikeVariant as T) : null;
 }
 
-function getActionFrequency(action: FeatPF2e | AbilityItemPF2e) {
-    const frequency = action.frequency;
+function getActionFrequency(item: FeatPF2e | AbilityItemPF2e) {
+    const frequency = item.frequency;
     if (!frequency?.max) return;
 
     const perLabel = game.i18n.localize(CONFIG.PF2E.frequencies[frequency.per]);
@@ -734,6 +740,20 @@ function getActionFrequency(action: FeatPF2e | AbilityItemPF2e) {
         value: frequency.value,
         label: `${frequency.max} / ${perLabel}`,
     };
+}
+
+function getActionResource(item: ActionItem) {
+    if (item.crafting) {
+        const resource = item.actor.getResource(item.crafting.resource);
+        if (!resource?.max) return;
+
+        return {
+            max: resource.max,
+            value: resource.value,
+            slug: resource.slug,
+            label: resource.label,
+        };
+    }
 }
 
 type RawStrikeData<T extends StrikeData = StrikeData> = Omit<
@@ -801,14 +821,9 @@ type ActionData = {
     isActive: boolean;
     toggles: TraitToggleViewData[];
     isExploration: boolean;
-    usage: Maybe<{
-        disabled: boolean;
-        label: string;
-    }>;
-    frequency: Maybe<{
-        value: number;
-        label: string;
-    }>;
+    usage: Maybe<{ disabled: boolean; label: string }>;
+    resource: Maybe<ValueAndMax & { label: string; slug: string }>;
+    frequency: Maybe<ValueAndMax & { label: string }>;
 };
 
 type ActionsContext = SidebarContext & {
@@ -858,6 +873,7 @@ type ActionsContext = SidebarContext & {
 export {
     PF2eHudSidebarActions,
     getActionFrequency,
+    getActionResource,
     getBlastData,
     getStrikeData,
     getStrikeImage,

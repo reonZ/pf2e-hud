@@ -221,20 +221,25 @@
         {{/each}}
         {{!-- if usages --}}
         {{#if action.usage}}
+        {{!-- resource field --}}
+        {{#if action.resource}}
+        <input type="number" class="small" value="{{action.resource.value}}"
+            data-tooltip="{{action.resource.label}}" disabled>
         {{!-- frequency field --}}
-        {{#if action.frequency}}
+        {{else if action.frequency}}
         <input type="number" class="small" data-item-id="{{action.id}}"
             data-item-property="system.frequency.value" value="{{action.frequency.value}}" min="0"
             max="{{action.frequency.max}}" data-tooltip="{{action.frequency.label}}">
         {{/if}}
         {{!-- reset btn --}}
-        {{#if action.usage.disabled}}
+        {{#if (and action.usage.disabled action.frequency)}}
         <a data-action="reset-action" data-tooltip="{{action.usage.label}}">
             <i class="fa-solid fa-rotate-left"></i>
         </a>
         {{!-- use btn --}}
         {{else}}
-        <a data-action="use-action" data-tooltip="{{action.usage.label}}">
+        <a data-action="use-action" data-tooltip="{{action.usage.label}}" {{disabled
+            action.usage.disabled}}>
             <i class="fa-solid fa-play"></i>
         </a>
         {{/if}}
