@@ -612,6 +612,12 @@ async function getBlastData(
     return elementTrait ? blasts[0] : blasts;
 }
 
+function isAlchemicalStrike(
+    strike: StrikeData
+): strike is StrikeData & { item: WeaponPF2e<ActorPF2e> } {
+    return strike.item.isOfType("weapon") && strike.item.isAlchemical && strike.item.isTemporary;
+}
+
 async function getStrikeData(
     actor: ActorPF2e,
     options: { id: string; slug: string }
@@ -628,13 +634,37 @@ async function getStrikeData(
         if (!options) return actorStrikes;
 
         const exactMatch = actorStrikes.find(
-            (s) => s.item.id === options.id && s.slug === options.slug
+            (strike) => strike.item.id === options.id && strike.slug === options.slug
         );
-        if (exactMatch) return [exactMatch];
 
+        if (exactMatch) {
+            if (!isAlchemicalStrike(exactMatch) || exactMatch.item.quantity) {
+                return [exactMatch];
+            }
+
+            // we look for another alchemical strike with the same slug
+            const other = actorStrikes.find((strike) => {
+                return (
+                    strike !== exactMatch &&
+                    strike.slug === options.slug &&
+                    isAlchemicalStrike(strike) &&
+                    strike.item.quantity > 0
+                );
+            });
+
+            if (other) return [other];
+            else return [exactMatch];
+        }
+
+        // we look for another strike with the same slug
         const match = actorStrikes.find((s) => s.slug === options.slug);
         if (!match) return [];
 
+        if (isAlchemicalStrike(match)) {
+            return [match];
+        }
+
+        // if the embedded item is different from the strike item then it is a virtual strike
         const realItem = actor.items.get(match.item.id);
         return realItem && realItem.type !== match.item.type ? [match] : [];
     })();
