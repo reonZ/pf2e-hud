@@ -1678,7 +1678,7 @@ class PersistentShortcuts extends PersistentPart<
                     return;
                 }
 
-                return useAction(event, action);
+                return useAction(action, event);
             }
         }
     }
