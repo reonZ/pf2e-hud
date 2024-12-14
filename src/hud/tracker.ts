@@ -5,6 +5,7 @@ import {
     EffectsPanel,
     EncounterPF2e,
     EncounterTrackerPF2e,
+    ErrorPF2e,
     R,
     RolledCombatant,
     TokenPF2e,
@@ -22,7 +23,9 @@ import {
     localize,
     render,
     rollInitiative,
+    saveNewOrder,
     setFlag,
+    setInitiativeFromDrop,
     templateLocalize,
     unsetFlag,
 } from "module-helpers";
@@ -555,8 +558,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
 
     #onSortableUpdate(event: SortableEvent) {
         const tracker = this.tracker;
-        // @ts-expect-error
-        tracker.validateDrop(event);
+        this.#validateDrop(event);
 
         const encounter = tracker.viewed;
         if (!encounter) return;
@@ -579,10 +581,20 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
             )
         );
 
-        return this.#newInitiativeOrder(newOrder, dropped);
+        this.#newInitiativeOrder(newOrder, dropped);
     }
 
-    #newInitiativeOrder(
+    #validateDrop(event: SortableEvent) {
+        const { combat } = game;
+        if (!combat) throw ErrorPF2e("Unexpected error retrieving combat");
+
+        const { oldIndex, newIndex } = event;
+        if (!(typeof oldIndex === "number" && typeof newIndex === "number")) {
+            throw ErrorPF2e("Unexpected error retrieving new index");
+        }
+    }
+
+    async #newInitiativeOrder(
         newOrder: RolledCombatant<EncounterPF2e>[],
         combatant: RolledCombatant<EncounterPF2e>
     ) {
@@ -598,10 +610,8 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
 
         this.#cancelScroll = true;
 
-        // @ts-expect-error
-        tracker.setInitiativeFromDrop(newOrder, combatant);
-        // @ts-expect-error
-        return tracker.saveNewOrder(newOrder);
+        setInitiativeFromDrop(encounter, newOrder, combatant);
+        await saveNewOrder(encounter, newOrder);
     }
 
     #onSortableEnd(event: SortableEvent) {
