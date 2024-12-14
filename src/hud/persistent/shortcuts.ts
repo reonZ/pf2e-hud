@@ -54,6 +54,7 @@ import { PersistentContext, PersistentHudActor, PersistentRenderOptions } from "
 import { PF2eHudItemPopup } from "../popup/item";
 import {
     ActionBlast,
+    ActionItem,
     ActionStrike,
     getActionFrequency,
     getActionMacro,
@@ -192,7 +193,7 @@ class PersistentShortcuts extends PersistentPart<
                 const shortcut: Shortcut | EmptyShortcut = isAttack
                     ? { index: String(index), groupIndex: String(groupIndex), isEmpty: true }
                     : autoFill
-                    ? await this.#fillShortcut(groupIndex, index, cached)
+                    ? await this.#fillShortcut(String(groupIndex), String(index), cached)
                     : await this.#createShortcutFromSet(groupIndex, index, cached, shortcutsSet);
 
                 shortcuts.push(shortcut);
@@ -312,7 +313,7 @@ class PersistentShortcuts extends PersistentPart<
                           groupIndex: String(groupIndex),
                           isEmpty: true,
                       }
-                    : await this.#fillShortcut(groupIndex, index, cached);
+                    : await this.#fillShortcut(String(groupIndex), String(index), cached);
 
                 if (index === 0 && !shortcut.isEmpty && shortcut.type === "attack") {
                     isAttack = true;
@@ -518,7 +519,7 @@ class PersistentShortcuts extends PersistentPart<
         return flag?.map((x) => x || undefined) ?? [];
     }
 
-    isUsableAction(item: FeatPF2e | AbilityItemPF2e) {
+    isUsableAction(item: ActionItem) {
         return (
             item.system.selfEffect || item.frequency?.max || item.crafting || getActionMacro(item)
         );
@@ -543,13 +544,10 @@ class PersistentShortcuts extends PersistentPart<
     }
 
     async #fillShortcut(
-        groupIndex: Maybe<number | string>,
-        index: Maybe<number | string>,
+        groupIndex: string,
+        index: string,
         cached: ShortcutCache
     ): Promise<Shortcut | EmptyShortcut> {
-        index = String(index);
-        groupIndex = String(groupIndex);
-
         const emptyData: EmptyShortcut = {
             index,
             groupIndex,

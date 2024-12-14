@@ -2,7 +2,6 @@ import {
     ActorPF2e,
     addListenerAll,
     AfflictionPF2e,
-    CharacterPF2e,
     ConditionPF2e,
     CreaturePF2e,
     EffectPF2e,
@@ -12,7 +11,6 @@ import {
     htmlClosest,
     isInstanceOf,
     localize,
-    NPCPF2e,
     PersistentDamageDialog,
     R,
 } from "module-helpers";

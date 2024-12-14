@@ -21,7 +21,7 @@ function migrateGM(userSource: UserSourcePF2e) {
 
     const resources = R.pipe(
         worldResources,
-        R.filter((resource) => R.isPlainObject(resource)),
+        R.filter((resource): resource is Record<string, any> => R.isPlainObject(resource)),
         R.map((resource) => {
             delete resource.world;
 
@@ -53,7 +53,7 @@ function migratePlayer(userSource: UserSourcePF2e) {
 
     resourcesFlag.userResources = R.pipe(
         foundry.utils.deepClone(resourcesFlag.userResources),
-        R.filter((resource) => R.isPlainObject(resource)),
+        R.filter((resource): resource is Record<string, any> => R.isPlainObject(resource)),
         R.map((resource) => {
             delete resource.world;
             resource.shared = false;

@@ -902,4 +902,4 @@ export {
     useAction,
     variantLabel,
 };
-export type { ActionBlast, ActionStrike };
+export type { ActionBlast, ActionItem, ActionStrike };

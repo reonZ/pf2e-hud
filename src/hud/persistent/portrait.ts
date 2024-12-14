@@ -1,9 +1,9 @@
 import { addListener, getFlag, htmlQuery } from "module-helpers";
-import { PersistentContext, PersistentRenderOptions, PF2eHudPersistent } from "../persistent";
-import { getStatsHeaderExtras, StatsHeaderExtras } from "../shared/advanced";
-import { getStatsHeader, StatsHeader } from "../shared/base";
-import { addStatsHeaderListeners } from "../shared/listeners";
 import { AvatarData, editAvatar } from "../../utils/avatar";
+import { PersistentContext, PersistentRenderOptions } from "../persistent";
+import { StatsHeaderExtras, getStatsHeaderExtras } from "../shared/advanced";
+import { StatsHeader, getStatsHeader } from "../shared/base";
+import { addStatsHeaderListeners } from "../shared/listeners";
 import { PersistentPart } from "./part";
 
 class PersistentPortrait extends PersistentPart<PortraitContext | PersistentContext> {

@@ -1,5 +1,5 @@
 import { addListener, addListenerAll, localize } from "module-helpers";
-import { PersistentContext, PersistentRenderOptions, PF2eHudPersistent } from "../persistent";
+import { PersistentContext, PersistentRenderOptions } from "../persistent";
 import { PersistentPart } from "./part";
 
 class PersistentMenu extends PersistentPart<MenuContext> {

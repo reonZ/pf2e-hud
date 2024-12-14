@@ -572,7 +572,7 @@ const SF2E_VARIANTS = R.pipe(
     R.flatMap((rawSkill) =>
         R.pipe(
             rawSkill.actions,
-            R.filter((rawAction) => typeof rawAction === "object"),
+            R.filter((rawAction): rawAction is RawSkillAction => typeof rawAction === "object"),
             R.map((rawAction) => rawAction.actionId)
         )
     )
