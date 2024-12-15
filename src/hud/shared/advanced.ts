@@ -225,6 +225,7 @@ function getAdvancedStats(actor: ActorPF2e, hud: AdvancedHUD): StatsAdvanced {
         dying: isCharacter ? actor.attributes.dying : undefined,
         wounded: isCharacter ? actor.attributes.wounded : undefined,
         heroPoints: isCharacter ? actor.heroPoints : undefined,
+        mythicPoints: isCharacter ? actor.system.resources.mythicPoints : undefined,
         statistics: getStatistics(actor),
         otherSpeeds: otherSpeeds || undefined,
     };
@@ -271,6 +272,7 @@ type StatsAdvanced = {
     dying: ValueAndMax | undefined;
     wounded: ValueAndMax | undefined;
     heroPoints: ValueAndMax | undefined;
+    mythicPoints: ValueAndMax | undefined;
     mainSpeed: StatsSpeed | undefined;
     statistics: StatsStatistic[];
     infoSections: InfoSection[];

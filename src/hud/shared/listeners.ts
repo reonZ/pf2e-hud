@@ -245,14 +245,17 @@ function addStatsAdvancedListeners(actor: ActorPF2e, html: HTMLElement) {
             const direction = event.button === 0 ? 1 : -1;
 
             switch (action) {
+                case "mythic":
                 case "hero": {
-                    const { max, value } = (actor as CharacterPF2e).heroPoints;
+                    const key = action === "mythic" ? "mythicPoints" : "heroPoints";
+                    const { max, value } = (actor as CharacterPF2e).system.resources[key];
                     const newValue = Math.clamp(value + direction, 0, max);
                     if (newValue !== value) {
-                        actor.update({ "system.resources.heroPoints.value": newValue });
+                        actor.update({ [`system.resources.${key}.value`]: newValue });
                     }
                     break;
                 }
+
                 case "dying":
                 case "wounded": {
                     const max = (actor as CharacterPF2e).system.attributes[action].max;
@@ -272,6 +275,6 @@ type StatsHeaderActionEvent = "take-cover" | "raise-shield" | "show-notes" | "us
 
 type StatsAdvancedActionEvent = "roll-statistic" | "change-speed";
 
-type StatsAdvancedSliderEvent = "hero" | "wounded" | "dying";
+type StatsAdvancedSliderEvent = "hero" | "wounded" | "dying" | "mythic";
 
 export { addEnterKeyListeners, addStatsAdvancedListeners, addStatsHeaderListeners };

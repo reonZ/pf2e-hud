@@ -2,7 +2,6 @@ import {
     ActorPF2e,
     CharacterAttributes,
     CreatureSpeeds,
-    LabeledSpeed,
     MovementType,
     R,
     canObserveActor,
