@@ -69,12 +69,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             : undefined;
 
         const heroActions = (() => {
-            if (
-                !isCharacter ||
-                !actor.heroPoints.max ||
-                !toolbelt?.getSetting("heroActions.enabled")
-            )
-                return;
+            if (!isCharacter || !toolbelt?.getSetting("heroActions.enabled")) return;
 
             const api = toolbelt.api.heroActions;
             const actions = api.getHeroActions(actor);
