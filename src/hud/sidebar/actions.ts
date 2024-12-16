@@ -26,6 +26,7 @@ import {
     getActionIcon,
     getActionImg,
     getActiveModule,
+    getMythicOrHeroPoints,
     getStances,
     htmlClosest,
     htmlQuery,
@@ -74,7 +75,7 @@ class PF2eHudSidebarActions extends PF2eHudSidebar {
             const api = toolbelt.api.heroActions;
             const actions = api.getHeroActions(actor);
             const usesCount = api.usesCountVariant();
-            const heroPoints = actor.heroPoints.value;
+            const heroPoints = getMythicOrHeroPoints(actor).value;
             const diff = heroPoints - actions.length;
             const mustDiscard = !usesCount && diff < 0;
             const mustDraw = !usesCount && diff > 0;
