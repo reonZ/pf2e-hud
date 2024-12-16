@@ -30,7 +30,7 @@
     <div class="right controls">
         {{> 'increments' sign="+"}}
     </div>
-    {{#unless short}}
+    {{#unless (or short disabledForPlayers)}}
     <a class="encrypt{{#if encrypt.encrypted}} encrypted{{/if}}" data-action="toggle-encrypted"
         data-tooltip="{{encrypt.tooltip}}">
         {{#if encrypt.encrypted}}

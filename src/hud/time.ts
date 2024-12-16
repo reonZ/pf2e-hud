@@ -40,6 +40,10 @@ class PF2eHudTime extends PF2eHudDirectory<TimeSettings, TimeRenderOptions> {
         return game.pf2e.worldClock.worldTime;
     }
 
+    get disabledForPlayers() {
+        return !game.settings.get("pf2e", "worldClock.playersCanView");
+    }
+
     getSettings() {
         const parentSettings = super.getSettings();
         const enabledSetting = parentSettings.find((setting) => setting.key === "enabled");
@@ -72,7 +76,7 @@ class PF2eHudTime extends PF2eHudDirectory<TimeSettings, TimeRenderOptions> {
     }
 
     _onEnable(enabled = this.enabled) {
-        if (!game.user.isGM && !game.settings.get("pf2e", "worldClock.playersCanView")) {
+        if (!game.user.isGM && this.disabledForPlayers) {
             enabled = false;
         }
 
@@ -105,6 +109,7 @@ class PF2eHudTime extends PF2eHudDirectory<TimeSettings, TimeRenderOptions> {
             time: data.time,
             short,
             slider,
+            disabledForPlayers: isGM && this.disabledForPlayers,
             encrypt: {
                 encrypted,
                 tooltip: localize("time.encrypt", encrypted ? "encrypted" : "clear"),
@@ -185,6 +190,7 @@ type TimeContext = {
     date: string;
     time: string;
     slider: number | undefined;
+    disabledForPlayers: boolean;
     encrypt: {
         encrypted: boolean;
         tooltip: string;
