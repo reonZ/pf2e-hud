@@ -85,9 +85,11 @@ class PF2eHudResources extends PF2eHudBase<
 
     getSettings() {
         const parentSettings = super.getSettings();
+        const enabledSetting = parentSettings.find((x) => x.key === "enabled");
 
-        const enabledSetting = parentSettings.find((x) => x.key === "enabled")!;
-        enabledSetting.requiresReload = true;
+        if (enabledSetting) {
+            enabledSetting.requiresReload = true;
+        }
 
         return parentSettings.concat([
             {

@@ -7,6 +7,7 @@ import {
     getTimeWithSeconds,
     htmlQuery,
     localize,
+    settingPath,
 } from "module-helpers";
 import { BaseRenderOptions, BaseSettings } from "./base/base";
 import { PF2eHudDirectory } from "./base/directory";
@@ -40,7 +41,14 @@ class PF2eHudTime extends PF2eHudDirectory<TimeSettings, TimeRenderOptions> {
     }
 
     getSettings() {
-        return super.getSettings().concat([
+        const parentSettings = super.getSettings();
+        const enabledSetting = parentSettings.find((setting) => setting.key === "enabled");
+
+        if (enabledSetting) {
+            enabledSetting.hint = settingPath("time.enabled.hint");
+        }
+
+        return parentSettings.concat([
             {
                 key: "short",
                 type: Boolean,
@@ -64,6 +72,10 @@ class PF2eHudTime extends PF2eHudDirectory<TimeSettings, TimeRenderOptions> {
     }
 
     _onEnable(enabled = this.enabled) {
+        if (!game.user.isGM && !game.settings.get("pf2e", "worldClock.playersCanView")) {
+            enabled = false;
+        }
+
         this.#worldTimeHook.toggle(enabled);
         super._onEnable(enabled);
     }

@@ -305,6 +305,9 @@
             },
             "time": {
                 "title": "Time Tracker",
+                "enabled": {
+                    "hint": "Enables this HUD element on your client. This is overriden when the 'Player Access' system worldclock setting is disabled."
+                },
                 "short": {
                     "name": "Short Date & Time",
                     "hint": "When enabled, a single line with a shortened version of the date & time will be displayed. You can click on the time to toggle between both modes."
