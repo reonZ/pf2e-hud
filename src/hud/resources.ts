@@ -2,6 +2,7 @@ import {
     addListenerAll,
     ApplicationConfiguration,
     ApplicationPosition,
+    createHook,
     createHTMLElement,
     elementDataset,
     getFlag,
@@ -54,6 +55,8 @@ class PF2eHudResources extends PF2eHudBase<
     ResourcesUserSettings,
     ResourcesRenderOptions
 > {
+    #userConnectedHook = createHook("userConnected", () => this.render());
+
     #initialized: boolean = false;
 
     static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
@@ -105,9 +108,6 @@ class PF2eHudResources extends PF2eHudBase<
 
         Hooks.on("updateUser", this.#onUpdateUser.bind(this));
         Hooks.on("getSceneControlButtons", this.#onGetSceneControlButtons.bind(this));
-        Hooks.on("userConnected", () => {
-            this.render();
-        });
 
         if (this.getUserSetting("showTracker")) {
             this.render(true);
@@ -147,9 +147,16 @@ class PF2eHudResources extends PF2eHudBase<
 
     _onFirstRender(context: ResourcesContext, options: ResourcesRenderOptions) {
         const { left, top } = this.getSetting("position");
+
         options.position ??= {} as ApplicationPosition;
         options.position.left = left;
         options.position.top = top;
+
+        this.#userConnectedHook.activate();
+    }
+
+    _onClose() {
+        this.#userConnectedHook.disable();
     }
 
     async _renderFrame(options: ResourcesRenderOptions) {
