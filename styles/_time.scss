@@ -38,22 +38,6 @@
         .time {
             padding-inline: 0.5rem;
         }
-
-        .encrypt {
-            position: absolute;
-            right: -0.2rem;
-
-            &:not(.encrypted) {
-                display: none;
-            }
-        }
-
-        &.encrypted {
-            .time {
-                background: #ffffff1c;
-                outline: 1px dotted rgb(205 205 205 / 50%);
-            }
-        }
     }
 
     &.is-gm {
@@ -76,12 +60,6 @@
         .details {
             .time {
                 margin-top: -2px;
-            }
-        }
-
-        &:hover {
-            .encrypt {
-                display: block;
             }
         }
     }

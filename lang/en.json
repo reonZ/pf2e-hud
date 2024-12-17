@@ -447,12 +447,6 @@
             "step2": "[Shift-Click]",
             "step3": "[Control-Click]"
         },
-        "time": {
-            "encrypt": {
-                "encrypted": "Data is encrypted for players",
-                "clear": "Data is readable by players"
-            }
-        },
         "sidebars": {
             "actions": {
                 "title": "Actions",
