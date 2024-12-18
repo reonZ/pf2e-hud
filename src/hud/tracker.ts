@@ -291,7 +291,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
                 index: i,
                 id: combatant.id,
                 name: isGM || playersCanSeeName ? combatant.name : unknown,
-                initiative: String(initiative),
+                initiative: initiative ? Math.floor(initiative) : undefined,
                 isDelayed: getFlag(combatant, "delayed") ?? false,
                 hasRolled,
                 texture,
@@ -810,7 +810,7 @@ type TrackerTurn = {
     isOwner: boolean;
     hidden: boolean;
     defeated: boolean;
-    initiative: string;
+    initiative: number | undefined;
     isDelayed: boolean;
     hasRolled: boolean;
     health: TrackerHealth | undefined;
