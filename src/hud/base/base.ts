@@ -159,7 +159,7 @@ abstract class PF2eHudBase<
     }
 
     getSelectedHealthStatusEntry(health: HealthData, statuses?: string[] | null) {
-        statuses = statuses === undefined ? this.getHealthStatusEntries() : statuses;
+        statuses = statuses === undefined ? this.getHealthStatusEntries() : statuses?.slice();
         if (!statuses) return;
 
         let { value, max, ratio } = health.total;
