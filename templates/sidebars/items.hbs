@@ -82,7 +82,7 @@
             <div class="item-controls">
                 {{#if (and canBeEquipped isInvestable)}}
                 <a class="toggle-invested{{#if item.isInvested}} active{{/if}}"
-                    data-action="toggle-invested" data-tooltip="PF2E.ui.equipmentInvested">
+                    data-action="toggle-invested" data-tooltip="{{@root.invested}}">
                     <i class="fa-solid fa-gem fa-fw"></i>
                 </a>
                 {{/if}}

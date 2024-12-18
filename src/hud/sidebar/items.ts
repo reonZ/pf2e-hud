@@ -57,6 +57,10 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
             );
         })();
 
+        const investedToggle = game.i18n.localize("PF2E.ui.equipmentInvested");
+        const investedLabel = game.i18n.localize("PF2E.InvestedLabel");
+        const invested = `${investedToggle}<br>${investedLabel} - ${inventory.invested?.value} / ${inventory.invested?.max}`;
+
         const data: ItemContext = {
             ...parentData,
             ...inventoryData,
@@ -64,6 +68,7 @@ class PF2eHudSidebarItems extends PF2eHudSidebar {
             isNPC: actor.isOfType("npc"),
             isCharacter: actor.isOfType("character"),
             canIdentify,
+            invested,
             wealth: {
                 coins: inventory.coins.goldValue,
                 total: inventory.totalWealth.goldValue,
@@ -243,11 +248,12 @@ type ItemsActionEvent =
     | "use-item";
 
 type ItemContext = SidebarContext &
-    SheetInventory & {
+    Omit<SheetInventory, "invested"> & {
         isGM: boolean;
         isNPC: boolean;
         isCharacter: boolean;
         canIdentify: boolean;
+        invested: string;
         wealth: {
             coins: number;
             total: number;
