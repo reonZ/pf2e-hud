@@ -1,3 +1,31 @@
+#
+
+-   this is a system `6.8.0` release
+-   update actions and action shortcuts to handle latest system changes
+    -   notably the crafting formula picker menu
+-   add support for `Mythic Points` (show in place of the `Hero Points`)
+-   `Combat Tracker`:
+    -   fix drag & drop not working now that the system methods are private
+    -   fix health status tooltip not always showing
+    -   fix initiative sometimes having decimals
+-   `Persistent Shortcuts`:
+    -   add counter to shortcut actions with a resource
+    -   strike related to `Temporary` `Alchemical` `Bomb` items are now "smart"
+        -   if the item bound to the shortcut isn't found or its quantity is `0`, the module will look for another alchemical bomb of the same type and use in its place if any exist
+    -   strike's range & quantity are now displayed even if the strike weapon is sheathed
+    -   always display the ammunition counter even if none are currently selected
+-   `Roll Panel`:
+    -   change the panel borders style to fix the horrible groove render when using firefox
+-   `Sidebars`:
+    -   add special resources to `extras` sidebar
+    -   add counter to actions with a resource
+        -   the counter isn't editable by design, go in the extras sidebar for that
+    -   now display the invested count in the tooltip of the `Toggle Invested` button
+    -   fix disabled `use` buttons not being greyed out
+-   `Time Tracker`:
+    -   Now override the `Enabled` settings for players if the system worldclock `Player Access` is disabled
+    -   remove the `Encrypt` feature
+
 # 1.25.0
 
 -   if you use the `PF2e Dailies` module, make sure to update it to version `3.15.0`

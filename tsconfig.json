@@ -7,6 +7,8 @@
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "noUnusedParameters": false,
+        "noUnusedLocals": true,
         "noImplicitAny": true,
         "noImplicitThis": true,
         "noFallthroughCasesInSwitch": true,
