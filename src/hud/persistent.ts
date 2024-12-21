@@ -78,8 +78,6 @@ class PF2eHudPersistent extends makeAdvancedHUD(
         shortcuts: null,
     };
 
-    #hotbar: HTMLElement | null = null;
-
     #parts: Parts = {
         main: new PersistentMain(this),
         menu: new PersistentMenu(this),
@@ -335,10 +333,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
     }
 
     get hotbarElement() {
-        if (!this.#hotbar) {
-            this.#hotbar = document.getElementById("hotbar");
-        }
-        return this.#hotbar;
+        return document.getElementById("hotbar");
     }
 
     get sidebars() {
