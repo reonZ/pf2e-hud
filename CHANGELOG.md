@@ -1,3 +1,7 @@
+# 1.26.1
+
+-   fix hotbar navigation being unresponsive after any persistent HUD "update"
+
 # 1.26.0
 
 -   this is a system `6.8.0` release
