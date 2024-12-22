@@ -23,33 +23,6 @@ import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
 
 const DEFAULT_POSITION = { left: 150, top: 100 };
 
-function createStepTooltip(resource: Resource, direction: "increase" | "decrease") {
-    const steps = R.pipe(
-        ["step1", "step2", "step3"] as const,
-        R.map((step) => {
-            const value = resource[step];
-            if (typeof value !== "number" || value <= 0) return;
-
-            const click = localize("resources", step);
-            return localize("resources", direction, { click, value });
-        }),
-        R.filter(R.isTruthy)
-    );
-
-    if (steps.length === 0) {
-        steps.push(
-            localize("resources", direction, {
-                click: localize("resources.step1"),
-                value: 1,
-            })
-        );
-    }
-
-    steps.unshift(localize("resources.edit"));
-
-    return steps.join("<br>");
-}
-
 class PF2eHudResources extends PF2eHudBase<
     ResourcesSettings,
     ResourcesUserSettings,
@@ -346,6 +319,7 @@ class PF2eHudResources extends PF2eHudBase<
     #onUpdateUser(user: UserPF2e, updates: Partial<UserSourcePF2e>) {
         if (user !== game.user) {
             this.render();
+            return;
         }
 
         const showTracker = getFlagProperty<boolean>(updates, "resources.showTracker");
@@ -390,6 +364,33 @@ class PF2eHudResources extends PF2eHudBase<
             this.editResource(resourceId);
         });
     }
+}
+
+function createStepTooltip(resource: Resource, direction: "increase" | "decrease") {
+    const steps = R.pipe(
+        ["step1", "step2", "step3"] as const,
+        R.map((step) => {
+            const value = resource[step];
+            if (typeof value !== "number" || value <= 0) return;
+
+            const click = localize("resources", step);
+            return localize("resources", direction, { click, value });
+        }),
+        R.filter(R.isTruthy)
+    );
+
+    if (steps.length === 0) {
+        steps.push(
+            localize("resources", direction, {
+                click: localize("resources.step1"),
+                value: 1,
+            })
+        );
+    }
+
+    steps.unshift(localize("resources.edit"));
+
+    return steps.join("<br>");
 }
 
 type RecourcesActionEvent = "add-resource" | "decrease-resource" | "increase-resource";
