@@ -574,12 +574,15 @@ class PersistentShortcuts extends PersistentPart<
         ] as const;
         for (const [type, setting] of actions) {
             cached.fillActions ??= {};
-            cached.fillActions[type] ??= { setting: this.getSetting(setting), index: 0 };
-            if (!cached.fillActions[type]!.setting) continue;
+            const fillAction = (cached.fillActions[type] ??= {
+                setting: this.getSetting(setting),
+                index: 0,
+            });
+            if (!fillAction.setting) continue;
 
             const action = actor.itemTypes.action
                 .filter((x) => x.system.actionType.value === type)
-                .at(cached.fillActions[type]!.index++);
+                .at(fillAction.index++);
 
             if (action) {
                 const shortcutData: ActionShortcutData = {
@@ -611,7 +614,9 @@ class PersistentShortcuts extends PersistentPart<
 
             if (spellGroup) {
                 const slotIndex = cached.spells.index++;
-                const active = spellGroup.active[slotIndex]!;
+                const active = spellGroup.active[slotIndex];
+                const spell = active?.spell;
+                if (!spell) return emptyData;
 
                 const shortcutData: SpellShortcutData = {
                     type: "spell",
@@ -620,12 +625,10 @@ class PersistentShortcuts extends PersistentPart<
                     itemType: "spell",
                     entryId: entryData.id,
                     groupId: spellGroup.id,
-                    itemId: active.spell.id,
+                    itemId: spell.id,
                     slotId: entryData.isPrepared ? slotIndex : undefined,
                     castRank:
-                        active.castRank ??
-                        active.spell.system.location.heightenedLevel ??
-                        active.spell.rank,
+                        active.castRank ?? spell.system.location.heightenedLevel ?? spell.rank,
                 };
 
                 return returnShortcut(shortcutData);
