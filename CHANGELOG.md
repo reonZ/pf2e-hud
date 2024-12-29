@@ -1,3 +1,8 @@
+# 1.26.3
+
+-   `Persistent Shortcuts`:
+    -   fix NPC empty spell slots breaking the persistent HUD during auto-fill
+
 # 1.26.2
 
 -   `Resources Tracker`:
