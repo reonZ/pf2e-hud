@@ -279,6 +279,7 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                 key: "lockShortcuts",
                 type: Boolean,
                 default: false,
+                scope: "client",
                 config: false,
                 onChange: (value) => {
                     if (!this.rendered) return;
