@@ -39,6 +39,7 @@ class PersistentMain extends PersistentPart<MainContext | PersistentContext> {
             ...getAdvancedStats(actor, this),
             sidebars: getSidebars(actor, this.sidebar?.key),
             showEffects: options.showEffects,
+            shortcutsLocked: this.getSetting("lockShortcuts"),
             shortcutsSets: {
                 value: 0,
                 max: this.shortcuts.SHORTCUTS_LIST_LIMIT,
@@ -128,8 +129,6 @@ class PersistentMain extends PersistentPart<MainContext | PersistentContext> {
         );
 
         addListenerAll(html, ".stretch .shortcut-menus [data-action]", async (event, el) => {
-            const action = el.dataset.action as ShortcutMenusAction;
-
             const confirmAction = (key: string) => {
                 const name = actor.name;
                 const title = localize(key, "title");
@@ -140,7 +139,7 @@ class PersistentMain extends PersistentPart<MainContext | PersistentContext> {
                 });
             };
 
-            switch (action) {
+            switch (el.dataset.action as ShortcutMenusAction) {
                 case "delete-shortcuts": {
                     if (await confirmAction("delete")) {
                         await this.shortcuts.deleteShortcuts();
@@ -161,12 +160,21 @@ class PersistentMain extends PersistentPart<MainContext | PersistentContext> {
                     }
                     break;
                 }
+
+                case "toggle-shortcuts-lock": {
+                    this.setSetting("lockShortcuts", !this.getSetting("lockShortcuts"));
+                    break;
+                }
             }
         });
     }
 }
 
-type ShortcutMenusAction = "delete-shortcuts" | "fill-shortcuts" | "copy-owner-shortcuts";
+type ShortcutMenusAction =
+    | "delete-shortcuts"
+    | "fill-shortcuts"
+    | "copy-owner-shortcuts"
+    | "toggle-shortcuts-lock";
 
 type MainContext = PersistentContext &
     StatsAdvanced & {
@@ -174,6 +182,7 @@ type MainContext = PersistentContext &
         showEffects: boolean;
         alliance?: ThreeStep;
         shortcutsSets: ValueAndMax & { min: number };
+        shortcutsLocked: boolean;
     };
 
 export { PersistentMain };

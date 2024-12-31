@@ -250,15 +250,15 @@
                     width: fit-content;
                 }
 
+                hr {
+                    height: calc(100% - 1px);
+                    border: 0;
+                    margin: 0;
+                    border-right: 1px solid var(--hr-color);
+                }
+
                 .sidebars {
                     min-width: 11.708em;
-
-                    hr {
-                        height: calc(100% - 1px);
-                        border: 0;
-                        margin: 0;
-                        border-right: 1px solid var(--hr-color);
-                    }
 
                     .effects-toggle {
                         display: grid;
@@ -279,6 +279,20 @@
                         &.disabled {
                             i {
                                 color: var(--color-disabled);
+                            }
+                        }
+                    }
+
+                    .lock {
+                        &.locked {
+                            .open {
+                                display: none;
+                            }
+                        }
+
+                        &:not(.locked) {
+                            .locked {
+                                display: none;
                             }
                         }
                     }

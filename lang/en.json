@@ -367,6 +367,9 @@
                     "wrongActor": "You can only create shortcuts from the same persistent actor.",
                     "wrongType": "You cannot create a shortcut of that type.",
                     "wrongOrigin": "Only spells from a HUD sidebar can be turned into shortcuts.",
+                    "lock": "Lock Shortcuts",
+                    "unlock": "Unlock Shortcuts",
+                    "locked": "Shortcuts are locked.",
                     "confirm": {
                         "title": "Use - {name}",
                         "message": "Are you sure you want to use <strong>{name}</strong>?"

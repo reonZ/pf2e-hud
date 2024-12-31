@@ -275,6 +275,20 @@ class PF2eHudPersistent extends makeAdvancedHUD(
                     this.element?.classList.toggle("cleaned", value);
                 },
             },
+            {
+                key: "lockShortcuts",
+                type: Boolean,
+                default: false,
+                config: false,
+                onChange: (value) => {
+                    if (!this.rendered) return;
+
+                    htmlQuery(this.mainElement, ".top .shortcut-menus .lock")?.classList.toggle(
+                        "locked",
+                        value
+                    );
+                },
+            },
             ...CLOSE_SETTINGS.map(
                 (key): SettingOptions => ({
                     key,
@@ -853,6 +867,7 @@ type PersistentSettings = BaseActorSettings &
         shortcutSlots: number;
         keepLast: boolean;
         drawConsumables: boolean;
+        lockShortcuts: boolean;
     };
 
 export { PF2eHudPersistent };

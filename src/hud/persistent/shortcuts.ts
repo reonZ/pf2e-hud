@@ -230,6 +230,7 @@ class PersistentShortcuts extends PersistentPart<
         const shortcutElements = html.querySelectorAll<HTMLElement>(
             ".stretch .shortcuts .shortcut"
         );
+
         for (const shortcutElement of shortcutElements) {
             const classList = [...shortcutElement.classList];
 
@@ -246,6 +247,11 @@ class PersistentShortcuts extends PersistentPart<
             });
 
             shortcutElement.addEventListener("contextmenu", async () => {
+                if (this.getSetting("lockShortcuts")) {
+                    warn("persistent.main.shortcut.locked");
+                    return;
+                }
+
                 const { groupIndex, index } = elementDataset(shortcutElement);
 
                 if (this.#isVirtual) {

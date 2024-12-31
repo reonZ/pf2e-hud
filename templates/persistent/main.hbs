@@ -32,6 +32,14 @@
         </div>
         {{#if hasActor}}
         <div class="panel app shortcut-menus">
+            <a class="lock{{#if @root.shortcutsLocked}} locked{{/if}}"
+                data-action="toggle-shortcuts-lock">
+                <i class="locked fa-solid fa-lock"
+                    data-tooltip="{{@root.i18n 'shortcut.unlock'}}"></i>
+                <i class="open fa-solid fa-lock-open"
+                    data-tooltip="{{@root.i18n 'shortcut.lock'}}"></i>
+            </a>
+            <hr>
             <div class="shortcuts-navigation" data-section="shortcuts-list-navigation"
                 data-tooltip="{{@root.i18n.path 'shortcut.navigation'}}">
                 {{> (@root.partial 'slider') entry=@root.shortcutsSets
