@@ -40,7 +40,11 @@
             <img class="token-img" src="{{combatant.texture.img}}"
                 style="--scaleX: {{combatant.texture.scaleX}}; --scaleY: {{combatant.texture.scaleY}}; --mask: {{combatant.texture.mask}};">
             {{#if combatant.defeated}}
+            {{#if @root.deathImg}}
+            <img class="defeated-img custom" src="{{@root.deathImg}}">
+            {{else}}
             <img class="defeated-img" src="systems/pf2e/icons/damage/double.svg">
+            {{/if}}
             {{/if}}
             <div class="alt">
                 <i class="fa-solid fa-arrow-right-to-bracket"></i>

@@ -348,6 +348,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         }
 
         const combatScene = combat?.scene;
+        const deathImg = game.settings.get("pf2e", "deathIcon");
 
         const data: TrackerContext = {
             ...parentData,
@@ -356,6 +357,7 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
             turns,
             metrics,
             hasActive,
+            deathImg: !deathImg || deathImg === "icons/svg/skull.svg" ? undefined : deathImg,
             hasStarted: combat.started,
             canRoll,
             canRollNPCs,
@@ -833,10 +835,11 @@ type TrackerContext = {
     hasStarted: boolean;
     canRoll: boolean;
     canRollNPCs: boolean;
-    metrics?: {
+    metrics: Maybe<{
         tooltip: string;
         threat: string;
-    };
+    }>;
+    deathImg: string | undefined;
     expand: {
         tooltip: string;
         collapsed: boolean;
