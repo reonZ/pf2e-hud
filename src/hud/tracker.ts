@@ -604,16 +604,15 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         const encounter = tracker.viewed;
         if (!encounter) return;
 
-        const oldOrder = encounter.turns.filter((combatant) => combatant.initiative !== null);
-        const allOrdersChecks = newOrder.every(
-            (combatant) => newOrder.indexOf(combatant) === oldOrder.indexOf(combatant)
-        );
+        const oldOrder = encounter.turns.filter((c) => c.initiative !== null);
+        const allOrdersChecks = newOrder.every((c) => newOrder.indexOf(c) === oldOrder.indexOf(c));
         if (allOrdersChecks) return;
 
         this.#cancelScroll = true;
 
         setInitiativeFromDrop(encounter, newOrder, combatant);
         await saveNewOrder(encounter, newOrder);
+        await encounter.nextTurn();
     }
 
     #onSortableEnd(event: SortableEvent) {
