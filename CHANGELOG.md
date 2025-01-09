@@ -1,3 +1,10 @@
+# 1.27.0
+
+-   `Combat tracker`:
+    -   now also move to next turn when a delayed combatant returns to initiative (making it the current combatant)
+-   `Persistent HUD`:
+    -   add a new button to lock the shortcuts
+
 # 1.26.3
 
 -   `Persistent Shortcuts`:
