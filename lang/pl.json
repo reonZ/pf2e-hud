@@ -367,6 +367,9 @@
                     "wrongActor": "Skróty można tworzyć tylko od tego samego stałego aktora.",
                     "wrongType": "Nie można utworzyć skrótu tego typu.",
                     "wrongOrigin": "Tylko zaklęcia z paska bocznego HUD mogą zostać przekształcone w skróty.",
+                    "lock": "Zablokuj skróty",
+                    "unlock": "Odblokuj skróty",
+                    "locked": "Skróty są zablokowane.",
                     "confirm": {
                         "title": "Użycie - {name}",
                         "message": "Czy na pewno chcesz użyć <strong>{name}</strong>?"
