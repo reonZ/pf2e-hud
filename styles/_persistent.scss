@@ -284,6 +284,8 @@
                     }
 
                     .lock {
+                        font-size: 0.95em;
+
                         &.locked {
                             .open {
                                 display: none;

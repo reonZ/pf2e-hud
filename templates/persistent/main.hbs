@@ -33,7 +33,7 @@
         {{#if hasActor}}
         <div class="panel app shortcut-menus">
             <a class="lock{{#if @root.shortcutsLocked}} locked{{/if}}"
-                data-action="toggle-shortcuts-lock">
+                data-action="toggle-shortcuts-lock" data-section="lock">
                 <i class="locked fa-solid fa-lock"
                     data-tooltip="{{@root.i18n 'shortcut.unlock'}}"></i>
                 <i class="open fa-solid fa-lock-open"
