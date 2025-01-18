@@ -34,7 +34,7 @@ const STATISTICS = [
 
 function getHealth(actor: ActorPF2e): HealthData | undefined {
     const hp = actor.attributes.hp as CharacterAttributes["hp"] | undefined;
-    if (!hp?.max) return;
+    if (!hp || hp.max <= 0) return;
 
     const isCharacter = actor.isOfType("character");
     const useStamina = isCharacter && game.pf2e.settings.variants.stamina;
