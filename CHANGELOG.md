@@ -1,3 +1,15 @@
+# 1.28.0
+
+-   add an extra flavor text for consumables `use` to make it more obvious
+-   `Combat Tracker`:
+    -   the HP value displayed now includes the temp HP
+-   rework of `Health Status`:
+    -   the feature now has a dedicated menu to setup the different entries
+    -   a setting migration will be done to recover the values from the old feature
+    -   the overall value used to pick the entry and its color now uses the temp HP as well
+        -   this is true for both the `Combat Tracker` & `Token Tooltip`
+    -   fix health status being shown for actors with negative max HP
+
 # 1.27.0
 
 -   `Combat tracker`:
