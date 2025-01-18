@@ -4,24 +4,45 @@ import {
     localize,
     MODULE,
     registerSetting,
+    registerSettingMenu,
     userIsGM,
 } from "module-helpers";
 import { PF2eHudPopup } from "./hud/popup/base";
 import { hud as HUDS } from "./main";
+import { HealthStatusMenu } from "./utils/health-status";
 
 function registerModuleSettings() {
     const isGM = userIsGM();
     const settings: SettingOptions[] = [];
 
+    const healthStatusRender = fu.debounce(() => {
+        HUDS.tracker.render();
+        HUDS.tooltip.render();
+    }, 1);
+
     registerSetting({
-        key: "healthStatus",
-        type: String,
-        default: localize(`settings.healthStatus.default`),
+        key: "healthStatusData",
+        type: Object,
+        default: null,
         scope: "world",
-        onChange: () => {
-            HUDS.tracker.render();
-            HUDS.tooltip.render();
-        },
+        config: false,
+        onChange: healthStatusRender,
+    });
+
+    registerSetting({
+        key: "healthStatusEnabled",
+        type: Boolean,
+        default: true,
+        scope: "world",
+        config: false,
+        onChange: healthStatusRender,
+    });
+
+    registerSettingMenu({
+        key: "healthStatusMenu",
+        type: HealthStatusMenu,
+        restricted: true,
+        icon: "fa-solid fa-kit-medical",
     });
 
     registerSetting({

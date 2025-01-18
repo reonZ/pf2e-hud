@@ -12,6 +12,7 @@ import {
     render,
     setFlag,
     subLocalize,
+    TemplateLocalize,
 } from "module-helpers";
 
 const localize = subLocalize("utils.avatar");
@@ -65,6 +66,7 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
         const actor = this.actor;
 
         return {
+            i18n: localize.i18n,
             placeholder: actor.img,
             noBrowser: !game.user.can("FILES_BROWSE"),
             noTokenImage: VideoHelper.hasVideoExtension(actor.prototypeToken.texture.src ?? ""),
@@ -72,10 +74,7 @@ class PF2eHudAvatarEditor extends foundry.applications.api.ApplicationV2 {
     }
 
     async _renderHTML(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
-        return render("avatar/editor", {
-            ...context,
-            i18n: localize.i18n,
-        });
+        return render("avatar/editor", context);
     }
 
     _replaceHTML(result: string, content: HTMLElement, options: ApplicationRenderOptions) {
@@ -309,6 +308,7 @@ type AvatarContext = {
     placeholder: string;
     noBrowser: boolean;
     noTokenImage: boolean;
+    i18n: TemplateLocalize;
 };
 
 export { editAvatar };

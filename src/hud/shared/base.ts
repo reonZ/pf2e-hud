@@ -41,11 +41,13 @@ function getHealth(actor: ActorPF2e): HealthData | undefined {
     const currentHP = Math.clamp(hp.value, 0, hp.max);
     const maxSP = (useStamina && hp.sp?.max) || 0;
     const currentSP = Math.clamp((useStamina && hp.sp?.value) || 0, 0, maxSP);
-    const currentTotal = currentHP + currentSP;
     const maxTotal = hp.max + maxSP;
+    const currentTotal = currentHP + currentSP + hp.temp;
+    const currentTemp = currentHP + hp.temp;
 
     const calculateRatio = (value: number, max: number) => {
-        const ratio = value / max;
+        // we need to cap it at 130% to avoid color weirdness
+        const ratio = Math.min(value / max, 1);
         return {
             ratio,
             hue: ratio * ratio * 122 + 3,
@@ -67,6 +69,10 @@ function getHealth(actor: ActorPF2e): HealthData | undefined {
             value: currentTotal,
             max: maxTotal,
             ...calculateRatio(currentTotal, maxTotal),
+        },
+        totalTemp: {
+            value: currentTemp,
+            ...calculateRatio(currentTemp, hp.max),
         },
     };
 }
@@ -178,6 +184,11 @@ type HealthData = {
         hue: number;
         value: number;
         max: number;
+    };
+    totalTemp: {
+        ratio: number;
+        hue: number;
+        value: number;
     };
     ratio: number;
     hue: number;

@@ -11,6 +11,7 @@ import {
     createHook,
     createTimeout,
     createWrapper,
+    getSetting,
     isHoldingModifierKeys,
     localize,
 } from "module-helpers";
@@ -203,7 +204,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
     get enabled(): boolean {
         return (
             this.getSetting("enabled") &&
-            (this.getSetting("showDistance") !== "never" || !!this.getHealthStatusEntries())
+            (this.getSetting("showDistance") !== "never" || getSetting("healthStatusEnabled"))
         );
     }
 
@@ -329,11 +330,12 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
             (extendedType === "owned" && isOwner) || (extendedType === "observed" && isObserver);
 
         const status = (() => {
+            if (!getSetting("healthStatusEnabled")) return;
+
             const statusType = this.getSetting("showStatus");
             if (statusType === "never" || (statusType === "small" && extended)) return;
 
-            const statuses = this.getHealthStatusEntries();
-            return this.getSelectedHealthStatusEntry(statsMain.health, statuses);
+            return this.getSelectedHealthStatusEntry(statsMain.health);
         })();
 
         if (!extended) {

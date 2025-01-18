@@ -23,11 +23,6 @@
             }
         },
         "settings": {
-            "healthStatus": {
-                "name": "État de santé",
-                "hint": "liste de termes, séparés par une virgules, indiquant les différents états de santé de la créature, du pire au meilleur. Laisser vide pour désactiver.",
-                "default": "Mort, Aux portes de la mort, Ne se sent pas bien, A vu des jours meilleurs, À peine blessé, En pleine santé"
-            },
             "partyAsObserved": {
                 "name": "Groupe observé",
                 "hint": "Considérer les acteurs du groupe comme 'observés' quand il s'agit de déterminer si l'information est étendue ou pas. À ne pas confondre avec l'acteur de groupe."
@@ -452,6 +447,10 @@
                 "cancel": "Annuler",
                 "contain": "Contient",
                 "reset": "Réinitialiser"
+            },
+            "healthStatus": {
+                "title": "État de santé",
+                "default": "Mort, Aux portes de la mort, Ne se sent pas bien, A vu des jours meilleurs, À peine blessé, En pleine santé"
             }
         },
         "dialogs": {

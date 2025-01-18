@@ -3,22 +3,22 @@ import {
     ApplicationConfiguration,
     ApplicationRenderContext,
     ApplicationRenderOptions,
+    R,
     getFlag,
     getSetting,
-    R,
     render,
     setFlag,
     setSetting,
     settingPath,
     templatePath,
 } from "module-helpers";
+import { getHealthStatus } from "../../utils/health-status";
 import { HealthData } from "../shared/base";
 
 const GLOBAL_SETTINGS: ReadonlyArray<keyof GlobalSettings> = [
     "highestSpeed",
     "useModifiers",
     "partyAsObserved",
-    "healthStatus",
 ] as const;
 
 abstract class PF2eHudBase<
@@ -149,36 +149,23 @@ abstract class PF2eHudBase<
         return setFlag(game.user, this.key, key, value);
     }
 
-    getHealthStatusEntries() {
-        const statuses = R.pipe(
-            this.getSetting("healthStatus").split(","),
-            R.map((status) => status.trim()),
-            R.filter(R.isTruthy)
-        );
-        return statuses.length >= 3 ? statuses : null;
-    }
-
-    getSelectedHealthStatusEntry(health: HealthData, statuses?: string[] | null) {
-        statuses = statuses === undefined ? this.getHealthStatusEntries() : statuses?.slice();
-        if (!statuses) return;
-
+    getSelectedHealthStatusEntry(health: HealthData, status = getHealthStatus()): string {
         let { value, max, ratio } = health.total;
         value = Math.clamp(value, 0, max);
 
         if (value === 0) {
-            return statuses.at(0)!;
+            return status.dead;
         }
 
         if (value === max) {
-            return statuses.at(-1)!;
+            return status.full;
         }
 
-        statuses.shift();
-        statuses.pop();
+        const statuses = R.sortBy(status.entries, R.prop("marker"));
+        // we add 1% to make sure the label after the marker is picked even at exact marker value
+        const pick = Math.ceil((ratio + 0.01) * statuses.length);
 
-        const pick = Math.ceil(ratio * statuses.length);
-
-        return statuses.at(pick - 1)!;
+        return statuses[pick - 1].label;
     }
 }
 
@@ -186,7 +173,6 @@ type GlobalSettings = {
     useModifiers: boolean;
     highestSpeed: boolean;
     partyAsObserved: boolean;
-    healthStatus: string;
 };
 
 type BaseSettings = {

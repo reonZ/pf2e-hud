@@ -1,0 +1,71 @@
+<div class="menu">
+    <label>
+        <input type="checkbox" name="healthStatusEnabled" {{checked enabled}}>
+        <span>{{@root.i18n 'enabled'}}</span>
+    </label>
+    <div class="controls">
+        <a data-action="import" data-tooltip="{{@root.i18n.path 'import.label'}}">
+            <i class="fa-solid fa-file-import"></i>
+        </a>
+        <a data-action="export" data-tooltip="{{@root.i18n.path 'export.label'}}">
+            <i class="fa-solid fa-file-export"></i>
+        </a>
+    </div>
+</div>
+<hr>
+<div class="scroll">
+    <div class="frise">
+        <div class="line"></div>
+        <div class="marker">
+            <div class="value">
+                <input type="number" value="100" disabled>
+            </div>
+            <div class="full-text">
+                <input type="text" name="full" value="{{full}}">
+            </div>
+        </div>
+        {{#each entries as |entry|}}
+        <div class="entry" data-index="{{entry.index}}">
+            <div class="range">
+                {{#if entry.add}}
+                <a class="add" data-action="add-entry" data-marker="{{entry.add}}"
+                    data-tooltip="{{@root.i18n.path 'add'}}">
+                    <i class="fa-solid fa-square-plus"></i>
+                </a>
+                {{/if}}
+                <input type="text" name="entries.{{entry.index}}.label" value="{{entry.label}}">
+            </div>
+            {{#unless @last}}
+            <div class="marker">
+                <div class="value">
+                    <input type="number" name="entries.{{entry.index}}.marker"
+                        value="{{entry.marker}}" min="{{entry.min}}" max="{{entry.max}}">
+                </div>
+                <a class="delete" data-action="delete-entry"
+                    data-tooltip="{{@root.i18n.path 'delete'}}">
+                    <i class="fa-solid fa-trash"></i>
+                </a>
+            </div>
+            {{/unless}}
+        </div>
+        {{/each}}
+        <div class="marker">
+            <div class="value">
+                <input type="number" value="0" disabled>
+            </div>
+            <div class="dead-text">
+                <input type="text" name="dead" value="{{dead}}">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="buttons">
+    <button type="button" data-action="save">
+        <i class="fa-solid fa-floppy-disk"></i>
+        {{@root.i18n 'save'}}
+    </button>
+    <button type="button" data-action="cancel">
+        <i class="fa-solid fa-xmark"></i>
+        {{@root.i18n 'cancel'}}
+    </button>
+</div>
