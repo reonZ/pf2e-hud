@@ -8,7 +8,7 @@
             padding-inline: 8px;
             display: grid;
             column-gap: 6px;
-            font-size: 1.1em;
+            font-size: var(--font-size-12);
             align-items: center;
             background: repeating-linear-gradient(
                 #ddd 0 var(--row-height),
