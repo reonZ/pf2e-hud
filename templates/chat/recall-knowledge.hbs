@@ -29,7 +29,7 @@
         <span class="header">{{@root.i18n 'third'}}</span>
         <span class="header">{{@root.i18n 'fourth'}}</span>
 
-        <span class="header">{{localize 'PF2E.RecallKnowledge.Skill'}}</span>
+        <span class="header">{{@root.i18n 'skill'}}</span>
         <span></span>
         {{#each skillsDCs as |dc|}}
         <span class="header">{{#if dc}}{{@root.i18n 'dc'}} {{dc}}{{else}}-{{/if}}</span>
@@ -49,7 +49,7 @@
     {{#if lores.length}}
     <hr>
     <div class="rk-lores" style="--nb-rows: 3;">
-        <span class="header">{{localize 'TYPES.Item.lore'}}</span>
+        <span class="header">{{@root.i18n 'lore'}}</span>
         <span class="header">{{@root.i18n 'first'}}</span>
         <span class="header">{{@root.i18n 'second'}}</span>
         <span class="header">{{@root.i18n 'third'}}</span>
@@ -72,8 +72,8 @@
     </div>
     <hr>
     <div class="rk-lores-rolls" style="--nb-rows: {{add lores.length 1}}">
-        <span class="header">{{localize 'TYPES.Item.lore'}}</span>
-        <span class="header">{{localize 'PF2E.ProficiencyLabel'}}</span>
+        <span class="header">{{@root.i18n 'lore'}}</span>
+        <span class="header">{{@root.i18n 'proficiency'}}</span>
         <span class="header">{{@root.i18n 'modifier'}}</span>
         <span class="header">{{@root.i18n 'result'}}</span>
         {{> skillsRows skills=lores}}
@@ -82,8 +82,8 @@
     {{!-- else no target --}}
     {{else}}
     <div class="rk" style="--nb-rows: {{add skills.length 1}}">
-        <span class="header">{{localize 'PF2E.RecallKnowledge.Skill'}}</span>
-        <span class="header">{{localize 'PF2E.ProficiencyLabel'}}</span>
+        <span class="header">{{@root.i18n 'skill'}}</span>
+        <span class="header">{{@root.i18n 'proficiency'}}</span>
         <span class="header">{{@root.i18n 'modifier'}}</span>
         <span class="header">{{@root.i18n 'result'}}</span>
         {{> skillsRows skills=skills}}

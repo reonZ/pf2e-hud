@@ -524,7 +524,10 @@
                 "sixth": "6th",
                 "dc": "DC",
                 "unspecific": "Unspecific",
-                "specific": "Specific"
+                "specific": "Specific",
+                "skill": "Skill",
+                "lore": "Lore Skill",
+                "proficiency": "Proficiency"
             },
             "drive": {
                 "drive1": "Drive <span class=\"action-glyph\">1</span>",
