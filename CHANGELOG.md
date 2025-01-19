@@ -1,3 +1,8 @@
+# 1.28.1
+
+-   reworked the styling of the recall-knowledge message to be more lean
+-   add new localization keys for the recall-knowledge message to allow better customization
+
 # 1.28.0
 
 -   add an extra flavor text for consumables `use` to make it more obvious
