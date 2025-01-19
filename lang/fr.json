@@ -8,7 +8,7 @@
                     "cancel": "Annuler",
                     "content": {
                         "modules": "Le(s) module(s) suivant(s) pourrait avoir besoin de migrer les données :",
-                        "wait": "Si le système est en train de migrer ses propres donnésn veuillez attendre avant de débuter."
+                        "wait": "Si le système est en train de migrer ses propres données veuillez attendre avant de débuter."
                     }
                 },
                 "summary": {
