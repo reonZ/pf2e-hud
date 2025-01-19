@@ -52,6 +52,13 @@
             }
         },
         "settings": {
+            "menus": {
+                "healthStatusMenu": {
+                    "name": "Stan zdrowia",
+                    "label": "Konfiguracja stanu zdrowia",
+                    "hint": "Skonfiguruj podziały stanu zdrowia do wyświetlania w interfejsie HUD."
+                }
+            },
             "partyAsObserved": {
                 "name": "Drużyna sojuszników jako Obserwowani",
                 "hint": "Aktorzy w sojuszu „Drużyna” mogą być obserwowani przez graczy w celu rozszerzenia podpowiedzi lub pokazania szczegółów zdrowia w śledzeniu walki. Nie mylić z aktorem „Drużyny”."
@@ -517,7 +524,10 @@
                 "sixth": "6.",
                 "dc": "ST",
                 "unspecific": "Nieokreślony",
-                "specific": "Określony"
+                "specific": "Określony",
+                "skill": "Umiejętność",
+                "lore": "Umiejętność wiedzy",
+                "proficiency": "Biegłość"
             },
             "drive": {
                 "drive1": "Napęd <span class=\"action-glyph\">1</span>",
@@ -538,7 +548,22 @@
                 "reset": "Reset"
             },
             "healthStatus": {
-                "title": "Wpisy stanu zdrowia",
+                "title": "Stan zdrowia",
+                "enabled": "Włączone",
+                "add": "Dodaj znacznik",
+                "delete": "Usuń znacznik",
+                "save": "Zapisz",
+                "cancel": "Anuluj",
+                "import": {
+                    "label": "Importuj stan zdrowia",
+                    "yes": "Importuj",
+                    "no": "Anuluj",
+                    "error": "Podane dane są nieprawidłowe."
+                },
+                "export": {
+                    "label": "Eksportuj stan zdrowia",
+                    "confirm": "Stan zdrowia został skopiowany do schowka."
+                },
                 "default": "Martwy, Bliski śmierci, Ciężko ranny, Ranny, Lekko ranny, Bez obrażeń"
             }
         },
