@@ -159,7 +159,7 @@ class HealthStatusMenu extends foundry.applications.api.ApplicationV2 {
             content: "<textarea></textarea>",
             yes: {
                 label: localize("utils.healthStatus.import.yes"),
-                icon: "fa-solid fa-file-export",
+                icon: "fa-solid fa-file-import",
                 callback: async (event, btn, html) => {
                     return htmlQuery(html, "textarea")?.value;
                 },
