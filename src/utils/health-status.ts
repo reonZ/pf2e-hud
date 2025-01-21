@@ -4,6 +4,7 @@ import {
     R,
     TemplateLocalize,
     addListenerAll,
+    error,
     getSetting,
     htmlClosest,
     htmlQuery,
@@ -192,7 +193,7 @@ class HealthStatusMenu extends foundry.applications.api.ApplicationV2 {
 
             this.#status = status as HealthStatus;
             this.render();
-        } catch (error) {
+        } catch {
             error("utils.healthStatus.import.error");
         }
     }
