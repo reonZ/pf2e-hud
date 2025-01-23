@@ -95,6 +95,7 @@ async function rollStatistic(
     const roll = (await statistic.roll({
         createMessage: false,
         skipDialog: true,
+        rollMode: CONST.DICE_ROLL_MODES.BLIND,
         extraRollOptions: [
             "action:recall-knowledge",
             "skill-check",
