@@ -1,3 +1,10 @@
+# 1.28.2
+
+-   `Health Status`:
+    -   fix wrong icon being used in import dialog
+    -   fix issue with import dialog error message
+-   fix recell-knowledge action not skipping manual input dice
+
 # 1.28.1
 
 -   reworked the styling of the recall-knowledge message to be more lean
