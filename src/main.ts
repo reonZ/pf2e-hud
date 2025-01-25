@@ -33,8 +33,6 @@ Hooks.once("canvasReady", () => {
         ?.addEventListener("click", () => HUDS.persistent.closeSidebar());
 });
 
-// TODO remove everything health status related
-
 Hooks.once("setup", () => {
     registerModuleSettings();
     registerModuleKeybinds();
