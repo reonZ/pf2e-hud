@@ -440,7 +440,8 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
 
         return this.#newInitiativeOrder(
             newOrder.filter((c): c is RolledCombatant<EncounterPF2e> => hasRolledInitiative(c)),
-            combatant
+            combatant,
+            true
         );
     }
 
@@ -599,7 +600,8 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
 
     async #newInitiativeOrder(
         newOrder: RolledCombatant<EncounterPF2e>[],
-        combatant: RolledCombatant<EncounterPF2e>
+        combatant: RolledCombatant<EncounterPF2e>,
+        nextTurn?: boolean
     ) {
         const tracker = this.tracker;
         const encounter = tracker.viewed;
@@ -613,7 +615,10 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
 
         setInitiativeFromDrop(encounter, newOrder, combatant);
         await saveNewOrder(encounter, newOrder);
-        await encounter.nextTurn();
+
+        if (nextTurn) {
+            await encounter.nextTurn();
+        }
     }
 
     #onSortableEnd(event: SortableEvent) {
