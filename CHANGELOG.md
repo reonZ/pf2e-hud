@@ -1,3 +1,8 @@
+# 1.28.3
+
+-   `Combat Tracker`:
+    -   fix issue with tracker calling `Next Turn` when dragging a combatant
+
 # 1.28.2
 
 -   `Health Status`:
