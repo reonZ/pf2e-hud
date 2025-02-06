@@ -53,7 +53,7 @@ class PF2eHudResources extends PF2eHudBase<
     }
 
     get SETTINGS_ORDER(): (keyof ResourcesSettings)[] {
-        return ["enabled", "fontSize"];
+        return ["offlines", "enabled", "fontSize"];
     }
 
     getSettings() {
@@ -65,6 +65,15 @@ class PF2eHudResources extends PF2eHudBase<
         }
 
         return parentSettings.concat([
+            {
+                key: "offlines",
+                type: Boolean,
+                default: false,
+                scope: "world",
+                onChange: () => {
+                    this.render();
+                },
+            },
             {
                 key: "position",
                 type: Object,
@@ -90,6 +99,8 @@ class PF2eHudResources extends PF2eHudBase<
     }
 
     async _prepareContext(options: ResourcesRenderOptions): Promise<ResourcesContext> {
+        const showOfflines = this.getSetting("offlines");
+
         const resourceContext = (resource: Resource, withTooltip: boolean) => {
             const validated = this.validateResource(resource) as ContextResource;
 
@@ -108,7 +119,9 @@ class PF2eHudResources extends PF2eHudBase<
             resourceContext(resource, true)
         );
         const sharedResources = R.pipe(
-            game.users.filter((user): user is Active<UserPF2e> => user !== thisUser && user.active),
+            game.users.filter((user): user is Active<UserPF2e> => {
+                return user !== thisUser && (showOfflines || user.active);
+            }),
             R.flatMap((user) => this.getUserResources(user, true)),
             R.map((resource) => resourceContext(resource, false))
         );
@@ -431,7 +444,7 @@ type ResourcesUserSettings = {
 };
 
 type ResourcesSettings = BaseSettings & {
-    worldResources: Resource[];
+    offlines: boolean;
     position: { left: number; top: number };
 };
 

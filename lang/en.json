@@ -303,7 +303,11 @@
                 }
             },
             "resources": {
-                "title": "Resources Tracker"
+                "title": "Resources Tracker",
+                "offlines": {
+                    "name": "Show Offlines",
+                    "hint": "Show shared resources from offline users as well"
+                }
             },
             "time": {
                 "title": "Time Tracker",
