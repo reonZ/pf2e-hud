@@ -1,3 +1,13 @@
+# 1.29.0
+
+-   `Persistent HUD`:
+    -   add an extra `[Shift + Click] Remove Effect` entry to effects with counters when the `Hold Shift for Effects` setting is disabled
+        -   this will remove the effect entirely without having to go through decreasing its counters one by one to `0`
+-   `Resources Tracker`:
+    -   add `Show Offlines` setting
+        -   display shared resources from offline users as well
+    -   now display the name of the shared resource owner when hovering over the planet icon
+
 # 1.28.3
 
 -   `Combat Tracker`:

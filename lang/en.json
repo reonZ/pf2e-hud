@@ -306,7 +306,7 @@
                 "title": "Resources Tracker",
                 "offlines": {
                     "name": "Show Offlines",
-                    "hint": "Show shared resources from offline users as well"
+                    "hint": "Display shared resources from offline users as well."
                 }
             },
             "time": {
