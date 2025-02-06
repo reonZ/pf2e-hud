@@ -122,8 +122,17 @@ class PF2eHudResources extends PF2eHudBase<
             game.users.filter((user): user is Active<UserPF2e> => {
                 return user !== thisUser && (showOfflines || user.active);
             }),
-            R.flatMap((user) => this.getUserResources(user, true)),
-            R.map((resource) => resourceContext(resource, false))
+            R.flatMap((user) => {
+                return this.getUserResources(user, true).map(
+                    (resource) => [user.name, resource] as const
+                );
+            }),
+            R.map(([user, resource]) => {
+                return {
+                    ...resourceContext(resource, false),
+                    user,
+                };
+            })
         );
 
         return {
@@ -411,7 +420,7 @@ type RecourcesActionEvent = "add-resource" | "decrease-resource" | "increase-res
 type ResourcesContext = {
     i18n: ReturnType<typeof templateLocalize>;
     userResources: ContextResource[];
-    sharedResources: ContextResource[];
+    sharedResources: (ContextResource & { user: string })[];
 };
 
 type ResourcesRenderOptions = BaseRenderOptions;

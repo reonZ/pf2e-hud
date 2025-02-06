@@ -16,7 +16,8 @@
         {{#if isOwner}}
         <i class="fa-solid fa-eye"></i>
         {{else}}
-        <i class="fa-sharp-duotone fa-solid fa-earth-americas"></i>
+        <i class="fa-sharp-duotone fa-solid fa-earth-americas" data-tooltip="{{resource.user}}"
+            data-tooltip-direction="UP"></i>
         {{/if}}
         {{/if}}
         {{resource.name}}
