@@ -32,6 +32,11 @@ class PersistentEffects extends PersistentPart<EffectsContext | PersistentContex
             R.mapValues((value) => game.i18n.localize(value))
         );
 
+        this.#effectsInstructions["all"] = this.#effectsInstructions.remove.replace(
+            /^\[/,
+            `[${localize("persistent.main.effects.shift")} + `
+        );
+
         return this.#effectsInstructions;
     }
 
@@ -39,8 +44,11 @@ class PersistentEffects extends PersistentPart<EffectsContext | PersistentContex
         if (this.#effectsShiftInstructions) return this.#effectsShiftInstructions;
 
         const shiftLabel = localize("persistent.main.effects.shift");
-        this.#effectsShiftInstructions ??= R.mapValues(this.effectsInstructions, (value) =>
-            value.replace(/^\[/, `[${shiftLabel} + `)
+
+        this.#effectsShiftInstructions ??= R.pipe(
+            this.effectsInstructions,
+            R.omit(["all"]),
+            R.mapValues((value) => value.replace(/^\[/, `[${shiftLabel} + `))
         );
 
         return this.#effectsShiftInstructions;
@@ -125,7 +133,9 @@ class PersistentEffects extends PersistentPart<EffectsContext | PersistentContex
         addListenerAll(html, ".effect-item[data-item-id] .icon", "mousedown", (event, el) => {
             if (![0, 2].includes(event.button)) return;
 
-            if (!event.shiftKey && this.getSetting("shiftEffects")) return;
+            const requireShift = this.getSetting("shiftEffects");
+
+            if (!event.shiftKey && requireShift) return;
 
             const effect = getEffect(el);
             if (!effect) return;
@@ -141,7 +151,11 @@ class PersistentEffects extends PersistentPart<EffectsContext | PersistentContex
                 }
             } else if (event.button === 2) {
                 if (isAbstract) {
-                    effect.decrease();
+                    if (!requireShift && event.shiftKey) {
+                        effect.delete();
+                    } else {
+                        effect.decrease();
+                    }
                 } else {
                     // Failover in case of a stale effect
                     this.render();
