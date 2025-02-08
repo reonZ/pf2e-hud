@@ -303,7 +303,11 @@
                 }
             },
             "resources": {
-                "title": "Śledzenie zasobów"
+                "title": "Śledzenie zasobów",
+                "offlines": {
+                    "name": "Pokaż zasoby graczy offline",
+                    "hint": "Wyświetlaj również udostępnione zasoby od użytkowników offline."
+                }
             },
             "time": {
                 "title": "Śledzenie czasu",
