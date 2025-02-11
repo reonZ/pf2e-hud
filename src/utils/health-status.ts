@@ -217,7 +217,7 @@ function getDefaultHealthStatus(statuses?: string[]): HealthStatus {
         R.map((i): HealthStatusEntry => {
             return {
                 label: all[i],
-                marker: Math.floor((i - 1) * segment),
+                marker: Math.max(Math.floor((i - 1) * segment), 1),
             };
         })
     );
