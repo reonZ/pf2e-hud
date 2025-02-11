@@ -161,11 +161,15 @@ abstract class PF2eHudBase<
             return status.full;
         }
 
-        const statuses = R.sortBy(status.entries, R.prop("marker"));
-        // we add 1% to make sure the label after the marker is picked even at exact marker value
-        const pick = Math.ceil((ratio + 0.01) * statuses.length);
+        const percent = ratio * 100;
 
-        return statuses[pick - 1].label;
+        return (
+            R.pipe(
+                status.entries,
+                R.sortBy([R.prop("marker"), "desc"]),
+                R.find((entry) => percent >= entry.marker)
+            )?.label ?? "???"
+        );
     }
 }
 
