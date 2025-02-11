@@ -1,3 +1,10 @@
+# 1.30.0
+
+-   `Health Status`:
+    -   change the internal value of the first entry (not the dead one) to be `1%` instead of `0%`
+    -   the module will have to migrate your existing setting to adopt that new value
+    -   if you had a custom entry at `1%` prior to the migration, it will be deleted
+
 # 1.29.1
 
 -   `Health Status`:
