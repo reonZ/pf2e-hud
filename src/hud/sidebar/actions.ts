@@ -788,7 +788,7 @@ function getActionFrequency(item: FeatPF2e | AbilityItemPF2e) {
 }
 
 function getActionResource(item: ActionItem) {
-    if (item.crafting) {
+    if (item.crafting?.resource) {
         const resource = item.actor.getResource(item.crafting.resource);
         if (!resource?.max) return;
 

@@ -1,3 +1,8 @@
+# 1.29.1
+
+-   `Health Status`:
+    -   fix the feature not actually using the provided percentage values
+
 # 1.29.0
 
 -   `Persistent HUD`:
