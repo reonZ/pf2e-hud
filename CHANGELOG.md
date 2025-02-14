@@ -1,3 +1,10 @@
+# 1.31.0
+
+-   `Health Status`:
+    -   fix a possible mixup with `1.30.0` migration
+        -   the module may have to migrate your existing setting to completely fix it
+    -   fix import not working with `1.30.0` data changes
+
 # 1.30.0
 
 -   `Health Status`:
