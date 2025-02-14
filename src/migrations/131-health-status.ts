@@ -3,25 +3,21 @@ import { ModuleMigration } from "module-helpers/dist/migration";
 import { HealthStatus } from "../utils/health-status";
 
 export default {
-    version: 1.3,
+    version: 1.31,
     migrateSettings: migrateHealStatus,
 } satisfies ModuleMigration;
 
 async function migrateHealStatus(): Promise<string[] | undefined> {
     if (!userIsActiveGM()) return;
 
-    const setting = fu.deepClone(getSetting<Maybe<HealthStatus>>("healthStatusData"));
-    if (!setting) return;
+    const current = getSetting<Maybe<HealthStatus>>("healthStatusData");
+    if (!current || current.entries.some((entry) => entry.marker === 1)) return;
 
-    if (setting.entries.some((entry) => entry.marker === 0)) {
-        setting.entries.findSplice((entry) => entry.marker === 1);
-    }
+    const setting = fu.deepClone(current);
 
-    setting.entries = setting.entries.map((entry) => {
-        return {
-            label: entry.label,
-            marker: Math.max(entry.marker, 1),
-        };
+    setting.entries.unshift({
+        label: "???",
+        marker: 1,
     });
 
     await setSetting("healthStatusData", setting);
