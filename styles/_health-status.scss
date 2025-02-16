@@ -1,5 +1,7 @@
 #pf2e-hud-health-status {
     --outer-padding: 1em;
+    --highlight-background: #ffffff12;
+    --line-marker-color: #ffffff5c;
 
     max-height: 90%;
     height: 90%;
@@ -75,11 +77,11 @@
 
         .entry {
             &:has(.marker:hover) {
-                background: #ffffff12;
+                background: var(--highlight-background);
             }
 
             &:has(.add:hover) {
-                box-shadow: inset 0 1px 0 #ffffff5c;
+                box-shadow: inset 0 1px 0 var(--line-marker-color);
             }
         }
 
@@ -130,5 +132,18 @@
         padding-inline: 0.5em;
         gap: 0.5em;
         margin-top: 0.5em;
+    }
+}
+
+body.theme-light #pf2e-hud-health-status {
+    --highlight-background: #00000017;
+    --line-marker-color: #00000069;
+
+    input {
+        --input-background-color: #c6c4b8;
+
+        &:disabled {
+            --input-background-color: #aeaca2;
+        }
     }
 }
