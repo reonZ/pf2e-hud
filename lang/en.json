@@ -320,7 +320,7 @@
                 }
             },
             "dice": {
-                "title": "Roll Panel"
+                "title": "Dice Panel"
             }
         },
         "hud": {

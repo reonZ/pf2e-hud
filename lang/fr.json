@@ -316,7 +316,7 @@
                 }
             },
             "dice": {
-                "title": "Panneau de lancer"
+                "title": "Panneau de dés"
             }
         },
         "hud": {
