@@ -56,15 +56,12 @@ class PF2eHudResources extends PF2eHudBase<
         return ["offlines", "enabled", "fontSize"];
     }
 
+    get requiresReload(): boolean {
+        return true;
+    }
+
     getSettings() {
-        const parentSettings = super.getSettings();
-        const enabledSetting = parentSettings.find((x) => x.key === "enabled");
-
-        if (enabledSetting) {
-            enabledSetting.requiresReload = true;
-        }
-
-        return parentSettings.concat([
+        return super.getSettings().concat([
             {
                 key: "offlines",
                 type: Boolean,

@@ -43,6 +43,10 @@ abstract class PF2eHudBase<
         return [];
     }
 
+    get requiresReload(): boolean {
+        return false;
+    }
+
     getSettings(): SettingOptions[] {
         return [
             {
@@ -52,6 +56,7 @@ abstract class PF2eHudBase<
                 scope: "client",
                 name: settingPath("shared.enabled.name"),
                 hint: settingPath("shared.enabled.hint"),
+                requiresReload: this.requiresReload,
                 onChange: () => {
                     this.enable();
                 },

@@ -379,8 +379,8 @@ class PF2eHudTracker extends PF2eHudBase<TrackerSettings, any, TrackerRenderOpti
         return data;
     }
 
-    async _renderHTML(context: TrackerContext, options: TrackerRenderOptions): Promise<string> {
-        return await this.renderTemplate("tracker", context);
+    _renderHTML(context: TrackerContext, options: TrackerRenderOptions): Promise<string> {
+        return this.renderTemplate("tracker", context);
     }
 
     _onFirstRender(context: ApplicationRenderContext, options: TrackerRenderOptions): void {
