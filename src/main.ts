@@ -1,19 +1,19 @@
 import { MeasuredTemplatePF2e, MODULE } from "module-helpers";
 import { rollRecallKnowledge } from "./actions/recall-knowledge";
 import { useResolve } from "./actions/resolve";
+import { PF2eHudDice } from "./hud/dice";
 import { PF2eHudPersistent } from "./hud/persistent";
 import { PF2eHudPopup } from "./hud/popup/base";
 import { PF2eHudResources } from "./hud/resources";
+import { PF2eHudTime } from "./hud/time";
 import { PF2eHudToken } from "./hud/token";
 import { PF2eHudTooltip } from "./hud/tooltip";
 import { PF2eHudTracker } from "./hud/tracker";
 import { registerModuleKeybinds } from "./keybinds";
+import * as migrations from "./migrations";
 import { onRenderSettingsConfig, registerModuleSettings } from "./settings";
 import { editAvatar } from "./utils/avatar";
 import { getNpcStrikeImage } from "./utils/npc-attacks";
-import { PF2eHudTime } from "./hud/time";
-import { PF2eHudDice } from "./hud/dice";
-import * as migrations from "./migrations";
 
 MODULE.register("pf2e-hud", migrations);
 

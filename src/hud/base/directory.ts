@@ -5,15 +5,8 @@ abstract class PF2eHudDirectory<
     TSettings extends BaseSettings = BaseSettings,
     TRenderOptions extends BaseRenderOptions = BaseRenderOptions
 > extends PF2eHudBase<TSettings, any, TRenderOptions> {
-    getSettings() {
-        const parentSettings = super.getSettings();
-        const fontSizeSetting = parentSettings.find((setting) => setting.key === "fontSize");
-
-        if (fontSizeSetting) {
-            fontSizeSetting.hide = true;
-        }
-
-        return parentSettings;
+    get hasFontSize() {
+        return false;
     }
 
     _onEnable(enabled = this.enabled) {

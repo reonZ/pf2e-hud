@@ -1,5 +1,6 @@
 import {
     addListenerAll,
+    ApplicationClosingOptions,
     ApplicationConfiguration,
     ApplicationPosition,
     createHook,
@@ -28,9 +29,15 @@ class PF2eHudResources extends PF2eHudBase<
     ResourcesUserSettings,
     ResourcesRenderOptions
 > {
+    #initialized: boolean = false;
     #userConnectedHook = createHook("userConnected", () => this.render());
 
-    #initialized: boolean = false;
+    #setPositionDebounce = foundry.utils.debounce(() => {
+        const newPosition = foundry.utils.mergeObject(DEFAULT_POSITION, this.position, {
+            inplace: false,
+        });
+        this.setSetting("position", newPosition);
+    }, 1000);
 
     static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         id: "pf2e-hud-resources",
@@ -149,7 +156,7 @@ class PF2eHudResources extends PF2eHudBase<
         this.#userConnectedHook.activate();
     }
 
-    _onClose() {
+    _onClose(options: ApplicationClosingOptions) {
         this.#userConnectedHook.disable();
     }
 
@@ -221,7 +228,7 @@ class PF2eHudResources extends PF2eHudBase<
     }
 
     getUserResources(user = game.user, sharedOnly?: boolean) {
-        const resources = getFlag<Resource[]>(user, this.key, "userResources")?.slice() ?? [];
+        const resources = getFlag<Resource[]>(user, "resources.userResources")?.slice() ?? [];
         return sharedOnly ? resources.filter((resource) => resource.shared) : resources;
     }
 
@@ -336,12 +343,15 @@ class PF2eHudResources extends PF2eHudBase<
     }
 
     #onUpdateUser(user: UserPF2e, updates: Partial<UserSourcePF2e>) {
+        const hudUpdates = getFlagProperty<ResourcesUserSettings>(updates, this.key);
+        if (!R.isPlainObject(hudUpdates)) return;
+
         if (user !== game.user) {
             this.render();
             return;
         }
 
-        const showTracker = getFlagProperty<boolean>(updates, "resources.showTracker");
+        const showTracker = hudUpdates.showTracker;
 
         if (showTracker !== undefined) {
             toggleControlTool("pf2e-hud-resources", showTracker);
@@ -369,13 +379,6 @@ class PF2eHudResources extends PF2eHudBase<
             },
         });
     }
-
-    #setPositionDebounce = foundry.utils.debounce(() => {
-        const newPosition = foundry.utils.mergeObject(DEFAULT_POSITION, this.position, {
-            inplace: false,
-        });
-        this.setSetting("position", newPosition);
-    }, 1000);
 
     #activateListeners(html: HTMLElement) {
         addListenerAll(html, "[data-resource-id]", "contextmenu", async (event, el) => {

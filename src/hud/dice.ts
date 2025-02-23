@@ -27,7 +27,7 @@ class PF2eHudDice extends PF2eHudDirectory<DiceSettings, DiceRenderOptions> {
     };
 
     get SETTINGS_ORDER(): (keyof DiceSettings)[] {
-        return ["enabled", "fontSize"];
+        return ["enabled"];
     }
 
     get key(): "dice" {

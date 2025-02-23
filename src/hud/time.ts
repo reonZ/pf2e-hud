@@ -21,7 +21,7 @@ class PF2eHudTime extends PF2eHudDirectory<TimeSettings, TimeRenderOptions> {
     };
 
     get SETTINGS_ORDER(): (keyof TimeSettings)[] {
-        return ["enabled", "fontSize", "short"];
+        return ["enabled", "short"];
     }
 
     get key(): "time" {
@@ -40,15 +40,12 @@ class PF2eHudTime extends PF2eHudDirectory<TimeSettings, TimeRenderOptions> {
         return !game.settings.get("pf2e", "worldClock.playersCanView");
     }
 
+    get enabledHint() {
+        return settingPath("time.enabled.hint");
+    }
+
     getSettings() {
-        const parentSettings = super.getSettings();
-        const enabledSetting = parentSettings.find((setting) => setting.key === "enabled");
-
-        if (enabledSetting) {
-            enabledSetting.hint = settingPath("time.enabled.hint");
-        }
-
-        return parentSettings.concat([
+        return super.getSettings().concat([
             {
                 key: "short",
                 type: Boolean,
