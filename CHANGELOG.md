@@ -1,3 +1,9 @@
+# 1.31.1
+
+-   rename `Roll Panel` to `Dice Panel`
+-   `Health Status`:
+    -   update style of the menu to work with `Light Theme`
+
 # 1.31.0
 
 -   `Health Status`:
