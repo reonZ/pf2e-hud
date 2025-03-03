@@ -10,10 +10,10 @@ import {
     getFlagProperty,
     htmlClosest,
     htmlQuery,
-    localize,
     R,
     render,
     settingPath,
+    subLocalize,
     templateLocalize,
     toggleControlTool,
     UserPF2e,
@@ -23,6 +23,8 @@ import {
 import { BaseRenderOptions, BaseSettings, PF2eHudBase } from "./base/base";
 
 const DEFAULT_POSITION = { left: 150, top: 100 };
+
+const localize = subLocalize("resources");
 
 class PF2eHudResources extends PF2eHudBase<
     ResourcesSettings,
@@ -142,7 +144,7 @@ class PF2eHudResources extends PF2eHudBase<
         return {
             sharedResources,
             userResources,
-            i18n: templateLocalize("resources"),
+            i18n: localize.i18n,
         };
     }
 
@@ -165,7 +167,7 @@ class PF2eHudResources extends PF2eHudBase<
         const windowHeader = htmlQuery(frame, ".window-header")!;
 
         const template = await render("resources/header", {
-            i18n: templateLocalize("resources"),
+            i18n: localize.i18n,
         });
 
         const header = createHTMLElement("div", {
@@ -240,7 +242,7 @@ class PF2eHudResources extends PF2eHudBase<
         const id = foundry.utils.randomID();
         const resource = await this.#openResourceMenu({
             id,
-            name: localize("resources.menu.name.default"),
+            name: localize("menu.name.default"),
             max: 100,
             min: 0,
             value: 100,
@@ -322,20 +324,20 @@ class PF2eHudResources extends PF2eHudBase<
 
     async #openResourceMenu(resource: Resource, isEdit = false) {
         const editedResource = await waitDialog<MenuResource>({
-            title: localize("resources.menu.title", isEdit ? "edit" : "create"),
+            title: localize("menu.title", isEdit ? "edit" : "create"),
             content: "resources/resource-menu",
             classes: ["pf2e-hud-resource-menu"],
             yes: {
-                label: localize("resources.menu.button.yes", isEdit ? "edit" : "create"),
+                label: localize("menu.button.yes", isEdit ? "edit" : "create"),
                 default: true,
             },
             no: {
-                label: localize("resources.menu.button.no"),
+                label: localize("menu.button.no"),
             },
             data: {
                 resource,
                 isEdit,
-                i18n: templateLocalize("resources"),
+                i18n: localize.i18n,
             },
         });
 
@@ -395,22 +397,22 @@ function createStepTooltip(resource: Resource, direction: "increase" | "decrease
             const value = resource[step];
             if (typeof value !== "number" || value <= 0) return;
 
-            const click = localize("resources", step);
-            return localize("resources", direction, { click, value });
+            const click = localize(step);
+            return localize(direction, { click, value });
         }),
         R.filter(R.isTruthy)
     );
 
     if (steps.length === 0) {
         steps.push(
-            localize("resources", direction, {
-                click: localize("resources.step1"),
+            localize(direction, {
+                click: localize("step1"),
                 value: 1,
             })
         );
     }
 
-    steps.unshift(localize("resources.edit"));
+    steps.unshift(localize("edit"));
 
     return steps.join("<br>");
 }
