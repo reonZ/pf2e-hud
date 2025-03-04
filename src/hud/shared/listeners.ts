@@ -92,21 +92,28 @@ function addStatsHeaderListeners(actor: ActorPF2e, html: HTMLElement, token?: To
 
             if (value === current) {
                 el.value = String(current);
-                return;
-            }
-
-            el.value = String(value);
-
-            if (path === "system.attributes.shield.hp.value") {
-                const heldShield = actor.heldShield;
-                if (heldShield) {
-                    heldShield.update({ "system.hp.value": value });
-                }
             } else {
+                el.value = String(value);
                 actor.update({ [path]: value });
             }
         });
     }
+
+    addListenerAll(html, "input[type='number']", "change", (event, el: HTMLInputElement) => {
+        const heldShield = actor.heldShield;
+
+        if (el.name === "system.attributes.shield.hp" && heldShield) {
+            const { max, value } = heldShield.hitPoints;
+            const newValue = Math.clamp(el.valueAsNumber, 0, max);
+
+            if (newValue === value) {
+                el.value = String(value);
+            } else {
+                el.value = String(newValue);
+                heldShield.update({ "system.hp.value": newValue });
+            }
+        }
+    });
 
     addListenerAll(html, "[data-action]:not(.disabled)", async (event, el) => {
         const action = el.dataset.action as StatsHeaderActionEvent;
