@@ -1,3 +1,7 @@
+# 1.31.2
+
+-   fix not being able to update the shield HP from the HUD
+
 # 1.31.1
 
 -   rename `Roll Panel` to `Dice Panel`
