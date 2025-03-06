@@ -1,3 +1,8 @@
+# 1.32.0
+
+-   this is a system `6.10.0` release
+-   fix `actions` sidebar not opening because of a recent change in the system
+
 # 1.31.2
 
 -   fix not being able to update the shield HP from the HUD
