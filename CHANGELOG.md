@@ -1,3 +1,12 @@
+# 1.33.0
+
+-   `Persistent Shortcuts`:
+    -   now look for any strike with the same weapon slug if no id matches
+        -   this mean that if the original weapon associated to the strike (when creating a shortcut) doesn't exist on the actor anymore, the module will look for another strike associated to a weapon similar instead
+        -   this can be useful if you like to trade/drop your weapons often, because new item IDs are generated every time in those cases
+        -   if multiple similar weapons exist on the actor, the module will then prioritize the one currently equipped (if any)
+-   fix current stance not being toggled off when clicking on its action/shortcut
+
 # 1.32.0
 
 -   this is a system `6.10.0` release
