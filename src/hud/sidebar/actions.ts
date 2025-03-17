@@ -665,7 +665,8 @@ async function getStrikeData(
         }
 
         // we look for another strike with the same slug
-        const match = actorStrikes.find((s) => s.slug === options.slug);
+        const matches = actorStrikes.filter((s) => s.slug === options.slug);
+        const match = matches[0];
         if (!match) return [];
 
         if (isAlchemicalStrike(match)) {
@@ -678,9 +679,20 @@ async function getStrikeData(
             return [match];
         }
 
+        // NPC stuff shouldn't normally reach here but just in case (also TS stuff)
+        if (match.item.isOfType("melee")) {
+            return [match];
+        }
+
         // if the embedded item is different from the strike item then it is a virtual strike
         const realItem = actor.items.get(match.item.id);
-        return realItem && realItem.type !== match.item.type ? [match] : [];
+        if (realItem && realItem.type !== match.item.type) {
+            return [match];
+        }
+
+        // we prioritize the currently equipped weapon over others
+        const equipped = matches.find((s) => (s.item as WeaponPF2e).isEquipped);
+        return equipped ? [equipped] : [match];
     })();
 
     const isCharacter = actor.isOfType("character");
