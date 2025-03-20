@@ -2,7 +2,6 @@ import {
     ActorPF2e,
     ApplicationClosingOptions,
     ApplicationConfiguration,
-    ApplicationPosition,
     createHook,
     TokenDocumentPF2e,
     TokenPF2e,
@@ -69,7 +68,7 @@ abstract class PF2eHudBaseToken<
             options = Object.assign(_options, { force: options });
         }
 
-        options.position = {} as ApplicationPosition;
+        options.position = {} as any;
 
         return super.render(options);
     }

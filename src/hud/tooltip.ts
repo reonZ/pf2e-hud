@@ -76,6 +76,7 @@ const SETTING_DISTANCE = ["never", "idiot", "smart", "weird"] as const;
 const SETTING_NO_DEAD = ["none", "small", "full"] as const;
 
 class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, TooltipRenderOptions> {
+    #canvasPanHook = createHook("canvasPan", this.#onCanvasPan.bind(this));
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
     #canvasTearDownHook = createHook("canvasTearDown", this.#onCanvasTearDown.bind(this));
 
@@ -244,6 +245,7 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
 
         this.#clickEvent.toggle(enabled);
         this.#hoverTokenHook.toggle(enabled);
+        this.#canvasPanHook.toggle(enabled);
 
         const enableDraw = enabled && this.getSetting("drawDistance") > 0;
         this.#tokenRefreshWrapper.toggle(enableDraw);
@@ -525,6 +527,10 @@ class PF2eHudTooltip extends PF2eHudBaseToken<TooltipSettings, ActorPF2e, Toolti
     #onCanvasTearDown() {
         this.clearDistance();
         this.setToken(null);
+    }
+
+    #onCanvasPan() {
+        requestAnimationFrame(() => this._updatePosition(this.position));
     }
 
     #onHoverToken(token: TokenPF2e, hovered: boolean) {

@@ -74,9 +74,7 @@ class PF2eHudToken extends makeAdvancedHUD(
     #canvasPanHook = createHook("canvasPan", this.#onCanvasPan.bind(this));
     #canvasTearDownHook = createHook("canvasTearDown", () => this.setToken(null));
     #renderActorSheetHook = createHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
-    #renderTokenHudHook = createHook("renderTokenHUD", () => {
-        this.close();
-    });
+    #renderTokenHudHook = createHook("renderTokenHUD", () => this.close());
 
     #mainElement: HTMLElement | null = null;
 
