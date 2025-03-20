@@ -1,7 +1,7 @@
 # 1.33.1
 
 -   `Token Tooltip`:
--   now reposition the tooltip when scrolling
+    -   now reposition the tooltip when scrolling
 
 # 1.33.0
 
