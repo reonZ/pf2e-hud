@@ -283,22 +283,6 @@
                         }
                     }
 
-                    .lock {
-                        font-size: 0.95em;
-
-                        &.locked {
-                            .open {
-                                display: none;
-                            }
-                        }
-
-                        &:not(.locked) {
-                            .locked {
-                                display: none;
-                            }
-                        }
-                    }
-
                     .shortcuts-navigation {
                         margin-left: 0.3em;
                     }

@@ -369,9 +369,6 @@
                     "wrongActor": "Vous ne pouvez créer des raccourcis qu'à partir du même acteur persistant.",
                     "wrongType": "Vous ne pouvez pas créer de raccourcis de ce type.",
                     "wrongOrigin": "Seuls les sorts d'un sous-menu du HUD peuvent être utilisés pour créer un raccourci.",
-                    "lock": "Verrrouiller les raccourcis",
-                    "unlock": "Déverrouiller les raccourcis",
-                    "locked": "Les raccourciss sont verrouillés.",
                     "confirm": {
                         "title": "Utiliser - {name}",
                         "message": "Êtes-vous sûr(e) de vouloir utiliser <strong>{name}</strong> ?"

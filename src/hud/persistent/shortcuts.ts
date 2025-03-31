@@ -238,6 +238,10 @@ class PersistentShortcuts extends PersistentPart<
                 this.#onShortcutDrop(event, shortcutElement);
             });
 
+            if (classList.includes("empty")) continue;
+
+            const isInteractible = !arrayIncludes(["disabled", "attack"], classList);
+
             shortcutElement.addEventListener("mouseleave", () => {
                 shortcutElement.classList.remove("show-damage");
                 shortcutElement.classList.toggle(
@@ -246,27 +250,15 @@ class PersistentShortcuts extends PersistentPart<
                 );
             });
 
-            shortcutElement.addEventListener("contextmenu", async () => {
-                if (this.getSetting("lockShortcuts")) {
-                    warn("persistent.main.shortcut.locked");
-                    return;
-                }
-
-                const { groupIndex, index } = elementDataset(shortcutElement);
-
-                if (this.#isVirtual) {
-                    if (this.#shortcutData[groupIndex]?.[index]) {
-                        delete this.#shortcutData[groupIndex][index];
-                    }
-                    await this.#overrideShortcutData();
-                } else {
-                    if (this.worldActor) {
-                        await this.deleteShortcuts(groupIndex, index);
-                    }
+            shortcutElement.addEventListener("contextmenu", async (event) => {
+                if (event.shiftKey) {
+                    this.#removeShortcut(shortcutElement);
+                } else if (isInteractible) {
+                    this.#onShortcutContext(event, shortcutElement);
                 }
             });
 
-            if (!arrayIncludes(["empty", "disabled", "attack"], classList)) {
+            if (isInteractible) {
                 shortcutElement.addEventListener("click", async (event) => {
                     this.#onShortcutClick(event, shortcutElement);
                 });
@@ -548,6 +540,21 @@ class PersistentShortcuts extends PersistentPart<
             img: strike.item.img,
             name: `${game.i18n.localize("PF2E.WeaponStrikeLabel")}: ${strike.label}`,
         };
+    }
+
+    async #removeShortcut(el: HTMLElement) {
+        const { groupIndex, index } = elementDataset(el);
+
+        if (this.#isVirtual) {
+            if (this.#shortcutData[groupIndex]?.[index]) {
+                delete this.#shortcutData[groupIndex][index];
+            }
+            await this.#overrideShortcutData();
+        } else {
+            if (this.worldActor) {
+                await this.deleteShortcuts(groupIndex, index);
+            }
+        }
     }
 
     async #fillShortcut(
@@ -1487,11 +1494,38 @@ class PersistentShortcuts extends PersistentPart<
         });
     }
 
+    async #onShortcutContext(event: MouseEvent, shortcutElement: HTMLElement) {
+        const actor = this.actor;
+        const shortcut = this.getShortcutFromElement<InteractibleShortcut>(shortcutElement);
+        if (!actor || !shortcut) return;
+
+        switch (shortcut.type) {
+            case "consumable": {
+                break;
+            }
+
+            case "toggle": {
+                break;
+            }
+
+            case "action": {
+                break;
+            }
+
+            case "spell": {
+                break;
+            }
+
+            case "skill": {
+                break;
+            }
+        }
+    }
+
     async #onShortcutClick(event: MouseEvent, shortcutElement: HTMLElement) {
         const actor = this.actor;
-        const shortcut =
-            this.getShortcutFromElement<Exclude<Shortcut, AttackShortcut>>(shortcutElement);
-        if (!actor || !shortcut || shortcut.isEmpty || shortcut.isDisabled) return;
+        const shortcut = this.getShortcutFromElement<InteractibleShortcut>(shortcutElement);
+        if (!actor || !shortcut) return;
 
         const confirmUse = (item: ItemPF2e) => {
             return this.#confirmShortcut("confirm", { name: item.name });
@@ -1946,6 +1980,8 @@ type ShortcutsContext = PersistentContext & {
 };
 
 type AutoFillSetting = "one" | "two";
+
+type InteractibleShortcut = Exclude<Shortcut, AttackShortcut>;
 
 export { PersistentShortcuts };
 export type { AutoFillSetting };

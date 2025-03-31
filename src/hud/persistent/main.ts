@@ -39,7 +39,6 @@ class PersistentMain extends PersistentPart<MainContext | PersistentContext> {
             ...getAdvancedStats(actor, this),
             sidebars: getSidebars(actor, this.sidebar?.key),
             showEffects: options.showEffects,
-            shortcutsLocked: this.getSetting("lockShortcuts"),
             shortcutsSets: {
                 value: 0,
                 max: this.shortcuts.SHORTCUTS_LIST_LIMIT,
@@ -160,21 +159,12 @@ class PersistentMain extends PersistentPart<MainContext | PersistentContext> {
                     }
                     break;
                 }
-
-                case "toggle-shortcuts-lock": {
-                    this.setSetting("lockShortcuts", !this.getSetting("lockShortcuts"));
-                    break;
-                }
             }
         });
     }
 }
 
-type ShortcutMenusAction =
-    | "delete-shortcuts"
-    | "fill-shortcuts"
-    | "copy-owner-shortcuts"
-    | "toggle-shortcuts-lock";
+type ShortcutMenusAction = "delete-shortcuts" | "fill-shortcuts" | "copy-owner-shortcuts";
 
 type MainContext = PersistentContext &
     StatsAdvanced & {
@@ -182,7 +172,6 @@ type MainContext = PersistentContext &
         showEffects: boolean;
         alliance?: ThreeStep;
         shortcutsSets: ValueAndMax & { min: number };
-        shortcutsLocked: boolean;
     };
 
 export { PersistentMain };
