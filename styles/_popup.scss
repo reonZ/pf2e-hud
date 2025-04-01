@@ -7,6 +7,7 @@
     background: var(--outer-background);
     border-radius: var(--outer-border-radius);
     box-shadow: var(--outer-box-shadow);
+    min-width: 400px;
 
     .window-header {
         font-size: revert;
