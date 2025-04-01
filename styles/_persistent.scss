@@ -397,8 +397,12 @@
                     top: calc(50% + 0.02em);
                     transform: translate(-50%, -50%);
 
+                    &:first-child {
+                        opacity: 0.6;
+                    }
+
                     &:last-child {
-                        opacity: 0.7;
+                        opacity: 0.6;
                         color: black;
                     }
                 }
