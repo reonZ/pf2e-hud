@@ -55,6 +55,7 @@ import { PersistentContext, PersistentHudActor, PersistentRenderOptions } from "
 import {
     ActionBlast,
     ActionStrike,
+    ELEMENTAL_BLAST_IMG,
     getActionFrequency,
     getActionResource,
     getBlastData,
@@ -1176,7 +1177,7 @@ class PersistentShortcuts extends PersistentPart<
                     item,
                     subtitle,
                     isBlast,
-                    img: item?.img ?? shortcutData.img,
+                    img: isBlast ? ELEMENTAL_BLAST_IMG : item?.img ?? shortcutData.img,
                     optionSelection: selection,
                 } satisfies ToggleShortcut as T);
             }

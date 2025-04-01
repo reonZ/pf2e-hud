@@ -528,14 +528,14 @@
             }
 
             .center {
-                font-size: 1.8em;
-                background: #000000ab;
-                line-height: 1;
-                padding-inline: 0.1em;
-                border-radius: 4px;
+                font-size: 2em;
                 left: 50%;
                 top: 50%;
                 transform: translate(-50%, -50%);
+                color: black;
+                font-weight: bold;
+                text-shadow: 0 0 2px #ffffff;
+                opacity: 0.8;
             }
 
             .generic {
