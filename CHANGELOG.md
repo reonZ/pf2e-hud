@@ -1,3 +1,15 @@
+# 1.34.0
+
+-   `Persistent Shortcuts`:
+    -   remove the shortcuts lock button
+        -   the user must now use `[Shift + Right-Click]` to remove a shortcut
+    -   using `[Right-Click]` on a shortcut will now open the description popup to its associated item (if any)
+    -   reduce opacity of toggle shortcut checkbox and checkmark
+    -   add custom image to the elemental-blast action cost toggle
+        -   also restyle the roman number on top of it
+-   `Popup`:
+    -   add min-width to the window
+
 # 1.33.1
 
 -   `Token Tooltip`:
