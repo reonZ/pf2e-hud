@@ -231,10 +231,10 @@ function onRenderSettingsConfig(app: SettingsConfig, $html: JQuery) {
         }
     }
 
-    for (const hud of huds) {
-        const gmOnlyLabel = localize("gmOnly");
-        const reloadLabel = localize("reload");
+    const gmOnlyLabel = localize("gmOnly");
+    const reloadLabel = localize("reload");
 
+    for (const hud of huds) {
         for (const setting of hud.getSettings()) {
             const key = `${MODULE.id}.${hud.key}.${setting.key}`;
             const groupEl = htmlQuery(tab, `[data-setting-id="${key}"]`);
