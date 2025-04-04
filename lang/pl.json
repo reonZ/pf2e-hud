@@ -25,10 +25,10 @@
             "spellcasting": {
                 "staff": "Kostur",
                 "charges": "Ładunki"
-            }
+            },
+            "gmOnly": "Tylko MG",
+            "reloadRequired": "Wymaga przeładowania"
         },
-        "gmOnly": "Tylko MG",
-        "reload": "Wymaga przeładowania",
         "keybindings": {
             "setActor": {
                 "name": "Ustawienie stałego aktora",

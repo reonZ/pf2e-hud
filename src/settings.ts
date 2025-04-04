@@ -1,4 +1,5 @@
 import {
+    addExtraInfoToSettingLabel,
     createHTMLElement,
     htmlQuery,
     localize,
@@ -228,9 +229,6 @@ function onRenderSettingsConfig(app: SettingsConfig, $html: JQuery) {
         }
     }
 
-    const gmOnlyLabel = localize("gmOnly");
-    const reloadLabel = localize("reload");
-
     for (const hud of huds) {
         for (const setting of hud.getSettings()) {
             const key = `${MODULE.id}.${hud.key}.${setting.key}`;
@@ -242,19 +240,7 @@ function onRenderSettingsConfig(app: SettingsConfig, $html: JQuery) {
                 continue;
             }
 
-            const nameExtras: string[] = [];
-
-            if (setting.gmOnly) nameExtras.push(gmOnlyLabel);
-            if (setting.requiresReload) nameExtras.push(reloadLabel);
-
-            if (!nameExtras.length) continue;
-
-            const labelElement = htmlQuery(groupEl, ":scope > label");
-            const extraElement = createHTMLElement("span", {
-                innerHTML: ` (${nameExtras.join(", ")})`,
-            });
-
-            labelElement?.append(extraElement);
+            addExtraInfoToSettingLabel(setting, groupEl);
         }
     }
 }

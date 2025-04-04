@@ -25,10 +25,10 @@
             "spellcasting": {
                 "staff": "Bâton",
                 "charges": "Charges"
-            }
+            },
+            "gmOnly": "MJ seulement",
+            "reloadRequired": "Nécessite un rechargement"
         },
-        "gmOnly": "MJ seulement",
-        "reload": "Nécessite un rechargement",
         "keybindings": {
             "setActor": {
                 "name": "Spécifier l'acteur persistant",

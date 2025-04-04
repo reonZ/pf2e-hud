@@ -25,10 +25,10 @@
             "spellcasting": {
                 "staff": "Staff",
                 "charges": "Charges"
-            }
+            },
+            "gmOnly": "GM Only",
+            "reloadRequired": "Requires Reload"
         },
-        "gmOnly": "GM Only",
-        "reload": "Requires  Reload",
         "keybindings": {
             "setActor": {
                 "name": "Set Persistent Actor",
