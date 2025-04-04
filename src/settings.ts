@@ -5,14 +5,12 @@ import {
     MODULE,
     registerSetting,
     registerSettingMenu,
-    userIsGM,
 } from "module-helpers";
 import { PF2eHudPopup } from "./hud/popup/base";
 import { hud as HUDS } from "./main";
 import { HealthStatusMenu } from "./utils/health-status";
 
 function registerModuleSettings() {
-    const isGM = userIsGM();
     const settings: SettingOptions[] = [];
 
     const healthStatusRender = fu.debounce(() => {
@@ -196,7 +194,6 @@ function registerModuleSettings() {
     }
 
     for (const setting of settings) {
-        if (setting.gmOnly && !isGM) continue;
         registerSetting(setting);
     }
 }
