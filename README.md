@@ -1,5 +1,8 @@
 # FoundryVTT PF2e HUD
 
+> [!IMPORTANT]
+> THE v13 update is gonna come in due time, stop spamming the issues with ETA requests.
+
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K6M2V13)
 or [Stripe](https://buy.stripe.com/cN23dy0hd0gW5nq3cc) directly
 
