@@ -1,0 +1,590 @@
+{
+    "pf2e-hud": {
+        "actions": {
+            "recall-knowledge": {
+                "lore": "学识技能",
+                "proficiency": "熟练度",
+                "result": "结果",
+                "target": "目标",
+                "dc": "DC",
+                "skill": "技能",
+                "modifier": "调整值",
+                "first": "1st",
+                "second": "2nd",
+                "third": "3rd",
+                "fourth": "4th",
+                "fifth": "5th",
+                "sixth": "6th",
+                "specific": "特殊",
+                "unspecific": "非特殊"
+            },
+            "borrowArcaneSpell": "借阅奥术",
+            "drive": {
+                "drive2": "驱动 <span class=\"action-glyph\">2</span>",
+                "drive1": "驱动 <span class=\"action-glyph\">1</span>",
+                "drive3": "驱动 <span class=\"action-glyph\">3</span>"
+            }
+        },
+        "SHARED": {
+            "spellcasting": {
+                "staff": "法杖",
+                "charges": "充能"
+            },
+            "migration": {
+                "warning": {
+                    "cancel": "取消",
+                    "title": "模组迁移",
+                    "start": "开始迁移",
+                    "content": {
+                        "modules": "以下模组可能要迁移数据：",
+                        "wait": "如果系统正在迁移数据，请在启动前等待"
+                    }
+                },
+                "summary": {
+                    "title": "迁移汇总",
+                    "content": "迁移了以下文件",
+                    "nothing": "无文件需要迁移。"
+                },
+                "error": {
+                    "actors": "为世界角色迁移数据时出现了错误。",
+                    "token": "在迁移指示物角色{uuid}数据时出现了错误。",
+                    "users": "为用户迁移数据时出现了错误。"
+                }
+            }
+        },
+        "gmOnly": "仅限GM",
+        "hud": {
+            "tempHP": "临时生命值",
+            "alliance": "关系：{value}",
+            "adjustment": "生物调整：{value}",
+            "resolve": {
+                "title": "使用决心点数",
+                "full": "{name}耐力值为满值，不需要休息。",
+                "breather": {
+                    "used": "{name}拥有{ratio}SP并消耗了一点决心点数，10分钟时间小憩片刻。耐力值已回复。"
+                }
+            }
+        },
+        "tooltip": {
+            "distance": {
+                "meter": "m",
+                "square": "sq.",
+                "feet": "尺"
+            }
+        },
+        "persistent": {
+            "main": {
+                "shortcut": {
+                    "delete": {
+                        "title": "重制快捷栏",
+                        "message": "你确定你要将<strong>{name}</strong>当前的快捷栏设置删除吗？"
+                    },
+                    "wrongOrigin": "仅允许HUD侧边栏中的法术创建快捷栏选项。",
+                    "confirm": {
+                        "message": "你确定你想要使用<strong>{name}</strong>？",
+                        "title": "使用 - {name}"
+                    },
+                    "draw": {
+                        "title": "{type} - {name}",
+                        "message": "你确定你想要{type}<strong>{name}</strong>？"
+                    },
+                    "fill": {
+                        "title": "自动填充快捷栏",
+                        "message": "你确定你想要为<strong>{name}</strong>自动填充全部快捷栏吗？"
+                    },
+                    "noChannelElements": "在该角色上无法找到此<strong>引导元素</strong>动作。",
+                    "owner": {
+                        "title": "复制所有者快捷栏",
+                        "message": "你确定要从<strong>{name}</strong>的所有者复制所有快捷栏设置与自动化吗？",
+                        "none": "该角色没有任何具备快捷栏设置的所有者。",
+                        "self": "你正在尝试复制自己的设置。"
+                    },
+                    "navigation": "切换当前快捷栏设置<br>[鼠标中键]自动化设置",
+                    "automation": {
+                        "legend": "宏/效应 UUID",
+                        "title": "快捷栏设置 ({set}) - 自动化",
+                        "hint": "如果该效果当前存在于角色上，或者宏返回<strong>true</strong>，则该快捷栏设置将自动使用。",
+                        "zero": "首个快捷栏设置不能包含任何自动化。"
+                    },
+                    "dc": "DC{dc}",
+                    "alwaysEnabled": "始终启用",
+                    "wrongType": "你无法以此方式在快捷栏创建选项。",
+                    "unassigned": "未选择",
+                    "wrongActor": "你仅可以在相同的受控角色创建快捷栏选项。"
+                },
+                "effects": {
+                    "toggle": "开关效果显示",
+                    "shift": "Shift"
+                }
+            },
+            "menu": {
+                "openSheet": "打开角色卡",
+                "clean": {
+                    "always": "始终在肖像上显示UI",
+                    "hover": "仅在悬停于肖像上时显示UI"
+                },
+                "unsetActor": "解绑受控角色",
+                "setActor": "设置选中指示物为受控角色"
+            },
+            "portrait": {
+                "selectActor": "设置该角色受控"
+            },
+            "error": {
+                "selectOne": "选择一个NPC/角色指示物以设置你的受控角色。"
+            }
+        },
+        "resources": {
+            "resource": "资源",
+            "menu": {
+                "title": {
+                    "create": "创建新资源",
+                    "edit": "编辑资源"
+                },
+                "delete": "删除该资源？",
+                "min": "最小值",
+                "max": "最大值",
+                "current": "当前值",
+                "name": {
+                    "label": "资源名称",
+                    "default": "新资源"
+                },
+                "button": {
+                    "yes": {
+                        "create": "创建",
+                        "edit": "确认编辑"
+                    },
+                    "no": "取消"
+                },
+                "shared": "对其他人可见？"
+            },
+            "edit": "[右键点击]编辑资源",
+            "increase": "{click}增加{value}点",
+            "decrease": "{click}减少{value}点",
+            "step3": "[Ctrl+点击]",
+            "step2": "[Shift+点击]",
+            "step1": "[点击]",
+            "add": "添加新资源"
+        },
+        "tracker": {
+            "delay": "延迟回合",
+            "join": "加入回合",
+            "expanded": "已展开，点击折叠",
+            "collapsed": "已折叠，点击展开",
+            "fake": {
+                "nothing": "未开始",
+                "secret": "某些隐秘之事正在发生"
+            },
+            "unknown": "未知"
+        },
+        "sidebars": {
+            "actions": {
+                "thrown": "投掷{increment}/{max}尺",
+                "ranged": "射程{max}尺",
+                "rangedWithIncrement": "射程{increment}/{max}尺",
+                "blasts": "元素冲击",
+                "title": "动作",
+                "stances": "架势",
+                "reset": "重置使用次数",
+                "reach": "触及{reach}尺",
+                "outOfCombat": "[Ctrl + 点击]以强制",
+                "stowedWeapons": {
+                    "shown": "存放武器已显示",
+                    "hidden": "存放武器已隐藏"
+                }
+            },
+            "skills": {
+                "roll": "掷骰：{name}",
+                "title": "技能",
+                "follow": "跟随专家",
+                "alternate": "[右键点击]菜单变体",
+                "proficient": "熟练度"
+            },
+            "annotation": {
+                "pick-up": "拾起",
+                "retrieve": "拔出",
+                "sheathe": "收起",
+                "draw": "拖入"
+            },
+            "spells": {
+                "title": "施法",
+                "cast": "施放法术",
+                "draw": "拖入消耗品",
+                "broken": "消耗法术"
+            },
+            "extras": {
+                "title": "额外选项",
+                "noMacro": "拖拽宏至此",
+                "delete": {
+                    "title": "删除宏",
+                    "confirm": "你确定你想要删除该宏吗？"
+                },
+                "use": {
+                    "title": "执行宏"
+                },
+                "edit": {
+                    "title": "编辑宏"
+                }
+            },
+            "filter": {
+                "label": "侧边栏过滤"
+            },
+            "items": {
+                "title": "库存"
+            }
+        },
+        "rightClick": "[右键点击]",
+        "leftClick": "[左键点击]",
+        "reload": "需要刷新重载",
+        "keybindings": {
+            "setActor": {
+                "name": "设置受控角色",
+                "hint": "设置选中指示物角色受控。"
+            },
+            "filter": {
+                "name": "应用侧边栏筛选",
+                "hint": "允许对侧边栏内容进行筛选。"
+            },
+            "altTracker": {
+                "name": "开关战斗跟踪器",
+                "hint": "开关战斗跟踪器目录以显示额外选项。"
+            },
+            "previousShortcutsSet": {
+                "hint": "恢复为之前的快捷栏设置。",
+                "name": "之前的快捷栏设置"
+            },
+            "nextShortcutsSet": {
+                "hint": "切换为下一个快捷栏设置。",
+                "name": "下一个快捷栏设置"
+            }
+        },
+        "settings": {
+            "menus": {
+                "healthStatusMenu": {
+                    "name": "健康状况",
+                    "label": "配置健康状况",
+                    "hint": "设置显示在HUD的健康状况阶段。"
+                }
+            },
+            "highestSpeed": {
+                "name": "显示最高速度",
+                "hint": "如果未手动选择显示速度类型，则即便陆地速度不为0也默认显示最高速度。"
+            },
+            "useModifiers": {
+                "hint": "在不同的HUD元素中显示调整值而非DC。",
+                "name": "使用调整值"
+            },
+            "partyAsObserved": {
+                "name": "队伍盟友可查看",
+                "hint": "允许玩家查看‘队伍’中的盟友，以便在扩展工具提示或战斗跟踪器中显示健康细节。不要与‘队伍’角色混淆。"
+            },
+            "popup": {
+                "onCursor": {
+                    "name": "随光标显示",
+                    "hint": "首次渲染时，模组弹出窗口将显示于光标中心（而不是显示在视窗中心）。"
+                },
+                "fontSize": {
+                    "name": "字体大小",
+                    "hint": "弹出窗口会根据字体大小动态缩放。注意：该模块为使用14号大小字体而设计。"
+                },
+                "closeOnSendToChat": {
+                    "name": "发送至聊天则自动关闭",
+                    "hint": "是否在点击标题栏按钮发送物品至聊天时，关闭弹出窗口。"
+                },
+                "title": "弹出窗口"
+            },
+            "sidebar": {
+                "title": "侧边栏",
+                "fontSize": {
+                    "name": "字体大小",
+                    "hint": "侧边栏会根据字体大小动态缩放。注意：该模块为使用14号大小字体而设计。"
+                },
+                "multiColumns": {
+                    "name": "复数列",
+                    "hint": "当侧边栏的高度大于其最大高度时，它将被分成至多x列。注意：火狐浏览器使用此功能时会强制出现水平滚动条。"
+                },
+                "maxHeight": {
+                    "name": "最大高度",
+                    "hint": "设置侧边栏的最大高度为视窗的百分比。"
+                },
+                "hideUntrained": {
+                    "name": "隐藏未受训",
+                    "hint": "是否使侧边栏在角色技能未受训时，隐藏对应的技能动作。"
+                }
+            },
+            "shared": {
+                "enabled": {
+                    "hint": "在客户端启用HUD元素。",
+                    "name": "启用"
+                },
+                "fontSize": {
+                    "name": "字体大小",
+                    "hint": "HUD元素根据字体大小动态缩放。注意：该模块为使用14号字体而设计。"
+                },
+                "showAlliance": {
+                    "name": "盟友按钮",
+                    "hint": "在HUD上显示盟友/部署按钮。"
+                }
+            },
+            "tooltip": {
+                "title": "指示物提示工具",
+                "type": {
+                    "choices": {
+                        "never": "从不",
+                        "owned": "仅限拥有",
+                        "observed": "拥有和查看"
+                    },
+                    "hint": "何时/何种条件下显示扩展工具提示。",
+                    "name": "扩展工具提示"
+                },
+                "showStatus": {
+                    "name": "显示健康状况",
+                    "choices": {
+                        "never": "从不显示",
+                        "all": "始终显示",
+                        "small": "仅以小窗显示"
+                    },
+                    "hint": "如果你的世界已启用，则生物的健康状况何时显示在工具提示中。"
+                },
+                "delay": {
+                    "name": "工具提示延迟",
+                    "hint": "在工具提示显示在屏幕上之前的延迟，以毫秒为单位。"
+                },
+                "position": {
+                    "name": "位置",
+                    "choices": {
+                        "left": "左侧",
+                        "right": "右侧",
+                        "top": "顶部",
+                        "bottom": "底部"
+                    },
+                    "hint": "选择要显示工具提示的首选一侧，如果无法显示，模块将首先尝试在相反一侧显示，否则在剩余两侧中选择一个。"
+                },
+                "showDistance": {
+                    "name": "显示距离",
+                    "choices": {
+                        "never": "从不",
+                        "weird": "以平方为单位",
+                        "idiot": "以尺为单位",
+                        "smart": "以米为单位"
+                    },
+                    "hint": "将显示悬停指示物与自动参考的指示物之间的距离。"
+                },
+                "noDead": {
+                    "name": "死亡角色",
+                    "choices": {
+                        "none": "不显示工具提示",
+                        "full": "显示扩展工具提示",
+                        "small": "仅以小窗显示"
+                    },
+                    "hint": "悬停在死亡角色上时应显示哪种类型的工具提示。"
+                },
+                "drawDistance": {
+                    "name": "距离拉线",
+                    "hint": "在悬停指示物与‘距离’目标间画这样粗度的线。"
+                }
+            },
+            "token": {
+                "title": "指示物HUD",
+                "scaleDimensions": {
+                    "hint": "HUD的大小是否应根据其链接的指示物进行缩放，而不是采用固定尺寸。",
+                    "name": "随指示物缩放"
+                },
+                "mode": {
+                    "choices": {
+                        "left": "集中（左侧）",
+                        "right": "集中（右侧）",
+                        "exploded": "分散"
+                    },
+                    "name": "显示模式",
+                    "hint": "选择指示物HUD的显示模式。"
+                },
+                "closeAllOnCLick": {
+                    "name": "点击完全关闭",
+                    "hint": "当启用时，点击场景的任何地方将完全关闭HUD。当禁用时，它将带您退出任何输入框或首先关闭侧边栏。"
+                },
+                "closeOnSendToChat": {
+                    "name": "若发送至聊天，则关闭",
+                    "hint": "发送物品至聊天时，HUD/侧边栏是否自动关闭。"
+                },
+                "closeOnSpell": {
+                    "name": "若施法，则关闭",
+                    "hint": "释放法术时，HUD/侧边栏是否自动关闭。"
+                },
+                "closeOnSkill": {
+                    "name": "若技能掷骰，则关闭",
+                    "hint": "进行技能掷骰时，HUD/侧边栏是否自动关闭。"
+                }
+            },
+            "persistent": {
+                "title": "受控HUD",
+                "subtitle": "受控快捷栏",
+                "noflash": {
+                    "name": "禁用闪光",
+                    "hint": "当选择与当前受控角色链接的指示物时，禁用肖像闪光效果。"
+                },
+                "closeOnSkill": {
+                    "name": "技能掷骰时，关闭侧边栏",
+                    "hint": "是否在技能掷骰时，关闭侧边栏。"
+                },
+                "consumableShortcut": {
+                    "name": "快捷栏消耗品",
+                    "choices": {
+                        "use": "直接使用",
+                        "confirm": "在使用前进行确认",
+                        "chat": "仅发送至聊天"
+                    },
+                    "hint": "当点击快捷栏的消耗品时，应如何响应。"
+                },
+                "autoSet": {
+                    "choices": {
+                        "disabled": "禁用",
+                        "select": "所选择的指示物",
+                        "combat": "当前回合的参战者"
+                    },
+                    "name": "自动设置角色",
+                    "hint": "只要没有设置受控角色，当前选择的指示物角色或当前回合的参战者将自动设置为受控角色。"
+                },
+                "closeOnSpell": {
+                    "hint": "是否在施放法术时，关闭侧边栏。",
+                    "name": "若施法，则关闭侧边栏"
+                },
+                "closeOnSendToChat": {
+                    "hint": "是否在发送物品至聊天时，关闭侧边栏。",
+                    "name": "若发送至聊天，则关闭侧边栏"
+                },
+                "confirmShortcut": {
+                    "hint": "使用快捷栏的法术或动作时，是否需要进行确认。",
+                    "name": "快捷栏动作/法术确认"
+                },
+                "autoFillActions": {
+                    "name": "动作自动填充",
+                    "hint": "NPC快捷栏内是否在攻击方式后，自动添加消耗1至3个动作的行动。"
+                },
+                "autoFillReactions": {
+                    "name": "反应自动填充",
+                    "hint": "NPC快捷栏内是否在攻击方式后，自动添加反应动作。"
+                },
+                "autoFillType": {
+                    "hint": "剩余槽位填充的优先级顺序。",
+                    "choices": {
+                        "two": "动作->消耗品->法术",
+                        "one": "动作->法术->消耗品"
+                    },
+                    "name": "自动填充偏好"
+                },
+                "shortcutSlots": {
+                    "name": "快捷栏槽位",
+                    "hint": "可用的快捷栏槽位数。注意：该模块为4个槽位而设计。"
+                },
+                "drawConsumables": {
+                    "name": "必须取出消耗品",
+                    "hint": "强制在使用快捷栏消耗品前，该消耗品必须持握在手中。这不会影响从法术中拖出的卷轴，只会影响库存中的实际消耗品。"
+                },
+                "autoFillNpc": {
+                    "name": "NPC自动填充",
+                    "hint": "如果您没有进行任何手动更改，NPC快捷栏将自动填充。"
+                },
+                "keepLast": {
+                    "name": "保持持续受控",
+                    "hint": "当使用“自动设置角色”时，是否保持最后一个有效角色为受控，而不是取消设置。如果你已有受控角色且所选模式为 '所选择的指示物'，它仍然会恢复到您指定的角色。"
+                },
+                "ownerShortcuts": {
+                    "name": "使用所有者快捷栏",
+                    "hint": "如果你没有对玩家拥有的角色进行任何手动更改，则会使用其所有者快捷栏。"
+                },
+                "shiftEffects": {
+                    "hint": "需要按住Shift键才能与效果图标交互。",
+                    "name": "对效果长按Shift"
+                }
+            },
+            "resources": {
+                "title": "资源跟踪器",
+                "offlines": {
+                    "name": "显示离线资源",
+                    "hint": "显示来自离线用户的共享资源。"
+                }
+            },
+            "tracker": {
+                "title": "战斗跟踪器",
+                "started": {
+                    "name": "仅",
+                    "hint": "只有当战斗实际开始（并且有战斗参与者时），跟踪器才会向玩家显示。"
+                },
+                "textureScaling": {
+                    "name": "尺寸缩放",
+                    "hint": "基于指示物尺寸缩放对参展者画像进行缩放。"
+                }
+            },
+            "time": {
+                "title": "时间跟踪",
+                "short": {
+                    "hint": "启用后，将显示单行带有简短版本的日期和时间。你可以点击时间在两种模式之间切换。",
+                    "name": "简短日期&时间"
+                },
+                "enabled": {
+                    "hint": "在您的客户端上启用此HUD元素。当系统设置中世界时钟的“玩家访问权”被禁用时，该设置将被覆盖。"
+                }
+            },
+            "dice": {
+                "title": "骰子面板"
+            }
+        },
+        "token": {
+            "closeChoices": {
+                "never": "禁用",
+                "sidebar": "仅侧边栏",
+                "all": "HUD与侧边栏"
+            }
+        },
+        "utils": {
+            "avatar": {
+                "src": {
+                    "actor": "使用角色画像",
+                    "token": "使用指示物画像"
+                },
+                "save": "保存",
+                "cancel": "取消",
+                "title": "编辑化身 - {name}",
+                "reset": "恢复默认",
+                "contain": "容器"
+            },
+            "healthStatus": {
+                "title": "健康状况",
+                "enabled": "启用",
+                "save": "保存",
+                "cancel": "取消",
+                "import": {
+                    "label": "导入健康状况设置",
+                    "yes": "导入",
+                    "no": "取消",
+                    "error": "导入的数据无效。"
+                },
+                "add": "添加标记",
+                "delete": "删除标记",
+                "export": {
+                    "label": "导出健康状况设置",
+                    "confirm": "健康状况设置已被复制到剪贴板。"
+                },
+                "default": "死亡, 奄奄一息, 欠佳, 受创, 微伤, 完好"
+            }
+        },
+        "dialogs": {
+            "variants": {
+                "dc": "DC",
+                "drag": "拖拽至快捷栏创建选项",
+                "title": "变体动作",
+                "statistic": "统计技能"
+            },
+            "resolve": {
+                "breather": {
+                    "label": "小憩一刻",
+                    "hint": "休息10分钟，消耗一个决心点，恢复你所有的耐力。"
+                },
+                "steel": {
+                    "hint": "使用一个动作，消耗一个决心点，恢复你一半的耐力。"
+                },
+                "full": "{name}的耐力值已满且不需要休息。"
+            }
+        }
+    }
+}
