@@ -1,56 +1,5 @@
 {
     "pf2e-hud": {
-        "SHARED": {
-            "migration": {
-                "warning": {
-                    "title": "Migracja modułu",
-                    "start": "Rozpoczęcie migracji",
-                    "cancel": "Anuluj",
-                    "content": {
-                        "modules": "Następujące moduły mogą wymagać migracji danych:",
-                        "wait": "Jeśli system przeprowadza migrację własnych danych, należy poczekać przed jej rozpoczęciem"
-                    }
-                },
-                "summary": {
-                    "title": "Podsumowanie migracji",
-                    "content": "Następujące dokumenty zostały zmigrowane",
-                    "nothing": "Żaden dokument nie wymagał migracji."
-                },
-                "error": {
-                    "actors": "Wystąpił błąd podczas migracji danych aktorów świata.",
-                    "token": "Wystąpił błąd podczas migracji danych dla aktora tokenu {uuid}.",
-                    "users": "Wystąpił błąd podczas migracji danych użytkowników."
-                }
-            },
-            "spellcasting": {
-                "staff": "Kostur",
-                "charges": "Ładunki"
-            },
-            "gmOnly": "Tylko MG",
-            "reloadRequired": "Wymaga przeładowania"
-        },
-        "keybindings": {
-            "setActor": {
-                "name": "Ustawienie stałego aktora",
-                "hint": "Ustawia aktora wybranego tokena jako stałego."
-            },
-            "altTracker": {
-                "name": "Przełączanie śledzenia walki",
-                "hint": "Przełącz menu śledzenia walki, aby wyświetlić dodatkowe opcje."
-            },
-            "filter": {
-                "name": "Użyj filtra paska bocznego",
-                "hint": "Umożliwia filtrowanie bieżącej zawartości paska bocznego."
-            },
-            "previousShortcutsSet": {
-                "name": "Poprzedni zestaw skrótów",
-                "hint": "Zmiana na poprzedni zestaw skrótów."
-            },
-            "nextShortcutsSet": {
-                "name": "Następny zestaw skrótów",
-                "hint": "Zmiana na następny zestaw skrótów."
-            }
-        },
         "settings": {
             "menus": {
                 "healthStatusMenu": {
@@ -59,89 +8,25 @@
                     "hint": "Skonfiguruj podziały stanu zdrowia do wyświetlania w interfejsie HUD."
                 }
             },
-            "partyAsObserved": {
-                "name": "Drużyna sojuszników jako Obserwowani",
-                "hint": "Aktorzy w sojuszu „Drużyna” mogą być obserwowani przez graczy w celu rozszerzenia podpowiedzi lub pokazania szczegółów zdrowia w śledzeniu walki. Nie mylić z aktorem „Drużyny”."
-            },
-            "highestSpeed": {
-                "name": "Pokaż najwyższą szybkość",
-                "hint": "Jeśli żadna szybkość nie została wybrana ręcznie, najwyższa z nich będzie zawsze wyświetlana domyślnie, nawet jeśli szybkość na lądzie nie wynosi 0."
-            },
-            "useModifiers": {
-                "name": "Użycie modyfikatorów",
-                "hint": "Wyświetlanie modyfikatorów zamiast wartości poziomu trudności w różnych elementach HUD."
-            },
-            "popup": {
-                "title": "Wyskakujące okienko",
-                "onCursor": {
-                    "name": "Wyświetl na kursorze",
-                    "hint": "Wyskakujące okienko modułu zostanie wyśrodkowane na kursorze, gdy zostanie wyrenderowane po raz pierwszy (zamiast pojawiać się na środku widoku)."
-                },
-                "fontSize": {
-                    "name": "Rozmiar czcionki",
-                    "hint": "Wyskakujące okienko dynamicznie skaluje się wraz z rozmiarem czcionki. UWAGA: Moduł został zaprojektowany do używania czcionki o rozmiarze 14."
-                },
-                "closeOnSendToChat": {
-                    "name": "Zamknięcie przy wysyłaniu na czat",
-                    "hint": "Wyskakujące okienko będzie zamykane podczas wysyłania elementu na czat za pomocą przycisku nagłówka."
-                }
-            },
-            "sidebar": {
-                "title": "Paski boczne",
-                "hideUntrained": {
-                    "name": "Ukryj niewytrenowane",
-                    "hint": "Akcje umiejętności będą ukryte na pasku bocznym, jeśli postać nie jest w nich biegła."
-                },
-                "fontSize": {
-                    "name": "Rozmiar czcionki",
-                    "hint": "Paski boczne dynamicznie skalują się wraz z rozmiarem czcionki. UWAGA: Moduł został zaprojektowany do używania czcionki o rozmiarze 14."
-                },
-                "multiColumns": {
-                    "name": "Wiele kolumn",
-                    "hint": "Gdy wysokość paska bocznego jest większa niż jego maksymalna wysokość, zostanie on podzielony na maksymalnie x kolumn. UWAGA: Firefox ma dziwne ograniczenie polegające na wymuszaniu przewijania w poziomie podczas korzystania z tej funkcji."
-                },
-                "maxHeight": {
-                    "name": "Maksymalna wysokość",
-                    "hint": "Ustawia maksymalną wysokość pasków bocznych jako procent widoku."
-                }
-            },
-            "shared": {
-                "enabled": {
-                    "name": "Włączone",
-                    "hint": "Włącza ten element HUD na kliencie."
-                },
-                "fontSize": {
-                    "name": "Rozmiar czcionki",
-                    "hint": "Element HUD dynamicznie skaluje się wraz z rozmiarem czcionki. UWAGA: Moduł został zaprojektowany do używania czcionki o rozmiarze 14."
-                },
-                "showAlliance": {
-                    "name": "Przycisk sojuszu",
-                    "hint": "Pokaż przycisk sojuszu/dyspozycji na HUD."
-                }
-            },
             "tooltip": {
                 "title": "Podpowiedzi tokena",
-                "type": {
-                    "name": "Rozszerzone podpowiedzi",
-                    "hint": "Czy/kiedy powinna być używana rozszerzona wersja podpowiedzi.",
-                    "choices": {
-                        "never": "Nigdy",
-                        "owned": "Tylko właściciel",
-                        "observed": "Właściciel i obserwator"
-                    }
-                },
-                "showStatus": {
-                    "name": "Wyświetl stan zdrowia",
-                    "hint": "Informacja o tym, kiedy stan zdrowia stworzeń powinien być wyświetlany w podpowiedzi, jeśli jest ona włączona na danym świecie.",
-                    "choices": {
-                        "never": "Nigdy",
-                        "small": "Tylko mała wersja",
-                        "all": "Zawsze"
-                    }
-                },
                 "delay": {
                     "name": "Opóźnienie podpowiedzi",
                     "hint": "Opóźnienie w milisekundach przed wyświetleniem podpowiedzi na ekranie."
+                },
+                "distance": {
+                    "name": "Wyświetlanie odległości",
+                    "hint": "Wyświetla odległość między najechanym tokenem a tokenem, który jest wnioskowany automatycznie.",
+                    "choices": {
+                        "never": "Nigdy",
+                        "idiot": "W stopach",
+                        "smart": "W metrach",
+                        "weird": "W kwadratach"
+                    }
+                },
+                "draw": {
+                    "name": "Rysowanie odległości",
+                    "hint": "Narysuj linię o tej grubości między zaznaczonym tokenem a \"odległym\" celem."
                 },
                 "position": {
                     "name": "Pozycja",
@@ -153,437 +38,35 @@
                         "bottom": "Dół"
                     }
                 },
-                "showDistance": {
-                    "name": "Wyświetlanie odległości",
-                    "hint": "Wyświetla odległość między najechanym tokenem a tokenem, który jest wnioskowany automatycznie.",
-                    "choices": {
-                        "never": "Nigdy",
-                        "idiot": "W stopach",
-                        "smart": "W metrach",
-                        "weird": "W kwadratach"
-                    }
-                },
-                "drawDistance": {
-                    "name": "Rysowanie odległości",
-                    "hint": "Narysuj linię o tej grubości między zaznaczonym tokenem a \"odległym\" celem."
-                },
-                "noDead": {
-                    "name": "Martwy aktor",
-                    "hint": "Jaki typ podpowiedzi powinien być wyświetlany po najechaniu kursorem na martwego aktora.",
-                    "choices": {
-                        "none": "Brak podpowiedzi",
-                        "small": "Tylko mała wersja",
-                        "full": "Rozszerzona wersja"
-                    }
+                "status": {
+                    "name": "Wyświetl stan zdrowia"
                 }
-            },
-            "token": {
-                "title": "HUD tokena",
-                "scaleDimensions": {
-                    "name": "Skalowanie wraz z tokenem",
-                    "hint": "HUD będzie mieć wymiary skalowane wraz z tokenem, do którego jest dołączony, zamiast mieć stałe wymiary."
-                },
-                "mode": {
-                    "name": "Tryb wyświetlania",
-                    "hint": "Wybierz tryb wyświetlania HUD tokena.",
-                    "choices": {
-                        "exploded": "Rozłożony",
-                        "left": "Zgrupowany (po lewej)",
-                        "right": "Zgrupowany (po prawej)"
-                    }
-                },
-                "closeAllOnCLick": {
-                    "name": "Całkowite zamknięcie po kliknięciu",
-                    "hint": "Po włączeniu, kliknięcie w dowolnym miejscu na planszy spowoduje całkowite zamknięcie HUD. Gdy jest wyłączone, spowoduje opuszczenie dowolnego pola wprowadzania danych lub zamknięcie paska bocznego."
-                },
-                "closeOnSpell": {
-                    "name": "Zamknięcie po rzuceniu zaklęcia",
-                    "hint": "HUD / pasek boczny będzie zamykany podczas rzucania zaklęcia."
-                },
-                "closeOnSendToChat": {
-                    "name": "Zamknięcie przy wysyłaniu na czat",
-                    "hint": "HUD / pasek boczny będzie zamykany podczas wysyłania przedmiotu na czat."
-                },
-                "closeOnSkill": {
-                    "name": "Zamknięcie przy rzucie umiejętności",
-                    "hint": "HUD / pasek boczny będzie zamykany podczas rzucania na umiejętność."
-                }
-            },
-            "persistent": {
-                "title": "Stały HUD",
-                "subtitle": "Stałe skróty",
-                "noflash": {
-                    "name": "Wyłączanie błyskania",
-                    "hint": "Wyłącza efekt błysku portretu podczas wybierania tokena powiązanego z aktualnie ustawionym stałym aktorem."
-                },
-                "closeOnSkill": {
-                    "name": "Zamknięcie paska bocznego przy rzucie umiejętności",
-                    "hint": "Pasek boczny będzie zamykany podczas rzucania na umiejętność"
-                },
-                "closeOnSpell": {
-                    "name": "Zamknięcie paska bocznego przy rzucaniu zaklęcia",
-                    "hint": "Pasek boczny będzie zamykany podczas rzucania zaklęcia."
-                },
-                "closeOnSendToChat": {
-                    "name": "Zamknięcie paska bocznego przy wysyłaniu na czat",
-                    "hint": "Pasek boczny będzie zamykany podczas wysyłania przedmiotu na czat."
-                },
-                "consumableShortcut": {
-                    "name": "Skrót do materiałów zużywalnych",
-                    "hint": "Co powinno zrobić kliknięcie skrótu materiałów zużywalnych.",
-                    "choices": {
-                        "use": "Bezpośrednie użycie",
-                        "confirm": "Potwierdź przed użyciem",
-                        "chat": "Wyślij tylko na czat"
-                    }
-                },
-                "confirmShortcut": {
-                    "name": "Potwierdzenie akcji/skrótu zaklęcia",
-                    "hint": "Skróty zaklęć i akcji będą wymagać potwierdzenia przed ich użyciem."
-                },
-                "autoSet": {
-                    "name": "Automatycznie ustawiany aktor",
-                    "hint": "Jeśli nie ustawiono żadnego stałego aktora, aktualnie wybrany token aktora lub aktualny aktor walczący zostanie automatycznie ustawiony jako stały.",
-                    "choices": {
-                        "disabled": "Wyłączony",
-                        "select": "Zaznaczony token",
-                        "combat": "Bieżący uczestnik walki"
-                    }
-                },
-                "keepLast": {
-                    "name": "Zachowaj ostatniego stałego aktora",
-                    "hint": "Czy podczas korzystania z opcji \"Automatycznie ustawianiy aktor\" ostatni prawidłowy aktor powinien zostać zachowany jako stały, zamiast zostać usunięty. Nadal powróci do przypisanego aktora, jeśli go masz i wybrano opcję \"Zaznaczony token\"."
-                },
-                "autoFillNpc": {
-                    "name": "Automatyczne wypełnianie NPC",
-                    "hint": "Jeśli nie wprowadzono żadnych ręcznych zmian, miejsca na skróty zostaną automatycznie wypełnione."
-                },
-                "autoFillActions": {
-                    "name": "Autouzupełnianie akcji",
-                    "hint": "Akcje NPC kosztujące od 1 do 3 akcji będą dodawane po atakach."
-                },
-                "autoFillReactions": {
-                    "name": "Autouzupełnianie reakcji",
-                    "hint": "Reakcje NPC będą dodane po atakach."
-                },
-                "autoFillType": {
-                    "name": "Autouzupełnianie preferencji",
-                    "hint": "Kolejność priorytetów dla pozostałych miejsc.",
-                    "choices": {
-                        "one": "Akcje -> Zaklęcia -> Materiały zużywalne",
-                        "two": "Akcje -> Materiały zużywalne -> Zaklęcia"
-                    }
-                },
-                "ownerShortcuts": {
-                    "name": "Używanie skrótów właściciela",
-                    "hint": "Jeśli nie dokonano żadnych ręcznych zmian w aktorze będącym własnością postaci, użyte zostaną skróty jego właściciela."
-                },
-                "shiftEffects": {
-                    "name": "Przytrzymanie Shift dla efektów",
-                    "hint": "Wymaga przytrzymania klawisza Shift w celu interakcji z ikonami efektów."
-                },
-                "shortcutSlots": {
-                    "name": "Miejsca na skróty",
-                    "hint": "Liczba dostępnych miejsc na skróty. UWAGA: Moduł został zaprojektowany na 4 miejsca."
-                },
-                "drawConsumables": {
-                    "name": "Musi nosić przedmioty zużywalne",
-                    "hint": "Wymusza noszenie przedmiotów zużywalnych przed użyciem ich skrótu. Nie ma to wpływu na zwoje, które zostały przeciągnięte z zaklęć, a jedynie na rzeczywiste przedmioty z ekwipunku."
-                }
-            },
-            "tracker": {
-                "title": "Śledzenie walki",
-                "started": {
-                    "name": "Tylko po rozpoczęciu",
-                    "hint": "Śledzenie będzie widoczne dla graczy tylko wtedy, gdy walka faktycznie się rozpoczęła (oprócz konieczności udziału walczącego)."
-                },
-                "textureScaling": {
-                    "name": "Skalowanie tekstur",
-                    "hint": "Odwraca skalowanie obrazu walczącego w oparciu o skalowanie tekstury tokena."
-                }
-            },
-            "resources": {
-                "title": "Śledzenie zasobów",
-                "offlines": {
-                    "name": "Pokaż zasoby graczy offline",
-                    "hint": "Wyświetlaj również udostępnione zasoby od użytkowników offline."
-                }
-            },
-            "time": {
-                "title": "Śledzenie czasu",
-                "enabled": {
-                    "hint": "Włącza ten element HUD na kliencie. Jest to nadpisywane, gdy ustawienie systemowego zegara światowego „Dostęp gracza” jest wyłączone."
-                },
-                "short": {
-                    "name": "Skrócona data i godzina",
-                    "hint": "Po włączeniu wyświetlany będzie pojedynczy wiersz ze skróconą wersją daty i godziny. Możesz kliknąć godzinę, aby przełączać się między obydwoma trybami."
-                }
-            },
-            "dice": {
-                "title": "Panel kości"
             }
         },
-        "hud": {
-            "adjustment": "Charakter: {value}",
-            "alliance": "Sojusz: {value}",
-            "tempHP": "Tymczasowe Punkty Wytrzymałości",
-            "resolve": {
-                "title": "Użyj Punkt Determinacji",
-                "full": "{name} ma pełną staminę i nie potrzebuje odpoczynku.",
-                "breather": {
-                    "used": "{name} ma {ratio} PS i wydaje punkt determinacji, odpoczywając przez 10 minut. Stamina odświeżona."
-                }
-            }
+        "health-status": {
+            "title": "Stan zdrowia",
+            "enabled": "Włączone",
+            "add": "Dodaj znacznik",
+            "delete": "Usuń znacznik",
+            "save": "Zapisz",
+            "cancel": "Anuluj",
+            "import": {
+                "title": "Importuj stan zdrowia",
+                "yes": "Importuj",
+                "no": "Anuluj",
+                "error": "Podane dane są nieprawidłowe."
+            },
+            "export": {
+                "title": "Eksportuj stan zdrowia",
+                "confirm": "Stan zdrowia został skopiowany do schowka."
+            },
+            "default": "Martwy, Bliski śmierci, Ciężko ranny, Ranny, Lekko ranny, Bez obrażeń"
         },
         "tooltip": {
             "distance": {
                 "feet": "stóp",
                 "meter": "m",
                 "square": "kwadrat"
-            }
-        },
-        "token": {
-            "closeChoices": {
-                "never": "Wyłączony",
-                "sidebar": "Tylko pasek boczny",
-                "all": "HUD i pasek boczny"
-            }
-        },
-        "persistent": {
-            "error": {
-                "selectOne": "Wybierz pojedynczy token NPC/postaci, aby ustawić go jako stałego aktora."
-            },
-            "menu": {
-                "openSheet": "Otwórz kartę",
-                "setActor": "Ustawienie wybranego tokena jako stałego aktora",
-                "unsetActor": "Usuń ustawionego stałego aktora",
-                "clean": {
-                    "always": "Zawsze wyświetlaj interfejs użytkownika w orientacji pionowej",
-                    "hover": "Wyświetlanie interfejsu użytkownika tylko po najechaniu na portret"
-                }
-            },
-            "portrait": {
-                "selectActor": "Ustaw tego aktora jako stałego"
-            },
-            "main": {
-                "shortcut": {
-                    "dc": "ST {dc}",
-                    "unassigned": "nieprzypisany",
-                    "alwaysEnabled": "Zawsze włączony",
-                    "wrongActor": "Skróty można tworzyć tylko od tego samego stałego aktora.",
-                    "wrongType": "Nie można utworzyć skrótu tego typu.",
-                    "wrongOrigin": "Tylko zaklęcia z paska bocznego HUD mogą zostać przekształcone w skróty.",
-                    "confirm": {
-                        "title": "Użycie - {name}",
-                        "message": "Czy na pewno chcesz użyć <strong>{name}</strong>?"
-                    },
-                    "draw": {
-                        "title": "{type} - {name}",
-                        "message": "Czy na pewno chcesz {type} <strong>{name}</strong>?"
-                    },
-                    "noChannelElements": "Nie można znaleźć akcji <strong>Kanał Żywiołów</strong> na tej postaci.",
-                    "delete": {
-                        "title": "Resetowanie skrótów",
-                        "message": "Czy na pewno chcesz usunąć bieżące skróty ustawione dla <strong>{name}</strong>?"
-                    },
-                    "fill": {
-                        "title": "Autouzupełnianie skrótów",
-                        "message": "Czy na pewno chcesz automatycznie wypełnić wszystkie skróty dla <strong>{name}</strong>?"
-                    },
-                    "owner": {
-                        "title": "Kopiowanie skrótów właściciela",
-                        "message": "Czy na pewno chcesz skopiować wszystkie zestawy skrótów i ich automatyzację od właściciela <strong>{name}</strong>?",
-                        "none": "Ta postać nie ma żadnego właściciela z ustawionymi skrótami.",
-                        "self": "Próbujesz kopiować od samego siebie."
-                    },
-                    "navigation": "Zmiana bieżącego zestawu skrótów<br>[Środkowe kliknięcie] Automatyzacja ustawień",
-                    "automation": {
-                        "title": "Zestaw skrótów ({set}) - Automatyzacja",
-                        "legend": "UUID makra/efektu",
-                        "hint": "Jeśli efekt aktualnie istnieje na aktorze lub jeśli makro zwróci wartość <strong>true</strong>, ten zestaw skrótów zostanie automatycznie użyty.",
-                        "zero": "Pierwszy zestaw skrótów nie może mieć żadnej automatyzacji."
-                    }
-                },
-                "effects": {
-                    "shift": "Zmiana",
-                    "toggle": "Przełącz efekty"
-                }
-            }
-        },
-        "tracker": {
-            "expanded": "Rozwinięte, kliknij, aby zwinąć",
-            "collapsed": "Zwinięte, kliknij, aby rozwinąć",
-            "fake": {
-                "nothing": "Potyczka nie została rozpoczęta",
-                "secret": "Dzieje się coś tajemniczego"
-            },
-            "unknown": "Nieznany",
-            "delay": "Opóźnienie tury",
-            "join": "Dołącz do tury"
-        },
-        "resources": {
-            "resource": "Zasób",
-            "add": "Dodaj nowy zasób",
-            "menu": {
-                "title": {
-                    "create": "Utwórz nowy zasób",
-                    "edit": "Edytuj zasób"
-                },
-                "delete": "Usunąć zasób?",
-                "min": "Wartość minimalna",
-                "max": "Wartość maksymalna",
-                "current": "Bieżąca wartość",
-                "shared": "Widoczny dla innych?",
-                "name": {
-                    "label": "Nazwa zasobu",
-                    "default": "Nowy zasób"
-                },
-                "button": {
-                    "yes": {
-                        "create": "Utwórz",
-                        "edit": "Edytuj"
-                    },
-                    "no": "Anuluj"
-                }
-            },
-            "edit": "[Prawy przycisk myszy] Edytuj zasób",
-            "increase": "{click} zwiększa o {value}",
-            "decrease": "{click} zmniejsza o {value}",
-            "step1": "[Kliknij]",
-            "step2": "[Shift-Kliknięcie]",
-            "step3": "[Ctrl-Kliknięcie]"
-        },
-        "sidebars": {
-            "actions": {
-                "title": "Akcje",
-                "reach": "Zasięg {reach} stóp",
-                "thrown": "Rzut {increment}/{max} stóp",
-                "ranged": "Dystans {max} stóp",
-                "rangedWithIncrement": "Dystans {increment}/{max} stóp",
-                "blasts": "Żywiołowe Podmuchy",
-                "stances": "Postawy",
-                "reset": "Resetowanie użycia",
-                "stowedWeapons": {
-                    "shown": "Broń schowana jest wyświetlana",
-                    "hidden": "Broń schowana jest ukryta"
-                },
-                "outOfCombat": "[Ctrl + Kliknięcie] aby wymusić"
-            },
-            "annotation": {
-                "pick-up": "Podnoszenie",
-                "retrieve": "Odzyskanie",
-                "sheathe": "Schowek",
-                "draw": "Wyciągnięcie"
-            },
-            "items": {
-                "title": "Ekwipunek"
-            },
-            "spells": {
-                "title": "Rzucanie zaklęć",
-                "cast": "Rzuć zaklęcie",
-                "draw": "Noszenie przedmiotów zużywalnych",
-                "broken": "Przerwane zaklęcie"
-            },
-            "skills": {
-                "title": "Umiejętności",
-                "roll": "Rzuć: {name}",
-                "proficient": "Biegłość",
-                "follow": "Podążaj za Ekspertem",
-                "alternate": "Menu wariantów [prawy przycisk myszy]"
-            },
-            "extras": {
-                "title": "Dodatki",
-                "noMacro": "Upuść makra tutaj",
-                "delete": {
-                    "title": "Usuń makro",
-                    "confirm": "Czy na pewno chcesz usunąć to makro?"
-                },
-                "use": {
-                    "title": "Uruchom makro"
-                },
-                "edit": {
-                    "title": "Edytuj makro"
-                }
-            },
-            "filter": {
-                "label": "Filtr paska bocznego"
-            }
-        },
-        "leftClick": "[Kliknij lewym]",
-        "rightClick": "[Kliknij prawym]",
-        "actions": {
-            "borrowArcaneSpell": "Pożyczanie Tajemnego Zaklęcia",
-            "recall-knowledge": {
-                "result": "Wynik",
-                "modifier": "Mod.",
-                "target": "Cel",
-                "first": "1.",
-                "second": "2.",
-                "third": "3.",
-                "fourth": "4.",
-                "fifth": "5.",
-                "sixth": "6.",
-                "dc": "ST",
-                "unspecific": "Nieokreślony",
-                "specific": "Określony",
-                "skill": "Umiejętność",
-                "lore": "Umiejętność wiedzy",
-                "proficiency": "Biegłość"
-            },
-            "drive": {
-                "drive1": "Napęd <span class=\"action-glyph\">1</span>",
-                "drive2": "Napęd <span class=\"action-glyph\">2</span>",
-                "drive3": "Napęd <span class=\"action-glyph\">3</span>"
-            }
-        },
-        "utils": {
-            "avatar": {
-                "title": "Edytuj awatar - {name}",
-                "src": {
-                    "actor": "Użyj obrazu aktora",
-                    "token": "Użyj obrazu tokena"
-                },
-                "save": "Zapisz",
-                "cancel": "Anuluj",
-                "contain": "Zawartość",
-                "reset": "Reset"
-            },
-            "healthStatus": {
-                "title": "Stan zdrowia",
-                "enabled": "Włączone",
-                "add": "Dodaj znacznik",
-                "delete": "Usuń znacznik",
-                "save": "Zapisz",
-                "cancel": "Anuluj",
-                "import": {
-                    "label": "Importuj stan zdrowia",
-                    "yes": "Importuj",
-                    "no": "Anuluj",
-                    "error": "Podane dane są nieprawidłowe."
-                },
-                "export": {
-                    "label": "Eksportuj stan zdrowia",
-                    "confirm": "Stan zdrowia został skopiowany do schowka."
-                },
-                "default": "Martwy, Bliski śmierci, Ciężko ranny, Ranny, Lekko ranny, Bez obrażeń"
-            }
-        },
-        "dialogs": {
-            "variants": {
-                "title": "Warianty akcji",
-                "statistic": "Statystyka",
-                "dc": "Klasa trudności",
-                "drag": "Przeciągnij, aby utworzyć skrót"
-            },
-            "resolve": {
-                "full": "{name} ma pełną staminę i nie potrzebuje odpoczynku.",
-                "breather": {
-                    "label": "Złap Oddech",
-                    "hint": "Odpocznij przez 10 minut, wydaj punkt determinacji i odzyskaj całą staminę."
-                },
-                "steel": {
-                    "hint": "Użyj akcji, wydaj punkt determinacji i odzyskaj połowę staminy."
-                }
             }
         }
     }

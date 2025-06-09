@@ -1,3 +1,20 @@
+# 2.0.0
+
+-   this is a foundry `13.344` and system `7.1.1` release
+-   as i have decided to completely remake the module, it is gonna be some time before it is finished, this is why i have opted to make a release whenever something substantial has been done
+-   from this update and onward, you can expect:
+    -   `client` settings to be converted into `user` settings and reset to default
+    -   `Font Size` settings to be removed, the module will make use of the foundry `Interface Scale` setting instead
+-   this first release contains the `Health Status` menu and the `Token Tooltip` HUD
+-   `Health Status`:
+    -   reset its `enabled` state to default (enabled)
+-   `Token Tooltip`:
+    -   no longer has an extended version
+    -   remove the `Enabled` and other extended-related settings
+    -   both the `Display Distance` and `Display Health Status` settings are used to decide if the tooltip is enabled
+    -   convert the `Display Health Status` setting into a boolean
+-   add chinese localization
+
 # 1.34.0
 
 -   `Persistent Shortcuts`:

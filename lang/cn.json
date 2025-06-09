@@ -1,0 +1,73 @@
+{
+    "pf2e-hud": {
+        "settings": {
+            "menus": {
+                "healthStatusMenu": {
+                    "name": "健康状况",
+                    "label": "配置健康状况",
+                    "hint": "设置显示在HUD的健康状况阶段。"
+                }
+            },
+            "tooltip": {
+                "title": "指示物提示工具",
+                "delay": {
+                    "name": "工具提示延迟",
+                    "hint": "在工具提示显示在屏幕上之前的延迟，以毫秒为单位。"
+                },
+                "distance": {
+                    "name": "显示距离",
+                    "hint": "将显示悬停指示物与自动参考的指示物之间的距离。",
+                    "choices": {
+                        "never": "从不",
+                        "weird": "以平方为单位",
+                        "idiot": "以尺为单位",
+                        "smart": "以米为单位"
+                    }
+                },
+                "draw": {
+                    "name": "距离拉线",
+                    "hint": "在悬停指示物与‘距离’目标间画这样粗度的线。"
+                },
+                "position": {
+                    "name": "位置",
+                    "hint": "选择要显示工具提示的首选一侧，如果无法显示，模块将首先尝试在相反一侧显示，否则在剩余两侧中选择一个。",
+                    "choices": {
+                        "left": "左侧",
+                        "right": "右侧",
+                        "top": "顶部",
+                        "bottom": "底部"
+                    }
+                },
+                "status": {
+                    "name": "显示健康状况"
+                }
+            }
+        },
+        "health-status": {
+            "title": "健康状况",
+            "enabled": "启用",
+            "save": "保存",
+            "cancel": "取消",
+            "import": {
+                "label": "导入健康状况设置",
+                "yes": "导入",
+                "no": "取消",
+                "error": "导入的数据无效。"
+            },
+            "add": "添加标记",
+            "delete": "删除标记",
+            "export": {
+                "label": "导出健康状况设置",
+                "confirm": "健康状况设置已被复制到剪贴板。"
+            },
+            "default": "死亡, 奄奄一息, 欠佳, 受创, 微伤, 完好"
+        },
+        "tooltip": {
+            "distance": {
+                "meter": "m",
+                "square": "sq.",
+                "feet": "尺"
+            }
+        }
+    }
+}

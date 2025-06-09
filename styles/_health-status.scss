@@ -91,7 +91,7 @@
             padding-inline: var(--outer-padding);
             height: var(--row-height);
             display: grid;
-            grid-template-columns: var(--marker-width) 14em;
+            grid-template-columns: var(--marker-width) 20em;
             align-items: center;
             gap: var(--row-inline-gap);
 
@@ -128,7 +128,8 @@
     }
 
     .buttons {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         padding-inline: 0.5em;
         gap: 0.5em;
         margin-top: 0.5em;

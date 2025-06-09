@@ -1,56 +1,5 @@
 {
     "pf2e-hud": {
-        "SHARED": {
-            "migration": {
-                "warning": {
-                    "title": "Module Migration",
-                    "start": "Start Migration",
-                    "cancel": "Cancel",
-                    "content": {
-                        "modules": "The following module(s) may need to migrate data:",
-                        "wait": "If the system is migrating its own data, please wait before starting"
-                    }
-                },
-                "summary": {
-                    "title": "Migration Summary",
-                    "content": "The following documents were migrated",
-                    "nothing": "No document needed to be migrated."
-                },
-                "error": {
-                    "actors": "An error occured while migrating data for world actors.",
-                    "token": "An error occured while migrating data for the token actor {uuid}.",
-                    "users": "An error occured while migrating data for users."
-                }
-            },
-            "spellcasting": {
-                "staff": "Staff",
-                "charges": "Charges"
-            },
-            "gmOnly": "GM Only",
-            "reloadRequired": "Requires Reload"
-        },
-        "keybindings": {
-            "setActor": {
-                "name": "Set Persistent Actor",
-                "hint": "Set the selected token's actor as persistent."
-            },
-            "altTracker": {
-                "name": "Toggle Combat Tracker",
-                "hint": "Toggle the combat tracker menu to show additional options."
-            },
-            "filter": {
-                "name": "Use Sidebar Filter",
-                "hint": "Allow filtering the current sidebar content."
-            },
-            "previousShortcutsSet": {
-                "name": "Previous Shortcuts Set",
-                "hint": "Change to the previous shortcuts set."
-            },
-            "nextShortcutsSet": {
-                "name": "Next Shortcuts Set",
-                "hint": "Change to the next shortcuts set."
-            }
-        },
         "settings": {
             "menus": {
                 "healthStatusMenu": {
@@ -59,89 +8,25 @@
                     "hint": "Set up Health Status divisions to display in the HUDs."
                 }
             },
-            "partyAsObserved": {
-                "name": "Party Alliance as Observed",
-                "hint": "Consider actors in the 'Party' alliance to be observed by players for the sake of extending the tooltip or showing health details in the combat tracker. Not to be confused with the 'Party' actor."
-            },
-            "highestSpeed": {
-                "name": "Show Highest Speed",
-                "hint": "If no speed was manually selected, the highest one will always be shown by default even if the land speed isn't 0."
-            },
-            "useModifiers": {
-                "name": "Use Modifiers",
-                "hint": "Display modifiers instead of the difficulty value in the different HUD elements."
-            },
-            "popup": {
-                "title": "Popup",
-                "onCursor": {
-                    "name": "Show on Cursor",
-                    "hint": "The module popup will be centered on the cursor when it is first rendered (instead of showing up in the center of the viewport)."
-                },
-                "fontSize": {
-                    "name": "Font Size",
-                    "hint": "The popup dynamically scales with the font size. NOTE: The module was designed to use a font size of 14."
-                },
-                "closeOnSendToChat": {
-                    "name": "Close on Send-to-Chat",
-                    "hint": "Should the popup be closed when sending an item to chat from the header button."
-                }
-            },
-            "sidebar": {
-                "title": "Sidebars",
-                "hideUntrained": {
-                    "name": "Hide Untrained",
-                    "hint": "Should skill actions be hidden from the sidebar if the character isn't proficient with them."
-                },
-                "fontSize": {
-                    "name": "Font Size",
-                    "hint": "The sidebars dynamically scale with the font size. NOTE: The module was designed to use a font size of 14."
-                },
-                "multiColumns": {
-                    "name": "Multi Columns",
-                    "hint": "When a sidebar's height is bigger than its max-height, it will be split into up to x columns. NOTE: Firefox has a weird quirk of forcing horizontal scrolling when using this feature."
-                },
-                "maxHeight": {
-                    "name": "Max Height",
-                    "hint": "Sets the sidebars max height as a percentage of the viewport."
-                }
-            },
-            "shared": {
-                "enabled": {
-                    "name": "Enabled",
-                    "hint": "Enables this HUD element on your client."
-                },
-                "fontSize": {
-                    "name": "Font Size",
-                    "hint": "The HUD element dynamically scales with the font size. NOTE: The module was designed to use a font size of 14."
-                },
-                "showAlliance": {
-                    "name": "Alliance Button",
-                    "hint": "Show the alliance/disposition button on the HUD."
-                }
-            },
             "tooltip": {
                 "title": "Token Tooltip",
-                "type": {
-                    "name": "Extended Tooltip",
-                    "hint": "If/when the extended version of the tooltip should be used.",
-                    "choices": {
-                        "never": "Never",
-                        "owned": "Owned Only",
-                        "observed": "Owned and observed"
-                    }
-                },
-                "showStatus": {
-                    "name": "Display Health Status",
-                    "hint": "When should the creatures' health state be displayed on the tooltip if enabled in you world.",
-                    "choices": {
-                        "never": "Never",
-                        "small": "Small Version Only",
-                        "all": "Always"
-                    }
-                },
                 "delay": {
                     "name": "Tooltip Delay",
                     "hint": "Delay in milliseconds before the tooltip shows up on screen."
+                },
+                "distance": {
+                    "name": "Display Distance",
+                    "hint": "Will display the distance between the hovered token and one that is inferred automatically.",
+                    "choices": {
+                        "never": "Never",
+                        "idiot": "In Feet",
+                        "smart": "In Meters",
+                        "weird": "In Squares"
+                    }
+                },
+                "draw": {
+                    "name": "Draw Distance",
+                    "hint": "Draw a line of this thickness between the hovered token and the 'distance' target."
                 },
                 "position": {
                     "name": "Position",
@@ -153,437 +38,36 @@
                         "bottom": "Bottom"
                     }
                 },
-                "showDistance": {
-                    "name": "Display Distance",
-                    "hint": "Will display the distance between the hovered token and one that is inferred automatically.",
-                    "choices": {
-                        "never": "Never",
-                        "idiot": "In Feet",
-                        "smart": "In Meters",
-                        "weird": "In Squares"
-                    }
-                },
-                "drawDistance": {
-                    "name": "Draw Distance",
-                    "hint": "Draw a line of this thickness between the hovered token and the 'distance' target."
-                },
-                "noDead": {
-                    "name": "Dead Actor",
-                    "hint": "What type of tooltip should be displayed when hovering over a dead actor.",
-                    "choices": {
-                        "none": "No Tooltip",
-                        "small": "Small Version Only",
-                        "full": "Extended Version"
-                    }
+                "status": {
+                    "name": "Display Health Status",
+                    "hint": "Should health state be displayed on the tooltip if enabled in you world."
                 }
-            },
-            "token": {
-                "title": "Token HUD",
-                "scaleDimensions": {
-                    "name": "Scale With Token",
-                    "hint": "Should the HUD have its dimensions scaled with the token it is attached to instead of having fixed dimensions."
-                },
-                "mode": {
-                    "name": "Display Mode",
-                    "hint": "Select the mode of display of the token HUD.",
-                    "choices": {
-                        "exploded": "Exploded",
-                        "left": "Grouped (Left)",
-                        "right": "Grouped (Right)"
-                    }
-                },
-                "closeAllOnCLick": {
-                    "name": "Full Close on Click",
-                    "hint": "When enabled, clicking anywhere on the board will close the HUD entirely. When disabled, it will take you out of any input field or close the sidebar first."
-                },
-                "closeOnSpell": {
-                    "name": "Close on Spell Cast",
-                    "hint": "Should the HUD/sidebar be closed when casting a spell."
-                },
-                "closeOnSendToChat": {
-                    "name": "Close on Send-to-Chat",
-                    "hint": "Should the HUD/sidebar be closed when sending an item to chat."
-                },
-                "closeOnSkill": {
-                    "name": "Close on Skill Roll",
-                    "hint": "Should the HUD/sidebar be closed when rolling a skill."
-                }
-            },
-            "persistent": {
-                "title": "Persistent HUD",
-                "subtitle": "Persistent Shortcuts",
-                "noflash": {
-                    "name": "Disable Flash",
-                    "hint": "Disables the portrait flash effect when selecting a token linked to the currently set persistent actor."
-                },
-                "closeOnSkill": {
-                    "name": "Close Sidebar on Skill Roll",
-                    "hint": "Should the sidebar be closed when rolling a skill."
-                },
-                "closeOnSpell": {
-                    "name": "Close Sidebar on Spell Cast",
-                    "hint": "Should the sidebar be closed when casting a spell."
-                },
-                "closeOnSendToChat": {
-                    "name": "Close Sidebar on Send-to-Chat",
-                    "hint": "Should the sidebar be closed when sending an item to chat."
-                },
-                "consumableShortcut": {
-                    "name": "Consumable Shortcut",
-                    "hint": "What clicking on a consumable shortcut should do.",
-                    "choices": {
-                        "use": "Use Directly",
-                        "confirm": "Confirm Before Use",
-                        "chat": "Send-to-Chat Only"
-                    }
-                },
-                "confirmShortcut": {
-                    "name": "Confirm Action/Spell Shortcut",
-                    "hint": "Should spell and action shortcuts require confirmation before being used."
-                },
-                "autoSet": {
-                    "name": "Auto-Set Actor",
-                    "hint": "Whenever no persistent actor has been set, the currently selected token actor or the current combatant actor will automatically be set as persistent.",
-                    "choices": {
-                        "disabled": "Disabled",
-                        "select": "On Token Selection",
-                        "combat": "Current Combatant"
-                    }
-                },
-                "keepLast": {
-                    "name": "Keep Last Persistent",
-                    "hint": "When using 'Auto-Set Actor', should the last valid actor be kept as persistent instead of being unset. It will still revert to your assigned actor if you have one and 'On Token Selection' is chosen."
-                },
-                "autoFillNpc": {
-                    "name": "Auto-Fill NPCs",
-                    "hint": "If you haven't made any manual changes, the shortcut slots will automatically be filled."
-                },
-                "autoFillActions": {
-                    "name": "Auto-fill Actions",
-                    "hint": "Should NPC actions that cost 1 to 3 actions be added after the attacks."
-                },
-                "autoFillReactions": {
-                    "name": "Auto-fill Reactions",
-                    "hint": "Should NPC reactions be added after the attacks."
-                },
-                "autoFillType": {
-                    "name": "Auto-Fill Preference",
-                    "hint": "The priority order for the remaining slots.",
-                    "choices": {
-                        "one": "Actions -> Spells -> Consumables",
-                        "two": "Actions -> Consumables -> Spells"
-                    }
-                },
-                "ownerShortcuts": {
-                    "name": "Use Owner Shortcuts",
-                    "hint": "If you haven't made any manual changes to a character owned actor, its owner shortcuts will be used."
-                },
-                "shiftEffects": {
-                    "name": "Hold Shift for Effects",
-                    "hint": "Requires holding the shift key to interact with effect icons."
-                },
-                "shortcutSlots": {
-                    "name": "Shortcut Slots",
-                    "hint": "The number of shortcut slots available. NOTE: The module was designed to have 4 slots."
-                },
-                "drawConsumables": {
-                    "name": "Must Draw Consumable",
-                    "hint": "Forces consumables to be carried before being able to use their shortcut. This doesn't affect scrolls that were dragged from the spells, only actual consumable items from the inventory."
-                }
-            },
-            "tracker": {
-                "title": "Combat Tracker",
-                "started": {
-                    "name": "Only When Started",
-                    "hint": "The tracker will only show up for players if the combat has actually started (on top of needing a combatant participating)."
-                },
-                "textureScaling": {
-                    "name": "Texture Scaling",
-                    "hint": "Invert scales the combatant's image based on the token texture scaling."
-                }
-            },
-            "resources": {
-                "title": "Resources Tracker",
-                "offlines": {
-                    "name": "Show Offlines",
-                    "hint": "Display shared resources from offline users as well."
-                }
-            },
-            "time": {
-                "title": "Time Tracker",
-                "enabled": {
-                    "hint": "Enables this HUD element on your client. This is overriden when the 'Player Access' system worldclock setting is disabled."
-                },
-                "short": {
-                    "name": "Short Date & Time",
-                    "hint": "When enabled, a single line with a shortened version of the date & time will be displayed. You can click on the time to toggle between both modes."
-                }
-            },
-            "dice": {
-                "title": "Dice Panel"
             }
         },
-        "hud": {
-            "adjustment": "Adjustment: {value}",
-            "alliance": "Alliance: {value}",
-            "tempHP": "Temporary Hit Points",
-            "resolve": {
-                "title": "Use Resolve Point",
-                "full": "{name} is full of stamina and doesn't need to rest.",
-                "breather": {
-                    "used": "{name} has {ratio} SP and spends a resolve point, taking a 10 minute breather. Stamina Refreshed."
-                }
-            }
+        "health-status": {
+            "title": "Health Status",
+            "enabled": "Enabled",
+            "add": "Add Marker",
+            "delete": "Delete Marker",
+            "save": "Save",
+            "cancel": "Cancel",
+            "import": {
+                "title": "Import Health Status",
+                "yes": "Import",
+                "no": "Cancel",
+                "error": "The data provided is invalid."
+            },
+            "export": {
+                "title": "Export Health Status",
+                "confirm": "Health Status has been copied to clipboard."
+            },
+            "default": "Dead, At Death's Door, Not Feeling Good, Seen Better Days, Barely Hurt, Perfectly Fine"
         },
         "tooltip": {
             "distance": {
                 "feet": "ft.",
                 "meter": "m",
                 "square": "sq."
-            }
-        },
-        "token": {
-            "closeChoices": {
-                "never": "Disabled",
-                "sidebar": "Sidebar Only",
-                "all": "HUD & Sidebar"
-            }
-        },
-        "persistent": {
-            "error": {
-                "selectOne": "Select a single NPC/Character token to set as your persistent actor."
-            },
-            "menu": {
-                "openSheet": "Open Sheet",
-                "setActor": "Set selected token as persistent actor",
-                "unsetActor": "Unset persistent actor",
-                "clean": {
-                    "always": "Always show UI on portrait",
-                    "hover": "Only show UI when hovering the portrait"
-                }
-            },
-            "portrait": {
-                "selectActor": "Set this actor as persistent"
-            },
-            "main": {
-                "shortcut": {
-                    "dc": "DC {dc}",
-                    "unassigned": "unassigned",
-                    "alwaysEnabled": "Always Enabled",
-                    "wrongActor": "You can only create shortcuts from the same persistent actor.",
-                    "wrongType": "You cannot create a shortcut of that type.",
-                    "wrongOrigin": "Only spells from a HUD sidebar can be turned into shortcuts.",
-                    "confirm": {
-                        "title": "Use - {name}",
-                        "message": "Are you sure you want to use <strong>{name}</strong>?"
-                    },
-                    "draw": {
-                        "title": "{type} - {name}",
-                        "message": "Are you sure you want to {type} <strong>{name}</strong>?"
-                    },
-                    "noChannelElements": "Could not find the <strong>Channel Elements</strong> action on this character.",
-                    "delete": {
-                        "title": "Reset Shortcuts",
-                        "message": "Are you sure you want to delete the current shortcuts set for <strong>{name}</strong>?"
-                    },
-                    "fill": {
-                        "title": "Auto-Fill Shortcuts",
-                        "message": "Are you sure you want to automatically fill all the shortcuts for <strong>{name}</strong>?"
-                    },
-                    "owner": {
-                        "title": "Copy Owner Shortcuts",
-                        "message": "Are you sure you want to copy all the shortcuts sets and their automation from <strong>{name}</strong>'s owner?",
-                        "none": "This Character doesn't have any owner with shortcuts set.",
-                        "self": "You are trying to copy from yourself."
-                    },
-                    "navigation": "Change current shortcuts set<br>[Middle Click] Setup automation",
-                    "automation": {
-                        "title": "Shortcuts Set ({set}) - Automation",
-                        "legend": "Macro/Effect UUID",
-                        "hint": "If the effect currently exists on the actor or if the macro returns <strong>true</strong>, this shortcuts set will automatically be used.",
-                        "zero": "The first shortcuts set cannot have any automation."
-                    }
-                },
-                "effects": {
-                    "shift": "Shift",
-                    "toggle": "Toggle Effects"
-                }
-            }
-        },
-        "tracker": {
-            "expanded": "Expanded, click to collapse",
-            "collapsed": "Collapsed, click to expand",
-            "fake": {
-                "nothing": "Encounter Not Started",
-                "secret": "Something Secret is Happening"
-            },
-            "unknown": "Unknown",
-            "delay": "Delay Turn",
-            "join": "Join Turn"
-        },
-        "resources": {
-            "resource": "Resource",
-            "add": "Add new resource",
-            "menu": {
-                "title": {
-                    "create": "Create New Resource",
-                    "edit": "Edit Resource"
-                },
-                "delete": "Delete Resource?",
-                "min": "Minimum Value",
-                "max": "Maximum Value",
-                "current": "Current Value",
-                "shared": "Visible to others?",
-                "name": {
-                    "label": "Resource Name",
-                    "default": "New Resource"
-                },
-                "button": {
-                    "yes": {
-                        "create": "Create",
-                        "edit": "Edit"
-                    },
-                    "no": "Cancel"
-                }
-            },
-            "edit": "[Right-Click] Edit Resource",
-            "increase": "{click} increase by {value}",
-            "decrease": "{click} decrease by {value}",
-            "step1": "[Click]",
-            "step2": "[Shift-Click]",
-            "step3": "[Control-Click]"
-        },
-        "sidebars": {
-            "actions": {
-                "title": "Actions",
-                "reach": "Reach {reach} ft.",
-                "thrown": "Thrown {increment}/{max} ft.",
-                "ranged": "Range {max} ft.",
-                "rangedWithIncrement": "Range {increment}/{max} ft.",
-                "blasts": "Elemental Blasts",
-                "stances": "Stances",
-                "reset": "Reset Uses",
-                "stowedWeapons": {
-                    "shown": "Stowed Weapons are shown",
-                    "hidden": "Stowed Weapons are hidden"
-                },
-                "outOfCombat": "[Ctrl + Click] to force"
-            },
-            "annotation": {
-                "pick-up": "Pick Up",
-                "retrieve": "Retrieve",
-                "sheathe": "Sheathe",
-                "draw": "Draw"
-            },
-            "items": {
-                "title": "Inventory"
-            },
-            "spells": {
-                "title": "Spellcasting",
-                "cast": "Cast the Spell",
-                "draw": "Draw Consumable",
-                "broken": "Broken Spell"
-            },
-            "skills": {
-                "title": "Skills",
-                "roll": "Roll: {name}",
-                "proficient": "Proficient",
-                "follow": "Follow the Expert",
-                "alternate": "[Right Click] Variants Menu"
-            },
-            "extras": {
-                "title": "Extras",
-                "noMacro": "Drop Macros Here",
-                "delete": {
-                    "title": "Delete Macro",
-                    "confirm": "Are you sure you want to delete this macro?"
-                },
-                "use": {
-                    "title": "Run Macro"
-                },
-                "edit": {
-                    "title": "Edit Macro"
-                }
-            },
-            "filter": {
-                "label": "Sidebar Filter"
-            }
-        },
-        "leftClick": "[Left Click]",
-        "rightClick": "[Right Click]",
-        "actions": {
-            "borrowArcaneSpell": "Borrow an Arcane Spell",
-            "recall-knowledge": {
-                "result": "Result",
-                "modifier": "Mod.",
-                "target": "Target",
-                "first": "1st",
-                "second": "2nd",
-                "third": "3rd",
-                "fourth": "4th",
-                "fifth": "5th",
-                "sixth": "6th",
-                "dc": "DC",
-                "unspecific": "Unspecific",
-                "specific": "Specific",
-                "skill": "Skill",
-                "lore": "Lore Skill",
-                "proficiency": "Proficiency"
-            },
-            "drive": {
-                "drive1": "Drive <span class=\"action-glyph\">1</span>",
-                "drive2": "Drive <span class=\"action-glyph\">2</span>",
-                "drive3": "Drive <span class=\"action-glyph\">3</span>"
-            }
-        },
-        "utils": {
-            "avatar": {
-                "title": "Edit Avatar - {name}",
-                "src": {
-                    "actor": "Use Actor Image",
-                    "token": "Use Token Image"
-                },
-                "save": "Save",
-                "cancel": "Cancel",
-                "contain": "Contain",
-                "reset": "Reset"
-            },
-            "healthStatus": {
-                "title": "Health Status",
-                "enabled": "Enabled",
-                "add": "Add Marker",
-                "delete": "Delete Marker",
-                "save": "Save",
-                "cancel": "Cancel",
-                "import": {
-                    "label": "Import Health Status",
-                    "yes": "Import",
-                    "no": "Cancel",
-                    "error": "The data provided is invalid."
-                },
-                "export": {
-                    "label": "Export Health Status",
-                    "confirm": "Health Status has been copied to clipboard."
-                },
-                "default": "Dead, At Death's Door, Not Feeling Good, Seen Better Days, Barely Hurt, Perfectly Fine"
-            }
-        },
-        "dialogs": {
-            "variants": {
-                "title": "Action Variants",
-                "statistic": "Statistic",
-                "dc": "Difficulty Class",
-                "drag": "Drag to create a shortcut"
-            },
-            "resolve": {
-                "full": "{name} is full of stamina and doesn't need to rest.",
-                "breather": {
-                    "label": "Take a Breather",
-                    "hint": "Rest for 10 minutes, spend a resolve point and regain all your stamina."
-                },
-                "steel": {
-                    "hint": "Use an action, spend a resolve point and regain half your stamina."
-                }
             }
         }
     }

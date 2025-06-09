@@ -7,19 +7,20 @@
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "noUnusedParameters": false,
-        "noUnusedLocals": true,
         "noImplicitAny": true,
         "noImplicitThis": true,
+        "noUnusedParameters": false,
+        "noUnusedLocals": true,
         "noFallthroughCasesInSwitch": true,
         "strictFunctionTypes": true,
         "strictNullChecks": true,
         "strictPropertyInitialization": true,
         "strictBindCallApply": true,
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
-        "types": ["module-helpers", "@types/sortablejs"],
+        "types": ["module-helpers"],
         "rootDir": "src",
-        "outDir": "scripts"
+        "outDir": "scripts",
+        "baseUrl": "src"
     },
     "include": ["./src/**/*"]
 }

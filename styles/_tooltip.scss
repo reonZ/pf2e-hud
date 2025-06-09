@@ -1,37 +1,25 @@
 #pf2e-hud-tooltip {
-    --color-weak: #cc3311;
-    --color-elite: #009988;
-
-    --outer-padding: 4px;
-
     --inner-padding: 0.5em;
     --inner-gap: 0.6em;
 
-    --span-width: 1.7em;
+    --outer-padding: 4px;
 
-    --section-gap: 0.1em;
-    --section-width: calc(var(--icon-width) + var(--span-width) + var(--section-gap));
-
-    z-index: 9999;
     position: absolute;
-    font-size: var(--font-size);
+    z-index: 9999;
     padding: var(--outer-padding);
     pointer-events: none;
 
     .distance,
-    .status,
-    .inner {
+    .status {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
         background: var(--outer-background);
         border-radius: var(--outer-border-radius);
         box-shadow: var(--outer-box-shadow);
         padding: 0.2em var(--inner-padding);
-    }
-
-    .distance,
-    .status {
-        display: flex;
-        align-items: center;
-        justify-content: center;
     }
 
     .distance {
@@ -39,10 +27,11 @@
         z-index: -1;
         width: fit-content;
         margin: auto;
-        padding-left: calc(var(--inner-padding) - 0.1em);
 
-        .fa-user {
-            font-size: 0.92em;
+        i {
+            &.fa-user {
+                font-size: 0.92em;
+            }
         }
 
         &:not(:last-child) {
@@ -55,108 +44,8 @@
         color: hsl(var(--hue) 75% 40%);
         font-weight: bold;
         letter-spacing: 0.5px;
-        min-width: 7em;
-        white-space: nowrap;
-    }
-
-    .inner {
         min-width: 8em;
-        max-width: calc(
-            var(--inner-padding) * 2 + var(--inner-gap) * 2 + var(--section-width) * 3 +
-                var(--outer-border-width) * 2
-        );
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.3em var(--inner-gap);
-        border: var(--outer-border);
-        margin: auto;
-
-        header,
-        hr {
-            flex: 1 0 100%;
-        }
-
-        header {
-            flex: 1 0 100%;
-            text-align: center;
-            font-size: 0.92em;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding-inline: 0.3em;
-            margin-bottom: -0.2em;
-        }
-
-        hr {
-            margin: 0;
-            padding: 0;
-            border-bottom: 0;
-            border-color: #ffffff4a;
-        }
-
-        section {
-            display: flex;
-            align-items: center;
-            column-gap: var(--section-gap);
-
-            i {
-                width: var(--icon-width);
-                text-align: center;
-
-                + span {
-                    text-align: end;
-                }
-            }
-
-            span {
-                width: var(--span-width);
-                color: hsl(var(--hue) 75% 40%);
-            }
-
-            &.hint {
-                font-size: 0.9em;
-                line-height: 0.8;
-                text-wrap: wrap;
-                text-align: justify;
-            }
-
-            &.iwr {
-                width: var(--section-width);
-                justify-content: center;
-                column-gap: 0.3em;
-
-                i {
-                    width: unset;
-                    text-align: unset;
-                }
-
-                .disabled {
-                    color: var(--color-disabled);
-                }
-            }
-
-            &.level {
-                &.weak {
-                    span {
-                        color: var(--color-weak);
-                    }
-                }
-
-                &.elite {
-                    span {
-                        color: var(--color-elite);
-                    }
-                }
-            }
-        }
-
-        + .status {
-            width: fit-content;
-            margin: auto;
-            margin-top: -2px;
-            z-index: -1;
-            position: relative;
-        }
+        max-width: 12em;
+        text-align: center;
     }
 }

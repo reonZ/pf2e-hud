@@ -2,30 +2,16 @@ import {
     ApplicationClosingOptions,
     ApplicationConfiguration,
     ApplicationRenderContext,
-    ApplicationRenderOptions,
-    R,
-    getFlag,
     getSetting,
+    RegisterSettingOptions,
     render,
-    setFlag,
     setSetting,
-    settingPath,
-    templatePath,
 } from "module-helpers";
-import { getHealthStatus } from "../../utils/health-status";
-import { HealthData } from "../shared/base";
 
-const GLOBAL_SETTINGS: ReadonlyArray<keyof GlobalSettings> = [
-    "highestSpeed",
-    "useModifiers",
-    "partyAsObserved",
-] as const;
+abstract class BasePF2eHUD<TSettings extends Record<string, any>> extends foundry.applications.api
+    .ApplicationV2 {
+    #settings: Record<string, any> = {};
 
-abstract class PF2eHudBase<
-    TSettings extends BaseSettings = BaseSettings,
-    TUserSettings extends Record<string, any> = Record<string, any>,
-    TRenderOptions extends BaseRenderOptions = BaseRenderOptions
-> extends foundry.applications.api.ApplicationV2<ApplicationConfiguration, TRenderOptions> {
     static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         window: {
             resizable: false,
@@ -35,176 +21,74 @@ abstract class PF2eHudBase<
         classes: ["pf2e-hud"],
     };
 
+    declare settings: Readonly<TSettings>;
+
     abstract get key(): string;
-    abstract get templates(): string[];
-    abstract get SETTINGS_ORDER(): (keyof TSettings)[];
+    abstract get settingsSchema(): HUDSettingsList<TSettings>;
 
-    get SUB_SETTINGS_ORDER(): (keyof TSettings)[] {
-        return [];
-    }
+    init(isGM: boolean) {}
+    ready(isGM: boolean) {}
+    protected _configurate() {}
 
-    get requiresReload(): boolean {
-        return false;
-    }
-
-    get hasFontSize(): boolean {
-        return true;
-    }
-
-    getSettings(): SettingOptions[] {
-        const settings: SettingOptions[] = [
-            {
-                key: "enabled",
-                type: Boolean,
-                default: true,
-                scope: "client",
-                name: settingPath("shared.enabled.name"),
-                hint: this.enabledHint,
-                requiresReload: this.requiresReload,
-                onChange: () => {
-                    this.enable();
-                },
-            },
-        ];
-
-        if (this.hasFontSize) {
-            settings.push({
-                key: "fontSize",
-                type: Number,
-                range: {
-                    min: 10,
-                    max: 30,
-                    step: 1,
-                },
-                default: 14,
-                scope: "client",
-                name: settingPath("shared.fontSize.name"),
-                hint: settingPath("shared.fontSize.hint"),
-                onChange: () => {
-                    this.render();
-                },
-            });
-        }
-
-        return settings;
-    }
-
-    get enabledHint(): string {
-        return settingPath("shared.enabled.hint");
-    }
-
-    get enabled(): boolean {
-        return this.getSetting("enabled");
-    }
-
-    abstract _onEnable(enabled?: boolean): void;
-
-    _configureRenderOptions(options: TRenderOptions) {
-        super._configureRenderOptions(options);
-        options.fontSize = this.hasFontSize ? this.getSetting("fontSize") : 14;
-    }
-
-    async _preFirstRender(
-        context: ApplicationRenderContext,
-        options: ApplicationRenderOptions
-    ): Promise<void> {
-        const templates: Set<string> = new Set();
-
-        for (const template of this.templates) {
-            const path = templatePath(this.key, template);
-            templates.add(path);
-        }
-
-        await loadTemplates(Array.from(templates));
-    }
-
-    enable = foundry.utils.debounce((enabled?: boolean) => {
-        this._onEnable?.(enabled);
-    }, 1);
-
-    async render(
-        options?: boolean | DeepPartial<TRenderOptions>,
-        _options?: DeepPartial<TRenderOptions>
-    ) {
-        if (!this.enabled) return this;
-        return super.render(options, _options);
-    }
+    configurate = foundry.utils.debounce(this._configurate, 1);
 
     async close(options: ApplicationClosingOptions = {}) {
         options.animate = false;
         return super.close(options);
     }
 
-    renderTemplate(
-        template: (typeof this)["templates"][number],
-        context: ApplicationRenderContext
-    ) {
-        return render(this.key, template, context);
+    renderTemplate(template: string, context: ApplicationRenderContext) {
+        return render(`${this.key}/${template}`, context);
     }
 
-    getSetting<K extends keyof TSettings & string>(key: K): TSettings[K];
-    getSetting<K extends keyof GlobalSettings & string>(key: K): GlobalSettings[K];
-    getSetting(key: (keyof TSettings | keyof GlobalSettings) & string) {
-        if (GLOBAL_SETTINGS.includes(key as keyof GlobalSettings)) {
-            return getSetting(key);
+    getSettingKey<K extends keyof TSettings & string>(setting: K): string {
+        return `${this.key}.${setting}`;
+    }
+
+    _initialize() {
+        const settings = {};
+        const self = this;
+
+        for (const setting of this.settingsSchema) {
+            const key = this.getSettingKey(setting.key);
+            this.#settings[key] = getSetting(key);
+
+            Object.defineProperty(settings, setting.key, {
+                get() {
+                    return self.#settings[key];
+                },
+                set(value) {
+                    setSetting(key, value);
+                },
+            });
         }
 
-        return getSetting(`${this.key}.${key}`);
+        Object.defineProperty(this, "settings", {
+            get() {
+                return settings;
+            },
+        });
     }
 
-    setSetting<K extends keyof TSettings & string>(key: K, value: TSettings[K]) {
-        return setSetting(`${this.key}.${key}`, value);
-    }
+    _getHudSettings(): HUDSettingsList<TSettings> {
+        return this.settingsSchema.map((setting) => {
+            const _onChange = setting.onChange;
 
-    getUserSetting<TKey extends keyof TUserSettings & string>(key: TKey) {
-        return getFlag<TUserSettings[TKey]>(game.user, this.key, key);
-    }
+            setting.onChange = (value, operation, userId) => {
+                this.#settings[setting.key] = value;
+                _onChange?.(value, operation, userId);
+            };
 
-    setUserSetting<TKey extends keyof TUserSettings & string>(
-        key: TKey,
-        value: TUserSettings[TKey]
-    ) {
-        return setFlag(game.user, this.key, key, value);
-    }
-
-    getSelectedHealthStatusEntry(health: HealthData, status = getHealthStatus()): string {
-        let { value, max, ratio } = health.total;
-        value = Math.clamp(value, 0, max);
-
-        if (value === 0) {
-            return status.dead;
-        }
-
-        if (value === max) {
-            return status.full;
-        }
-
-        const percent = ratio * 100;
-
-        return (
-            R.pipe(
-                status.entries,
-                R.sortBy([R.prop("marker"), "desc"]),
-                R.find((entry) => percent >= entry.marker)
-            )?.label ?? "???"
-        );
+            return setting;
+        });
     }
 }
 
-type GlobalSettings = {
-    useModifiers: boolean;
-    highestSpeed: boolean;
-    partyAsObserved: boolean;
-};
+type HUDSetting<TSettings extends Record<string, any>> = TSettings extends Record<infer K, infer V>
+    ? RegisterSettingOptions & { key: K; type: FromPrimitive<V> }
+    : never;
 
-type BaseSettings = {
-    fontSize: number;
-    enabled: boolean;
-};
+type HUDSettingsList<TSettings extends Record<string, any>> = ReadonlyArray<HUDSetting<TSettings>>;
 
-type BaseRenderOptions = ApplicationRenderOptions & {
-    fontSize: number;
-};
-
-export { PF2eHudBase };
-export type { BaseRenderOptions, BaseSettings, GlobalSettings };
+export { BasePF2eHUD };
+export type { HUDSettingsList };

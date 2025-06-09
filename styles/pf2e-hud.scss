@@ -1,14 +1,3 @@
-@import "shared";
-
-@import "avatar";
-@import "chat";
-@import "dice";
-@import "health-status";
-@import "persistent";
-@import "popup";
-@import "resources";
-@import "sidebars";
-@import "time";
-@import "token";
-@import "tooltip";
-@import "tracker";
+@import "./health-status";
+@import "./shared";
+@import "./tooltip";

@@ -1,56 +1,5 @@
 {
     "pf2e-hud": {
-        "SHARED": {
-            "migration": {
-                "warning": {
-                    "title": "Migration du module",
-                    "start": "Début de la migration",
-                    "cancel": "Annuler",
-                    "content": {
-                        "modules": "Le(s) module(s) suivant(s) pourrait avoir besoin de migrer les données :",
-                        "wait": "Si le système est en train de migrer ses propres données veuillez attendre avant de débuter."
-                    }
-                },
-                "summary": {
-                    "title": "Sommaire de la migration",
-                    "content": "Les documents suivants ont été migrés",
-                    "nothing": "Aucun document ne nécessite d'être migré."
-                },
-                "error": {
-                    "actors": "Une erreur s'est produite en migrant les acteurs du monde.",
-                    "token": "Une erreur s'est produite en migrant les données du jeton de l'acteur {uuid}.",
-                    "users": "Une erreur s'est produite en migrant les données des utilisateurs."
-                }
-            },
-            "spellcasting": {
-                "staff": "Bâton",
-                "charges": "Charges"
-            },
-            "gmOnly": "MJ seulement",
-            "reloadRequired": "Nécessite un rechargement"
-        },
-        "keybindings": {
-            "setActor": {
-                "name": "Spécifier l'acteur persistant",
-                "hint": "Spécifier l'acteur de token sélectionné comme persistant."
-            },
-            "altTracker": {
-                "name": "Activer le compteur de rencontre",
-                "hint": "Activer le compteur de rencontre pour disposer d'options supplémentaires."
-            },
-            "filter": {
-                "name": "Utiliser le filtre du sous-menu",
-                "hint": "Permet le filtrage du contenu du sous-menu actuel."
-            },
-            "previousShortcutsSet": {
-                "name": "Fixer les raccourcis précédents",
-                "hint": "Changer pour les raccourcis précédents."
-            },
-            "nextShortcutsSet": {
-                "name": "Fixer les prochains raccourcis",
-                "hint": "Changer pour les reccourcis suivants."
-            }
-        },
         "settings": {
             "menus": {
                 "healthStatusMenu": {
@@ -59,89 +8,25 @@
                     "hint": "Fixer les divisions de statut de santé pour les afficher dans le HUD."
                 }
             },
-            "partyAsObserved": {
-                "name": "Groupe allié observé",
-                "hint": "Considérer que les acteurs du 'groupe' sont visibles pour les joueurs pour déterminer si l'infobulle et les détails de la santé sont visibles dans le compteur de rencontre. À ne pas confondre avec l'acteur 'groupe'."
-            },
-            "highestSpeed": {
-                "name": "Montrer la plus grande vitesse",
-                "hint": "Si aucune vitesse n'a été manuellement sélectionnée, la plus élevée sera toujours montrée par défaut même si la vitesse de déplacement au sol n'est pas 0."
-            },
-            "useModifiers": {
-                "name": "Utiliser les modificateurs",
-                "hint": "Afficher les modificateurs plutôt que les valeurs de difficulté dans les divers éléments du HUD."
-            },
-            "popup": {
-                "title": "Fenêtre",
-                "onCursor": {
-                    "name": "Fenêtre sous le pointeur",
-                    "hint": "Le module de fenêtre sera centré sur la position de la souris quand il sera affiché pour la première fois (au lieu d'être affiché au centre de la zone d'affichage)."
-                },
-                "fontSize": {
-                    "name": "Taille de police",
-                    "hint": "La fenêtre s'ajuste de manière dynamique à la taille de la police. NOTE : Le module a été conçu pour une taille de police 14."
-                },
-                "closeOnSendToChat": {
-                    "name": "Fermer lors de l'envoi sur la conversation",
-                    "hint": "Est-ce que la fenêtre se ferme lorsque vous envoyez un objet dans la conversation à partir du bouton du titre."
-                }
-            },
-            "sidebar": {
-                "title": "Sous-menus",
-                "hideUntrained": {
-                    "name": "Cacher Inexpérimenté",
-                    "hint": "Est-ce que vous voulez afficher les actions de compétence des sous-menus si le personnage n'en a pas la qualification."
-                },
-                "fontSize": {
-                    "name": "Taille de police",
-                    "hint": "Les sous-menu s'ajustent dynamiquement à la taille de police. NOTE : Le module a été conçu avec une taille de police 14."
-                },
-                "multiColumns": {
-                    "name": "Colonnes multiples",
-                    "hint": "Lorsqu'un sous-menu est trop gros pour sa hauteur max, il sera scindé en x columns. NOTE : Firefox force le défilement horizontal en utilisant cette fonctionnalité."
-                },
-                "maxHeight": {
-                    "name": "Hauteur max",
-                    "hint": "Fixe la hauteur max des sous-menus sous forme de pourcentage de la fenêtre."
-                }
-            },
-            "shared": {
-                "enabled": {
-                    "name": "Activé",
-                    "hint": "Active cet élément du HUD sur votre client."
-                },
-                "fontSize": {
-                    "name": "Taille de police",
-                    "hint": "Les éléments du HUD s'ajustent instantanément à la taille de police spécifiée. NOTE : Le module a été conçu pour être utilisé avec une taille de police 14."
-                },
-                "showAlliance": {
-                    "name": "Bouton alliance",
-                    "hint": "Montre le bouton alliance/disposition sur le HUD."
-                }
-            },
             "tooltip": {
                 "title": "Infobulle du jeton",
-                "type": {
-                    "name": "Infobulle étendue",
-                    "hint": "Si/Quand la version étendue de l'infobulle devrait être utilisée.",
-                    "choices": {
-                        "never": "Jamais",
-                        "owned": "Popriétaire seulement",
-                        "observed": "Propriétaire et observé"
-                    }
-                },
-                "showStatus": {
-                    "name": "Afficher la santé",
-                    "hint": "Quand l'état de santé de la créature sera affiché sur l'infobulle si activé dans votre monde.",
-                    "choices": {
-                        "never": "Jamais",
-                        "small": "Seulement la version réduite",
-                        "all": "Toujours"
-                    }
-                },
                 "delay": {
                     "name": "Délai de l'infobulle",
                     "hint": "Délai en millisecondes avant l'affichage de l'infobulle à l'écran."
+                },
+                "distance": {
+                    "name": "Afficher la Distance",
+                    "hint": "Est-ce que la distance sera affichée pour le jeton que vous survolez.",
+                    "choices": {
+                        "never": "Jamais",
+                        "idiot": "En pieds",
+                        "smart": "En mètres",
+                        "weird": "En cases"
+                    }
+                },
+                "draw": {
+                    "name": "Dessiner la Distance",
+                    "hint": "Affiche une ligne de cette épaisseur entre le jeton que vous survolez et la 'distance' cible."
                 },
                 "position": {
                     "name": "Position",
@@ -153,433 +38,35 @@
                         "bottom": "En-dessous"
                     }
                 },
-                "showDistance": {
-                    "name": "Afficher la Distance",
-                    "hint": "Est-ce que la distance sera affichée pour le jeton que vous survolez.",
-                    "choices": {
-                        "never": "Jamais",
-                        "idiot": "En pieds",
-                        "smart": "En mètres",
-                        "weird": "En cases"
-                    }
-                },
-                "drawDistance": {
-                    "name": "Dessiner la Distance",
-                    "hint": "Affiche une ligne de cette épaisseur entre le jeton que vous survolez et la 'distance' cible."
-                },
-                "noDead": {
-                    "name": "Acteur mort",
-                    "hint": "Quel type d'infobulle doit être affichée au survol d'un acteur mort.",
-                    "choices": {
-                        "none": "Aucune infobulle",
-                        "small": "La version réduite",
-                        "full": "La version étendue"
-                    }
+                "status": {
+                    "name": "Afficher la santé"
                 }
-            },
-            "token": {
-                "title": "Token HUD",
-                "scaleDimensions": {
-                    "name": "Ajuster au jeton",
-                    "hint": "Les dimensions du HUD doivent-elles être ajustées en fonction du jeton auquel il est rattaché plutôt que d'avoir des dimensions fixes."
-                },
-                "mode": {
-                    "name": "Mode d'affichage",
-                    "hint": "Choisissez le mode d'affichage du token HUD.",
-                    "choices": {
-                        "exploded": "Explosé",
-                        "left": "Groupé (Gauche)",
-                        "right": "Groupé (Droite)"
-                    }
-                },
-                "closeAllOnCLick": {
-                    "name": "Fermeture totale sur un clic",
-                    "hint": "Si activé, cliquer n'importe où fermera entièrement le HUD. Si désactivé, il vous fera sortir de tout champ de saisie ou fermera d'abord la barre latérale."
-                },
-                "closeOnSpell": {
-                    "name": "Fermer au lancement d'un sort",
-                    "hint": "Faut-il fermer le HUD/le sous-menu quand un sort est lancé ?"
-                },
-                "closeOnSendToChat": {
-                    "name": "Fermer en envoyant dans la conversation",
-                    "hint": "Faut-il fermer le HUD/le sous-menu quand un objet est envoyé dans la conversation ?"
-                },
-                "closeOnSkill": {
-                    "name": "Fermer sur un test de compétence",
-                    "hint": "Faut-il fermer le HUD en faisant un test de compétence ?"
-                }
-            },
-            "persistent": {
-                "title": "HUD Persistant",
-                "subtitle": "Raccourcis persistants",
-                "noflash": {
-                    "name": "Désactiver le clignotement",
-                    "hint": "Désactive l'effet de clignotement sur le portrait quand on sélectionne un jeton lié à l'acteur persistant choisi."
-                },
-                "closeOnSkill": {
-                    "name": "Fermer le sous-menu sur un test de compétence",
-                    "hint": "Faut-il fermer le sous-menu après avoir lancé un test de compétence ?"
-                },
-                "closeOnSpell": {
-                    "name": "Fermer le sous-menu au lancement d'un sort",
-                    "hint": "Faut-il fermer le sous-menu après avoir lancé un sort ?"
-                },
-                "closeOnSendToChat": {
-                    "name": "Fermer le sous-menu lors de l'envoi dans la conversation",
-                    "hint": "Faut-il fermer le sous-menu après avoir envoyé un objet dans la conversation."
-                },
-                "consumableShortcut": {
-                    "name": "Raccourcis des consommables",
-                    "hint": "Ce qu'il se passe quand on clique sur un raccourci de consommable.",
-                    "choices": {
-                        "use": "Utiliser directement",
-                        "confirm": "confirmer avant d'utiliser",
-                        "chat": "Envoyer uniquement dans la discussion"
-                    }
-                },
-                "confirmShortcut": {
-                    "name": "Confirmation de raccourci action/sort",
-                    "hint": "Faut-il confirmer après utilisation des raccourcis des sorts et des actions ?"
-                },
-                "autoSet": {
-                    "name": "Acteur automatique",
-                    "hint": "Quand aucun acteur persistant n'est choisi, le jeton sélectionné ou l'acteur combattant actuel sera automatiquement choisi comme persistant.",
-                    "choices": {
-                        "disabled": "Désactivé",
-                        "select": "Sur sélection de jeton",
-                        "combat": "Combattant actuel"
-                    }
-                },
-                "keepLast": {
-                    "name": "Conserver le dernier persistant",
-                    "hint": "Quand on utilise l'option 'Acteur automatique', le dernier acteur valide sera conservé comme persistant plutôt que d'être désélectionné. Il reviendra encore sur votre acteur assigné si vous en avez un et que l'option 'Sur sélection de jeton' est active."
-                },
-                "autoFillNpc": {
-                    "name": "Remplissage automatique des PNJ",
-                    "hint": "Si vous n'avez pas fait de changements manuels, les emplacements de raccourcis seront automatiquement remplis."
-                },
-                "autoFillActions": {
-                    "name": "Remplissage automatique des actions",
-                    "hint": "Les actions du PNJ qui prennent de 1 à 3 actions seront remplies après les attaques."
-                },
-                "autoFillReactions": {
-                    "name": "Remplissage automatique des réactions",
-                    "hint": "Les réactions du PNJ seront ajoutées après les attaques."
-                },
-                "autoFillType": {
-                    "name": "Préférence de remplissage automatique",
-                    "hint": "L'ordre de priorité pour les emplacements restant.",
-                    "choices": {
-                        "one": "Actions -> Sorts -> Consommables",
-                        "two": "Actions -> Consommables -> Sorts"
-                    }
-                },
-                "ownerShortcuts": {
-                    "name": "Utiliser les raccourcis du propriétaire",
-                    "hint": "Si vous n'avez pas fait de changements manuels pour un acteur personnage possédé par un joueur, les raccourcis de son propriétaire seront utilisés."
-                },
-                "shiftEffects": {
-                    "name": "Touche maj pour les effets",
-                    "hint": "Nécessite de presser la touche majuscule pour interagir avec les icônes effets."
-                },
-                "shortcutSlots": {
-                    "name": "Emplacements de raccourcis",
-                    "hint": "Le nombre d'emplacements de raccourcis disponibles. NOTE: le module a été conçu pour 4 emplacements."
-                },
-                "drawConsumables": {
-                    "name": "Doit tirer un consommable",
-                    "hint": "Oblige à tenir le consommable avant d'être capable d'utiliser le raccourci. Cela n'affecte pas les parchemins qui ont été tirés à partir des sorts, mais seulement les objets consommables de l'inventaire."
-                }
-            },
-            "tracker": {
-                "title": "compteur de rencontre",
-                "started": {
-                    "name": "Uniquement quand il commence",
-                    "hint": "Le suivi ne s'affichera pour les joueurs que si le combat a vraiment débuté (outre le fait d'y participer effectivement)."
-                },
-                "textureScaling": {
-                    "name": "Ajustement de texture",
-                    "hint": "Inverse l'ajustement de l'image du combattant basé sur l'ajustement de la texture du jeton."
-                }
-            },
-            "resources": {
-                "title": "Suivi de ressources"
-            },
-            "time": {
-                "title": "Compteur de temps",
-                "enabled": {
-                    "hint": "Active cet élément du HUD sur votre client. Ceci est annulé lorsque le paramètre 'Accès des joueurs' de l'horloge du monde du système est désactivé."
-                },
-                "short": {
-                    "name": "Date et heure au format réduit",
-                    "hint": "Lorsqu'il est activée, une ligne unique avec une version réduite de la date & de l'heure sera affichée. Vous pouvez cliquer sur l'heure pour passer de l'un à l'autre des modes."
-                }
-            },
-            "dice": {
-                "title": "Panneau de dés"
             }
         },
-        "hud": {
-            "adjustment": "Ajustement : {value}",
-            "alliance": "Alliance : {value}",
-            "tempHP": "Points de vie temporaires",
-            "resolve": {
-                "title": "Utiliser les Points de Résolution",
-                "full": "L'endurance de {name} est pleine qui n'a pas besoin de se reposer.",
-                "breather": {
-                    "used": "{name} a {ratio} Points d'Endurance et dépense un Point de Résolution, il prend 10 minutes pour souffler. Endurance rafraîchie."
-                }
-            }
+        "health-status": {
+            "title": "État de santé",
+            "enabled": "Activé",
+            "add": "Ajouter le marqueur",
+            "delete": "Effacer le marqueur",
+            "save": "Sauvegarder",
+            "cancel": "Annuler",
+            "import": {
+                "title": "Importer l'état de santé",
+                "yes": "Importer",
+                "no": "Annuler",
+                "error": "Les données fournies sont invalides."
+            },
+            "export": {
+                "title": "Exporter l'état de santé",
+                "confirm": "L'état de santé a été copié dans le presse-papier."
+            },
+            "default": "Mort, Au seuil de la mort, Ne se sent pas bien, A connu des jours meilleurs, Légèrement blessé, En pleine santé"
         },
         "tooltip": {
             "distance": {
                 "feet": "ft.",
                 "meter": "m",
                 "square": "sq."
-            }
-        },
-        "token": {
-            "closeChoices": {
-                "never": "Désactivé",
-                "sidebar": "Sous-menu uniquement",
-                "all": "HUD et sous-menu"
-            }
-        },
-        "persistent": {
-            "error": {
-                "selectOne": "Sélectionnez un seul jeton de PNJ ou PJ pour être votre acteur persistant."
-            },
-            "menu": {
-                "openSheet": "Ouvrir la feuille",
-                "setActor": "Choisir le jeton sélectionné comme acteur persistant",
-                "unsetActor": "Déselectionner l'acteur persistant",
-                "clean": {
-                    "always": "Toujours montrer les icônes sur le portrait",
-                    "hover": "Ne montrer les icônes qu'au survol du portrait"
-                }
-            },
-            "portrait": {
-                "selectActor": "Déclarer cet acteur comme persistant"
-            },
-            "main": {
-                "shortcut": {
-                    "dc": "DD {dc}",
-                    "unassigned": "Non assigné",
-                    "alwaysEnabled": "Toujours activé",
-                    "wrongActor": "Vous ne pouvez créer des raccourcis qu'à partir du même acteur persistant.",
-                    "wrongType": "Vous ne pouvez pas créer de raccourcis de ce type.",
-                    "wrongOrigin": "Seuls les sorts d'un sous-menu du HUD peuvent être utilisés pour créer un raccourci.",
-                    "confirm": {
-                        "title": "Utiliser - {name}",
-                        "message": "Êtes-vous sûr(e) de vouloir utiliser <strong>{name}</strong> ?"
-                    },
-                    "draw": {
-                        "title": "{type} - {name}",
-                        "message": "Souhaitez-vous {type} <strong>{name}</strong> ?"
-                    },
-                    "noChannelElements": "N'a pas trouvé l'action <strong>Canaliser les éléments</strong> sur ce personnage.",
-                    "delete": {
-                        "title": "Réinitialiser les raccourcis",
-                        "message": "Souhaitez-vous effacer tous vos raccourcis pour <strong>{name}</strong> ?"
-                    },
-                    "fill": {
-                        "title": "Remplissage automatique des raccourcis",
-                        "message": "Souhaitez-vous remplir automatiquement tous les raccourcis pour <strong>{name}</strong> ?"
-                    },
-                    "owner": {
-                        "title": "Copier les raccourcis du propriétaire",
-                        "message": "Souhaitez-vous copier les raccourcis du propriétaire de <strong>{name}</strong> ?",
-                        "none": "Ce personnage n'a pas de propriétaire ayant déterminé des raccourcis.",
-                        "self": "Vous tentez de copier à partir de vous-même."
-                    },
-                    "navigation": "Modifier le jeu de raccourcis actuel<br>[Clic milieu] Automatisation de la mise en place",
-                    "automation": {
-                        "title": "Raccourcis mis en place ({set}) - Automatique",
-                        "legend": "UUID Macro/Effet",
-                        "hint": "Si l'effet existe actuellement sur l'acteur ou si la macro renvoie <strong>true</strong>, ce jeu de raccourci sera automatiquement utilisé.",
-                        "zero": "Les premiers raccourcis définis ne peuvent pas être automatisés."
-                    }
-                },
-                "effects": {
-                    "shift": "Majuscule",
-                    "toggle": "Afficher/masquer les effets"
-                }
-            }
-        },
-        "tracker": {
-            "expanded": "Agrandi, cliquez pour réduire",
-            "collapsed": "Réduit, cliquez pour agrandir",
-            "fake": {
-                "nothing": "La rencontre n'a pas débuté",
-                "secret": "Quelque chose de secret se produit"
-            },
-            "unknown": "Inconnu",
-            "delay": "Retarder le tour",
-            "join": "Rejoindre le tour"
-        },
-        "resources": {
-            "resource": "Ressource",
-            "add": "Ajouter une nouvelle ressource",
-            "menu": {
-                "title": {
-                    "create": "Créer une nouvelle ressource",
-                    "edit": "Modifier la ressource"
-                },
-                "delete": "Effacer la ressource ?",
-                "min": "Valeur minimale",
-                "max": "Valeur maximale",
-                "current": "Valeur actuelle",
-                "visible": "Visible pour les autres ?",
-                "name": {
-                    "label": "Nom de la ressource",
-                    "default": "Nouvelle ressource"
-                },
-                "button": {
-                    "yes": {
-                        "create": "Créer",
-                        "edit": "Modifier"
-                    },
-                    "no": "Annuler"
-                }
-            },
-            "edit": "[Clic-droit] Modifier la ressource",
-            "increase": "{clic} augmenter de {value}",
-            "decrease": "{clic} diminuer de {value}",
-            "step1": "[Clic]",
-            "step2": "[Maj-clic]",
-            "step3": "[Ctrl-clic]"
-        },
-        "sidebars": {
-            "actions": {
-                "title": "Actions",
-                "reach": "Allonge {reach} ft.",
-                "thrown": "Lancer {increment}/{max} ft.",
-                "ranged": "Portée {max} ft.",
-                "rangedWithIncrement": "Portée {increment}/{max} ft.",
-                "blasts": "Explosions élementaires",
-                "stances": "Postures",
-                "reset": "Réinitialiser les utilisations",
-                "stowedWeapons": {
-                    "shown": "Les armes stockées sont visibles",
-                    "hidden": "Les armes stockées sont cachées"
-                },
-                "outOfCombat": "[Ctrl + Clic] pour forcer"
-            },
-            "annotation": {
-                "pick-up": "Ramasser",
-                "retrieve": "récupérer",
-                "sheathe": "Rengainer",
-                "draw": "Dégainer"
-            },
-            "items": {
-                "title": "Inventaire"
-            },
-            "spells": {
-                "title": "Incantation",
-                "cast": "Lancer le sort",
-                "draw": "Sortir un consommable",
-                "broken": "Sort défectueux"
-            },
-            "skills": {
-                "title": "Compétences",
-                "roll": "Lancer : {name}",
-                "proficient": "Expérimenté",
-                "follow": "Suivre l'expert",
-                "alternate": "[Clic droit] Menu des variantes"
-            },
-            "extras": {
-                "title": "Extras",
-                "noMacro": "Glissez vos macros ici",
-                "delete": {
-                    "title": "Effacer la Macro",
-                    "confirm": "Souhaitez-vous effacer cette macro ?"
-                },
-                "use": {
-                    "title": "Utiliser la Macro"
-                },
-                "edit": {
-                    "title": "Modifier la Macro"
-                }
-            },
-            "filter": {
-                "label": "Filtre de sous-menu"
-            }
-        },
-        "leftClick": "[Clic gauche]",
-        "rightClick": "[Clic droit]",
-        "actions": {
-            "borrowArcaneSpell": "Emprunter un sort arcanique",
-            "recall-knowledge": {
-                "result": "Résultat",
-                "modifier": "Mod.",
-                "target": "Cible",
-                "first": "1er",
-                "second": "2e",
-                "third": "3e",
-                "fourth": "4e",
-                "fifth": "5e",
-                "sixth": "6e",
-                "dc": "DD",
-                "unspecific": "Non spécifique",
-                "specific": "Spécifique",
-                "skill": "Compétence",
-                "lore": "Connaissance",
-                "proficiency": "Maîtrise"
-            },
-            "drive": {
-                "drive1": "Conduire <span class=\"action-glyph\">1</span>",
-                "drive2": "Conduire <span class=\"action-glyph\">2</span>",
-                "drive3": "Conduire <span class=\"action-glyph\">3</span>"
-            }
-        },
-        "utils": {
-            "avatar": {
-                "title": "Éditer l'Avatar - {name}",
-                "src": {
-                    "actor": "Utiliser l'image de l'acteur",
-                    "token": "Utiliser l'image du token"
-                },
-                "save": "Sauvegarder",
-                "cancel": "Annuler",
-                "contain": "Contient",
-                "reset": "Réinitialiser"
-            },
-            "healthStatus": {
-                "title": "État de santé",
-                "enabled": "Activé",
-                "add": "Ajouter le marqueur",
-                "delete": "Effacer le marqueur",
-                "save": "Sauvegarder",
-                "cancel": "Annuler",
-                "import": {
-                    "label": "Importer l'état de santé",
-                    "yes": "Importer",
-                    "no": "Annuler",
-                    "error": "Les données fournies sont invalides."
-                },
-                "export": {
-                    "label": "Exporter l'état de santé",
-                    "confirm": "L'état de santé a été copié dans le presse-papier."
-                },
-                "default": "Mort, Au seuil de la mort, Ne se sent pas bien, A connu des jours meilleurs, Légèrement blessé, En pleine santé"
-            }
-        },
-        "dialogs": {
-            "variants": {
-                "title": "Variantes d'action",
-                "statistic": "Statistique",
-                "dc": "Degré de difficulté",
-                "drag": "Glisser pour créer un raccourci"
-            },
-            "resolve": {
-                "full": "L'endurance de {name} est au complet. Le repos n'est pas nécessaire.",
-                "breather": {
-                    "label": "Reprendre son souffle",
-                    "hint": "Se reposer pendant 10 minutes, dépenser un point de résolution et récupérer toute votre Endurance."
-                },
-                "steel": {
-                    "hint": "Effectue une action, dépenser un point de résolution et récupérer la moitié de votre Endurance."
-                }
             }
         }
     }

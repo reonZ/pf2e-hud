@@ -3,85 +3,8 @@
     {{{distance.icon}}} {{distance.range}} {{distance.unit}}
 </div>
 {{/if}}
-
-{{#if extended}}
-<div class="inner">
-    {{#if name}}
-    <header>{{name}}</header>
-    <hr>
-    {{/if}}
-
-    {{#if health.useStamina}}
-    <section data-section="stamina">
-        <i class="fa-solid fa-heart-pulse"></i>
-        <span style="--hue: {{health.sp.hue}};">{{health.sp.value}}</span>
-    </section>
-    {{else if hardness includeZero=true}}
-    <section data-section="hardness">
-        <i class="fa-solid fa-turtle"></i>
-        <span>{{hardness}}</span>
-    </section>
-    {{else if scouting}}
-    <section data-section="scouting">
-        <i class="fa-solid fa-flag"></i>
-        <span>{{scouting}}</span>
-    </section>
-    {{else}}
-    <section data-section="temp-hp">
-        <i class="fa-solid fa-heart-half-stroke"></i>
-        <span>{{health.temp}}</span>
-    </section>
-    {{/if}}
-    <section data-section="hp">
-        <i class="fa-solid fa-heart"></i>
-        <span style="--hue: {{health.hue}};">{{health.value}}</span>
-    </section>
-    <section data-section="ac">
-        {{#if ac}}
-        <i class="fa-solid fa-helmet-battle"></i>
-        <span>{{ac}}</span>
-        {{/if}}
-    </section>
-
-    {{#each statistics as |statistic|}}
-    <section data-section="statistics" data-statistic="{{statistic.slug}}">
-        <i class="{{statistic.icon}}"></i>
-        <span>{{statistic.value}}</span>
-    </section>
-    {{/each}}
-
-
-    <section class="level {{adjustment}}" data-section="level">
-        <i class="fa-solid fa-user-graduate"></i>
-        <span>{{level}}</span>
-    </section>
-
-    <section class="iwr" data-section="iwr">
-        {{#each iwr}}
-        <i class="{{this.icon}} {{#unless this.active}}disabled{{/unless}}"></i>
-        {{/each}}
-    </section>
-
-    {{#each speeds as |speed|}}
-    <section data-section="speed">
-        <i class="{{speed.icon}}"></i>
-        <span>{{speed.total}}</span>
-    </section>
-    {{/each}}
-
-    {{#if speedNote}}
-    <section class="hint" data-section="speed-note">
-        {{#if (lt speeds.length 1)}}
-        {{localize 'PF2E.Actor.Speed.Label'}}:
-        {{/if}}
-        {{speedNote}}
-    </section>
-    {{/if}}
-</div>
-{{/if}}
-
 {{#if status}}
-<div class="status" style="--hue: {{health.total.hue}};" data-section="health-status">
-    {{status}}
+<div class="status" style="--hue: {{status.hue}};" data-section="health-status">
+    {{status.label}}
 </div>
 {{/if}}
