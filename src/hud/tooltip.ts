@@ -12,6 +12,7 @@ import {
     isHoldingModifierKey,
     localize,
     R,
+    render,
     TokenPF2e,
 } from "module-helpers";
 import { createGlobalEvent } from "module-helpers/src";
@@ -98,7 +99,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
                 scope: "user",
                 choices: SETTING_DISTANCE,
                 onChange: () => {
-                    this.configurate;
+                    this.configurate();
                 },
             },
             {
@@ -107,7 +108,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
                 default: true,
                 scope: "user",
                 onChange: () => {
-                    this.configurate;
+                    this.configurate();
                 },
             },
             {
@@ -163,32 +164,28 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         return details as WithRequired<DistanceDetails, "label">;
     }
 
-    init(isGM: boolean): void {
-        this._configurate();
-    }
-
-    async render(
-        options?: boolean | DeepPartial<ApplicationRenderOptions>,
-        _options?: DeepPartial<ApplicationRenderOptions>
-    ): Promise<this> {
-        return this.isValidActor(this.actor) ? super.render(options, _options) : this;
-    }
-
     protected _configurate(): void {
         const distanceEnabled = this.settings.distance !== "never";
         const drawEnabled = distanceEnabled && this.settings.draw > 0;
         const enabled = distanceEnabled || (this.settings.status && getHealthStatusData().enabled);
 
         this._toggleTokenHooks(enabled);
+        this.#mouseDownEvent.toggle(enabled);
         this.#canvasPanHook.toggle(enabled);
         this.#hoverTokenHook.toggle(enabled);
 
         this.#tokenRefreshWrapper.toggle(drawEnabled);
         this.#canvasTearDownHook.toggle(drawEnabled);
 
-        if (!enabled && this.rendered) {
+        if (enabled) {
+            this.render();
+        } else {
             this.close();
         }
+    }
+
+    init(): void {
+        this._configurate();
     }
 
     renderWithDelay(force?: boolean, options?: ApplicationRenderOptions) {
@@ -310,7 +307,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         context: ApplicationRenderContext,
         options: ApplicationRenderOptions
     ): Promise<string> {
-        return this.renderTemplate("tooltip", context);
+        return render("tooltip", context);
     }
 
     protected _replaceHTML(
@@ -323,45 +320,25 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
 
     protected _onRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
         this.cancelClose();
-        this.#mouseDownEvent.activate();
         this.drawDistance();
-    }
-
-    protected _onClose(options: ApplicationClosingOptions): void {
-        this.#mouseDownEvent.disable();
-        super._onClose(options);
     }
 
     protected _cleanupToken(): void {
         this.#targetToken = null;
 
         this.cancelRender();
-        this.cancelClose();
+        this.clearDistance();
 
         super._cleanupToken();
     }
 
     protected _updatePosition(position: ApplicationPosition) {
-        const token = this.token;
+        const targetCoords = this.tokenCoords;
+        if (!targetCoords || !canvas.ready) {
+            return position;
+        }
+
         const element = this.element;
-        if (!element || !token || !canvas.ready) return position;
-
-        const scale = token.worldTransform.a;
-        const gridSize = canvas.grid.size;
-        const tokenCoords = canvas.clientCoordinatesFromCanvas(token);
-        const targetCoords = {
-            left: tokenCoords.x,
-            top: tokenCoords.y,
-            width: token.document.width * gridSize * scale,
-            height: token.document.height * gridSize * scale,
-            get right() {
-                return this.left + this.width;
-            },
-            get bottom() {
-                return this.top + this.height;
-            },
-        };
-
         const positions = POSITIONS[this.settings.position].slice();
         const hudBounds = element.getBoundingClientRect();
         const limitX = window.innerWidth - hudBounds.width;
@@ -416,7 +393,9 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
     }
 
     #onCanvasPan() {
-        requestAnimationFrame(() => this._updatePosition(this.position));
+        requestAnimationFrame(() => {
+            this._updatePosition(this.position);
+        });
     }
 
     #onCanvasTearDown() {
