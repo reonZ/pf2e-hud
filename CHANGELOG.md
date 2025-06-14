@@ -1,10 +1,12 @@
-#
+# 2.1.0
 
+-   this release contains global settings and the `Token HUD`, you cannot currently open any sidebar and the `Notes` button in the NPC layout doesn't do anything yet
 -   `Global`:
     -   add `Alliance Button` (previously HUD specific setting)
         -   it is now a select field setting where you can decide to only show the button to the GM
 -   `Token HUD`:
     -   some styling improvement/tweaks
+    -   move the `Recall Knowledge` section to the top panel of NPC layout
     -   rework the `Alliance` button
         -   change its style to look like the other sections of the HUD
         -   move the section to the left panel (if enabled)
@@ -14,7 +16,6 @@
     -   remove the `Enabled` setting, the `Display Mode` setting takes care of it now
     -   remove all the `Close on ...` and `Scale With Token` settings
     -   remove the `Affiliation` button from NPC layout
-    -   move the `Recall Knowledge` section to the top panel
 -   `Token Tooltip`:
     -   add support for the `Interface Scale` core setting
     -   remove the `Position` setting
