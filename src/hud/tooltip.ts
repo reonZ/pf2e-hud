@@ -9,6 +9,7 @@ import {
     createHook,
     createTimeout,
     createToggleableWrapper,
+    htmlQuery,
     isHoldingModifierKey,
     localize,
     R,
@@ -18,13 +19,6 @@ import {
 import { createGlobalEvent } from "module-helpers/src";
 import { getHealthStatusData } from "settings";
 import { BaseTokenPF2eHUD, calculateActorHealth, HUDSettingsList } from ".";
-
-const POSITIONS = {
-    left: ["left", "right", "top", "bottom"],
-    right: ["right", "left", "top", "bottom"],
-    top: ["top", "bottom", "left", "right"],
-    bottom: ["bottom", "top", "left", "right"],
-};
 
 const TARGET_ICONS = {
     selected: "fa-solid fa-expand",
@@ -60,7 +54,6 @@ const DISTANCES: Record<Exclude<TooltipDistance, "never">, DistanceDetails> = {
 };
 
 const DELAY_BUFFER = 50;
-const SETTING_POSITION = R.keys(POSITIONS);
 const SETTING_DISTANCE = ["never", "idiot", "smart", "weird"] as const;
 
 class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
@@ -123,13 +116,6 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
                 },
             },
             {
-                key: "position",
-                type: String,
-                default: "top",
-                scope: "user",
-                choices: SETTING_POSITION,
-            },
-            {
                 key: "draw",
                 type: Number,
                 default: 4,
@@ -171,7 +157,6 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
 
         this._toggleTokenHooks(enabled);
         this.#mouseDownEvent.toggle(enabled);
-        this.#canvasPanHook.toggle(enabled);
         this.#hoverTokenHook.toggle(enabled);
 
         this.#tokenRefreshWrapper.toggle(drawEnabled);
@@ -321,6 +306,12 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
     protected _onRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
         this.cancelClose();
         this.drawDistance();
+        this.#canvasPanHook.activate();
+    }
+
+    protected _onClose(options: ApplicationClosingOptions): void {
+        this.#canvasPanHook.disable();
+        return super._onClose(options);
     }
 
     protected _cleanupToken(): void {
@@ -333,58 +324,19 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
     }
 
     protected _updatePosition(position: ApplicationPosition) {
-        const targetCoords = this.tokenCoords;
-        if (!targetCoords || !canvas.ready) {
-            return position;
-        }
+        super._updatePosition(position);
 
         const element = this.element;
-        const positions = POSITIONS[this.settings.position].slice();
-        const hudBounds = element.getBoundingClientRect();
-        const limitX = window.innerWidth - hudBounds.width;
-        const limitY = window.innerHeight - hudBounds.height;
+        const wrapper = htmlQuery(element, ":scope > .wrapper");
 
-        let coords: Point | undefined;
+        if (wrapper) {
+            const hudBounds = element.getBoundingClientRect();
+            const wrapperBounds = wrapper.getBoundingClientRect();
 
-        while (positions.length && !coords) {
-            const selected = positions.shift();
-
-            if (selected === "left") {
-                coords = {
-                    x: targetCoords.left - hudBounds.width,
-                    y: postionFromTargetY(hudBounds, targetCoords),
-                };
-                if (coords.x < 0) coords = undefined;
-            } else if (selected === "right") {
-                coords = {
-                    x: targetCoords.right,
-                    y: postionFromTargetY(hudBounds, targetCoords),
-                };
-                if (coords.x > limitX) coords = undefined;
-            } else if (selected === "top") {
-                coords = {
-                    x: postionFromTargetX(hudBounds, targetCoords),
-                    y: targetCoords.top - hudBounds.height,
-                };
-                if (coords.y < 0) coords = undefined;
-            } else if (selected === "bottom") {
-                coords = {
-                    x: postionFromTargetX(hudBounds, targetCoords),
-                    y: targetCoords.bottom,
-                };
-                if (coords.y > limitY) coords = undefined;
-            }
+            wrapper.dataset.mode = hudBounds.top - wrapperBounds.height < 0 ? "bottom" : "top";
         }
 
-        if (coords) {
-            element.style.setProperty("left", `${coords.x}px`);
-            element.style.setProperty("top", `${coords.y}px`);
-
-            position.left = coords.x;
-            position.top = coords.y;
-        }
-
-        return super._updatePosition(position);
+        return position;
     }
 
     #onMouseDown() {
@@ -441,42 +393,6 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
     }
 }
 
-function postionFromTargetX(
-    bounds: DOMRect,
-    targetCoords: { left: number; width: number },
-    margin = 0
-) {
-    let x = targetCoords.left + targetCoords.width / 2 - bounds.width / 2;
-
-    if (x + bounds.width > window.innerWidth) {
-        x = window.innerWidth - bounds.width;
-    }
-
-    if (x < 0) {
-        x = margin;
-    }
-
-    return x;
-}
-
-function postionFromTargetY(
-    bounds: DOMRect,
-    targetCoords: { top: number; height: number },
-    margin = 0
-) {
-    let y = targetCoords.top + targetCoords.height / 2 - bounds.height / 2;
-
-    if (y + bounds.height > window.innerHeight) {
-        y = window.innerHeight - bounds.height - margin;
-    }
-
-    if (y < 0) {
-        y = margin;
-    }
-
-    return y;
-}
-
 function tokenCanDraw(token: Maybe<TokenPF2e>): token is TokenPF2e {
     return !!token && token.visible && !token.isPreview && !token.isAnimating;
 }
@@ -487,14 +403,12 @@ type TooltipContext = {
 };
 
 type TargetIcon = keyof typeof TARGET_ICONS;
-type TooltipPosition = (typeof SETTING_POSITION)[number];
 type TooltipDistance = (typeof SETTING_DISTANCE)[number];
 
 type TooltipSettings = {
     delay: number;
     distance: TooltipDistance;
     draw: number;
-    position: TooltipPosition;
     status: boolean;
 };
 

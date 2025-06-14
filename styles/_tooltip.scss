@@ -2,12 +2,24 @@
     --inner-padding: 0.5em;
     --inner-gap: 0.6em;
 
-    --outer-padding: 4px;
-
     position: absolute;
     z-index: 9999;
-    padding: var(--outer-padding);
     pointer-events: none;
+
+    .wrapper {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: max-content;
+
+        &[data-mode="top"] {
+            bottom: var(--other-side);
+        }
+
+        &[data-mode="bottom"] {
+            top: var(--other-side);
+        }
+    }
 
     .distance,
     .status {

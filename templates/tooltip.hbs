@@ -1,0 +1,12 @@
+<div class="wrapper">
+    {{#if distance}}
+    <div class="distance" data-panel="distance">
+        {{{distance.icon}}} {{distance.range}} {{distance.unit}}
+    </div>
+    {{/if}}
+    {{#if status}}
+    <div class="status" style="--hue: {{status.hue}};" data-panel="health-status">
+        {{status.label}}
+    </div>
+    {{/if}}
+</div>
