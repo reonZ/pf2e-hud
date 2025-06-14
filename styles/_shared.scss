@@ -1,10 +1,126 @@
 .pf2e-hud {
     --outer-background: url("../../../ui/denim075.png") repeat #4d4d4d;
-    --outer-box-shadow: 0 0 20px var(--color-shadow-dark);
+    --outer-box-shadow-color: #111111;
+    --outer-box-shadow-blur: 20px;
+    --outer-box-shadow: 0 0 var(--outer-box-shadow-blur) var(--outer-box-shadow-color);
+    --outer-border-color: #111111;
     --outer-border-width: 1px;
-    --outer-border: var(--outer-border-width) solid var(--color-border-dark);
+    --outer-border: var(--outer-border-width) solid var(--outer-border-color);
     --outer-border-radius: 4px;
+    --outer-padding: 4px;
 
+    --tooltip-background: var(--outer-background);
+    --tooltip-box-shadow-color: var(--outer-box-shadow-color);
+    --tooltip-box-shadow-blur: 10px;
+    --tooltip-box-shadow: 0 0 var(--tooltip-box-shadow-blur) var(--tooltip-box-shadow-color);
+    --tooltip-border-color: #877a35;
+    --tooltip-border-width: 1px;
+    --tooltip-border: var(--tooltip-border-width) solid var(--tooltip-border-color);
+    --tooltip-padding: 0.5em 0.6em;
+    --tooltip-color: #fbe1b7;
+
+    --color: #efe6d8;
+    --color-alt: #cbcbc3;
+    --color-darker: #999;
+    --color-accent: #c54c4c;
+    --color-highlight: #ffffff;
+    --color-active: #db2828;
+    --color-reversed: black;
+    --color-disabled: #ffffff4f;
+
+    --input-width: 2.4em;
+    --input-width-small: 1.8em;
+    --input-background: #ffffff0f;
+
+    --icon-width: 1.4em;
+    --icon-color: #d4d7de;
+
+    --other-side: calc(100% + var(--outer-padding));
+
+    color: var(--color);
+    font-family: "Signika", sans-serif;
     font-size: var(--font-size-15);
-    transform: scale(var(--ui-scale));
+    scale: var(--ui-scale);
+
+    i {
+        width: var(--icon-width);
+        text-align: center;
+    }
+
+    input[type="number"],
+    input[type="text"].text-number {
+        height: 1.2em;
+        width: var(--input-width);
+        flex: 0 0 var(--input-width);
+        padding: 0;
+        text-align: center;
+        background: var(--input-background);
+
+        &.small {
+            width: var(--input-width-small);
+            flex: 0 0 var(--input-width-small);
+        }
+    }
+
+    .slider {
+        justify-self: center;
+        display: grid;
+        align-items: center;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 0.1em;
+
+        i.carret {
+            width: unset;
+            font-size: 0.6em;
+
+            &.disabled {
+                color: var(--color-disabled);
+            }
+        }
+
+        i.icon {
+            width: unset;
+        }
+
+        &.disabled {
+            i.carret {
+                color: var(--color-disabled);
+            }
+        }
+    }
+}
+
+#tooltip.pf2e-hud {
+    color: var(--tooltip-color);
+    border: var(--tooltip-border);
+    box-shadow: var(--tooltip-box-shadow);
+    padding: var(--tooltip-padding);
+    background: var(--outer-background);
+
+    h4 {
+        font-size: 1.3em;
+        margin-bottom: 0.3em;
+    }
+
+    ul {
+        margin: 0;
+    }
+
+    &.iconed-list {
+        ul {
+            list-style: none;
+            padding: 0 0.2em 0 0;
+            margin: 0 0 -0.1em;
+            display: grid;
+            grid-auto-flow: column;
+            grid-template-rows: auto auto auto;
+            gap: 0.2em 0.5em;
+
+            li {
+                display: flex;
+                align-items: center;
+                gap: 0.2em;
+            }
+        }
+    }
 }

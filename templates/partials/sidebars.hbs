@@ -1,0 +1,7 @@
+{{#each this as |sidebar|}}
+<a data-sidebar="{{sidebar.type}}" {{{@root.i18n.tooltip 'sidebars' sidebar.type }}}
+    class="{{#if sidebar.disabled}}disabled{{/if}}{{#if sidebar.active}} active{{/if}}"
+    data-action="open-sidebar">
+    <i class="{{sidebar.icon}}"></i>
+</a>
+{{/each}}

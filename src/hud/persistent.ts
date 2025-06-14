@@ -1,11 +1,12 @@
 import {
+    ActorPF2e,
     ApplicationConfiguration,
     ApplicationRenderContext,
     ApplicationRenderOptions,
     CharacterPF2e,
     NPCPF2e,
 } from "module-helpers";
-import { BaseActorPF2eHUD, HUDSettingsList } from ".";
+import { AdvancedHudContext, BaseActorPF2eHUD, HUDSettingsList } from ".";
 
 class PersistentPF2eHUD extends BaseActorPF2eHUD<PersistentSettings, PersistentHudActor> {
     #actor: PersistentHudActor | null = null;
@@ -24,6 +25,20 @@ class PersistentPF2eHUD extends BaseActorPF2eHUD<PersistentSettings, PersistentH
 
     get actor(): PersistentHudActor | null {
         return this.#actor;
+    }
+
+    isCurrentActor(actor: Maybe<ActorPF2e>, flash?: boolean): actor is PersistentHudActor {
+        const isCurrentActor = super.isCurrentActor(actor);
+        // if (isCurrentActor && flash){ this.flash();}
+        return isCurrentActor;
+    }
+
+    async _prepareContext(options: ApplicationRenderOptions): Promise<PersistentContext | {}> {
+        const settings = (await super._prepareContext(options)) as AdvancedHudContext | {};
+
+        return {
+            ...settings,
+        };
     }
 
     protected _renderHTML(
@@ -45,5 +60,7 @@ class PersistentPF2eHUD extends BaseActorPF2eHUD<PersistentSettings, PersistentH
 type PersistentHudActor = CharacterPF2e | NPCPF2e;
 
 type PersistentSettings = {};
+
+type PersistentContext = AdvancedHudContext & {};
 
 export { PersistentPF2eHUD };

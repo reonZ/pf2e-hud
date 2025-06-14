@@ -1,0 +1,214 @@
+@mixin separator($spacing: 0.3em) {
+    position: relative;
+    margin-bottom: $spacing;
+    padding-bottom: $spacing;
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 -1px 0;
+        border-bottom: var(--separator);
+    }
+}
+
+#pf2e-hud-token {
+    --separator: 1px solid #ffffff3b;
+
+    position: absolute;
+    pointer-events: none;
+
+    [data-panel="stats"] {
+        [data-section="name"] {
+            @include separator(0.2em);
+        }
+    }
+
+    [data-panel="info"] {
+        hr {
+            grid-column: 1 / -1;
+
+            background: none;
+            margin: 0;
+            border: 0;
+            border-top: var(--separator);
+        }
+    }
+}
+
+#pf2e-hud-token[data-mode="exploded"] {
+    container: pf2e-hud-token-exploded / size;
+
+    [data-panel] {
+        pointer-events: all;
+        width: max-content;
+        position: absolute;
+        border: var(--outer-border);
+        background: var(--outer-background);
+        box-shadow: var(--outer-box-shadow);
+        padding: 0.3em;
+        border-radius: var(--outer-border-radius);
+    }
+
+    [data-panel="stats"] {
+        width: 11em;
+        padding-top: 0.2em;
+        bottom: var(--other-side);
+        left: 0;
+    }
+
+    [data-panel="statistics"] {
+        height: 5.084em;
+        top: 0;
+        left: var(--other-side);
+        grid-template-rows: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-flow: column;
+    }
+
+    [data-panel="details"] {
+        bottom: 0;
+        right: var(--other-side);
+        grid-template-rows: repeat(2, 1fr);
+        grid-auto-flow: column;
+
+        &.alliance,
+        &.resources {
+            grid-template-rows: repeat(3, 1fr);
+        }
+    }
+
+    [data-panel="info"] {
+        width: 9em;
+        padding-bottom: 0.2em;
+        top: var(--other-side);
+        right: 0;
+    }
+
+    &:not(:has([data-panel="details"])) {
+        [data-panel="stats"] {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    }
+
+    &:not(:has([data-panel="statistics"])) {
+        [data-panel="info"] {
+            right: 50%;
+            transform: translateX(50%);
+        }
+    }
+
+    @container pf2e-hud-token-exploded (min-width: 11em) {
+        [data-panel="stats"] {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    }
+
+    @container pf2e-hud-token-exploded (min-width: 9em) {
+        [data-panel="info"] {
+            right: 50%;
+            transform: translateX(50%);
+        }
+    }
+
+    @container pf2e-hud-token-exploded (min-height: 5.084em) {
+        [data-panel="statistics"] {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        [data-panel="details"] {
+            &.resources,
+            &.alliance {
+                bottom: 50%;
+                transform: translateY(50%);
+            }
+        }
+    }
+
+    @container pf2e-hud-token-exploded (min-height: 3.534em) {
+        [data-panel="details"]:not(.resources):not(.alliance) {
+            bottom: 50%;
+            transform: translateY(50%);
+        }
+    }
+
+    @container pf2e-hud-token-exploded (min-height: 9.5em) {
+        [data-panel="statistics"],
+        [data-panel="details"].resources.alliance {
+            grid-template-columns: auto;
+            grid-auto-flow: row;
+            height: auto;
+        }
+    }
+
+    @container pf2e-hud-token-exploded (min-height: 8em) {
+        [data-panel="details"].resources:not(.alliance) {
+            grid-template-columns: auto;
+            grid-auto-flow: row;
+            height: auto;
+        }
+    }
+}
+
+#pf2e-hud-token[data-mode="left"],
+#pf2e-hud-token[data-mode="right"] {
+    .wrapper {
+        position: absolute;
+        border: var(--outer-border);
+        background: var(--outer-background);
+        box-shadow: var(--outer-box-shadow);
+        padding: 0.3em;
+        border-radius: var(--outer-border-radius);
+        width: max-content;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        pointer-events: all;
+        top: 50%;
+        transform: translateY(-50%);
+
+        [data-panel] {
+            grid-column: 1 / -1;
+
+            &:not(:last-child) {
+                @include separator;
+            }
+        }
+
+        [data-panel="resources"] {
+            grid-row: 3;
+        }
+
+        [data-panel="statistics"],
+        [data-panel="resources"] {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        [data-panel="details"] {
+            grid-column: 1 / -2;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        [data-panel="alliance"] {
+            grid-column: -2;
+            padding-left: calc(var(--panel-inner-gap) / 2);
+        }
+
+        [data-panel="sidebars"] {
+            grid-template-columns: repeat(5, 1fr);
+        }
+    }
+}
+
+#pf2e-hud-token[data-mode="right"] {
+    .wrapper {
+        left: var(--other-side);
+    }
+}
+
+#pf2e-hud-token[data-mode="left"] {
+    .wrapper {
+        right: var(--other-side);
+    }
+}

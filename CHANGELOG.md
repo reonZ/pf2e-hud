@@ -1,3 +1,26 @@
+#
+
+-   `Global`:
+    -   add `Alliance Button` (previously HUD specific setting)
+        -   it is now a select field setting where you can decide to only show the button to the GM
+-   `Token HUD`:
+    -   some styling improvement/tweaks
+    -   rework the `Alliance` button
+        -   change its style to look like the other sections of the HUD
+        -   move the section to the left panel (if enabled)
+        -   `[left + click]` move the alliance toward `opposition` and loop back to `party` if clicked again
+        -   `[right + click]` move the alliance toward `party` and loop back to `opposition` if clicked again
+        -   using `[shift]` while clicking will directly set the alliance to its "goal"
+    -   remove the `Enabled` setting, the `Display Mode` setting takes care of it now
+    -   remove all the `Close on ...` and `Scale With Token` settings
+    -   remove the `Affiliation` button from NPC layout
+    -   move the `Recall Knowledge` section to the top panel
+-   `Token Tooltip`:
+    -   add support for the `Interface Scale` core setting
+    -   remove the `Position` setting
+    -   fix tooltip delayed render not being canceled by clicks
+    -   fix `Display Distance` and `Display Health Status` settings not updating the different hooks/wrappers until reload
+
 # 2.0.0
 
 -   this is a foundry `13.344` and system `7.1.1` release

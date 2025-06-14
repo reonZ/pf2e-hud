@@ -6,6 +6,7 @@ import {
     ApplicationPosition,
     ApplicationRenderContext,
     ApplicationRenderOptions,
+    createGlobalEvent,
     createHook,
     createTimeout,
     createToggleableWrapper,
@@ -16,7 +17,6 @@ import {
     render,
     TokenPF2e,
 } from "module-helpers";
-import { createGlobalEvent } from "module-helpers/src";
 import { getHealthStatusData } from "settings";
 import { BaseTokenPF2eHUD, calculateActorHealth, HUDSettingsList } from ".";
 

@@ -8,6 +8,42 @@
                     "hint": "Fixer les divisions de statut de santé pour les afficher dans le HUD."
                 }
             },
+            "global": {
+                "highestSpeed": {
+                    "name": "Montrer la plus grande vitesse",
+                    "hint": "Si aucune vitesse n'a été manuellement sélectionnée, la plus élevée sera toujours montrée par défaut même si la vitesse de déplacement au sol n'est pas 0."
+                },
+                "useModifiers": {
+                    "name": "Utiliser les modificateurs",
+                    "hint": "Afficher les modificateurs plutôt que les valeurs de difficulté dans les divers éléments du HUD."
+                },
+                "showAlliance": {
+                    "name": "Bouton alliance"
+                }
+            },
+            "advanced": {
+                "alliance": {
+                    "name": "Bouton alliance",
+                    "hint": "Montre le bouton alliance/disposition sur le HUD."
+                }
+            },
+            "token": {
+                "title": "Token HUD",
+                "close": {
+                    "name": "Fermeture totale sur un clic",
+                    "hint": "Si activé, cliquer n'importe où fermera entièrement le HUD. Si désactivé, il vous fera sortir de tout champ de saisie ou fermera d'abord la barre latérale."
+                },
+                "mode": {
+                    "name": "Mode d'affichage",
+                    "hint": "Choisissez le mode d'affichage du token HUD.",
+                    "choices": {
+                        "disabled": "Désactivé",
+                        "exploded": "Explosé",
+                        "left": "Groupé (Gauche)",
+                        "right": "Groupé (Droite)"
+                    }
+                }
+            },
             "tooltip": {
                 "title": "Infobulle du jeton",
                 "delay": {
@@ -28,18 +64,40 @@
                     "name": "Dessiner la Distance",
                     "hint": "Affiche une ligne de cette épaisseur entre le jeton que vous survolez et la 'distance' cible."
                 },
-                "position": {
-                    "name": "Position",
-                    "hint": "Choisissez l'endroit privilégié pour l'affichage de l'infobulle et quand c'est impossible, le module essaiera en premier le côté opposé puis l'une des deux possibilités restantes.",
-                    "choices": {
-                        "left": "Gauche",
-                        "right": "Droite",
-                        "top": "Au-dessus",
-                        "bottom": "En-dessous"
-                    }
-                },
                 "status": {
                     "name": "Afficher la santé"
+                }
+            }
+        },
+        "actor-hud": {
+            "adjustment": "Ajustement : {value}",
+            "alliance": "Alliance : {value}",
+            "temp": "Points de vie temporaires",
+            "resolve": "Utiliser les Points de Résolution",
+            "sidebars": {
+                "actions": "Actions",
+                "items": "Inventaire",
+                "spells": "Incantation",
+                "skills": "Compétences",
+                "extras": "Extras"
+            }
+        },
+        "dialogs": {
+            "variants": {
+                "title": "Variantes d'action",
+                "statistic": "Statistique",
+                "dc": "Degré de difficulté",
+                "drag": "Glisser pour créer un raccourci"
+            },
+            "resolve": {
+                "title": "Utiliser les Points de Résolution",
+                "full": "L'endurance de {name} est au complet. Le repos n'est pas nécessaire.",
+                "breather": {
+                    "label": "Reprendre son souffle",
+                    "hint": "Se reposer pendant 10 minutes, dépenser un point de résolution et récupérer toute votre Endurance."
+                },
+                "steel": {
+                    "hint": "Effectue une action, dépenser un point de résolution et récupérer la moitié de votre Endurance."
                 }
             }
         },
@@ -67,6 +125,12 @@
                 "feet": "ft.",
                 "meter": "m",
                 "square": "sq."
+            }
+        },
+        "use-resolve": {
+            "full": "L'endurance de {name} est pleine qui n'a pas besoin de se reposer.",
+            "breather": {
+                "used": "{name} a {ratio} Points d'Endurance et dépense un Point de Résolution, il prend 10 minutes pour souffler. Endurance rafraîchie."
             }
         }
     }

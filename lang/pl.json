@@ -8,6 +8,42 @@
                     "hint": "Skonfiguruj podziały stanu zdrowia do wyświetlania w interfejsie HUD."
                 }
             },
+            "global": {
+                "highestSpeed": {
+                    "name": "Pokaż najwyższą szybkość",
+                    "hint": "Jeśli żadna szybkość nie została wybrana ręcznie, najwyższa z nich będzie zawsze wyświetlana domyślnie, nawet jeśli szybkość na lądzie nie wynosi 0."
+                },
+                "useModifiers": {
+                    "name": "Użycie modyfikatorów",
+                    "hint": "Wyświetlanie modyfikatorów zamiast wartości poziomu trudności w różnych elementach HUD."
+                },
+                "showAlliance": {
+                    "name": "Przycisk sojuszu"
+                }
+            },
+            "advanced": {
+                "alliance": {
+                    "name": "Przycisk sojuszu",
+                    "hint": "Pokaż przycisk sojuszu/dyspozycji na HUD."
+                }
+            },
+            "token": {
+                "title": "HUD tokena",
+                "close": {
+                    "name": "Całkowite zamknięcie po kliknięciu",
+                    "hint": "Po włączeniu, kliknięcie w dowolnym miejscu na planszy spowoduje całkowite zamknięcie HUD. Gdy jest wyłączone, spowoduje opuszczenie dowolnego pola wprowadzania danych lub zamknięcie paska bocznego."
+                },
+                "mode": {
+                    "name": "Tryb wyświetlania",
+                    "hint": "Wybierz tryb wyświetlania HUD tokena.",
+                    "choices": {
+                        "disabled": "Wyłączony",
+                        "exploded": "Rozłożony",
+                        "left": "Zgrupowany (po lewej)",
+                        "right": "Zgrupowany (po prawej)"
+                    }
+                }
+            },
             "tooltip": {
                 "title": "Podpowiedzi tokena",
                 "delay": {
@@ -28,18 +64,40 @@
                     "name": "Rysowanie odległości",
                     "hint": "Narysuj linię o tej grubości między zaznaczonym tokenem a \"odległym\" celem."
                 },
-                "position": {
-                    "name": "Pozycja",
-                    "hint": "Wybierz preferowaną stronę wyświetlania podpowiedzi, jeśli nie jest to możliwe, moduł spróbuje najpierw po przeciwnej stronie, w przeciwnym razie po jednej z pozostałych dwóch.",
-                    "choices": {
-                        "left": "Lewo",
-                        "right": "Prawo",
-                        "top": "Góra",
-                        "bottom": "Dół"
-                    }
-                },
                 "status": {
                     "name": "Wyświetl stan zdrowia"
+                }
+            }
+        },
+        "actor-hud": {
+            "adjustment": "Charakter: {value}",
+            "alliance": "Sojusz: {value}",
+            "temp": "Tymczasowe Punkty Wytrzymałości",
+            "resolve": "Użyj Punkt Determinacji",
+            "sidebars": {
+                "actions": "Akcje",
+                "items": "Ekwipunek",
+                "spells": "Rzucanie zaklęć",
+                "skills": "Umiejętności",
+                "extras": "Dodatki"
+            }
+        },
+        "dialogs": {
+            "variants": {
+                "title": "Warianty akcji",
+                "statistic": "Statystyka",
+                "dc": "Klasa trudności",
+                "drag": "Przeciągnij, aby utworzyć skrót"
+            },
+            "resolve": {
+                "title": "Użyj Punkt Determinacji",
+                "full": "{name} ma pełną staminę i nie potrzebuje odpoczynku.",
+                "breather": {
+                    "label": "Złap Oddech",
+                    "hint": "Odpocznij przez 10 minut, wydaj punkt determinacji i odzyskaj całą staminę."
+                },
+                "steel": {
+                    "hint": "Użyj akcji, wydaj punkt determinacji i odzyskaj połowę staminy."
                 }
             }
         },
@@ -67,6 +125,12 @@
                 "feet": "stóp",
                 "meter": "m",
                 "square": "kwadrat"
+            }
+        },
+        "use-resolve": {
+            "full": "{name} ma pełną staminę i nie potrzebuje odpoczynku.",
+            "breather": {
+                "used": "{name} ma {ratio} PS i wydaje punkt determinacji, odpoczywając przez 10 minut. Stamina odświeżona."
             }
         }
     }

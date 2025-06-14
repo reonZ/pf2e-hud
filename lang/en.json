@@ -8,6 +8,48 @@
                     "hint": "Set up Health Status divisions to display in the HUDs."
                 }
             },
+            "global": {
+                "highestSpeed": {
+                    "name": "Show Highest Speed",
+                    "hint": "If no speed was manually selected, the highest one will always be shown by default even if the land speed isn't 0."
+                },
+                "useModifiers": {
+                    "name": "Use Modifiers",
+                    "hint": "Display modifiers instead of the difficulty value in the different HUD elements."
+                },
+                "showAlliance": {
+                    "name": "Alliance Button",
+                    "hint": "Show the alliance/disposition button in the different HUD elements.",
+                    "choices": {
+                        "disabled": "Disabled",
+                        "gm": "GM Only",
+                        "all": "Everyone"
+                    }
+                }
+            },
+            "advanced": {
+                "alliance": {
+                    "name": "Alliance Button",
+                    "hint": "Show the alliance/disposition button in the HUD."
+                }
+            },
+            "token": {
+                "title": "Token HUD",
+                "close": {
+                    "name": "Full Close on Click",
+                    "hint": "When enabled, clicking anywhere on the board will close the HUD entirely. When disabled, it will take you out of any input field or close the sidebar first."
+                },
+                "mode": {
+                    "name": "Display Mode",
+                    "hint": "Select the mode of display of the token HUD.",
+                    "choices": {
+                        "disabled": "Disabled",
+                        "exploded": "Exploded",
+                        "left": "Grouped (Left)",
+                        "right": "Grouped (Right)"
+                    }
+                }
+            },
             "tooltip": {
                 "title": "Token Tooltip",
                 "delay": {
@@ -28,20 +70,43 @@
                     "name": "Draw Distance",
                     "hint": "Draw a line of this thickness between the hovered token and the 'distance' target."
                 },
-                "position": {
-                    "name": "Position",
-                    "hint": "Select a preferred side for the tooltip to be displayed, if not possible, the module will try first on the opposite side, otherwise on one of the remaining two.",
-                    "choices": {
-                        "left": "Left",
-                        "right": "Right",
-                        "top": "Top",
-                        "bottom": "Bottom"
-                    }
-                },
                 "status": {
                     "name": "Display Health Status",
                     "hint": "Should health state be displayed on the tooltip if enabled in you world."
                 }
+            }
+        },
+        "actor-hud": {
+            "adjustment": "Adjustment: {value}",
+            "alliance": "Alliance: {value}",
+            "temp": "Temporary Hit Points",
+            "resolve": "Use Resolve Point",
+            "sidebars": {
+                "actions": "Actions",
+                "items": "Inventory",
+                "spells": "Spellcasting",
+                "skills": "Skills",
+                "extras": "Extras"
+            }
+        },
+        "dialogs": {
+            "variants": {
+                "title": "Action Variants",
+                "statistic": "Statistic",
+                "dc": "Difficulty Class",
+                "drag": "Drag to create a shortcut"
+            },
+            "resolve": {
+                "title": "Use Resolve Point",
+                "full": "{name} is full of stamina and doesn't need to rest.",
+                "breather": {
+                    "label": "Take a Breather",
+                    "hint": "Rest for 10 minutes, spend a resolve point and regain all your stamina."
+                },
+                "steel": {
+                    "hint": "Use an action, spend a resolve point and regain half your stamina."
+                },
+                "yes": "Use Resolve"
             }
         },
         "health-status": {
@@ -68,6 +133,12 @@
                 "feet": "ft.",
                 "meter": "m",
                 "square": "sq."
+            }
+        },
+        "use-resolve": {
+            "full": "{name} is full of stamina and doesn't need to rest.",
+            "breather": {
+                "used": "{name} has {ratio} SP and spends a resolve point, taking a 10 minute breather. Stamina Refreshed."
             }
         }
     }

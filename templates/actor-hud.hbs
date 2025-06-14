@@ -1,0 +1,258 @@
+<div data-panel="stats">
+    {{!-- name --}}
+    <div class="full" data-section="name">
+        <span>{{name}}</span>
+    </div>
+
+    {{!-- stamina --}}
+    {{#if health.sp}}
+    <div data-section="resolve">
+        <a data-action="use-resolve" {{{@root.i18n.tooltip 'resolve' }}}>
+            <i class="fa-solid fa-circle-r"></i>
+        </a>
+        <input type="text" class="text-number small" name="system.resources.resolve"
+            value="{{resolve.value}}" data-min="0" data-max="{{resolve.max}}"
+            data-tooltip="PF2E.Actor.Resource.Resolve">
+    </div>
+    <div class="double" data-section="stamina" data-tooltip="PF2E.StaminaPointsShortLabel">
+        <i class="fa-solid fa-heart-pulse"></i>
+        {{> 'numbers' name="system.attributes.hp.sp" entry=health.sp}}
+    </div>
+    {{/if}}
+
+
+    {{!-- hardness --}}
+    {{#if hardness includeZero=true}}
+    <div data-section="hardness" data-tooltip="PF2E.HardnessLabel">
+        <i class="fa-solid fa-turtle"></i>
+        <span>{{hardness}}</span>
+    </div>
+    {{!-- scouting --}}
+    {{else if scouting}}
+    <a data-section="scouting" data-tooltip="PF2E.Kingmaker.Army.Scouting"
+        data-action="roll-statistic" data-statistic="scouting">
+        <i class="fa-solid fa-flag"></i>
+        <span>{{scouting}}</span>
+    </a>
+    {{!-- temp hp --}}
+    {{else}}
+    <div data-section="temp-hp" {{{@root.i18n.tooltip 'temp' }}}>
+        <i class="fa-solid fa-heart-half-stroke"></i>
+        <input type="text" class="text-number small" name="system.attributes.hp.temp"
+            value="{{health.temp}}" data-min="0">
+    </div>
+    {{/if}}
+    {{!-- health --}}
+    <div class="double" data-section="hp" data-tooltip="PF2E.HitPointsHeader">
+        <i class="fa-solid fa-heart"></i>
+        {{#if health}}
+        {{> 'numbers' name="system.attributes.hp" entry=health}}
+        {{else}}
+        <div class="numbers">
+            <span>——</span>
+            <span class="separator">/</span>
+            <span class="max">——</span>
+        </div>
+        {{/if}}
+    </div>
+
+    {{!-- ac --}}
+    <div data-section="ac" data-tooltip="PF2E.ArmorClassLabel">
+        <a data-action="take-cover" data-tooltip="PF2E.Actions.TakeCover.Title">
+            {{#if hasCover}}
+            <i class="fa-solid fa-helmet-battle"></i>
+            {{else}}
+            <i class="fa-regular fa-helmet-battle"></i>
+            {{/if}}
+        </a>
+        <span>{{ac}}</span>
+    </div>
+    {{!-- shield --}}
+    {{#if isCharacter}}
+    <div class="double" data-section="shield">
+        <a {{#if (eq shield.itemId null)}}class="disabled" {{/if}} data-action="raise-shield"
+            data-tooltip="PF2E.Actions.RaiseAShield.SingleActionTitle">
+            {{#if shield.broken}}
+            <i class="fa-regular fa-shield-slash"></i>
+            {{else if shield.raised}}
+            <i class="fa-solid fa-shield"></i>
+            {{else if shield.itemId}}
+            <i class="fa-regular fa-shield"></i>
+            {{else}}
+            <i class="fa-regular fa-shield-slash"></i>
+            {{/if}}
+        </a>
+        <span>({{shield.hardness}})</span>
+        {{#if shield.itemId}}
+        <input type="number" class="shield" name="system.attributes.shield.hp"
+            value="{{shield.hp.value}}" min="0" max="{{shield.hp.max}}"
+            data-tooltip="PF2E.Actor.Creature.Shield.HitPoints.Value">
+        {{else}}
+        <span class="nan">——&nbsp;&nbsp;</span>
+        {{/if}}
+    </div>
+    {{!-- knowledge & notes --}}
+    {{else if isNPC}}
+    <div class="double" data-section="npc-extra">
+        <div data-section="recall-knowledge" data-tooltip="{{knowledge.tooltip}}">
+            <i class="fa-solid fa-book"></i>
+            <span>{{knowledge.dc}}</span>
+        </div>
+        <a data-section="npc-notes" data-action="show-notes" data-tooltip="PF2E.NPC.NotesTab">
+            <i class="fa-duotone fa-clipboard"></i>
+            <span>...</span>
+        </a>
+    </div>
+    {{else}}
+    {{!-- extra data for non-character --}}
+    <div class="double" data-section="extra">
+        {{> 'level'}}
+        {{#if isVehicle}}
+        {{> 'statistics'}}
+        {{else if isFamiliar}}
+        {{> 'speed'}}
+        {{else if (or isHazard isArmy)}}
+        {{> (@root.partial 'sidebars') sidebars}}
+        {{/if}}
+    </div>
+    {{#if isHazard}}
+    <div class="full" data-section="statistics">
+        {{> 'statistics'}}
+    </div>
+    {{/if}}
+    {{/if}}
+</div>
+
+{{#if (or isCombatant isFamiliar)}}
+<div data-panel="statistics">
+    {{> 'statistics'}}
+</div>
+{{/if}}
+
+
+{{#if isCombatant}}
+{{#if isExploded}}
+<div data-panel="details"
+    class="{{#if isCharacter}} resources{{/if}}{{#if alliance}} alliance{{/if}}">
+    {{#if isCharacter}}
+    {{> 'resources'}}
+    {{/if}}
+    {{> 'level'}}
+    {{> 'speed'}}
+    {{> 'alliance'}}
+</div>
+{{else}}
+<div data-panel="details">
+    {{> 'level'}}
+    {{> 'speed'}}
+</div>
+<div data-panel="alliance">
+    {{> 'alliance'}}
+</div>
+{{#if isCharacter}}
+<div data-panel="resources">
+    {{> 'resources'}}
+</div>
+{{/if}}
+{{/if}}
+{{/if}}
+
+
+{{#unless isArmy}}
+<div data-panel="info">
+    {{#each infoSections as |info|}}
+    <div class="info{{#unless info.active}} disabled{{/unless}}" data-section="{{info.slug}}" {{#if
+        info.tooltip}}data-tooltip="{{info.tooltip}}" {{/if}} class="info">
+        <i class="{{info.icon}}"></i>
+    </div>
+    {{/each}}
+
+    {{#if (and isExploded sidebars.length (not isHazard))}}
+    <hr>
+    {{> (@root.partial 'sidebars') sidebars}}
+    {{/if}}
+</div>
+
+{{#unless (or isExploded isHazard (not sidebars.length))}}
+<div data-panel="sidebars">
+    {{> (@root.partial 'sidebars') sidebars}}
+</div>
+{{/unless}}
+{{/unless}}
+
+
+{{#*inline 'numbers'}}
+<div class="numbers">
+    <input type="text" class="text-number" name="{{name}}" value="{{entry.value}}" data-min="0"
+        data-max="{{entry.max}}">
+    <span class="separator">/</span>
+    <span class="max">{{entry.max}}</span>
+</div>
+{{/inline}}
+
+
+
+{{#*inline 'statistics'}}
+{{#each statistics as |statistic|}}
+<a data-section="{{statistic.slug}}" data-tooltip="{{statistic.label}}" data-action="roll-statistic"
+    data-statistic="{{statistic.slug}}">
+    <i class="{{statistic.icon}}"></i>
+    {{#if statistic.value}}
+    <span>{{statistic.value}}</span>
+    {{else}}
+    <span>{{statistic.dc}} / {{statistic.mod}}</span>
+    {{/if}}
+</a>
+{{/each}}
+{{/inline}}
+
+{{#*inline 'level'}}
+<div data-section="level" data-tooltip="PF2E.CharacterLevelLabel">
+    <i class="fa-solid fa-user-graduate"></i>
+    <span>{{level}}</span>
+</div>
+{{/inline}}
+
+{{#*inline 'speed'}}
+<a data-section="speeds" data-tooltip="{{speed.others}}" data-tooltip-class="pf2e-hud iconed-list"
+    {{#unless speed.others}}class="disabled" {{/unless}} data-speed="{{speed.main.type}}"
+    data-action="change-speed">
+    <i class="{{speed.main.icon}}"></i>
+    <span>{{speed.main.total}}</span>
+</a>
+{{/inline}}
+
+{{#*inline 'alliance'}}
+{{#if alliance}}
+<a data-section="alliance" data-action="update-alliance" data-value="{{alliance.value}}"
+    data-tooltip="{{alliance.tooltip}}">
+    <i class="{{alliance.icon}}"></i>
+    <span><i class="fa-solid fa-arrow-rotate-right"></i></span>
+</a>
+{{/if}}
+{{/inline}}
+
+{{#*inline 'resources'}}
+{{#if (eq resources.hero.mythic 'mythic')}}
+<div data-section="mythic-points" data-tooltip="PF2E.Actor.Resource.MythicPoints">
+    <i class="fa-solid fa-circle-m"></i>
+    {{> (@root.partial 'slider') resources.hero}}
+</div>
+{{else}}
+<div data-section="hero-points" data-tooltip="PF2E.Actor.Resource.HeroPoints">
+    <i class="fa-solid fa-circle-h"></i>
+    {{> (@root.partial 'slider') resources.hero}}
+</div>
+{{/if}}
+<div data-section="dying" data-tooltip="PF2E.ConditionTypeDying">
+    <a {{#unless resources.dying.value}}class="disabled" {{/unless}} data-action="recovery-check"
+        data-tooltip="PF2E.Check.Specific.Recovery">
+        <i class="fa-solid fa-tombstone"></i>
+    </a>
+    {{> (@root.partial 'slider') resources.dying}}
+</div>
+<div data-section="wounded" data-tooltip="PF2E.ConditionTypeWounded">
+    <i class="fa-solid fa-notes-medical"></i>
+    {{> (@root.partial 'slider') resources.wounded}}
+</div>
+{{/inline}}

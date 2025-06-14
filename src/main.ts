@@ -1,5 +1,5 @@
+import { MODULE, R, templatePath, userIsGM } from "module-helpers";
 import { PersistentPF2eHUD, TokenPF2eHUD, TooltipPF2eHUD, TrackerPF2eHUD } from "hud";
-import { MODULE, R, userIsGM } from "module-helpers";
 import { registerSettings } from "settings";
 
 MODULE.register("pf2e-hud");
@@ -15,8 +15,8 @@ const HUDS = {
 Hooks.on("init", () => {
     const isGM = userIsGM();
 
-    // TODO load partials
-    // foundry.applications.handlebars.loadTemplates([]);
+    const partials = ["sidebars", "slider"].map((x) => templatePath("partials", x));
+    foundry.applications.handlebars.loadTemplates(partials);
 
     registerSettings(HUDS);
 

@@ -1,10 +1,8 @@
 import {
     ApplicationClosingOptions,
     ApplicationConfiguration,
-    ApplicationRenderContext,
     getSetting,
     RegisterSettingOptions,
-    render,
     setSetting,
 } from "module-helpers";
 
@@ -35,10 +33,6 @@ abstract class BasePF2eHUD<TSettings extends Record<string, any>> extends foundr
     async close(options: ApplicationClosingOptions = {}) {
         options.animate = false;
         return super.close(options);
-    }
-
-    renderTemplate(template: string, context: ApplicationRenderContext) {
-        return render(`${this.key}/${template}`, context);
     }
 
     getSettingKey<K extends keyof TSettings & string>(setting: K): string {
@@ -88,7 +82,7 @@ type HUDSetting<TSettings extends Record<string, any>> = TSettings extends Recor
     ? RegisterSettingOptions & { key: K; type: FromPrimitive<V> }
     : never;
 
-type HUDSettingsList<TSettings extends Record<string, any>> = ReadonlyArray<HUDSetting<TSettings>>;
+type HUDSettingsList<TSettings extends Record<string, any>> = Array<HUDSetting<TSettings>>;
 
 export { BasePF2eHUD };
 export type { HUDSettingsList };

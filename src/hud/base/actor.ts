@@ -2,8 +2,8 @@ import { ActorPF2e, ApplicationClosingOptions } from "module-helpers";
 import { BasePF2eHUD } from ".";
 
 abstract class BaseActorPF2eHUD<
-    TSettings extends Record<string, any>,
-    TActor extends ActorPF2e
+    TSettings extends Record<string, any> = Record<string, any>,
+    TActor extends ActorPF2e = ActorPF2e
 > extends BasePF2eHUD<TSettings> {
     abstract get actor(): TActor | null;
 

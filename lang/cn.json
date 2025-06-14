@@ -8,6 +8,42 @@
                     "hint": "设置显示在HUD的健康状况阶段。"
                 }
             },
+            "global": {
+                "highestSpeed": {
+                    "name": "显示最高速度",
+                    "hint": "如果未手动选择显示速度类型，则即便陆地速度不为0也默认显示最高速度。"
+                },
+                "useModifiers": {
+                    "name": "使用调整值",
+                    "hint": "在不同的HUD元素中显示调整值而非DC。"
+                },
+                "showAlliance": {
+                    "name": "盟友按钮"
+                }
+            },
+            "advanced": {
+                "alliance": {
+                    "name": "盟友按钮",
+                    "hint": "在HUD上显示盟友/部署按钮。"
+                }
+            },
+            "token": {
+                "title": "指示物HUD",
+                "close": {
+                    "name": "点击完全关闭",
+                    "hint": "当启用时，点击场景的任何地方将完全关闭HUD。当禁用时，它将带您退出任何输入框或首先关闭侧边栏。"
+                },
+                "mode": {
+                    "name": "显示模式",
+                    "hint": "选择指示物HUD的显示模式。",
+                    "choices": {
+                        "disabled": "禁用",
+                        "exploded": "分散",
+                        "left": "集中（左侧）",
+                        "right": "集中（右侧）"
+                    }
+                }
+            },
             "tooltip": {
                 "title": "指示物提示工具",
                 "delay": {
@@ -28,18 +64,40 @@
                     "name": "距离拉线",
                     "hint": "在悬停指示物与‘距离’目标间画这样粗度的线。"
                 },
-                "position": {
-                    "name": "位置",
-                    "hint": "选择要显示工具提示的首选一侧，如果无法显示，模块将首先尝试在相反一侧显示，否则在剩余两侧中选择一个。",
-                    "choices": {
-                        "left": "左侧",
-                        "right": "右侧",
-                        "top": "顶部",
-                        "bottom": "底部"
-                    }
-                },
                 "status": {
                     "name": "显示健康状况"
+                }
+            }
+        },
+        "actor-hud": {
+            "adjustment": "生物调整：{value}",
+            "alliance": "关系：{value}",
+            "temp": "临时生命值",
+            "resolve": "使用决心点数",
+            "sidebars": {
+                "actions": "动作",
+                "items": "库存",
+                "spells": "施法",
+                "skills": "技能",
+                "extras": "额外选项"
+            }
+        },
+        "dialogs": {
+            "variants": {
+                "dc": "DC",
+                "drag": "拖拽至快捷栏创建选项",
+                "title": "变体动作",
+                "statistic": "统计技能"
+            },
+            "resolve": {
+                "title": "使用决心点数",
+                "full": "{name}的耐力值已满且不需要休息。",
+                "breather": {
+                    "label": "小憩一刻",
+                    "hint": "休息10分钟，消耗一个决心点，恢复你所有的耐力。"
+                },
+                "steel": {
+                    "hint": "使用一个动作，消耗一个决心点，恢复你一半的耐力。"
                 }
             }
         },
@@ -67,6 +125,12 @@
                 "meter": "m",
                 "square": "sq.",
                 "feet": "尺"
+            }
+        },
+        "use-resolve": {
+            "full": "{name}耐力值为满值，不需要休息。",
+            "breather": {
+                "used": "{name}拥有{ratio}SP并消耗了一点决心点数，10分钟时间小憩片刻。耐力值已回复。"
             }
         }
     }
