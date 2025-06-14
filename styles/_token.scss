@@ -171,6 +171,11 @@
         [data-panel] {
             grid-column: 1 / -1;
 
+            &:first-child {
+                padding-bottom: 0.1em;
+                margin-bottom: 0.4em;
+            }
+
             &:not(:last-child) {
                 @include separator;
             }
@@ -195,8 +200,13 @@
             padding-left: calc(var(--panel-inner-gap) / 2);
         }
 
+        [data-panel="info"] {
+            justify-items: center;
+        }
+
         [data-panel="sidebars"] {
             grid-template-columns: repeat(5, 1fr);
+            justify-items: center;
         }
     }
 }
