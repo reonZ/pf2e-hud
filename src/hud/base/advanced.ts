@@ -127,9 +127,11 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
         protected async _prepareContext(
             this: ThisAdvancedHUD,
             _: ApplicationRenderOptions
-        ): Promise<AdvancedHudContext | {}> {
+        ): Promise<ReturnedAdvancedHudContext> {
             const actor = this.actor;
-            if (!actor) return {};
+            if (!actor) {
+                return { hasActor: false };
+            }
 
             const health = calculateActorHealth(actor);
             const isNPC = actor.isOfType("npc");
@@ -146,6 +148,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             return {
                 ac: actor.attributes.ac?.value,
                 alliance: isCombatant ? getAllianceData(actor) : undefined,
+                hasActor: true,
                 hasCover: !!getCoverEffect(actor),
                 health,
                 infoSections: getInfoSections(actor, options),
@@ -187,18 +190,19 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
                 | "recovery-check"
                 | "roll-statistic"
                 | "show-notes"
+                | "slider"
                 | "take-cover"
                 | "use-resolve"
                 | "update-alliance";
 
-            const actor = this.actor;
             const action = target.dataset.action as EventAction;
 
             if (action === "change-speed") {
                 this.#changeSpeed(target);
             } else if (action === "raise-shield") {
-                game.pf2e.actions.raiseAShield({ actors: [actor], event });
+                game.pf2e.actions.raiseAShield({ actors: [this.actor], event });
             } else if (action === "recovery-check") {
+                const actor = this.actor;
                 if (actor?.isOfType("character")) {
                     actor.rollRecovery(event);
                 }
@@ -206,12 +210,41 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
                 this.#rollStatistic(event, target);
             } else if (action === "show-notes") {
                 // TODO
+            } else if (action === "slider") {
+                this.#onSlider(event, target);
             } else if (action === "take-cover") {
                 this.#takeCover(event);
             } else if (action === "update-alliance") {
                 this.#updateAlliance(event);
             } else if (action === "use-resolve") {
-                useResolve(actor);
+                useResolve(this.actor);
+            }
+        }
+
+        #onSlider(this: ThisAdvancedHUD, event: PointerEvent, target: HTMLElement) {
+            const actor = this.actor;
+            if (![0, 2].includes(event.button) || !actor?.isOfType("character")) return;
+
+            type SliderAction = "hero" | "wounded" | "dying" | "mythic";
+
+            const action = target.dataset.sliderAction as SliderAction;
+            const direction = event.button === 0 ? 1 : -1;
+
+            if (["hero", "mythic"].includes(action)) {
+                const resource = getMythicOrHeroPoints(actor);
+                const newValue = Math.clamp(resource.value + direction, 0, resource.max);
+
+                if (newValue !== resource.value) {
+                    actor.update({ [`system.resources.${resource.name}.value`]: newValue });
+                }
+            } else if (action === "dying" || action === "wounded") {
+                const max = actor.system.attributes[action].max;
+
+                if (direction === 1) {
+                    actor.increaseCondition(action, { max });
+                } else {
+                    actor.decreaseCondition(action);
+                }
             }
         }
 
@@ -336,6 +369,21 @@ function getInfoSections(actor: ActorPF2e, options: InfoOptions) {
             tooltip,
         };
     });
+}
+
+function getMythicOrHeroPoints(
+    actor: CharacterPF2e
+): ValueAndMax & { name: "mythicPoints" | "heroPoints" } {
+    const name = actor.system.resources.mythicPoints.max ? "mythicPoints" : "heroPoints";
+    const resource =
+        name === "mythicPoints"
+            ? actor.system.resources.mythicPoints
+            : actor.system.resources.heroPoints;
+
+    return {
+        ...resource,
+        name,
+    };
 }
 
 function getResources(actor: CharacterPF2e): HudResources {
@@ -465,9 +513,12 @@ type ActorSpeed = CreatureSpeeds & {
     type: MovementType;
 };
 
+type ReturnedAdvancedHudContext = AdvancedHudContext | { hasActor: false };
+
 type AdvancedHudContext = {
     ac: number | undefined;
     alliance: AllianceData | undefined;
+    hasActor: true;
     hasCover: boolean;
     health: HealthData | undefined;
     infoSections: InfoSection[];
@@ -530,4 +581,4 @@ type InfoSection = {
 };
 
 export { makeAdvancedHUD };
-export type { AdvancedHudContext };
+export type { AdvancedHudContext, ReturnedAdvancedHudContext };
