@@ -7,11 +7,11 @@ abstract class BaseActorPF2eHUD<
 > extends BasePF2eHUD<TSettings> {
     abstract get actor(): TActor | null;
 
-    isValidActor(actor: Maybe<ActorPF2e>): actor is ActorPF2e {
+    isValidActor(actor: any): actor is ActorPF2e {
         return actor instanceof Actor;
     }
 
-    isCurrentActor(actor: Maybe<ActorPF2e>): actor is TActor {
+    isCurrentActor(actor: any): actor is TActor {
         return !!actor && this.actor?.uuid === actor.uuid;
     }
 
@@ -20,8 +20,10 @@ abstract class BaseActorPF2eHUD<
     }
 
     protected _cleanupActor() {
-        delete this.actor?.apps[this.id];
-        delete this.actor?.token?.baseActor?.apps[this.id];
+        const actor = this.actor;
+
+        delete actor?.apps[this.id];
+        delete actor?.token?.baseActor?.apps[this.id];
     }
 }
 

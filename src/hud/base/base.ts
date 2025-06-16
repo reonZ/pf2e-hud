@@ -19,7 +19,7 @@ abstract class BasePF2eHUD<TSettings extends Record<string, any>> extends foundr
         classes: ["pf2e-hud"],
     };
 
-    declare settings: Readonly<TSettings>;
+    declare settings: TSettings;
 
     abstract get key(): string;
     abstract get settingsSchema(): HUDSettingsList<TSettings>;

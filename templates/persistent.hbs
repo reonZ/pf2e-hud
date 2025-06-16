@@ -1,0 +1,50 @@
+<div data-panel="menu">
+    {{#if (or setActor hasActor)}}
+    <div class="group">
+        {{#if setActor}}
+        <a class="set-actor{{#if setActor.disabled}} inactive{{/if}}" data-action="set-actor"
+            data-tooltip="{{setActor.tooltip}}" data-tooltip-class="pf2e-hud no-width">
+            <i class="fa-solid fa-user-vneck"></i>
+        </a>
+        {{/if}}
+        {{#if hasActor}}
+        <a data-action="open-sheet" {{{@root.i18n.tooltip 'menu.openSheet' }}}>
+            <i class="fa-solid fa-file"></i>
+        </a>
+        <a class="cleaned" data-action="toggle-clean" {{{@root.i18n.tooltip 'menu.clean.hover' }}}>
+            <i class="fa-duotone fa-image-user"></i>
+        </a>
+        <a data-action="toggle-clean" {{{@root.i18n.tooltip 'menu.clean.always' }}}>
+            <i class="fa-solid fa-image-user"></i>
+        </a>
+        {{/if}}
+    </div>
+    {{/if}}
+    <div class="group">
+        <a class="locked" data-action="toggle-hotbar-lock" data-tooltip="HOTBAR.UNLOCK">
+            <i class="fa-solid fa-lock"></i>
+        </a>
+        <a data-action="toggle-hotbar-lock" data-tooltip="HOTBAR.LOCK">
+            <i class="fa-solid fa-unlock"></i>
+        </a>
+        <a class="muted" data-action="mute-sound" data-tooltip="HOTBAR.UNMUTE">
+            <i class="fa-solid fa-volume-xmark"></i>
+        </a>
+        <a data-action="mute-sound" data-tooltip="HOTBAR.MUTE">
+            <i class="fa-solid fa-volume"></i>
+        </a>
+        <a data-action="clear-hotbar" data-tooltip="HOTBAR.CLEAR">
+            <i class="fa-solid fa-trash"></i>
+        </a>
+    </div>
+</div>
+
+<div data-panel="portrait">
+    {{#if avatar}}
+    <div class="avatar" data-action="edit-avatar" style='background-image: url("{{avatar}}");'>
+    </div>
+    {{else}}
+    <div class="avatar"></div>
+    {{/if}}
+    <div class="flash"></div>
+</div>

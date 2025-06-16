@@ -36,7 +36,7 @@ function addTextNumberInputListeners(doc: ActorPF2e | ItemPF2e, html: HTMLElemen
             const input = el.value;
             const current: number = foundry.utils.getProperty(doc, path) ?? 0;
             const isNegative = input.startsWith("-");
-            const isDelta = input.startsWith("+") || isNegative;
+            const isDelta = isNegative || input.startsWith("+");
             const isPercent = input.endsWith("%");
             const valueStr = input.slice(isDelta ? 1 : 0, isPercent ? -1 : undefined);
             const valueNum = Math.abs(Number(valueStr));
@@ -70,7 +70,9 @@ function addTextNumberInputListeners(doc: ActorPF2e | ItemPF2e, html: HTMLElemen
 
 function addEnterKeyListeners(html: HTMLElement) {
     addListenerAll(html, "input", "keyup", (el, event) => {
-        if (event.key === "Enter") el.blur();
+        if (event.key === "Enter") {
+            el.blur();
+        }
     });
 }
 

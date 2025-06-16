@@ -33,6 +33,19 @@
                     "hint": "Show the alliance/disposition button in the HUD."
                 }
             },
+            "persistent": {
+                "title": "Persistent HUD",
+                "mode": {
+                    "name": "Selection Mode",
+                    "hint": "Mode of selection for the persistent actor.",
+                    "choices": {
+                        "disabled": "Disabled",
+                        "manual": "Manual Selection",
+                        "select": "On Token Selection",
+                        "combat": "Current Combatant"
+                    }
+                }
+            },
             "token": {
                 "title": "Token HUD",
                 "close": {
@@ -76,8 +89,9 @@
                 }
             }
         },
+        "leftClick": "[Left Click]",
+        "rightClick": "[Right Click]",
         "actor-hud": {
-            "adjustment": "Adjustment: {value}",
             "alliance": "Alliance: {value}",
             "temp": "Temporary Hit Points",
             "resolve": "Use Resolve Point",
@@ -127,6 +141,22 @@
                 "confirm": "Health Status has been copied to clipboard."
             },
             "default": "Dead, At Death's Door, Not Feeling Good, Seen Better Days, Barely Hurt, Perfectly Fine"
+        },
+        "persistent": {
+            "error": {
+                "selectOne": "Select a single NPC/Character token to set as your persistent actor."
+            },
+            "menu": {
+                "clean": {
+                    "always": "Always show UI on portrait",
+                    "hover": "Only show UI when hovering the portrait"
+                },
+                "openSheet": "Open Sheet",
+                "setActor": {
+                    "set": "Set selected token as persistent actor",
+                    "unset": "Unset persistent actor"
+                }
+            }
         },
         "tooltip": {
             "distance": {

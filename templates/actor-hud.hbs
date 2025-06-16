@@ -1,8 +1,18 @@
+{{#unless isExploded}}
+<div data-panel="name">
+    <div class="full" data-section="name">
+        <span>{{name}}</span>
+    </div>
+</div>
+{{/unless}}
+
 <div data-panel="stats">
+    {{#if isExploded}}
     {{!-- name --}}
     <div class="full" data-section="name">
         <span>{{name}}</span>
     </div>
+    {{/if}}
 
     {{!-- stamina --}}
     {{#if health.sp}}

@@ -27,6 +27,9 @@
                     "hint": "Pokaż przycisk sojuszu/dyspozycji na HUD."
                 }
             },
+            "persistent": {
+                "title": "Stały HUD"
+            },
             "token": {
                 "title": "HUD tokena",
                 "close": {
@@ -69,8 +72,9 @@
                 }
             }
         },
+        "leftClick": "[Kliknij lewym]",
+        "rightClick": "[Kliknij prawym]",
         "actor-hud": {
-            "adjustment": "Charakter: {value}",
             "alliance": "Sojusz: {value}",
             "temp": "Tymczasowe Punkty Wytrzymałości",
             "resolve": "Użyj Punkt Determinacji",
@@ -119,6 +123,22 @@
                 "confirm": "Stan zdrowia został skopiowany do schowka."
             },
             "default": "Martwy, Bliski śmierci, Ciężko ranny, Ranny, Lekko ranny, Bez obrażeń"
+        },
+        "persistent": {
+            "error": {
+                "selectOne": "Wybierz pojedynczy token NPC/postaci, aby ustawić go jako stałego aktora."
+            },
+            "menu": {
+                "clean": {
+                    "always": "Zawsze wyświetlaj interfejs użytkownika w orientacji pionowej",
+                    "hover": "Wyświetlanie interfejsu użytkownika tylko po najechaniu na portret"
+                },
+                "openSheet": "Otwórz kartę",
+                "setActor": {
+                    "set": "Ustawienie wybranego tokena jako stałego aktora",
+                    "unset": "Usuń ustawionego stałego aktora"
+                }
+            }
         },
         "tooltip": {
             "distance": {

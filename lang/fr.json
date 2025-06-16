@@ -27,6 +27,9 @@
                     "hint": "Montre le bouton alliance/disposition sur le HUD."
                 }
             },
+            "persistent": {
+                "title": "HUD Persistant"
+            },
             "token": {
                 "title": "Token HUD",
                 "close": {
@@ -69,8 +72,9 @@
                 }
             }
         },
+        "leftClick": "[Clic gauche]",
+        "rightClick": "[Clic droit]",
         "actor-hud": {
-            "adjustment": "Ajustement : {value}",
             "alliance": "Alliance : {value}",
             "temp": "Points de vie temporaires",
             "resolve": "Utiliser les Points de Résolution",
@@ -119,6 +123,22 @@
                 "confirm": "L'état de santé a été copié dans le presse-papier."
             },
             "default": "Mort, Au seuil de la mort, Ne se sent pas bien, A connu des jours meilleurs, Légèrement blessé, En pleine santé"
+        },
+        "persistent": {
+            "error": {
+                "selectOne": "Sélectionnez un seul jeton de PNJ ou PJ pour être votre acteur persistant."
+            },
+            "menu": {
+                "clean": {
+                    "always": "Toujours montrer les icônes sur le portrait",
+                    "hover": "Ne montrer les icônes qu'au survol du portrait"
+                },
+                "openSheet": "Ouvrir la feuille",
+                "setActor": {
+                    "set": "Choisir le jeton sélectionné comme acteur persistant",
+                    "unset": "Déselectionner l'acteur persistant"
+                }
+            }
         },
         "tooltip": {
             "distance": {

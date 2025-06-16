@@ -27,6 +27,9 @@
                     "hint": "在HUD上显示盟友/部署按钮。"
                 }
             },
+            "persistent": {
+                "title": "受控HUD"
+            },
             "token": {
                 "title": "指示物HUD",
                 "close": {
@@ -69,8 +72,9 @@
                 }
             }
         },
+        "leftClick": "[左键点击]",
+        "rightClick": "[右键点击]",
         "actor-hud": {
-            "adjustment": "生物调整：{value}",
             "alliance": "关系：{value}",
             "temp": "临时生命值",
             "resolve": "使用决心点数",
@@ -119,6 +123,22 @@
                 "confirm": "健康状况设置已被复制到剪贴板。"
             },
             "default": "死亡, 奄奄一息, 欠佳, 受创, 微伤, 完好"
+        },
+        "persistent": {
+            "error": {
+                "selectOne": "选择一个NPC/角色指示物以设置你的受控角色。"
+            },
+            "menu": {
+                "clean": {
+                    "always": "始终在肖像上显示UI",
+                    "hover": "仅在悬停于肖像上时显示UI"
+                },
+                "openSheet": "打开角色卡",
+                "setActor": {
+                    "set": "设置选中指示物为受控角色",
+                    "unset": "解绑受控角色"
+                }
+            }
         },
         "tooltip": {
             "distance": {

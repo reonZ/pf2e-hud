@@ -36,15 +36,22 @@
     --icon-color: #d4d7de;
 
     --other-side: calc(100% + var(--outer-padding));
+    --hud-font-size: var(--font-size-15);
 
     color: var(--color);
     font-family: "Signika", sans-serif;
-    font-size: var(--font-size-15);
+    font-size: var(--hud-font-size);
     scale: var(--ui-scale);
 
     i {
         width: var(--icon-width);
         text-align: center;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        color: var(--color);
+        border: none;
     }
 
     input[type="number"],
@@ -117,5 +124,9 @@
                 gap: 0.3em;
             }
         }
+    }
+
+    &.no-width {
+        max-width: unset;
     }
 }

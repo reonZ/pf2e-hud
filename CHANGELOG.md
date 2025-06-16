@@ -1,3 +1,21 @@
+#
+
+-   this release contains the beginning of the `Token HUD` implementation, it is restricted to the same functionalities as the `Token HUD` for now
+-   `Persistent HUD`:
+    -   only the `Manual Selection` option of the `Selection Mode` setting is currently handled
+    -   add the `Mute Volume` button to the menu
+    -   add the `Clear Hotbar` button to the menu
+    -   remove the `Players` button from the menu
+    -   remove the `Browse Macro Directory` button from the menu
+    -   remove the `Enabled` and `Auto-Set Actor` settings and replace them with a new `Selection Mode` setting
+    -   you will no longer be able to manually set a persistent actor if the `Selection Mode` is anything but `Manual Selection`
+-   `Token HUD`:
+    -   implement slider buttons functionality (oops, forgot about them in last update)
+    -   fix last 2 rows of `Grouped` layouts not being centered
+    -   fix input fields color and border when using the `light` theme
+-   `Token Tooltip`:
+    -   fix tooltip not properly unregistering from its last actor render listener (it didn't really have any impact)
+
 # 2.1.0
 
 -   this release contains global settings and the `Token HUD`, you cannot currently open any sidebar and the `Notes` button in the NPC layout doesn't do anything yet
@@ -19,7 +37,7 @@
 -   `Token Tooltip`:
     -   add support for the `Interface Scale` core setting
     -   remove the `Position` setting
-    -   fix tooltip delayed render not being canceled by clicks
+    -   fix tooltip delayed render not being cancelled by clicks
     -   fix `Display Distance` and `Display Health Status` settings not updating the different hooks/wrappers until reload
 
 # 2.0.0

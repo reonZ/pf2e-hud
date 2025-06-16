@@ -138,15 +138,15 @@ class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, Token
 
     async _prepareContext(options: TokenRenderOptions): Promise<TokenContext> {
         const actor = this.actor!;
-        const settings = (await super._prepareContext(options)) as AdvancedHudContext;
+        const context = (await super._prepareContext(options)) as AdvancedHudContext;
         const isArmy = actor.isOfType("army");
         const isHazard = actor.isOfType("hazard");
         const isVehicle = actor.isOfType("vehicle");
         const isFamiliar = actor.isOfType("familiar");
-        const sidebars = isHazard || isArmy ? settings.sidebars.slice(0, 1) : settings.sidebars;
+        const sidebars = isHazard || isArmy ? context.sidebars.slice(0, 1) : context.sidebars;
 
         return {
-            ...settings,
+            ...context,
             ac: isArmy ? actor.system.ac.value : actor.attributes.ac?.value,
             hardness: isVehicle || isHazard ? actor.attributes.hardness : undefined,
             isArmy,

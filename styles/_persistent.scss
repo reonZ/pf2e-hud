@@ -1,0 +1,267 @@
+#pf2e-hud-persistent {
+    --panel-gap: 3px;
+    --panel-background: url("../../../ui/denim075.png") repeat;
+
+    --column-1fr: 3.8em;
+    --column-2fr: calc(var(--column-1fr) * 2);
+    --columns-icon: 2.2em;
+
+    --row-1fr: 2.05em;
+    --row-2fr: calc(var(--row-1fr) * 2);
+    --row-3fr: calc(var(--row-1fr) * 3);
+
+    align-self: start;
+    margin-bottom: var(--panel-gap);
+    display: grid;
+    gap: var(--panel-gap);
+    margin-left: -50px;
+
+    grid-template-columns:
+        [full-start menu-start] var(--columns-icon)
+        [menu-end portrait-start] var(--stats-width)
+        [portrait-end info-start] var(--columns-icon)
+        [info-end statistics-start] var(--column-2fr)
+        [statistics-end resources-start] var(--column-1fr)
+        [resources-end sidebars-start] 9em
+        [sidebars-end stretch-start] auto
+        [stretch-end full-end];
+    grid-template-rows:
+        [effects-start] auto
+        [effects-end top-start] var(--row-1fr)
+        [top-end middle-start] var(--row-3fr)
+        [middle-end bottom-start] var(--row-2fr)
+        [bottom-end];
+
+    [data-panel],
+    [data-panel="menu"] .group {
+        padding: var(--panel-gap);
+        background: var(--panel-background);
+        border: var(--outer-border);
+        border-radius: var(--outer-border-radius);
+        pointer-events: all;
+    }
+
+    [data-panel="menu"] {
+        grid-column: menu;
+        grid-row: top / bottom;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background: none;
+        border: none;
+        padding: 0;
+
+        .group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+
+            .set-actor {
+                &.inactive {
+                    i {
+                        color: var(--color-disabled);
+                    }
+                }
+            }
+        }
+    }
+
+    [data-panel="effects"] {
+        grid-column: full;
+        grid-row: effects;
+    }
+
+    [data-panel="name"] {
+        grid-column: portrait;
+        grid-row: top;
+        align-self: start;
+        border: none;
+        padding-block: 2px;
+        background: linear-gradient(
+            90deg,
+            rgba(0, 0, 0, 0.1) 0%,
+            rgba(0, 0, 0, 0.6) 20%,
+            rgba(0, 0, 0, 0.8) 50%,
+            rgba(0, 0, 0, 0.6) 80%,
+            rgba(0, 0, 0, 0.1) 100%
+        );
+    }
+
+    [data-panel="stats"] {
+        grid-column: portrait;
+        grid-row: middle / bottom;
+        align-self: end;
+        border: none;
+        background-color: #0000007d;
+    }
+
+    [data-panel="portrait"] {
+        z-index: -1;
+        position: relative;
+        grid-column: portrait;
+        grid-row: top / bottom;
+
+        .avatar {
+            position: absolute;
+            inset: 0;
+            background-position: center top;
+            background-repeat: no-repeat;
+            background-size: cover;
+
+            &[data-action] {
+                cursor: pointer;
+                box-shadow: inset 0 0 8px 1px var(--outer-border-color);
+            }
+        }
+    }
+
+    [data-panel="info"] {
+        grid-column: info;
+        grid-row: top / middle;
+        grid-template-columns: auto;
+        grid-template-rows: repeat(5, 1fr);
+        justify-content: center;
+    }
+
+    [data-panel="resources"] {
+        grid-column: resources;
+        grid-row: middle;
+    }
+
+    [data-panel="details"] {
+        grid-column: statistics;
+        grid-row: top;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    [data-panel="statistics"] {
+        grid-column: statistics;
+        grid-row: middle;
+        grid-template-rows: 1fr 1fr 1fr;
+        grid-auto-flow: column;
+    }
+
+    [data-panel="alliance"] {
+        grid-column: resources;
+        grid-row: top;
+    }
+
+    [data-panel="shortcuts"] {
+        grid-column: resources / full;
+        grid-row: middle;
+
+        &.character {
+            grid-column: sidebars / full;
+        }
+    }
+
+    [data-panel="sidebars"] {
+        grid-column: sidebars;
+        grid-row: top;
+        grid-template-columns: repeat(5, 1fr);
+        align-items: center;
+    }
+
+    &.cleaned {
+        [data-action="toggle-clean"]:not(.cleaned) {
+            display: none;
+        }
+
+        [data-panel="portrait"]:not(:hover) ~ [data-panel="stats"] {
+            display: none;
+        }
+    }
+
+    &:not(.cleaned) {
+        [data-action="toggle-clean"].cleaned {
+            display: none;
+        }
+    }
+
+    &.locked {
+        [data-action="toggle-hotbar-lock"]:not(.locked) {
+            display: none;
+        }
+    }
+
+    &:not(.locked) {
+        [data-action="toggle-hotbar-lock"].locked {
+            display: none;
+        }
+    }
+
+    &.muted {
+        [data-action="mute-sound"]:not(.muted) {
+            display: none;
+        }
+    }
+
+    &:not(.muted) {
+        [data-action="mute-sound"].muted {
+            display: none;
+        }
+    }
+
+    #hotbar {
+        grid-column: info / full;
+        grid-row: bottom;
+        flex-wrap: nowrap;
+        height: var(--hotbar-size);
+        margin: 0;
+        padding: 0;
+        transform: none;
+        gap: var(--panel-gap);
+        opacity: 1;
+
+        #action-bar {
+            width: auto;
+            gap: var(--panel-gap);
+
+            li {
+                border-radius: var(--outer-border-radius);
+                background: var(--panel-background);
+
+                span {
+                    background: var(--panel-background);
+                }
+            }
+        }
+
+        #hotbar-controls-left,
+        #hotbar-controls-right > div {
+            display: none;
+        }
+
+        #hotbar-page-controls {
+            --button-size: 1.4em;
+
+            background: var(--panel-background);
+            border-radius: var(--outer-border-radius);
+
+            button {
+                font-size: var(--hud-font-size);
+                color: var(--color);
+            }
+        }
+    }
+}
+
+#pf2e-hud-persistent [data-panel="shortcuts"] {
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
+    grid-auto-flow: column;
+    gap: var(--panel-gap);
+    background: none;
+    border: none;
+    padding: 0;
+    justify-self: start;
+
+    .shortcut {
+        border: var(--outer-border);
+        border-style: dashed;
+        border-radius: var(--outer-border-radius);
+        background: rgb(0 0 0 / 37%);
+        aspect-ratio: 1 / 1;
+    }
+}

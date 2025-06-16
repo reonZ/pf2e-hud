@@ -340,6 +340,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
     }
 
     #onMouseDown() {
+        this._cleanupToken();
         this.cancelRender();
         this.close();
     }
@@ -378,6 +379,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
     }
 
     #tokenHoverOut(token: TokenPF2e) {
+        this._cleanupToken();
         this.cancelRender();
         this.closeWithDelay();
     }

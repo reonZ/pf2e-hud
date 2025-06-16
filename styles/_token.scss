@@ -50,7 +50,7 @@
     }
 
     [data-panel="stats"] {
-        width: 11em;
+        width: var(--stats-width);
         padding-top: 0.2em;
         bottom: var(--other-side);
         left: 0;
@@ -98,7 +98,7 @@
         }
     }
 
-    @container pf2e-hud-token-exploded (min-width: 11em) {
+    @container pf2e-hud-token-exploded (min-width: var(--stats-width)) {
         [data-panel="stats"] {
             left: 50%;
             transform: translateX(-50%);
