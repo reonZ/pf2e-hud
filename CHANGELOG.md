@@ -1,4 +1,4 @@
-#
+# 2.2.0
 
 -   this release contains the beginning of the `Token HUD` implementation, it is restricted to the same functionalities as the `Token HUD` for now
 -   `Persistent HUD`:
