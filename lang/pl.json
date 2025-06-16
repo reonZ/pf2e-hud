@@ -18,17 +18,33 @@
                     "hint": "Wyświetlanie modyfikatorów zamiast wartości poziomu trudności w różnych elementach HUD."
                 },
                 "showAlliance": {
-                    "name": "Przycisk sojuszu"
+                    "name": "Przycisk sojuszu",
+                    "hint": "Pokaż przycisk sojuszu/nastawienia w różnych elementach HUD.",
+                    "choices": {
+                        "disabled": "Wyłączone",
+                        "gm": "Tylko MG",
+                        "all": "Wszyscy"
+                    }
                 }
             },
             "advanced": {
                 "alliance": {
                     "name": "Przycisk sojuszu",
-                    "hint": "Pokaż przycisk sojuszu/dyspozycji na HUD."
+                    "hint": "Pokaż przycisk sojuszu/nastawienia w HUD."
                 }
             },
             "persistent": {
-                "title": "Stały HUD"
+                "title": "Stały HUD",
+                "mode": {
+                    "name": "Tryb wyboru",
+                    "hint": "Tryb wyboru stałego aktora.",
+                    "choices": {
+                        "disabled": "Wyłączone",
+                        "manual": "Ręczny wybór",
+                        "select": "Zaznaczony token",
+                        "combat": "Bieżący uczestnik walki"
+                    }
+                }
             },
             "token": {
                 "title": "HUD tokena",
@@ -40,7 +56,7 @@
                     "name": "Tryb wyświetlania",
                     "hint": "Wybierz tryb wyświetlania HUD tokena.",
                     "choices": {
-                        "disabled": "Wyłączony",
+                        "disabled": "Wyłączone",
                         "exploded": "Rozłożony",
                         "left": "Zgrupowany (po lewej)",
                         "right": "Zgrupowany (po prawej)"
@@ -68,7 +84,8 @@
                     "hint": "Narysuj linię o tej grubości między zaznaczonym tokenem a \"odległym\" celem."
                 },
                 "status": {
-                    "name": "Wyświetl stan zdrowia"
+                    "name": "Wyświetl stan zdrowia",
+                    "hint": "Jeśli opcja jest włączona w Twoim świecie, stan zdrowia powinien być wyświetlany w podpowiedzi."
                 }
             }
         },
@@ -90,11 +107,11 @@
             "variants": {
                 "title": "Warianty akcji",
                 "statistic": "Statystyka",
-                "dc": "Klasa trudności",
+                "dc": "Klasa Trudności",
                 "drag": "Przeciągnij, aby utworzyć skrót"
             },
             "resolve": {
-                "title": "Użyj Punkt Determinacji",
+                "title": "Użyj Punktu Determinacji",
                 "full": "{name} ma pełną staminę i nie potrzebuje odpoczynku.",
                 "breather": {
                     "label": "Złap Oddech",
@@ -102,7 +119,8 @@
                 },
                 "steel": {
                     "hint": "Użyj akcji, wydaj punkt determinacji i odzyskaj połowę staminy."
-                }
+                },
+                "yes": "Użyj Determinacji"
             }
         },
         "health-status": {
@@ -130,8 +148,8 @@
             },
             "menu": {
                 "clean": {
-                    "always": "Zawsze wyświetlaj interfejs użytkownika w orientacji pionowej",
-                    "hover": "Wyświetlanie interfejsu użytkownika tylko po najechaniu na portret"
+                    "always": "Zawsze wyświetlaj UI w orientacji pionowej",
+                    "hover": "Wyświetlanie UI tylko po najechaniu na portret"
                 },
                 "openSheet": "Otwórz kartę",
                 "setActor": {
@@ -150,7 +168,7 @@
         "use-resolve": {
             "full": "{name} ma pełną staminę i nie potrzebuje odpoczynku.",
             "breather": {
-                "used": "{name} ma {ratio} PS i wydaje punkt determinacji, odpoczywając przez 10 minut. Stamina odświeżona."
+                "used": "{name} ma {ratio} PS i wydaje punkt determinacji, odpoczywając przez 10 minut. Stamina jest odświeżona."
             }
         }
     }
