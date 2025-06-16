@@ -94,6 +94,7 @@
         align-self: end;
         border: none;
         background-color: #0000007d;
+        display: none;
     }
 
     [data-panel="portrait"] {
@@ -168,14 +169,19 @@
             display: none;
         }
 
-        [data-panel="portrait"]:not(:hover) ~ [data-panel="stats"] {
-            display: none;
+        [data-panel="portrait"]:hover ~ [data-panel="stats"],
+        [data-panel="stats"]:hover {
+            display: grid;
         }
     }
 
     &:not(.cleaned) {
         [data-action="toggle-clean"].cleaned {
             display: none;
+        }
+
+        [data-panel="stats"] {
+            display: grid;
         }
     }
 
