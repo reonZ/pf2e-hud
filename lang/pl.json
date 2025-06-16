@@ -16,15 +16,6 @@
                 "useModifiers": {
                     "name": "Użycie modyfikatorów",
                     "hint": "Wyświetlanie modyfikatorów zamiast wartości poziomu trudności w różnych elementach HUD."
-                },
-                "showAlliance": {
-                    "name": "Przycisk sojuszu",
-                    "hint": "Pokaż przycisk sojuszu/nastawienia w różnych elementach HUD.",
-                    "choices": {
-                        "disabled": "Wyłączone",
-                        "gm": "Tylko MG",
-                        "all": "Wszyscy"
-                    }
                 }
             },
             "advanced": {

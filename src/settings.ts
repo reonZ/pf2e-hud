@@ -12,8 +12,6 @@ import {
     settingPath,
 } from "module-helpers";
 
-const ALLIANCE_OPTIONS = ["disabled", "gm", "all"] as const;
-
 const _globalSettings: Partial<GlobalSetting> = {};
 
 function getGlobalSetting<K extends GlobalSettingKey>(setting: K): GlobalSetting[K] {
@@ -63,17 +61,6 @@ function registerSettings(huds: Record<string, BasePF2eHUD<Record<string, any>>>
         },
     });
 
-    registerGlobalSetting("showAlliance", {
-        type: String,
-        default: "disabled",
-        scope: "world",
-        choices: ALLIANCE_OPTIONS,
-        onChange: () => {
-            hud.token.render();
-            hud.persistent.render();
-        },
-    });
-
     registerGlobalSetting("useModifiers", {
         type: Boolean,
         default: false,
@@ -107,7 +94,6 @@ type GlobalSetting = {
     healthStatusData: HealthStatus;
     useModifiers: boolean;
     highestSpeed: boolean;
-    showAlliance: (typeof ALLIANCE_OPTIONS)[number];
 };
 
 type GlobalSettingKey = keyof GlobalSetting;

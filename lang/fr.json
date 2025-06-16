@@ -16,9 +16,6 @@
                 "useModifiers": {
                     "name": "Utiliser les modificateurs",
                     "hint": "Afficher les modificateurs plutôt que les valeurs de difficulté dans les divers éléments du HUD."
-                },
-                "showAlliance": {
-                    "name": "Bouton alliance"
                 }
             },
             "advanced": {

@@ -16,15 +16,6 @@
                 "useModifiers": {
                     "name": "Use Modifiers",
                     "hint": "Display modifiers instead of the difficulty value in the different HUD elements."
-                },
-                "showAlliance": {
-                    "name": "Alliance Button",
-                    "hint": "Show the alliance/disposition button in the different HUD elements.",
-                    "choices": {
-                        "disabled": "Disabled",
-                        "gm": "GM Only",
-                        "all": "Everyone"
-                    }
                 }
             },
             "advanced": {

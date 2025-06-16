@@ -16,9 +16,6 @@
                 "useModifiers": {
                     "name": "使用调整值",
                     "hint": "在不同的HUD元素中显示调整值而非DC。"
-                },
-                "showAlliance": {
-                    "name": "盟友按钮"
                 }
             },
             "advanced": {

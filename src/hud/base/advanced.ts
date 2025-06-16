@@ -486,10 +486,7 @@ function getAlliance(actor: CharacterPF2e | NPCPF2e): AllianceType {
     return alliance === "default" ? (actor.hasPlayerOwner ? "party" : "opposition") : alliance;
 }
 
-function getAllianceData(actor: CharacterPF2e | NPCPF2e): AllianceData | undefined {
-    const setting = getGlobalSetting("showAlliance");
-    if (setting === "disabled" || (setting === "gm" && !game.user.isGM)) return;
-
+function getAllianceData(actor: CharacterPF2e | NPCPF2e): AllianceData {
     const alliance = getAlliance(actor);
     const data = ALLIANCE[alliance] as AllianceData;
     data.tooltip ??= localize("actor-hud.alliance", { value: game.i18n.localize(data.label) });
