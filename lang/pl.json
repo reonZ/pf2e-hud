@@ -142,7 +142,6 @@
                     "always": "Zawsze wyświetlaj UI w orientacji pionowej",
                     "hover": "Wyświetlanie UI tylko po najechaniu na portret"
                 },
-                "openSheet": "Otwórz kartę",
                 "setActor": {
                     "set": "Ustawienie wybranego tokena jako stałego aktora",
                     "unset": "Usuń ustawionego stałego aktora"

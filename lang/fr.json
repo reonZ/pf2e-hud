@@ -130,7 +130,6 @@
                     "always": "Toujours montrer les icônes sur le portrait",
                     "hover": "Ne montrer les icônes qu'au survol du portrait"
                 },
-                "openSheet": "Ouvrir la feuille",
                 "setActor": {
                     "set": "Choisir le jeton sélectionné comme acteur persistant",
                     "unset": "Déselectionner l'acteur persistant"
