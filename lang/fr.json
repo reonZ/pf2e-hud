@@ -29,10 +29,6 @@
             },
             "token": {
                 "title": "Token HUD",
-                "close": {
-                    "name": "Fermeture totale sur un clic",
-                    "hint": "Si activé, cliquer n'importe où fermera entièrement le HUD. Si désactivé, il vous fera sortir de tout champ de saisie ou fermera d'abord la barre latérale."
-                },
                 "mode": {
                     "name": "Mode d'affichage",
                     "hint": "Choisissez le mode d'affichage du token HUD.",

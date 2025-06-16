@@ -6,9 +6,9 @@ import {
     ApplicationPosition,
     ApplicationRenderContext,
     ApplicationRenderOptions,
-    createGlobalEvent,
     createHook,
     createTimeout,
+    createToggleableEvent,
     createToggleableWrapper,
     htmlQuery,
     isHoldingModifierKey,
@@ -63,7 +63,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
     #closeTimeout = createTimeout(this.close.bind(this), { minDelay: DELAY_BUFFER });
     #renderTimeout = createTimeout(this.render.bind(this), { minDelay: DELAY_BUFFER });
 
-    #mouseDownEvent = createGlobalEvent("mousedown", this.#onMouseDown.bind(this));
+    #mouseDownEvent = createToggleableEvent("mousedown", null, this.#onMouseDown.bind(this));
 
     #canvasPanHook = createHook("canvasPan", this.#onCanvasPan.bind(this));
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));

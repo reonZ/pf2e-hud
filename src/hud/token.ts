@@ -6,9 +6,9 @@ import {
     ActorType,
     ApplicationClosingOptions,
     ApplicationConfiguration,
-    ApplicationRenderContext,
     ApplicationRenderOptions,
     createHook,
+    createToggleableEvent,
     createToggleableWrapper,
     LootPF2e,
     PartyPF2e,
@@ -21,16 +21,23 @@ import {
     AdvancedHudContext,
     BaseTokenPF2eHUD,
     HUDSettingsList,
+    IAdvancedPF2eHUD,
     makeAdvancedHUD,
+    SidebarCoords,
     SidebarMenu,
 } from ".";
 
 const TOKEN_MODE = ["disabled", "exploded", "left", "right"] as const;
 
-class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, TokenHudActor>) {
+class TokenPF2eHUD
+    extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, TokenHudActor>)
+    implements IAdvancedPF2eHUD
+{
     #canvasPanHook = createHook("canvasPan", this.#onCanvasPan.bind(this));
     #canvasTearDownHook = createHook("canvasTearDown", () => this.setToken(null));
     #renderActorSheetHook = createHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
+
+    #mouseDownEvent = createToggleableEvent("mousedown", "#board", this.#onMouseDown.bind(this));
 
     #tokenClickLeftWrapper = createToggleableWrapper(
         "WRAPPER",
@@ -43,13 +50,6 @@ class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, Token
         "WRAPPER",
         "CONFIG.Token.objectClass.prototype._onDragLeftStart",
         this.#tokenOnDragLeftStart,
-        { context: this }
-    );
-
-    #tokenLayerClickLeftWrapper = createToggleableWrapper(
-        "WRAPPER",
-        "foundry.canvas.layers.TokenLayer.prototype._onClickLeft",
-        this.#tokenLayerOnClickLeft,
         { context: this }
     );
 
@@ -73,13 +73,24 @@ class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, Token
                     this.configurate();
                 },
             },
-            {
-                key: "close",
-                type: Boolean,
-                default: false,
-                scope: "user",
-            },
         ];
+    }
+
+    get sidebarCoords(): SidebarCoords {
+        const bounds = this.element.getBoundingClientRect();
+
+        return {
+            origin: {
+                x: bounds.x + bounds.width / 2,
+                y: bounds.y + bounds.height / 2,
+            },
+            limits: {
+                left: 0,
+                right: window.innerWidth,
+                top: 0,
+                bottom: window.innerHeight,
+            },
+        };
     }
 
     protected _configurate(): void {
@@ -88,7 +99,6 @@ class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, Token
         this._toggleTokenHooks(enabled);
         this.#tokenClickLeftWrapper.toggle(enabled);
         this.#tokenDragLeftStartWrapper.toggle(enabled);
-        this.#tokenLayerClickLeftWrapper.toggle(enabled);
 
         this.#canvasTearDownHook.toggle(enabled);
         this.#renderActorSheetHook.toggle(enabled);
@@ -116,14 +126,15 @@ class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, Token
         );
     }
 
-    _onRender(context: ApplicationRenderContext, options: TokenRenderOptions) {
+    protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
         this.#canvasPanHook.activate();
-        // this.sidebar?.render(true);
+        this.#mouseDownEvent.activate();
     }
 
-    _onClose(options: ApplicationClosingOptions) {
-        // this.#mainElement = null;
+    protected _onClose(options: ApplicationClosingOptions) {
         this.#canvasPanHook.disable();
+        this.#mouseDownEvent.disable();
+
         return super._onClose(options);
     }
 
@@ -172,8 +183,13 @@ class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, Token
 
     #onCanvasPan() {
         requestAnimationFrame(() => {
-            this._updatePosition();
-            // this.sidebar?._updatePosition();
+            this._updatePosition(this.position);
+
+            // we emit the event for the sidebar
+            this._doEvent(() => {}, {
+                debugText: "After Canvas Pan",
+                eventName: "canvaspan",
+            });
         });
     }
 
@@ -208,24 +224,11 @@ class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, Token
         this.close();
     }
 
-    #tokenLayerOnClickLeft(
-        canvas: Canvas,
-        wrapped: libWrapper.RegisterCallback,
-        event: PIXI.FederatedEvent & MouseEvent
-    ) {
-        wrapped(event);
-
-        if (this.settings.close) {
-            this.close();
-            return;
-        }
-
+    #onMouseDown() {
         const focused = document.activeElement as HTMLElement;
 
         if (focused instanceof HTMLInputElement || focused instanceof HTMLTextAreaElement) {
             focused.blur();
-            // } else if (this.sidebar) {
-            //     this.toggleSidebar(null);
         } else {
             this.close();
         }
@@ -237,7 +240,6 @@ type TokenHudActor = Exclude<ActorInstances<TokenDocumentPF2e>[ActorType], LootP
 type TokenMode = (typeof TOKEN_MODE)[number];
 
 type TokenSettings = {
-    close: boolean;
     mode: TokenMode;
 };
 

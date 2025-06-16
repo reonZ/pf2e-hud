@@ -39,10 +39,6 @@
             },
             "token": {
                 "title": "HUD tokena",
-                "close": {
-                    "name": "Całkowite zamknięcie po kliknięciu",
-                    "hint": "Po włączeniu, kliknięcie w dowolnym miejscu na planszy spowoduje całkowite zamknięcie HUD. Gdy jest wyłączone, spowoduje opuszczenie dowolnego pola wprowadzania danych lub zamknięcie paska bocznego."
-                },
                 "mode": {
                     "name": "Tryb wyświetlania",
                     "hint": "Wybierz tryb wyświetlania HUD tokena.",

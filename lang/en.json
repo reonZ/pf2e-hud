@@ -39,10 +39,6 @@
             },
             "token": {
                 "title": "Token HUD",
-                "close": {
-                    "name": "Full Close on Click",
-                    "hint": "When enabled, clicking anywhere on the board will close the HUD entirely. When disabled, it will take you out of any input field or close the sidebar first."
-                },
                 "mode": {
                     "name": "Display Mode",
                     "hint": "Select the mode of display of the token HUD.",
