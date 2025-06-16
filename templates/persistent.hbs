@@ -8,8 +8,8 @@
         </a>
         {{/if}}
         {{#if hasActor}}
-        <a data-action="open-sheet" {{{@root.i18n.tooltip 'menu.openSheet' }}}>
-            <i class="fa-solid fa-file"></i>
+        <a data-action="edit-avatar" {{{@root.i18n.tooltip 'menu.editAvatar' }}}>
+            <i class="fa-regular fa-image-user"></i>
         </a>
         {{!-- stats on hover --}}
         <a class="cleaned" data-action="toggle-clean" {{{@root.i18n.tooltip 'menu.clean.hover' }}}>
@@ -45,7 +45,7 @@
 
 <div data-panel="portrait">
     {{#if avatar}}
-    <div class="avatar" data-action="edit-avatar" style='background-image: url("{{avatar}}");'>
+    <div class="avatar" data-action="open-sheet" style='background-image: url("{{avatar}}");'>
     </div>
     {{else}}
     <div class="avatar"></div>

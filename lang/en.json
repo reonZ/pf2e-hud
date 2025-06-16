@@ -142,6 +142,7 @@
                     "always": "Always show UI on portrait",
                     "hover": "Only show UI when hovering the portrait"
                 },
+                "editAvatar": "Edit Avatar",
                 "openSheet": "Open Sheet",
                 "setActor": {
                     "set": "Set selected token as persistent actor",
