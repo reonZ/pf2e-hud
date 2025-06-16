@@ -11,28 +11,32 @@
         <a data-action="open-sheet" {{{@root.i18n.tooltip 'menu.openSheet' }}}>
             <i class="fa-solid fa-file"></i>
         </a>
+        {{!-- stats on hover --}}
         <a class="cleaned" data-action="toggle-clean" {{{@root.i18n.tooltip 'menu.clean.hover' }}}>
-            <i class="fa-duotone fa-image-user"></i>
+            <i class="fa-thin fa-chart-bar"></i>
         </a>
         <a data-action="toggle-clean" {{{@root.i18n.tooltip 'menu.clean.always' }}}>
-            <i class="fa-solid fa-image-user"></i>
+            <i class="fa-solid fa-chart-bar"></i>
         </a>
         {{/if}}
     </div>
     {{/if}}
     <div class="group">
+        {{!-- lock button --}}
         <a class="locked" data-action="toggle-hotbar-lock" data-tooltip="HOTBAR.UNLOCK">
             <i class="fa-solid fa-lock"></i>
         </a>
         <a data-action="toggle-hotbar-lock" data-tooltip="HOTBAR.LOCK">
             <i class="fa-solid fa-unlock"></i>
         </a>
+        {{!-- mute button --}}
         <a class="muted" data-action="mute-sound" data-tooltip="HOTBAR.UNMUTE">
             <i class="fa-solid fa-volume-xmark"></i>
         </a>
         <a data-action="mute-sound" data-tooltip="HOTBAR.MUTE">
             <i class="fa-solid fa-volume"></i>
         </a>
+        {{!-- clear button --}}
         <a data-action="clear-hotbar" data-tooltip="HOTBAR.CLEAR">
             <i class="fa-solid fa-trash"></i>
         </a>
