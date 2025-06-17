@@ -8,6 +8,10 @@
                     "hint": "Skonfiguruj podziały stanu zdrowia do wyświetlania w interfejsie HUD."
                 }
             },
+            "enabled": {
+                "name": "Włączone",
+                "hint": "Włącza ten element HUD na kliencie."
+            },
             "global": {
                 "highestSpeed": {
                     "name": "Pokaż najwyższą szybkość",

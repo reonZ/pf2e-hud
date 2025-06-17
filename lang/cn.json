@@ -8,6 +8,10 @@
                     "hint": "设置显示在HUD的健康状况阶段。"
                 }
             },
+            "enabled": {
+                "name": "启用",
+                "hint": "在客户端启用HUD元素。"
+            },
             "global": {
                 "highestSpeed": {
                     "name": "显示最高速度",

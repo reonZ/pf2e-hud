@@ -13,6 +13,7 @@ import {
     LootPF2e,
     PartyPF2e,
     render,
+    settingPath,
     signedInteger,
     TokenDocumentPF2e,
     TokenPF2e,
@@ -27,7 +28,7 @@ import {
     SidebarMenu,
 } from ".";
 
-const TOKEN_MODE = ["disabled", "exploded", "left", "right"] as const;
+const TOKEN_MODE = ["exploded", "left", "right"] as const;
 
 class TokenPF2eHUD
     extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, TokenHudActor>)
@@ -64,14 +65,25 @@ class TokenPF2eHUD
     get settingsSchema(): HUDSettingsList<TokenSettings> {
         return [
             {
-                key: "mode",
-                type: String,
-                default: "exploded",
-                scope: "user",
-                choices: TOKEN_MODE,
+                key: "enabled",
+                default: true,
+                hint: settingPath("enabled.hint"),
+                name: settingPath("enabled.name"),
                 onChange: () => {
                     this.configurate();
                 },
+                scope: "user",
+                type: Boolean,
+            },
+            {
+                choices: TOKEN_MODE,
+                default: "exploded",
+                key: "mode",
+                onChange: () => {
+                    this.render();
+                },
+                scope: "user",
+                type: String,
             },
         ];
     }
@@ -94,7 +106,7 @@ class TokenPF2eHUD
     }
 
     protected _configurate(): void {
-        const enabled = this.settings.mode !== "disabled";
+        const enabled = this.settings.enabled;
 
         this._toggleTokenHooks(enabled);
         this.#tokenClickLeftWrapper.toggle(enabled);
@@ -246,6 +258,7 @@ type TokenHudActor = Exclude<ActorInstances<TokenDocumentPF2e>[ActorType], LootP
 type TokenMode = (typeof TOKEN_MODE)[number];
 
 type TokenSettings = {
+    enabled: boolean;
     mode: TokenMode;
 };
 

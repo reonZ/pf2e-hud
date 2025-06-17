@@ -8,6 +8,10 @@
                     "hint": "Set up Health Status divisions to display in the HUDs."
                 }
             },
+            "enabled": {
+                "name": "Enabled",
+                "hint": "Enables this HUD element on your client."
+            },
             "global": {
                 "highestSpeed": {
                     "name": "Show Highest Speed",
