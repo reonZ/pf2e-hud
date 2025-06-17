@@ -1,0 +1,175 @@
+{
+    "pf2e-hud": {
+        "settings": {
+            "menus": {
+                "healthStatusMenu": {
+                    "name": "Estado de salud",
+                    "label": "Configurar Estado de salud",
+                    "hint": "Configurar las divisiones del estado de salud para que se muestren en los HUDs."
+                }
+            },
+            "global": {
+                "highestSpeed": {
+                    "name": "Mostrar la mayor velocidad",
+                    "hint": "Si no se especifica una velocidad, la más alta se mostrará incluso si la velocidad en tierra no es 0."
+                },
+                "useModifiers": {
+                    "name": "Usar modificadores",
+                    "hint": "Mostrar modificadores en vez de la dificutadl en los diferentes elementos del HUD."
+                },
+                "showAlliance": {
+                    "name": "Botón de alianzas",
+                    "hint": "Mostrar el boton de alianza/disposición en los diferentes elementos del HUD.",
+                    "choices": {
+                        "disabled": "Desactivado",
+                        "gm": "Solo el GM",
+                        "all": "Todos"
+                    }
+                }
+            },
+            "advanced": {
+                "alliance": {
+                    "name": "Botón de alianzas",
+                    "hint": "Mostrar el botón de alianza/disposición en el HUD."
+                }
+            },
+            "persistent": {
+                "title": "HUD persistente",
+                "mode": {
+                    "name": "Selección de modo",
+                    "hint": "Selección de modo para el actor persistente.",
+                    "choices": {
+                        "disabled": "Desactivado",
+                        "manual": "Selección manual",
+                        "select": "Selección según el token",
+                        "combat": "Combatiente actual"
+                    }
+                }
+            },
+            "token": {
+                "title": "HUD de token",
+                "close": {
+                    "name": "Cerrar completamente al hacer clic",
+                    "hint": "Mientras esté activo, hacer clic en cualquier parte del tablero cerrará el HUD completamente. Mientras esté desactivado, perderá el foco de cualquier campo de entrada o cerrará el menú lateral abierto primero."
+                },
+                "mode": {
+                    "name": "Modo de visualización",
+                    "hint": "Elegir el modo de visualización del HUD del token.",
+                    "choices": {
+                        "disabled": "Desactivado",
+                        "exploded": "Expandido",
+                        "left": "Agrupado (izquierda)",
+                        "right": "Agrupado (derecha)"
+                    }
+                }
+            },
+            "tooltip": {
+                "title": "Información del token (tooltip)",
+                "delay": {
+                    "name": "Retraso del tooltip",
+                    "hint": "Retraso en milisegundos antes de que se muestre el tooltip."
+                },
+                "distance": {
+                    "name": "Mostrar distancia",
+                    "hint": "Mostrará la distancia entre el token sobre el que se pasa el ratón y el que se deduce automáticamente.",
+                    "choices": {
+                        "never": "Nunca",
+                        "idiot": "En pies",
+                        "smart": "En metros",
+                        "weird": "En cuadrados"
+                    }
+                },
+                "draw": {
+                    "name": "Dibujar distancia",
+                    "hint": "Dibujar una linea con este ancho entre el token sobre el que se pasa el ratón y el objetivo."
+                },
+                "status": {
+                    "name": "Mostrar estado de salud",
+                    "hint": "Debería mostrarse el estado en el tootlip."
+                }
+            }
+        },
+        "leftClick": "[Clic izquierdo]",
+        "rightClick": "[Clic derecho]",
+        "actor-hud": {
+            "alliance": "Alianza: {value}",
+            "temp": "Puntos de golpe temporales",
+            "resolve": "Usar punto de resolución",
+            "sidebars": {
+                "actions": "Acciones",
+                "items": "Inventario",
+                "spells": "Conjuros",
+                "skills": "Habilidades",
+                "extras": "Extras"
+            }
+        },
+        "dialogs": {
+            "variants": {
+                "title": "Variantes de acción",
+                "statistic": "Estadística",
+                "dc": "Clase de dificultad",
+                "drag": "Arrastrar para crear un atajo"
+            },
+            "resolve": {
+                "title": "Usar puntos de resolución",
+                "full": "{name} está rebosante de energía y no necesita descansar.",
+                "breather": {
+                    "label": "Tomarse un respiro",
+                    "hint": "Descansar durante 10 minutos, gastar un punto de héroe y recuperar todo tu aguante."
+                },
+                "steel": {
+                    "hint": "Usa una acción, gasta un punto resolución y recupera la mitad de tu aguante."
+                },
+                "yes": "Usar punto de resolución"
+            }
+        },
+        "health-status": {
+            "title": "Estado de salud",
+            "enabled": "Activado",
+            "add": "Agregar marcador",
+            "delete": "Borrar marcador",
+            "save": "Guardar",
+            "cancel": "Cancelar",
+            "import": {
+                "title": "Importar estados de salud",
+                "yes": "Importar",
+                "no": "Cancelar",
+                "error": "Los datos suministrados no son válidos."
+            },
+            "export": {
+                "title": "Exportar estados de salud",
+                "confirm": "Los estados de salud han sido exportados al portapapeles."
+            },
+            "default": "Muerto, Moribundo, Herido, Magullado, Rasguñado, Perfecto"
+        },
+        "persistent": {
+            "error": {
+                "selectOne": "Elije un token de PNJ/PJ para establecerlo como tu actor persistente."
+            },
+            "menu": {
+                "clean": {
+                    "always": "Mostrar siempre la UI en el retrato",
+                    "hover": "Mostrar la UI únicamente cuando se pasa al ratón por el retrato"
+                },
+                "openSheet": "Abrir ficha",
+                "setActor": {
+                    "set": "Elegir el token seleccionado como actor persistente",
+                    "unset": "Deseleccionar como actor persistente"
+                }
+            }
+        },
+        "tooltip": {
+            "distance": {
+                "feet": "ft.",
+                "meter": "m",
+                "square": "sq."
+            }
+        },
+        "use-resolve": {
+            "full": "{name} tiene su aguante completo y no necesita descansar.",
+            "breather": {
+                "used": "{name} tiene {ratio} SP y gasta un punto de resolución, tomando un descanso de 10 minutos. Aguante recuperado."
+            }
+        }
+    }
+}
