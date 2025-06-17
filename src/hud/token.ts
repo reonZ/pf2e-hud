@@ -206,13 +206,17 @@ class TokenPF2eHUD
     ) {
         wrapped(event);
 
-        if (!event.altKey && !event.shiftKey && !event.ctrlKey && game.activeTool === "select") {
-            if (token === this.token) {
-                this.close();
-            } else {
-                this.setToken(token);
-            }
+        if (event.altKey || event.shiftKey || event.ctrlKey || game.activeTool !== "select") return;
+
+        if (token === this.token) {
+            this.close();
+            return;
         }
+
+        // we delay this because of the #onMouseDown which is fucking annoying
+        requestAnimationFrame(() => {
+            this.setToken(token);
+        });
     }
 
     #tokenOnDragLeftStart(
@@ -224,7 +228,9 @@ class TokenPF2eHUD
         this.close();
     }
 
-    #onMouseDown() {
+    #onMouseDown(event: MouseEvent) {
+        if (event.button !== 0) return;
+
         const focused = document.activeElement as HTMLElement;
 
         if (focused instanceof HTMLInputElement || focused instanceof HTMLTextAreaElement) {
