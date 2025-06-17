@@ -1,6 +1,5 @@
 .pf2e-hud.advanced {
     --panel-inner-gap: 0.3em;
-    --stats-width: 11em;
 
     [data-panel] {
         white-space: nowrap;
@@ -87,6 +86,13 @@
         [data-sidebar] {
             &.disabled {
                 opacity: 0.4;
+            }
+
+            &.active {
+                i {
+                    color: var(--color-active);
+                    text-shadow: none;
+                }
             }
         }
     }

@@ -18,7 +18,7 @@
 
     grid-template-columns:
         [full-start menu-start] var(--columns-icon)
-        [menu-end portrait-start] var(--stats-width)
+        [menu-end portrait-start] 11em
         [portrait-end info-start] var(--columns-icon)
         [info-end statistics-start] var(--column-2fr)
         [statistics-end resources-start] var(--column-1fr)

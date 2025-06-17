@@ -50,7 +50,7 @@
     }
 
     [data-panel="stats"] {
-        width: var(--stats-width);
+        width: 11em;
         padding-top: 0.2em;
         bottom: var(--other-side);
         left: 0;
@@ -98,7 +98,7 @@
         }
     }
 
-    @container pf2e-hud-token-exploded (min-width: var(--stats-width)) {
+    @container pf2e-hud-token-exploded (min-width: 11em) {
         [data-panel="stats"] {
             left: 50%;
             transform: translateX(-50%);
@@ -220,5 +220,12 @@
 #pf2e-hud-token[data-mode="left"] {
     .wrapper {
         right: var(--other-side);
+    }
+}
+
+body:has(#pf2e-hud-sidebar[data-hud="token"]) {
+    #pf2e-hud-token {
+        visibility: hidden;
+        opacity: 0;
     }
 }
