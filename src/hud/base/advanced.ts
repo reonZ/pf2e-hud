@@ -8,6 +8,7 @@ import {
     getCoverEffect,
     getSidebars,
     HealthData,
+    NpcNotesHudPopup,
     SidebarMenu,
     SidebarPF2eHUD,
     SliderData,
@@ -205,21 +206,23 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
                 | "use-resolve"
                 | "update-alliance";
 
+            const actor = this.actor;
             const action = target.dataset.action as EventAction;
 
             if (action === "change-speed") {
                 this.#changeSpeed(target);
             } else if (action === "raise-shield") {
-                game.pf2e.actions.raiseAShield({ actors: [this.actor], event });
+                game.pf2e.actions.raiseAShield({ actors: [actor], event });
             } else if (action === "recovery-check") {
-                const actor = this.actor;
                 if (actor?.isOfType("character")) {
                     actor.rollRecovery(event);
                 }
             } else if (action === "roll-statistic") {
                 this.#rollStatistic(event, target);
             } else if (action === "show-notes") {
-                // TODO
+                if (actor?.isOfType("npc")) {
+                    new NpcNotesHudPopup(actor).render(true);
+                }
             } else if (action === "slider") {
                 this.#onSlider(event, target);
             } else if (action === "take-cover") {
@@ -227,7 +230,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             } else if (action === "update-alliance") {
                 this.#updateAlliance(event);
             } else if (action === "use-resolve") {
-                useResolve(this.actor);
+                useResolve(actor);
             }
         }
 

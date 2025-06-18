@@ -1,4 +1,4 @@
-import { BaseActorPF2eHUD, IAdvancedPF2eHUD, SidebarName } from "hud";
+import { BaseActorPF2eHUD, IAdvancedPF2eHUD, ItemHudPopup, SidebarName } from "hud";
 import {
     ActorPF2e,
     addListenerAll,
@@ -301,6 +301,15 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
                 ]);
             }
         );
+
+        addListenerAll(html, "[data-action='item-description']", async (el, event) => {
+            const actor = this.actor;
+            const item = await this.getItemFromElement(el);
+
+            if (item) {
+                new ItemHudPopup(actor, item, event).render(true);
+            }
+        });
 
         addListenerAll(html, "[data-action='send-to-chat']", async (el, event) => {
             const item = await this.getItemFromElement(el);
