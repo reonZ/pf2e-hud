@@ -6,6 +6,7 @@ import {
     ApplicationRenderOptions,
     CharacterPF2e,
     executeWhenReady,
+    htmlQuery,
     localize,
     NPCPF2e,
     R,
@@ -17,15 +18,18 @@ import {
     AdvancedHudContext,
     BaseActorPF2eHUD,
     HUDSettingsList,
+    IAdvancedPF2eHUD,
     makeAdvancedHUD,
     ReturnedAdvancedHudContext,
+    SidebarCoords,
 } from ".";
 
 const SELECTION_MODES = ["disabled", "manual", "select", "combat"] as const;
 
-class PersistentPF2eHUD extends makeAdvancedHUD(
-    BaseActorPF2eHUD<PersistentSettings, PersistentHudActor>
-) {
+class PersistentPF2eHUD
+    extends makeAdvancedHUD(BaseActorPF2eHUD<PersistentSettings, PersistentHudActor>)
+    implements IAdvancedPF2eHUD
+{
     #actor: ActorPF2e | null = null;
 
     static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
@@ -84,6 +88,25 @@ class PersistentPF2eHUD extends makeAdvancedHUD(
         const uuid = this.settings.savedActor;
         const actor = fromUuidSync<PersistentHudActor>(uuid);
         return actor instanceof Actor && this.isValidActor(actor) ? actor : null;
+    }
+
+    get sidebarCoords(): SidebarCoords {
+        const element = this.element;
+        const sidebars = htmlQuery(element, `[data-panel="sidebars"]`);
+        const bounds = (sidebars ?? element).getBoundingClientRect();
+
+        return {
+            origin: {
+                x: bounds.x + bounds.width / 2,
+                y: bounds.y,
+            },
+            limits: {
+                left: 0,
+                right: window.innerWidth,
+                top: 0,
+                bottom: bounds.top,
+            },
+        };
     }
 
     protected _configurate(): void {

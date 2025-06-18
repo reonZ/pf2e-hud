@@ -1,4 +1,6 @@
-import { ActorPF2e, CharacterPF2e, NPCPF2e } from "module-helpers";
+import { BaseActorPF2eHUD, IAdvancedPF2eHUD } from "hud/base";
+import { SidebarPF2eHUD } from "hud/sidebar";
+import { ActorPF2e, addListenerAll, CharacterPF2e, NPCPF2e } from "module-helpers";
 
 const SIDEBARS = [
     {
@@ -42,7 +44,8 @@ const SIDEBARS = [
 
 function getSidebars(
     actor: ActorPF2e,
-    options?: SidebarOptions & { active?: SidebarName }
+    active: SidebarName | null,
+    options?: SidebarOptions
 ): SidebarMenu[] {
     options ??= {
         isCharacter: actor.isOfType("character"),
@@ -55,7 +58,7 @@ function getSidebars(
             type: details.type,
             icon: details.icon,
             disabled: details.disabled(actor, options),
-            active: options.active === details.type,
+            active: details.type === active,
         };
     });
 }
@@ -70,6 +73,13 @@ function hasSpells(actor: ActorPF2e, { isCharacter, isNPC }: SidebarOptions): bo
             );
         })
     );
+}
+
+function addSidebarsListeners(parent: IAdvancedPF2eHUD & BaseActorPF2eHUD, html: HTMLElement) {
+    addListenerAll(html, `[data-sidebar]`, (el) => {
+        const sidebar = el.dataset.sidebar as SidebarName;
+        SidebarPF2eHUD.toggleSidebar(sidebar, parent);
+    });
 }
 
 type SidebarOptions = {
@@ -93,5 +103,5 @@ type SidebarMenu = {
 
 type SidebarName = (typeof SIDEBARS)[number]["type"];
 
-export { getSidebars };
+export { addSidebarsListeners, getSidebars };
 export type { SidebarMenu, SidebarName };

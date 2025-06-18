@@ -1,4 +1,5 @@
 export * from "./shared";
+export * from "./sidebar";
 export * from "./base";
 export * from "./persistent";
 export * from "./tooltip";

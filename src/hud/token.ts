@@ -6,6 +6,7 @@ import {
     ActorType,
     ApplicationClosingOptions,
     ApplicationConfiguration,
+    ApplicationPosition,
     ApplicationRenderOptions,
     createHook,
     createToggleableEvent,
@@ -193,15 +194,17 @@ class TokenPF2eHUD
         super._replaceHTML(result, content, options);
     }
 
+    protected _updatePosition(position: ApplicationPosition): ApplicationPosition {
+        super._updatePosition(position);
+
+        this.element.style.setProperty("z-index", String(position.zIndex));
+
+        return position;
+    }
+
     #onCanvasPan() {
         requestAnimationFrame(() => {
-            this._updatePosition(this.position);
-
-            // we emit the event for the sidebar
-            this._doEvent(() => {}, {
-                debugText: "After Canvas Pan",
-                eventName: "canvaspan",
-            });
+            this.setPosition(this.position);
         });
     }
 

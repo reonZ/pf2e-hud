@@ -10,6 +10,8 @@
     --row-2fr: calc(var(--row-1fr) * 2);
     --row-3fr: calc(var(--row-1fr) * 3);
 
+    --sidebar-arrow-color: #2c2c2c;
+
     align-self: start;
     margin-bottom: var(--panel-gap);
     display: grid;
@@ -154,7 +156,6 @@
 
         &.character {
             grid-column: sidebars / full;
-            width: 100%;
         }
     }
 
@@ -163,6 +164,25 @@
         grid-row: top;
         grid-template-columns: repeat(5, 1fr);
         align-items: center;
+
+        [data-sidebar].active {
+            position: relative;
+
+            &::before {
+                --arrow-size: calc(var(--sidebar-external-padding) * 2);
+
+                position: absolute;
+                content: "";
+                left: 50%;
+                transform: translate(-50%);
+                bottom: calc(100% + 1px);
+                width: 0;
+                height: 0;
+                border-left: var(--arrow-size) solid transparent;
+                border-right: var(--arrow-size) solid transparent;
+                border-top: var(--arrow-size) solid var(--sidebar-arrow-color);
+            }
+        }
     }
 
     &.cleaned {
@@ -255,6 +275,8 @@
 }
 
 #pf2e-hud-persistent [data-panel="shortcuts"] {
+    --shortcut-width: calc(var(--row-3fr) / 2);
+
     display: grid;
     grid-template-rows: repeat(2, 1fr);
     grid-auto-flow: column;
@@ -269,6 +291,6 @@
         border-style: dashed;
         border-radius: var(--outer-border-radius);
         background: rgb(0 0 0 / 37%);
-        aspect-ratio: 1 / 1;
+        width: var(--shortcut-width);
     }
 }

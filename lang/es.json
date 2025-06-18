@@ -151,7 +151,6 @@
                     "always": "Mostrar siempre la UI en el retrato",
                     "hover": "Mostrar la UI únicamente cuando se pasa al ratón por el retrato"
                 },
-                "openSheet": "Abrir ficha",
                 "setActor": {
                     "set": "Elegir el token seleccionado como actor persistente",
                     "unset": "Deseleccionar como actor persistente"

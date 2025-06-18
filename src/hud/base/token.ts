@@ -81,9 +81,11 @@ abstract class BaseTokenPF2eHUD<
         }
     }
 
-    protected _updatePosition(position = {} as ApplicationPosition) {
+    protected _updatePosition(position: ApplicationPosition) {
         const token = this.token;
         if (!token || !canvas.ready) return position;
+
+        super._updatePosition(position);
 
         const scale = token.worldTransform.a;
         const uiScale = canvas.dimensions.uiScale;
@@ -109,7 +111,7 @@ abstract class BaseTokenPF2eHUD<
 
         Object.assign(position, { left, top, width, height });
 
-        return super._updatePosition(position);
+        return position;
     }
 
     #onDeleteToken(token: TokenDocumentPF2e) {

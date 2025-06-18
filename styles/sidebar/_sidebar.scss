@@ -1,0 +1,169 @@
+#pf2e-hud-sidebar {
+    --min-width: 12em;
+    --min-height: 4em;
+    --max-heigth: var(var(--min-height));
+
+    --nb-columns: 1;
+    --max-column-width: 17em;
+
+    --header-border: 1px solid #ffffff1f;
+    --header-background: rgba(0, 0, 0, 0.239);
+
+    --item-gap: 0.2em;
+    --item-spacing: 0.3em;
+    --name-background: rgba(255, 255, 255, 0.09);
+    --image-border-color: rgb(118 118 118);
+    --chat-icon-size: 1.6em;
+    --temporary-color: 255, 143, 0;
+
+    --hud-font-size: var(--font-size-14);
+
+    position: absolute;
+    padding: var(--sidebar-external-padding);
+    max-height: 100vh;
+    max-width: 100vw;
+    pointer-events: none;
+
+    .inner {
+        overflow: auto;
+        pointer-events: all;
+        border: var(--outer-border);
+        background: var(--outer-background);
+        box-shadow: var(--outer-box-shadow);
+        border-radius: var(--outer-border-radius);
+        padding: var(--outer-padding);
+        min-width: var(--min-width);
+        min-height: var(--min-height);
+        max-width: calc(100vw - var(--sidebar-external-padding) * 2);
+        max-height: calc(min(100vh, var(--max-height)) - var(--sidebar-external-padding) * 2);
+    }
+
+    .item-list {
+        white-space: nowrap;
+        column-gap: var(--outer-padding);
+        columns: var(--nb-columns);
+
+        > * {
+            break-inside: avoid;
+        }
+    }
+
+    header {
+        position: relative;
+        background: var(--header-background);
+        border: var(--header-border);
+        border-left: 0;
+        border-right: 0;
+        padding-block: 0.2em;
+
+        .name {
+            text-align: center;
+        }
+
+        .controls {
+            position: absolute;
+            inset: 0 0.2em 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 0.3em;
+        }
+
+        &:not(:first-child) {
+            margin-top: 0.6em;
+        }
+    }
+
+    .item {
+        display: flex;
+        max-width: var(--max-column-width);
+
+        .details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            .extras {
+                display: flex;
+                justify-content: space-between;
+                gap: 1em;
+                color: var(--color-text-light-4);
+                font-size: 0.9em;
+            }
+        }
+
+        .name {
+            background-color: var(--name-background);
+            padding-inline: 0.2em;
+        }
+
+        .image {
+            position: relative;
+            height: 100%;
+            aspect-ratio: 1 / 1;
+            border: 1px solid var(--image-border-color);
+            border-radius: var(--outer-border-radius);
+            cursor: pointer;
+
+            img {
+                border-radius: var(--outer-border-radius);
+                border: none;
+            }
+
+            i {
+                position: absolute;
+
+                &.chat {
+                    font-size: var(--chat-icon-size);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    inset: 0;
+                    width: unset;
+                }
+
+                &.temporary {
+                    bottom: 0.1em;
+                    right: -0.1em;
+                    color: rgb(var(--temporary-color));
+                    text-shadow: 0.05em 0 black, 0 0.05em black, -0.05em 0 black, 0 -0.05em black,
+                        -0.05em -0.05em black, -0.05em 0.05em black, 0.05em -0.05em black,
+                        0.05em 0.05em black;
+                }
+            }
+
+            &:not(:hover) {
+                i.chat {
+                    display: none;
+                }
+            }
+
+            &:hover {
+                img,
+                i.temporary {
+                    opacity: 0;
+                }
+            }
+        }
+
+        &:not(:first-child) {
+            margin-top: var(--item-spacing);
+        }
+
+        &:has(.image) {
+            height: 2.5em;
+            gap: var(--item-gap);
+        }
+    }
+
+    *:has(> .name) {
+        overflow: hidden;
+
+        .name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}
+
+@import "./items";

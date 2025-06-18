@@ -3,7 +3,7 @@ import { PersistentPF2eHUD, TokenPF2eHUD, TooltipPF2eHUD, TrackerPF2eHUD } from 
 import { registerSettings } from "settings";
 
 MODULE.register("pf2e-hud");
-// MODULE.enableDebugMode();
+MODULE.enableDebugMode();
 
 const HUDS = {
     persistent: new PersistentPF2eHUD(),
@@ -15,7 +15,7 @@ const HUDS = {
 Hooks.on("init", () => {
     const isGM = userIsGM();
 
-    const partials = ["sidebars", "slider"].map((x) => templatePath("partials", x));
+    const partials = ["item-image", "sidebars", "slider"].map((x) => templatePath("partials", x));
     foundry.applications.handlebars.loadTemplates(partials);
 
     registerSettings(HUDS);

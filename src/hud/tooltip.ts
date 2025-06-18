@@ -347,7 +347,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
 
     #onCanvasPan() {
         requestAnimationFrame(() => {
-            this._updatePosition(this.position);
+            this.setPosition(this.position);
         });
     }
 

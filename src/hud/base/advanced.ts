@@ -1,6 +1,7 @@
 import { useResolve } from "actions";
 import {
     addEnterKeyListeners,
+    addSidebarsListeners,
     addTextNumberInputListeners,
     calculateActorHealth,
     createSlider,
@@ -8,6 +9,7 @@ import {
     getSidebars,
     HealthData,
     SidebarMenu,
+    SidebarPF2eHUD,
     SliderData,
 } from "hud";
 import {
@@ -145,6 +147,12 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
                 isNPC,
             };
 
+            const sidebars = getSidebars(
+                actor,
+                SidebarPF2eHUD.isParent(this) ? SidebarPF2eHUD.current : null,
+                options
+            );
+
             return {
                 ac: actor.attributes.ac?.value,
                 alliance: isCombatant ? getAllianceData(actor) : undefined,
@@ -162,13 +170,14 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
                 resolve: isCharacter ? actor.system.resources.resolve : undefined,
                 resources: isCharacter ? getResources(actor) : undefined,
                 shield: isCharacter ? actor.attributes.shield : undefined,
-                sidebars: getSidebars(actor, options),
+                sidebars,
                 speed: getSpeed(actor),
                 statistics: getStatistics(actor),
             } satisfies AdvancedHudContext;
         }
 
         protected _replaceHTML(
+            this: ThisAdvancedHUD,
             result: string,
             content: HTMLElement,
             options: ApplicationRenderOptions
@@ -176,6 +185,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             content.dataset.tooltipClass = "pf2e-hud";
             content.dataset.tooltipDirection = "UP";
             content.classList.add("advanced");
+
             this.#activateListeners(content);
         }
 
@@ -311,15 +321,18 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             });
         }
 
-        #activateListeners(html: HTMLElement) {
+        #activateListeners(this: ThisAdvancedHUD, html: HTMLElement) {
             const actor = this.actor;
             if (!actor) return;
 
+            addSidebarsListeners(this as any, html);
             addEnterKeyListeners(html);
             addTextNumberInputListeners(actor, html);
 
             addListener(html, `input[type="number"].shield`, "change", (el: HTMLInputElement) => {
                 const heldShield = actor.heldShield;
+                if (!heldShield) return;
+
                 const { max, value } = heldShield.hitPoints;
                 const newValue = Math.clamp(el.valueAsNumber, 0, max);
 
@@ -494,10 +507,24 @@ function getAllianceData(actor: CharacterPF2e | NPCPF2e): AllianceData {
     return data;
 }
 
+interface IAdvancedPF2eHUD {
+    get sidebarCoords(): SidebarCoords;
+}
+
 interface AdvancedPF2eHUD {
     _prepareContext(options: ApplicationRenderOptions): Promise<AdvancedHudContext | {}>;
     _replaceHTML(result: unknown, content: HTMLElement, options: ApplicationRenderOptions): void;
 }
+
+type SidebarCoords = {
+    origin: Point;
+    limits: {
+        left: number;
+        right: number;
+        top: number;
+        bottom: number;
+    };
+};
 
 type HudSpeed = {
     icon: string;
@@ -578,4 +605,10 @@ type InfoSection = {
 };
 
 export { makeAdvancedHUD };
-export type { AdvancedHudContext, ReturnedAdvancedHudContext };
+export type {
+    AdvancedHudContext,
+    AdvancedPF2eHUD,
+    IAdvancedPF2eHUD,
+    ReturnedAdvancedHudContext,
+    SidebarCoords,
+};
