@@ -1,3 +1,29 @@
+# 2.3.0
+
+-   this release contains the `Popup`, core functionalities of `Sidebar` and the fully implemented `Items` sidebar
+-   add implementation of npc `Notes`
+-   `Global`:
+    -   remove the `Alliance Button` setting, i decided that there wasn't really a reason for it to be optional
+-   `Persistent HUD`:
+    -   change the icons for the stats-on-hover button
+    -   convert `Open Sheet` button to `Edit Avatar` in the menu (not doing anything yet)
+    -   clicking on the avatar now opens the actor sheet
+    -   fix flickering of stats when hovering over them
+    -   fix shortcut slots being smudged when using firefox browser
+-   `Popup`:
+    -   remove all settings
+-   `Sidebar`:
+    -   remove all settings
+-   `Items Sidebar`:
+    -   add full support for `PF2e Toolbelt` `Actionable`
+    -   embedded containers are extracted and aligned together to avoid indentation hell
+    -   no longer sort items by alphabetical order to avoid confusion with unidentified items
+-   `Token HUD`:
+    -   remove the `Full Close on Click` setting
+    -   revert removal of `Enabled` setting (the `Display Mode` setting felt alone in that section)
+    -   fix exploded top panel not being centered when the token is large enough to accomodate it
+-   add spanish localization (thanks to [HonzoNebro](https://github.com/HonzoNebro))
+
 # 2.2.0
 
 -   this release contains the beginning of the `Persistent HUD` implementation, it is restricted to the same functionalities as the `Token HUD` for now
@@ -55,7 +81,7 @@
     -   remove the `Enabled` and other extended-related settings
     -   both the `Display Distance` and `Display Health Status` settings are used to decide if the tooltip is enabled
     -   convert the `Display Health Status` setting into a boolean
--   add chinese localization
+-   add chinese localization (thanks to [AlphaStarguide](https://github.com/AlphaStarguide))
 
 # 1.34.0
 
