@@ -1,6 +1,6 @@
 import { BaseActorPF2eHUD, IAdvancedPF2eHUD } from "hud/base";
 import { SidebarPF2eHUD } from "hud/sidebar";
-import { ActorPF2e, addListenerAll, CharacterPF2e, NPCPF2e } from "module-helpers";
+import { ActorPF2e, addListenerAll, CharacterPF2e, localize, NPCPF2e } from "module-helpers";
 
 const SIDEBARS = [
     {
@@ -55,10 +55,11 @@ function getSidebars(
 
     return SIDEBARS.map((details: SidebarDetails & { type: SidebarName }): SidebarMenu => {
         return {
-            type: details.type,
-            icon: details.icon,
-            disabled: details.disabled(actor, options),
             active: details.type === active,
+            disabled: details.disabled(actor, options),
+            icon: details.icon,
+            type: details.type,
+            tooltip: (details.tooltip ??= localize("sidebars", details.type)),
         };
     });
 }
@@ -92,13 +93,15 @@ type SidebarDetails = {
     type: string;
     icon: string;
     disabled: (actor: ActorPF2e, options: SidebarOptions) => boolean;
+    tooltip?: string;
 };
 
 type SidebarMenu = {
-    type: SidebarName;
-    icon: string;
-    disabled: boolean;
     active: boolean;
+    disabled: boolean;
+    icon: string;
+    tooltip: string;
+    type: SidebarName;
 };
 
 type SidebarName = (typeof SIDEBARS)[number]["type"];

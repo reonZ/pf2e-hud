@@ -512,6 +512,7 @@ function getAllianceData(actor: CharacterPF2e | NPCPF2e): AllianceData {
 
 interface IAdvancedPF2eHUD {
     get sidebarCoords(): SidebarCoords;
+    get sidebarCeption(): boolean;
 }
 
 interface AdvancedPF2eHUD {

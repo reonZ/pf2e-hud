@@ -74,14 +74,7 @@
         "actor-hud": {
             "alliance": "Alliance : {value}",
             "temp": "Points de vie temporaires",
-            "resolve": "Utiliser les Points de Résolution",
-            "sidebars": {
-                "actions": "Actions",
-                "items": "Inventaire",
-                "spells": "Incantation",
-                "skills": "Compétences",
-                "extras": "Extras"
-            }
+            "resolve": "Utiliser les Points de Résolution"
         },
         "dialogs": {
             "variants": {
@@ -135,6 +128,13 @@
                     "unset": "Déselectionner l'acteur persistant"
                 }
             }
+        },
+        "sidebars": {
+            "actions": "Actions",
+            "items": "Inventaire",
+            "spells": "Incantation",
+            "skills": "Compétences",
+            "extras": "Extras"
         },
         "tooltip": {
             "distance": {

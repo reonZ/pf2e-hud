@@ -109,6 +109,10 @@ class PersistentPF2eHUD
         };
     }
 
+    get sidebarCeption(): boolean {
+        return false;
+    }
+
     protected _configurate(): void {
         const mode = this.settings.mode;
 

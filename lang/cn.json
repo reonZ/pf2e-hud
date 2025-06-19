@@ -74,14 +74,7 @@
         "actor-hud": {
             "alliance": "关系：{value}",
             "temp": "临时生命值",
-            "resolve": "使用决心点数",
-            "sidebars": {
-                "actions": "动作",
-                "items": "库存",
-                "spells": "施法",
-                "skills": "技能",
-                "extras": "额外选项"
-            }
+            "resolve": "使用决心点数"
         },
         "dialogs": {
             "variants": {
@@ -135,6 +128,13 @@
                     "unset": "解绑受控角色"
                 }
             }
+        },
+        "sidebars": {
+            "actions": "动作",
+            "items": "库存",
+            "spells": "施法",
+            "skills": "技能",
+            "extras": "额外选项"
         },
         "tooltip": {
             "distance": {

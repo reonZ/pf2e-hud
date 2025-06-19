@@ -37,6 +37,7 @@
     --icon-color: #d4d7de;
 
     --sidebar-external-padding: 10px;
+
     --hud-font-size: var(--font-size-15);
     --other-side: calc(100% + var(--outer-padding));
 
@@ -94,6 +95,19 @@
         &.disabled {
             i.carret {
                 color: var(--color-disabled);
+            }
+        }
+    }
+
+    [data-sidebar] {
+        &.disabled {
+            opacity: 0.4;
+        }
+
+        &.active {
+            i {
+                color: var(--color-active);
+                text-shadow: none;
             }
         }
     }

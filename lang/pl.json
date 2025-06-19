@@ -85,14 +85,7 @@
         "actor-hud": {
             "alliance": "Sojusz: {value}",
             "temp": "Tymczasowe Punkty Wytrzymałości",
-            "resolve": "Użyj Punkt Determinacji",
-            "sidebars": {
-                "actions": "Akcje",
-                "items": "Ekwipunek",
-                "spells": "Rzucanie zaklęć",
-                "skills": "Umiejętności",
-                "extras": "Dodatki"
-            }
+            "resolve": "Użyj Punkt Determinacji"
         },
         "dialogs": {
             "variants": {
@@ -147,6 +140,13 @@
                     "unset": "Usuń ustawionego stałego aktora"
                 }
             }
+        },
+        "sidebars": {
+            "actions": "Akcje",
+            "items": "Ekwipunek",
+            "spells": "Rzucanie zaklęć",
+            "skills": "Umiejętności",
+            "extras": "Dodatki"
         },
         "tooltip": {
             "distance": {

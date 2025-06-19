@@ -85,14 +85,7 @@
         "actor-hud": {
             "alliance": "Alliance: {value}",
             "temp": "Temporary Hit Points",
-            "resolve": "Use Resolve Point",
-            "sidebars": {
-                "actions": "Actions",
-                "items": "Inventory",
-                "spells": "Spellcasting",
-                "skills": "Skills",
-                "extras": "Extras"
-            }
+            "resolve": "Use Resolve Point"
         },
         "dialogs": {
             "variants": {
@@ -148,6 +141,13 @@
                     "unset": "Unset persistent actor"
                 }
             }
+        },
+        "sidebars": {
+            "actions": "Actions",
+            "items": "Inventory",
+            "spells": "Spellcasting",
+            "skills": "Skills",
+            "extras": "Extras"
         },
         "tooltip": {
             "distance": {

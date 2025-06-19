@@ -1,4 +1,11 @@
-import { BaseActorPF2eHUD, IAdvancedPF2eHUD, ItemHudPopup, SidebarName } from "hud";
+import {
+    addSidebarsListeners,
+    BaseActorPF2eHUD,
+    getSidebars,
+    IAdvancedPF2eHUD,
+    ItemHudPopup,
+    SidebarName,
+} from "hud";
 import {
     ActorPF2e,
     addListenerAll,
@@ -31,6 +38,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
 
     #parent: IAdvancedPF2eHUD & BaseActorPF2eHUD;
     #innerElement: HTMLElement | undefined;
+    #sidebarElement: HTMLElement | undefined;
 
     #mouseDownEvent = createToggleableEvent(
         "mousedown",
@@ -150,6 +158,8 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
     protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
         SidebarPF2eHUD.#instance = this;
 
+        this.element.dataset.tooltipClass = "pf2e-hud";
+
         this.#mouseDownEvent.activate();
 
         this.parent.addEventListener("position", this.#parentPositionListener);
@@ -160,6 +170,15 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
     protected _onRender(context: object, options: ApplicationRenderOptions): void {
         htmlQuery(this.parent.element, `[data-sidebar="${this.name}"]`)?.classList.add("active");
         this.#setColumns();
+
+        requestAnimationFrame(() => {
+            if (this.#sidebarElement && this.#innerElement) {
+                this.#sidebarElement.classList.toggle(
+                    "top",
+                    this.#innerElement.offsetHeight <= this.#sidebarElement.offsetHeight
+                );
+            }
+        });
     }
 
     protected _onClose(options: ApplicationClosingOptions): void {
@@ -180,7 +199,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
     protected async _renderHTML(
         context: ApplicationRenderContext & { partial: (key: string) => string },
         options: ApplicationRenderOptions
-    ): Promise<HTMLElement> {
+    ): Promise<SidebarHudRenderElements> {
         context.partial = (key: string) => templatePath("partials", key);
 
         const listElement = createHTMLElement("div", {
@@ -188,17 +207,24 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
             content: await render(`sidebar/${this.name}`, context),
         });
 
+        const sidebarElement = this.parent.sidebarCeption
+            ? createHTMLElement("div", {
+                  dataset: { panel: "sidebars" },
+                  content: await render("partials/sidebars", getSidebars(this.actor, this.name)),
+              })
+            : undefined;
+
         const innerElement = createHTMLElement("div", {
             classes: ["inner"],
-            dataset: { tooltipDirection: "UP", tooltipClass: "pf2e", sidebar: this.name },
+            dataset: { tooltipDirection: "UP", sidebar: this.name },
             content: listElement,
         });
 
-        return innerElement;
+        return { innerElement, sidebarElement };
     }
 
     protected _replaceHTML(
-        innerElement: HTMLElement,
+        { innerElement, sidebarElement }: SidebarHudRenderElements,
         content: HTMLElement,
         options: ApplicationRenderOptions
     ): void {
@@ -208,6 +234,19 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
             previousInner.replaceWith(innerElement);
         } else {
             content.appendChild(innerElement);
+        }
+
+        if (sidebarElement) {
+            const previousSidebar = this.#sidebarElement;
+
+            if (previousSidebar) {
+                previousSidebar.replaceWith(sidebarElement);
+            } else {
+                content.appendChild(sidebarElement);
+            }
+
+            this.#sidebarElement = sidebarElement;
+            addSidebarsListeners(this.parent, sidebarElement);
         }
 
         content.dataset.hud = this.parent.key;
@@ -328,6 +367,11 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         });
     }
 }
+
+type SidebarHudRenderElements = {
+    innerElement: HTMLElement;
+    sidebarElement: HTMLElement | undefined;
+};
 
 MODULE.devExpose({ SidebarPF2eHUD });
 

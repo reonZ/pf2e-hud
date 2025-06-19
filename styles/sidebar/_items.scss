@@ -2,7 +2,9 @@
     --spacer-width: 0.4em;
     --spacer-color: var(--image-border-color);
 
-    --color-active: #616bed;
+    .inner {
+        --color-active: #616bed;
+    }
 
     .inventory-wealth,
     .inventory-bulk {

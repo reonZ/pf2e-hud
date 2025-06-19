@@ -106,6 +106,10 @@ class TokenPF2eHUD
         };
     }
 
+    get sidebarCeption(): boolean {
+        return true;
+    }
+
     protected _configurate(): void {
         const enabled = this.settings.enabled;
 

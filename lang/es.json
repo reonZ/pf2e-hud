@@ -94,14 +94,7 @@
         "actor-hud": {
             "alliance": "Alianza: {value}",
             "temp": "Puntos de golpe temporales",
-            "resolve": "Usar punto de resolución",
-            "sidebars": {
-                "actions": "Acciones",
-                "items": "Inventario",
-                "spells": "Conjuros",
-                "skills": "Habilidades",
-                "extras": "Extras"
-            }
+            "resolve": "Usar punto de resolución"
         },
         "dialogs": {
             "variants": {
@@ -156,6 +149,13 @@
                     "unset": "Deseleccionar como actor persistente"
                 }
             }
+        },
+        "sidebars": {
+            "actions": "Acciones",
+            "items": "Inventario",
+            "spells": "Conjuros",
+            "skills": "Habilidades",
+            "extras": "Extras"
         },
         "tooltip": {
             "distance": {
