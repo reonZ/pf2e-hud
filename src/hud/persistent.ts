@@ -247,7 +247,6 @@ class PersistentPF2eHUD
                   R.join("")
               );
 
-        // TODO
         const character = !actor || actor.isOfType("character") ? "character" : "";
         const slots = R.times(18, () => `<div class="shortcut empty"></div>`).join("");
         const shortcuts = `<div data-panel="shortcuts" class="${character}">${slots}</div>`;

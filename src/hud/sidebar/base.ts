@@ -126,13 +126,10 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
             const toFilterElements =
                 innerElement?.querySelectorAll<HTMLElement>("[data-filter-value]");
 
-            let hasFilter = false;
-
             for (const toFilterElement of toFilterElements ?? []) {
                 const filterValue = toFilterElement.dataset.filterValue as string;
 
                 if (filterValue.includes(toTest)) {
-                    hasFilter = true;
                     toFilterElement.classList.add("filtered");
                 }
             }
@@ -231,7 +228,12 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         return coords;
     }
 
-    getItemFromElement<T extends ItemPF2e>(el: HTMLElement): T | null | Promise<T | null> {
+    getItemFromElement<T extends ItemPF2e>(el: HTMLElement, sync: true): T | null;
+    getItemFromElement<T extends ItemPF2e>(
+        el: HTMLElement,
+        sync?: false
+    ): T | null | Promise<T | null>;
+    getItemFromElement(el: HTMLElement, sync?: boolean) {
         const actor = this.actor;
         const element = htmlClosest(el, ".item");
         if (!element) return null;
@@ -241,7 +243,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         const item = parentId
             ? actor.inventory.get(parentId, { strict: true }).subitems.get(itemId, { strict: true })
             : itemUuid
-            ? fromUuid<T>(itemUuid)
+            ? fromUuid(itemUuid)
             : entryId
             ? actor.spellcasting?.collections
                   .get(entryId, { strict: true })
@@ -252,7 +254,11 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
             ? actor.system.actions?.[Number(actionIndex)].item ?? null
             : actor.items.get(itemId ?? "") ?? null;
 
-        return item as T | null | Promise<T | null>;
+        if (sync) {
+            return item instanceof Item ? item : null;
+        } else {
+            return item;
+        }
     }
 
     protected _activateListeners(html: HTMLElement) {}
@@ -419,6 +425,44 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         this.close();
     }
 
+    #onDragStart(target: HTMLElement, event: DragEvent) {
+        if (!event.dataTransfer) return;
+
+        const parent = target.dataset.dragParent
+            ? htmlClosest(target, target.dataset.dragParent)!
+            : target;
+
+        const item = this.getItemFromElement(target, true);
+        const img = parent.querySelector<HTMLImageElement>(".drag-img")?.src ?? item?.img ?? "";
+
+        const baseDragData: BaseDragData = {
+            actorId: this.actor.id,
+            actorUUID: this.actor.uuid,
+            fromSidebar: true,
+            sceneId: canvas.scene?.id ?? null,
+            tokenId: this.actor.token?.id ?? null,
+            ...item?.toDragData(),
+        };
+
+        const dragData = {
+            ...baseDragData,
+            // ...extraDragData,
+            // ...toggleDragData,
+        };
+
+        const draggable = createHTMLElement("div", {
+            classes: ["pf2e-hud-draggable"],
+            content: `<img src="${img}">`,
+        });
+
+        document.body.append(draggable);
+
+        event.dataTransfer.setDragImage(draggable, 16, 16);
+        event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
+
+        target.addEventListener("dragend", () => draggable.remove(), { once: true });
+    }
+
     #setColumns() {
         const element = this.element;
         const innerElement = this.#innerElement;
@@ -464,6 +508,8 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
     }
 
     #activateInnerListeners(html: HTMLElement) {
+        addListenerAll(html, "[draggable='true']", "dragstart", this.#onDragStart.bind(this));
+
         addListenerAll(
             html,
             "input[data-item-id][data-item-property]",
@@ -505,6 +551,14 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         });
     }
 }
+
+type BaseDragData = Partial<ReturnType<ItemPF2e["toDragData"]>> & {
+    actorId: string;
+    actorUUID: ActorUUID;
+    fromSidebar: true;
+    sceneId: string | null;
+    tokenId: string | null;
+};
 
 type SidebarHudRenderElements = {
     filterElement: HTMLElement;
