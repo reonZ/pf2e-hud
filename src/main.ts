@@ -15,8 +15,12 @@ const HUDS = {
 Hooks.on("init", () => {
     const isGM = userIsGM();
 
-    const partials = ["item-image", "sidebars", "slider"].map((x) => templatePath("partials", x));
-    foundry.applications.handlebars.loadTemplates(partials);
+    const templates = [
+        ["actions", "extras", "items", "skills", "spells"].map((x) => templatePath("sidebar", x)),
+        ["item-image", "sidebars", "slider"].map((x) => templatePath("partials", x)),
+        ["actor-hud", "tooltip"].map((x) => templatePath(x)),
+    ];
+    foundry.applications.handlebars.loadTemplates(templates.flat());
 
     registerSettings(HUDS);
 
