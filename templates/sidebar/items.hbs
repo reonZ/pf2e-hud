@@ -44,7 +44,7 @@
 <div class="item{{#if hidden}} hidden-item{{/if}}{{#if item.isTemporary}} temporary{{/if}}" {{#if
     isSubitem}} data-parent-id="{{item.parentItem.id}}" {{/if}} data-item-id="{{item.id}}" {{#if
     isContainer}}data-is-container{{/if}} {{#if item.isInContainer}}data-item-type="{{item.type}}"
-    {{/if}} draggable="true" data-filter-value="{{ifThen isSubitem item.name filterValue}}">
+    {{/if}} draggable="true" data-filter-value="{{ifThen isSubitem (lower item.name) filterValue}}">
     {{!-- subspacer --}}
     {{#if (and (not isContainer) (or item.isInContainer isSubitem))}}
     <div class="sub-spacer"></div>

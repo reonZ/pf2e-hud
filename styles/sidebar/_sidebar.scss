@@ -25,6 +25,7 @@
     pointer-events: none;
 
     .inner,
+    [data-panel="filter"],
     [data-panel="sidebars"] {
         pointer-events: all;
         border: var(--outer-border);
@@ -40,6 +41,34 @@
         min-height: var(--min-height);
         max-width: calc(100vw - var(--sidebar-external-padding) * 2);
         max-height: calc(min(100vh, var(--max-height)) - var(--sidebar-external-padding) * 2);
+
+        &:has(.filtered) {
+            [data-filter-value]:not(.filtered) {
+                filter: grayscale(1) opacity(0.2);
+            }
+        }
+    }
+
+    [data-panel="filter"] {
+        position: absolute;
+        bottom: -5px; // do not change that, it is hardcoded
+        left: 50%;
+        transform: translate(-50%, calc(100% - var(--sidebar-external-padding)));
+        width: calc(100% - var(--sidebar-external-padding) * 2);
+        padding: 10px;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+
+        input {
+            border: 1px solid #5d5d5d;
+        }
+
+        &.visible {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+        }
     }
 
     [data-panel="sidebars"] {

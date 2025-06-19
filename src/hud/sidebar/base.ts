@@ -4,10 +4,12 @@ import {
     getSidebars,
     IAdvancedPF2eHUD,
     ItemHudPopup,
+    SidebarCoords,
     SidebarName,
 } from "hud";
 import {
     ActorPF2e,
+    addListener,
     addListenerAll,
     ApplicationClosingOptions,
     ApplicationConfiguration,
@@ -20,6 +22,7 @@ import {
     htmlClosest,
     htmlQuery,
     ItemPF2e,
+    localize,
     MODULE,
     render,
     templatePath,
@@ -33,10 +36,14 @@ import {
     SpellsSidebarPF2eHUD,
 } from ".";
 
+const _cached: { filter?: string } = {};
+
 abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
     static #instance: SidebarPF2eHUD | null = null;
+    static #filter: string = "";
 
     #parent: IAdvancedPF2eHUD & BaseActorPF2eHUD;
+    #filterElement: HTMLElement | undefined;
     #innerElement: HTMLElement | undefined;
     #sidebarElement: HTMLElement | undefined;
 
@@ -74,6 +81,85 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         },
         classes: ["pf2e-hud"],
     };
+
+    static get keybindsSchema(): KeybindingActionConfig[] {
+        return [
+            {
+                name: "filter",
+                onUp: () => {
+                    console.log(this);
+                    if (this.#filter) {
+                        this.filter = "";
+                    } else {
+                        this.openFilter();
+                    }
+                },
+            },
+        ];
+    }
+
+    static get innerElement(): HTMLElement | undefined {
+        return this.#instance ? this.#instance.#innerElement : undefined;
+    }
+
+    static get filterElement(): HTMLElement | undefined {
+        return this.#instance ? this.#instance.#filterElement : undefined;
+    }
+
+    static get filter(): string {
+        return this.#filter;
+    }
+
+    static set filter(value) {
+        this.#filter = value;
+
+        const innerElement = this.innerElement;
+        const filteredElements = innerElement?.querySelectorAll(".filtered") ?? [];
+        for (const element of filteredElements) {
+            element.classList.remove("filtered");
+        }
+
+        const trimmed = value.trim();
+
+        if (trimmed.length) {
+            const toTest = trimmed.toLowerCase();
+            const toFilterElements =
+                innerElement?.querySelectorAll<HTMLElement>("[data-filter-value]");
+
+            let hasFilter = false;
+
+            for (const toFilterElement of toFilterElements ?? []) {
+                const filterValue = toFilterElement.dataset.filterValue as string;
+
+                if (filterValue.includes(toTest)) {
+                    hasFilter = true;
+                    toFilterElement.classList.add("filtered");
+                }
+            }
+        }
+    }
+
+    static openFilter() {
+        const filterElement = this.filterElement;
+        const input = htmlQuery(filterElement, "input");
+
+        filterElement?.classList.add("visible");
+
+        if (input) {
+            input.value = this.filter;
+            input.focus();
+        }
+    }
+
+    static closeFilter(reset: boolean) {
+        const filterElement = this.filterElement;
+
+        filterElement?.classList.remove("visible");
+
+        if (reset) {
+            this.filter = "";
+        }
+    }
 
     async close(options: ApplicationClosingOptions = {}): Promise<this> {
         options.animate = false;
@@ -129,6 +215,22 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         return this.parent.actor as ActorPF2e;
     }
 
+    get sidebarCoords(): SidebarCoords {
+        const coords = this.parent.sidebarCoords;
+        const maxHeight = window.innerHeight;
+        const filterHeight = this.#filterElement?.offsetHeight ?? 0 - 5;
+
+        if (coords.limits.bottom > maxHeight - filterHeight) {
+            const newBottom = maxHeight - filterHeight;
+            const diff = coords.limits.bottom - newBottom;
+
+            coords.limits.bottom = newBottom;
+            coords.limits.top = Math.max(coords.limits.top - diff, 0);
+        }
+
+        return coords;
+    }
+
     getItemFromElement<T extends ItemPF2e>(el: HTMLElement): T | null | Promise<T | null> {
         const actor = this.actor;
         const element = htmlClosest(el, ".item");
@@ -157,6 +259,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
 
     protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
         SidebarPF2eHUD.#instance = this;
+        SidebarPF2eHUD.#filter = "";
 
         this.element.dataset.tooltipClass = "pf2e-hud";
 
@@ -182,6 +285,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
     }
 
     protected _onClose(options: ApplicationClosingOptions): void {
+        SidebarPF2eHUD.#filter = "";
         SidebarPF2eHUD.#instance = null;
 
         const sidebarButtons = this.parent.element?.querySelectorAll<HTMLElement>(`[data-sidebar]`);
@@ -209,26 +313,33 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
 
         const sidebarElement = this.parent.sidebarCeption
             ? createHTMLElement("div", {
-                  dataset: { panel: "sidebars" },
                   content: await render("partials/sidebars", getSidebars(this.actor, this.name)),
+                  dataset: { panel: "sidebars" },
               })
             : undefined;
 
         const innerElement = createHTMLElement("div", {
             classes: ["inner"],
-            dataset: { tooltipDirection: "UP", sidebar: this.name },
             content: listElement,
+            dataset: { tooltipDirection: "UP", sidebar: this.name },
         });
 
-        return { innerElement, sidebarElement };
+        const filterLabel = (_cached.filter ??= localize("sidebar.filter"));
+        const filterElement = createHTMLElement("div", {
+            content: `<input type="text" id="pf2e-hud-sidebar-filter" placeholder="${filterLabel}">`,
+            dataset: { panel: "filter" },
+        });
+
+        return { filterElement, innerElement, sidebarElement };
     }
 
     protected _replaceHTML(
-        { innerElement, sidebarElement }: SidebarHudRenderElements,
+        { filterElement, innerElement, sidebarElement }: SidebarHudRenderElements,
         content: HTMLElement,
         options: ApplicationRenderOptions
     ): void {
         const previousInner = this.#innerElement;
+        const previousFilter = this.#filterElement;
 
         if (previousInner) {
             previousInner.replaceWith(innerElement);
@@ -249,18 +360,26 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
             addSidebarsListeners(this.parent, sidebarElement);
         }
 
+        if (previousFilter) {
+            previousFilter.replaceWith(filterElement);
+        } else {
+            content.appendChild(filterElement);
+        }
+
         content.dataset.hud = this.parent.key;
         content.dataset.type = this.name;
 
+        this.#filterElement = filterElement;
         this.#innerElement = innerElement;
 
-        this.#activateListeners(innerElement);
+        this.#activateFilterListener(filterElement);
+        this.#activateInnerListeners(innerElement);
         this._activateListeners(innerElement);
     }
 
     protected _updatePosition(position: ApplicationPosition): ApplicationPosition {
         const element = this.element;
-        const { limits, origin } = this.parent.sidebarCoords;
+        const { limits, origin } = this.sidebarCoords;
         const bounds = this.element.getBoundingClientRect();
 
         super._updatePosition(position);
@@ -305,7 +424,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         const innerElement = this.#innerElement;
         if (!innerElement) return;
 
-        const { limits } = this.parent.sidebarCoords;
+        const { limits } = this.sidebarCoords;
         const elementStyle = getComputedStyle(element);
         const innerStyle = getComputedStyle(innerElement);
         const viewportHeight = window.innerHeight;
@@ -325,7 +444,26 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         element.style.setProperty("--max-height", `${maxHeight}px`);
     }
 
-    #activateListeners(html: HTMLElement) {
+    #activateFilterListener(html: HTMLElement) {
+        addListener(html, "input", "keyup", (_, event) => {
+            if (event.key === "Enter") {
+                SidebarPF2eHUD.closeFilter(false);
+            } else if (event.key === "Escape") {
+                SidebarPF2eHUD.closeFilter(true);
+                SidebarPF2eHUD.filter = "";
+            }
+        });
+
+        addListener(html, "input", "blur", () => {
+            SidebarPF2eHUD.closeFilter(false);
+        });
+
+        addListener(html, "input", "input", (el) => {
+            SidebarPF2eHUD.filter = el.value;
+        });
+    }
+
+    #activateInnerListeners(html: HTMLElement) {
         addListenerAll(
             html,
             "input[data-item-id][data-item-property]",
@@ -369,6 +507,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
 }
 
 type SidebarHudRenderElements = {
+    filterElement: HTMLElement;
     innerElement: HTMLElement;
     sidebarElement: HTMLElement | undefined;
 };

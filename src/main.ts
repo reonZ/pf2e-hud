@@ -1,5 +1,6 @@
-import { MODULE, R, templatePath, userIsGM } from "module-helpers";
 import { PersistentPF2eHUD, TokenPF2eHUD, TooltipPF2eHUD, TrackerPF2eHUD } from "hud";
+import { registerKeybinds } from "keybinds";
+import { MODULE, R, templatePath, userIsGM } from "module-helpers";
 import { registerSettings } from "settings";
 
 MODULE.register("pf2e-hud");
@@ -22,6 +23,7 @@ Hooks.on("init", () => {
     ];
     foundry.applications.handlebars.loadTemplates(templates.flat());
 
+    registerKeybinds(HUDS);
     registerSettings(HUDS);
 
     for (const hud of R.values(HUDS)) {

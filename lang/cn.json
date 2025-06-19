@@ -1,5 +1,13 @@
 {
     "pf2e-hud": {
+        "keybindings": {
+            "sidebar": {
+                "filter": {
+                    "name": "应用侧边栏筛选",
+                    "hint": "允许对侧边栏内容进行筛选。"
+                }
+            }
+        },
         "settings": {
             "menus": {
                 "healthStatusMenu": {
@@ -30,6 +38,9 @@
             },
             "persistent": {
                 "title": "受控HUD"
+            },
+            "sidebar": {
+                "title": "侧边栏"
             },
             "token": {
                 "title": "指示物HUD",
@@ -128,6 +139,9 @@
                     "unset": "解绑受控角色"
                 }
             }
+        },
+        "sidebar": {
+            "filter": "侧边栏过滤"
         },
         "sidebars": {
             "actions": "动作",

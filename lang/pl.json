@@ -1,5 +1,13 @@
 {
     "pf2e-hud": {
+        "keybindings": {
+            "sidebar": {
+                "filter": {
+                    "name": "Użyj filtra paska bocznego",
+                    "hint": "Umożliwia filtrowanie bieżącej zawartości paska bocznego."
+                }
+            }
+        },
         "settings": {
             "menus": {
                 "healthStatusMenu": {
@@ -40,6 +48,9 @@
                         "combat": "Bieżący uczestnik walki"
                     }
                 }
+            },
+            "sidebar": {
+                "title": "Paski boczne"
             },
             "token": {
                 "title": "HUD tokena",
@@ -140,6 +151,9 @@
                     "unset": "Usuń ustawionego stałego aktora"
                 }
             }
+        },
+        "sidebar": {
+            "filter": "Filtr paska bocznego"
         },
         "sidebars": {
             "actions": "Akcje",

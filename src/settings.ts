@@ -43,7 +43,7 @@ function registerGlobalSetting(key: GlobalSettingKey, options: RegisterSettingOp
     registerSetting(key, options);
 }
 
-function registerSettings(huds: Record<string, BasePF2eHUD<Record<string, any>>>) {
+function registerSettings(huds: Record<string, BasePF2eHUD>) {
     registerSettingMenu("healthStatusMenu", {
         type: HealthStatusMenu,
         icon: "fa-solid fa-kit-medical",

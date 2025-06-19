@@ -1,5 +1,13 @@
 {
     "pf2e-hud": {
+        "keybindings": {
+            "sidebar": {
+                "filter": {
+                    "name": "Use Sidebar Filter",
+                    "hint": "Allow filtering the current sidebar content."
+                }
+            }
+        },
         "settings": {
             "menus": {
                 "healthStatusMenu": {
@@ -40,6 +48,9 @@
                         "combat": "Current Combatant"
                     }
                 }
+            },
+            "sidebar": {
+                "title": "Sidebar"
             },
             "token": {
                 "title": "Token HUD",
@@ -141,6 +152,9 @@
                     "unset": "Unset persistent actor"
                 }
             }
+        },
+        "sidebar": {
+            "filter": "Sidebar Filter"
         },
         "sidebars": {
             "actions": "Actions",

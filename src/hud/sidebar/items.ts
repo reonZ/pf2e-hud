@@ -20,6 +20,8 @@ import {
 import { SidebarPF2eHUD } from ".";
 import applications = foundry.applications;
 
+const _cached: { investedToggle?: string; investedLabel?: string } = {};
+
 class ItemsSidebarPF2eHUD extends SidebarPF2eHUD {
     get name(): "items" {
         return "items";
@@ -44,12 +46,6 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD {
             return !!macro || (isConsumable && itemData.hasCharges && !item.isAmmo);
         };
 
-        const getItemFilter = (itemData: SidebarItem): string => {
-            return itemData.item.subitems.size
-                ? `${itemData.item.name} ` + itemData.item.subitems.map((x) => x.name).join("|")
-                : itemData.item.name;
-        };
-
         data.sections = await Promise.all(
             R.pipe(
                 data.sections,
@@ -60,12 +56,12 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD {
                     // we don't want infinite depth of containers so we bring them all back to depth 1
                     const itemsPromises = extractContainers(section.items).map(async (itemData) => {
                         itemData.canBeUsed = await canBeUsed(itemData);
-                        itemData.filterValue = getItemFilter(itemData);
+                        itemData.filterValue = itemData.item.name.toLowerCase();
 
                         if (itemData.heldItems?.length) {
                             const heldItems = itemData.heldItems.map(async (heldItemData) => {
                                 heldItemData.canBeUsed = await canBeUsed(heldItemData);
-                                itemData.filterValue = getItemFilter(itemData);
+                                heldItemData.filterValue = heldItemData.item.name.toLowerCase();
                                 return heldItemData;
                             });
 
@@ -75,6 +71,13 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD {
                             itemData.filterValue += itemData.heldItems
                                 .map((x) => x.filterValue)
                                 .join("|");
+                        } else if (itemData.item.subitems.size) {
+                            const filters = itemData.item.subitems.map((item) => {
+                                return item.name.toLowerCase();
+                            });
+
+                            itemData.filterValue += "|";
+                            itemData.filterValue += filters.join("|");
                         }
 
                         sectionFilters.push(itemData.filterValue);
@@ -159,11 +162,9 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD {
     }
 }
 
-const _cache: Record<string, any> = {};
-
 function getInvestedTooltip(data: ItemsHudContext): string {
-    const toggle = (_cache.investedToggle ??= game.i18n.localize("PF2E.ui.equipmentInvested"));
-    const label = (_cache.investedLabel ??= game.i18n.localize("PF2E.InvestedLabel"));
+    const toggle = (_cached.investedToggle ??= game.i18n.localize("PF2E.ui.equipmentInvested"));
+    const label = (_cached.investedLabel ??= game.i18n.localize("PF2E.InvestedLabel"));
     const { max, value } = data.invested ?? {};
 
     return `${toggle}<br>${label} - ${value} / ${max}`;

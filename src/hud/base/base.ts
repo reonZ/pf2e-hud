@@ -6,8 +6,9 @@ import {
     setSetting,
 } from "module-helpers";
 
-abstract class BasePF2eHUD<TSettings extends Record<string, any>> extends foundry.applications.api
-    .ApplicationV2 {
+abstract class BasePF2eHUD<
+    TSettings extends Record<string, any> = Record<string, any>
+> extends foundry.applications.api.ApplicationV2 {
     #settings: Record<string, any> = {};
 
     static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
@@ -23,6 +24,10 @@ abstract class BasePF2eHUD<TSettings extends Record<string, any>> extends foundr
 
     abstract get key(): string;
     abstract get settingsSchema(): HUDSettingsList<TSettings>;
+
+    get keybindsSchema(): KeybindingActionConfig[] {
+        return [];
+    }
 
     init(isGM: boolean) {}
     ready(isGM: boolean) {}
