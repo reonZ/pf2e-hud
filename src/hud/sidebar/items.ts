@@ -17,7 +17,7 @@ import {
     tupleHasValue,
     usePhysicalItem,
 } from "module-helpers";
-import { SidebarPF2eHUD } from ".";
+import { SidebarFilter, SidebarPF2eHUD } from ".";
 import applications = foundry.applications;
 
 const _cached: { investedToggle?: string; investedLabel?: string } = {};
@@ -51,41 +51,33 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD {
                 data.sections,
                 R.filter((section): section is SidebarItemList => section.items.length > 0),
                 R.map(async (section) => {
-                    const sectionFilters: string[] = [];
+                    section.filterValue = new SidebarFilter();
 
                     // we don't want infinite depth of containers so we bring them all back to depth 1
                     const itemsPromises = extractContainers(section.items).map(async (itemData) => {
                         itemData.canBeUsed = await canBeUsed(itemData);
-                        itemData.filterValue = itemData.item.name.toLowerCase();
+                        itemData.filterValue = new SidebarFilter(itemData.item);
 
                         if (itemData.heldItems?.length) {
                             const heldItems = itemData.heldItems.map(async (heldItemData) => {
                                 heldItemData.canBeUsed = await canBeUsed(heldItemData);
-                                heldItemData.filterValue = heldItemData.item.name.toLowerCase();
+                                heldItemData.filterValue = new SidebarFilter(heldItemData.item);
+
+                                itemData.filterValue.add(heldItemData.filterValue);
+
                                 return heldItemData;
                             });
 
                             itemData.heldItems = await Promise.all(heldItems);
-
-                            itemData.filterValue += "|";
-                            itemData.filterValue += itemData.heldItems
-                                .map((x) => x.filterValue)
-                                .join("|");
                         } else if (itemData.item.subitems.size) {
-                            const filters = itemData.item.subitems.map((item) => {
-                                return item.name.toLowerCase();
-                            });
-
-                            itemData.filterValue += "|";
-                            itemData.filterValue += filters.join("|");
+                            itemData.filterValue.add(...itemData.item.subitems);
                         }
 
-                        sectionFilters.push(itemData.filterValue);
+                        section.filterValue.add(itemData.filterValue);
                         return itemData;
                     });
 
                     section.items = await Promise.all(itemsPromises);
-                    section.filterValue = sectionFilters.join("|");
 
                     return section;
                 })
@@ -301,12 +293,12 @@ type SheetItemList = SheetInventory["sections"][number];
 
 type SidebarItem = Omit<InventoryItem, "heldItems"> & {
     canBeUsed: boolean;
-    filterValue: string;
+    filterValue: SidebarFilter;
     heldItems?: SidebarItem[];
 };
 
 type SidebarItemList = Omit<SheetItemList, "items"> & {
-    filterValue: string;
+    filterValue: SidebarFilter;
     items: SidebarItem[];
 };
 
