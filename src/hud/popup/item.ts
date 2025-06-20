@@ -1,3 +1,4 @@
+import { sendItemToChat } from "hud";
 import {
     ActorPF2e,
     ApplicationConfiguration,
@@ -5,9 +6,9 @@ import {
     createHTMLElement,
     getSpellRankLabel,
     htmlClosest,
+    htmlQuery,
     ItemPF2e,
     RawItemChatData,
-    unownedItemToMessage,
     ZeroToTen,
 } from "module-helpers";
 import { BaseHudPopup } from ".";
@@ -78,7 +79,7 @@ class ItemHudPopup extends BaseHudPopup {
         options: ApplicationRenderOptions
     ): Promise<unknown> {
         const summaryElement = createHTMLElement("div", {
-            classes: ["item-summary"],
+            classes: ["item-summary", "item"],
             dataset: {
                 ...context.dataset,
                 tooltipClass: "pf2e",
@@ -102,19 +103,20 @@ class ItemHudPopup extends BaseHudPopup {
     protected _onClickAction(event: PointerEvent, target: HTMLElement): void {
         type ActionEvent = "consume-item" | "send-to-chat";
 
-        const item = this.item;
         const action = target.dataset.action as ActionEvent;
 
         if (action === "consume-item") {
+            const item = this.item;
+
             if (item.actor && item.isOfType("consumable")) {
                 item.consume();
                 this.close();
             }
         } else if (action === "send-to-chat") {
-            if (item.actor) {
-                item.toMessage(event);
-            } else {
-                unownedItemToMessage(this.actor, item, event);
+            const el = htmlQuery(this.element, ".item");
+
+            if (el) {
+                sendItemToChat(this.actor, event, el);
             }
         }
     }

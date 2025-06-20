@@ -1,9 +1,11 @@
 import {
     addSidebarsListeners,
     BaseActorPF2eHUD,
+    getItemFromElement,
     getSidebars,
     IAdvancedPF2eHUD,
     ItemHudPopup,
+    sendItemToChat,
     SidebarCoords,
     SidebarName,
 } from "hud";
@@ -26,7 +28,6 @@ import {
     MODULE,
     render,
     templatePath,
-    unownedItemToMessage,
 } from "module-helpers";
 import {
     ActionSidebarPF2eHUD,
@@ -234,31 +235,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         sync?: false
     ): T | null | Promise<T | null>;
     getItemFromElement(el: HTMLElement, sync?: boolean) {
-        const actor = this.actor;
-        const element = htmlClosest(el, ".item");
-        if (!element) return null;
-
-        const { parentId, itemId, itemUuid, itemType, actionIndex, entryId } = element.dataset;
-
-        const item = parentId
-            ? actor.inventory.get(parentId, { strict: true }).subitems.get(itemId, { strict: true })
-            : itemUuid
-            ? fromUuid(itemUuid)
-            : entryId
-            ? actor.spellcasting?.collections
-                  .get(entryId, { strict: true })
-                  .get(itemId, { strict: true }) ?? null
-            : itemType === "condition"
-            ? actor.conditions.get(itemId, { strict: true })
-            : actionIndex
-            ? actor.system.actions?.[Number(actionIndex)].item ?? null
-            : actor.items.get(itemId ?? "") ?? null;
-
-        if (sync) {
-            return item instanceof Item ? item : null;
-        } else {
-            return item;
-        }
+        return getItemFromElement(this.actor, el, sync as any);
     }
 
     protected _activateListeners(html: HTMLElement) {}
@@ -535,19 +512,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         });
 
         addListenerAll(html, "[data-action='send-to-chat']", async (el, event) => {
-            const item = await this.getItemFromElement(el);
-            if (!item) return;
-
-            if (!item.actor) {
-                unownedItemToMessage(this.actor, item, event);
-            } else if (item.isOfType("spell")) {
-                const rankStr = htmlClosest(el, "[data-cast-rank]")?.dataset.castRank;
-                const castRank = Number(rankStr ?? NaN);
-
-                item.toMessage(event, { data: { castRank } });
-            } else {
-                item.toMessage(event);
-            }
+            sendItemToChat(this.actor, event, el);
         });
     }
 }
