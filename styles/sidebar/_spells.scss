@@ -1,0 +1,54 @@
+#pf2e-hud-sidebar[data-type="spells"] {
+    .item {
+        .extras {
+            gap: 2em;
+
+            [data-section="category"] {
+                min-width: 3em;
+                gap: 0.2em;
+
+                i.fa-battery-three-quarters {
+                    transform: rotateZ(-90deg);
+                }
+            }
+
+            .actions {
+                display: flex;
+                align-items: center;
+                gap: 0.2em;
+
+                .disabled {
+                    color: var(--color-disabled);
+                }
+
+                .numbers {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.2em;
+                    margin-right: -0.2em;
+
+                    span + input {
+                        background: none;
+                    }
+                }
+
+                .cast {
+                    margin-top: 1px;
+                }
+            }
+        }
+
+        &[data-slot-expended] {
+            .image {
+                filter: grayscale(1);
+            }
+
+            .details {
+                .name {
+                    color: var(--color-disabled);
+                    text-decoration: line-through;
+                }
+            }
+        }
+    }
+}

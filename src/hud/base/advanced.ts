@@ -9,6 +9,7 @@ import {
     getSidebars,
     HealthData,
     NpcNotesHudPopup,
+    processSliderEvent,
     SidebarMenu,
     SidebarPF2eHUD,
     SliderData,
@@ -224,7 +225,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
                     new NpcNotesHudPopup(actor).render(true);
                 }
             } else if (action === "slider") {
-                this.#onSlider(event, target);
+                processSliderEvent(event, target, this.#onSlider.bind(this));
             } else if (action === "take-cover") {
                 this.#takeCover(event);
             } else if (action === "update-alliance") {
@@ -234,14 +235,13 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             }
         }
 
-        #onSlider(this: ThisAdvancedHUD, event: PointerEvent, target: HTMLElement) {
+        #onSlider(
+            this: ThisAdvancedHUD,
+            action: "hero" | "wounded" | "dying" | "mythic",
+            direction: 1 | -1
+        ) {
             const actor = this.actor;
-            if (![0, 2].includes(event.button) || !actor?.isOfType("character")) return;
-
-            type SliderAction = "hero" | "wounded" | "dying" | "mythic";
-
-            const action = target.dataset.sliderAction as SliderAction;
-            const direction = event.button === 0 ? 1 : -1;
+            if (!actor?.isOfType("character")) return;
 
             if (["hero", "mythic"].includes(action)) {
                 const resource = getMythicOrHeroPoints(actor);

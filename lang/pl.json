@@ -93,6 +93,10 @@
         },
         "leftClick": "[Kliknij lewym]",
         "rightClick": "[Kliknij prawym]",
+        "spellcasting": {
+            "charges": "Ładunki",
+            "staff": "Kostur"
+        },
         "actor-hud": {
             "alliance": "Sojusz: {value}",
             "temp": "Tymczasowe Punkty Wytrzymałości",
@@ -154,7 +158,11 @@
             }
         },
         "sidebar": {
-            "filter": "Filtr paska bocznego"
+            "filter": "Filtr paska bocznego",
+            "spells": {
+                "broken": "Przerwane zaklęcie",
+                "cast": "Rzuć zaklęcie"
+            }
         },
         "sidebars": {
             "actions": "Akcje",

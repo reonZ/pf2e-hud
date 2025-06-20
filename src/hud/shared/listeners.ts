@@ -76,4 +76,17 @@ function addEnterKeyListeners(html: HTMLElement) {
     });
 }
 
-export { addEnterKeyListeners, addTextNumberInputListeners };
+function processSliderEvent<TAction extends string>(
+    event: PointerEvent,
+    target: HTMLElement,
+    callback: (action: TAction, direction: 1 | -1) => void | Promise<void>
+) {
+    if (![0, 2].includes(event.button)) return;
+
+    const action = target.dataset.sliderAction as TAction;
+    const direction = event.button === 0 ? 1 : -1;
+
+    callback(action, direction);
+}
+
+export { addEnterKeyListeners, addTextNumberInputListeners, processSliderEvent };

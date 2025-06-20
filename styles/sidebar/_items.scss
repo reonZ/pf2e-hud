@@ -94,11 +94,6 @@
             .extras {
                 gap: 1.5em;
 
-                > * {
-                    display: flex;
-                    align-items: center;
-                }
-
                 .stats {
                     gap: 0.3em;
 
@@ -196,15 +191,5 @@
                 }
             }
         }
-
-        // &:is([data-parent-id], [data-item-type]):not(
-        //         :has(+ :is([data-parent-id], [data-is-container]))
-        //     ) {
-        //     .sub-spacer {
-        //         &::after {
-        //             display: none;
-        //         }
-        //     }
-        // }
     }
 }

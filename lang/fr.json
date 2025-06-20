@@ -82,6 +82,10 @@
         },
         "leftClick": "[Clic gauche]",
         "rightClick": "[Clic droit]",
+        "spellcasting": {
+            "charges": "Charges",
+            "staff": "Bâton"
+        },
         "actor-hud": {
             "alliance": "Alliance : {value}",
             "temp": "Points de vie temporaires",
@@ -141,7 +145,11 @@
             }
         },
         "sidebar": {
-            "filter": "Filtre de sous-menu"
+            "filter": "Filtre de sous-menu",
+            "spells": {
+                "broken": "Sort défectueux",
+                "cast": "Lancer le sort"
+            }
         },
         "sidebars": {
             "actions": "Actions",

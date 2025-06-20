@@ -82,6 +82,10 @@
         },
         "leftClick": "[左键点击]",
         "rightClick": "[右键点击]",
+        "spellcasting": {
+            "charges": "充能",
+            "staff": "法杖"
+        },
         "actor-hud": {
             "alliance": "关系：{value}",
             "temp": "临时生命值",
@@ -141,7 +145,11 @@
             }
         },
         "sidebar": {
-            "filter": "侧边栏过滤"
+            "filter": "侧边栏过滤",
+            "spells": {
+                "broken": "消耗法术",
+                "cast": "施放法术"
+            }
         },
         "sidebars": {
             "actions": "动作",

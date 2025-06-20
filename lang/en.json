@@ -93,6 +93,10 @@
         },
         "leftClick": "[Left Click]",
         "rightClick": "[Right Click]",
+        "spellcasting": {
+            "charges": "Charges",
+            "staff": "Staff"
+        },
         "actor-hud": {
             "alliance": "Alliance: {value}",
             "temp": "Temporary Hit Points",
@@ -154,7 +158,11 @@
             }
         },
         "sidebar": {
-            "filter": "Sidebar Filter"
+            "filter": "Sidebar Filter",
+            "spells": {
+                "broken": "Broken Spell",
+                "cast": "Cast the Spell"
+            }
         },
         "sidebars": {
             "actions": "Actions",

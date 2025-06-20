@@ -1,5 +1,5 @@
 #pf2e-hud-sidebar {
-    --min-width: 12em;
+    --min-width: 14em;
     --min-height: 4em;
     --max-heigth: var(var(--min-height));
 
@@ -135,20 +135,25 @@
 
     .item {
         display: flex;
+        min-width: var(--min-width);
         max-width: var(--max-column-width);
 
         .details {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 2px;
 
             .extras {
                 display: flex;
                 justify-content: space-between;
                 gap: 1em;
-                color: var(--color-text-light-4);
                 font-size: 0.9em;
+
+                > * {
+                    display: flex;
+                    align-items: center;
+                }
             }
         }
 
@@ -231,3 +236,4 @@
 }
 
 @import "./items";
+@import "./spells";

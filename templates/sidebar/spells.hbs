@@ -1,1 +1,92 @@
-<div>SPELLS</div>
+{{!-- entry --}}
+{{#each spellGroups as |group rank|}}
+<header data-filter-value="{{group.filterValue}}">
+    <div class="name">{{localize group.label}}</div>
+    {{#if group.focusPool}}
+    <div class="controls" data-section="focus-points" data-tooltip="PF2E.Focus.label">
+        {{> (@root.partial 'slider') group.focusPool}}
+    </div>
+    {{/if}}
+</header>
+{{!-- spell --}}
+{{#each group.slotSpells}}
+<div class="item{{#if isVirtual}} virtual{{/if}}"
+    data-item-type="spell{{#if isVirtual}}-slot-group{{/if}}" data-item-id="{{spell.id}}"
+    data-entry-id="{{entryId}}" data-cast-rank="{{castRank}}" data-group-id="{{groupId}}" {{#if
+    isPrepared}}data-slot-id="{{slotId}}" {{/if}} {{#if expended}}data-slot-expended{{/if}}
+    draggable="true" data-filter-value="{{filterValue}}">
+    {{!-- image --}}
+    {{> (@root.partial 'item-image') spell}}
+    {{!-- details --}}
+    <div class="details">
+        {{!-- name --}}
+        <div class="name">
+            {{#if signature}}
+            <a data-action="toggle-signature">
+                <i class="fa-{{ifThen signature.toggled 'solid' 'regular'}} fa-star signature"></i>
+            </a>
+            {{/if}}
+            <a data-action="item-description">{{spell.name}}</a>
+        </div>
+        {{!-- extras --}}
+        <div class="extras" data-tooltip-direction="DOWN">
+            {{!-- category --}}
+            {{#if isRitual}}
+            <div class="cast">
+                {{spell.system.time.value}}
+            </div>
+            {{else}}
+            <div data-section="category" data-tooltip="{{{entryTooltip}}}">
+                <i class="{{category.icon}}"></i> {{{actionGlyph spell.actionGlyph}}}
+            </div>
+            {{/if}}
+            {{!-- actions --}}
+            <div class="actions">
+                {{!-- if broken --}}
+                {{#if isBroken}}
+                <div class="broken" data-tooltip="{{@root.i18n.path 'broken'}}">
+                    <i class="fa-solid fa-link-slash broken"></i>
+                </div>
+                {{!-- not broken --}}
+                {{else}}
+                {{!-- if uses --}}
+                {{#if uses}}
+                <div {{#if uses.hasMaxUses}}class="numbers" {{/if}}>
+                    <input class="small" type="number" {{#if isStaff}}
+                        data-action="update-staff-charges" {{else}} data-item-id="{{uses.itemId}}"
+                        data-item-property="{{uses.input}}" {{/if}} value="{{uses.value}}" min="0"
+                        max="{{uses.max}}" placeholder="0">
+                    {{#if uses.hasMaxUses}}
+                    <span class="slash"> / </span>
+                    <input class="small" type="number" data-item-id="" data-item-property=""
+                        value="{{uses.max}}" placeholder="0" disabled />
+                    {{/if}}
+                </div>
+                {{else if canTogglePrepared}}
+                <a data-action="toggle-slot-expended"
+                    data-tooltip="{{#if expended}}PF2E.RestoreSpellTitle{{else}}PF2E.ExpendSpellTitle{{/if}}">
+                    <i
+                        class="fa-solid fa-fw fa-{{#if expended}}plus{{else}}minus{{/if}}-square"></i>
+                </a>
+                {{/if}}
+                {{!-- must equip --}}
+                {{#if annotation}}
+                <a data-action="draw-item" data-parent-id="{{parentId}}" {{{annotation.dataset}}}
+                    data-tooltip="{{localize annotation.label}} {{actionGlyph annotation.cost}}">
+                    <i class="fa-solid fa-hand-back-fist"></i>
+                </a>
+                {{!-- equipped --}}
+                {{else}}
+                {{!-- cast spell --}}
+                <a {{#if expended}}class="disabled cast" {{else}}data-action="cast-spell"
+                    class="cast" {{/if}} {{{@root.i18n.tooltip 'cast' }}}>
+                    <i class="fa-solid fa-play"></i>
+                </a>
+                {{/if}}
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+{{/each}}
+{{/each}}
