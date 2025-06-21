@@ -281,6 +281,10 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
                     this.#innerElement.offsetHeight <= this.#sidebarElement.offsetHeight
                 );
             }
+
+            if (SidebarPF2eHUD.#filter) {
+                SidebarPF2eHUD.filter = SidebarPF2eHUD.#filter;
+            }
         });
     }
 
