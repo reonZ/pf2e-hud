@@ -1,3 +1,23 @@
+#
+
+-   this release contains the sidebar `Filter`, sidebar `Roll Option Toggles` and the fully implemented `Spells` sidebar
+-   if you are using the `PF2e Dailies` module, you are gonna need to update it to `v4.1.0`
+-   improve first render performances of the different HUD elements (most notably the sidebars)
+-   `Item Popup`:
+    -   fix send-to-chat not respecting the heightened rank of spells
+-   `Sidebar`:
+    -   make sure re-rendered sidebars have their scrolling & focus synced
+    -   add fast-change sidebar menu (when opened by the `Token HUD`)
+    -   the filter is now part of the sidebar (showing at the bottom) instead of being an independent application in the middle of the screen
+    -   improved the responsiveness of filters
+    -   no longer display sub-options select fields for roll-option when only a single option exists
+    -   fix mouseover tooltips not using the module's style
+-   `Items Sidebar`:
+    -   you can now drag & drop items from the sidebar, they behave as if your were dragging them from the actor sheet
+-   `Spells Sidebar`:
+    -   now use icons to represent spellcasting category instead of the name of the category itself
+    -   add the spellcasting category in the tooltip instead
+
 # 2.3.0
 
 -   this release contains the `Popup`, core functionalities of `Sidebar` and the fully implemented `Items` sidebar

@@ -20,6 +20,7 @@ import {
     ApplicationRenderOptions,
     assignStyle,
     createHTMLElement,
+    createHTMLElementContent,
     createToggleableEvent,
     htmlClosest,
     htmlQuery,
@@ -28,7 +29,9 @@ import {
     MODULE,
     postSyncElement,
     preSyncElement,
+    R,
     render,
+    RollOptionToggle,
     templatePath,
 } from "module-helpers";
 import {
@@ -38,6 +41,14 @@ import {
     SkillsSidebarPF2eHUD,
     SpellsSidebarPF2eHUD,
 } from ".";
+
+const ROLLOPTIONS_PLACEMENT = {
+    actions: "actions",
+    spells: "spellcasting",
+    items: "inventory",
+    skills: "proficiencies",
+    extras: undefined,
+} as const;
 
 const _cached: { filter?: string } = {};
 
@@ -314,6 +325,39 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
             dataset: { panel: "filter" },
         });
 
+        const selectedPlacement = ROLLOPTIONS_PLACEMENT[this.name];
+        if (selectedPlacement) {
+            const actor = this.actor;
+            const toggles = getRollOptionsData(actor, selectedPlacement);
+
+            if (toggles?.length) {
+                const togglesTemplate = await foundry.applications.handlebars.renderTemplate(
+                    "systems/pf2e/templates/actors/partials/toggles.hbs",
+                    { toggles }
+                );
+
+                const togglesElement = createHTMLElementContent({
+                    content: togglesTemplate,
+                });
+
+                for (const { itemId, img } of toggles) {
+                    if (!img) continue;
+
+                    const imgEl = createHTMLElement("img", { classes: ["drag-img"] });
+                    imgEl.src = img;
+
+                    const toggleRow = htmlQuery(togglesElement, `[data-item-id="${itemId}"]`);
+
+                    if (toggleRow) {
+                        toggleRow.draggable = true;
+                        toggleRow.appendChild(imgEl);
+                    }
+                }
+
+                listElement.prepend(togglesElement);
+            }
+        }
+
         return { filterElement, innerElement, sidebarElement };
     }
 
@@ -523,8 +567,57 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         addListenerAll(html, "[data-action='send-to-chat']", async (el, event) => {
             sendItemToChat(this.actor, event, el);
         });
+
+        /**
+         * https://github.com/foundryvtt/pf2e/blob/3157c39e82c91001bb362e43e3439f782834db56/src/module/actor/sheet/base.ts#L432
+         */
+        addListenerAll(html, "ul[data-option-toggles]", "change", (_, event) => {
+            const toggleRow = htmlClosest(event.target, "[data-item-id][data-domain][data-option]");
+            const checkbox = htmlQuery<HTMLInputElement>(
+                toggleRow,
+                "input[data-action=toggle-roll-option]"
+            );
+            const suboptionsSelect = htmlQuery<HTMLSelectElement>(
+                toggleRow,
+                "select[data-action=set-suboption"
+            );
+            const { domain, option, itemId } = toggleRow?.dataset ?? {};
+            const suboption = suboptionsSelect?.value ?? null;
+            if (checkbox && domain && option) {
+                this.actor.toggleRollOption(
+                    domain,
+                    option,
+                    itemId ?? null,
+                    checkbox.checked,
+                    suboption
+                );
+            }
+        });
     }
 }
+
+function getRollOptionsData(actor: ActorPF2e, selected: RolloptionPlacement): RollOptionsData[] {
+    return R.pipe(
+        R.values(actor.synthetics.toggles).flatMap((domain) => Object.values(domain)),
+        R.filter(({ placement, option, domain }) => {
+            return (
+                placement === selected && (domain !== "elemental-blast" || option !== "action-cost")
+            );
+        }),
+        R.map((toggle): RollOptionsData => {
+            return {
+                ...toggle,
+                img: actor.items.get(toggle.itemId)?.img,
+            };
+        })
+    );
+}
+
+type RolloptionPlacement = ValueOf<typeof ROLLOPTIONS_PLACEMENT>;
+
+type RollOptionsData = RollOptionToggle & {
+    img: ImageFilePath | undefined;
+};
 
 type BaseDragData = Partial<ReturnType<ItemPF2e["toDragData"]>> & {
     actorId: string;
