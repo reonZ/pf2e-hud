@@ -26,6 +26,8 @@ import {
     ItemPF2e,
     localize,
     MODULE,
+    postSyncElement,
+    preSyncElement,
     render,
     templatePath,
 } from "module-helpers";
@@ -88,7 +90,6 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
             {
                 name: "filter",
                 onUp: () => {
-                    console.log(this);
                     if (this.#filter) {
                         this.filter = "";
                     } else {
@@ -324,6 +325,10 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         const previousInner = this.#innerElement;
         const previousFilter = this.#filterElement;
 
+        const state =
+            previousInner?.dataset.sidebar === innerElement.dataset.sidebar &&
+            preSyncElement(innerElement, previousInner);
+
         if (previousInner) {
             previousInner.replaceWith(innerElement);
         } else {
@@ -354,6 +359,10 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
 
         this.#filterElement = filterElement;
         this.#innerElement = innerElement;
+
+        if (previousInner && state) {
+            postSyncElement(innerElement, state);
+        }
 
         this.#activateFilterListener(filterElement);
         this.#activateInnerListeners(innerElement);
