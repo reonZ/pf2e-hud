@@ -124,8 +124,6 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
     }
 
     static set filter(value) {
-        this.#filter = value;
-
         const innerElement = this.innerElement;
         const filteredElements = innerElement?.querySelectorAll(".filtered") ?? [];
         for (const element of filteredElements) {
@@ -139,13 +137,20 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
             const toFilterElements =
                 innerElement?.querySelectorAll<HTMLElement>("[data-filter-value]");
 
+            let hasFilter = false;
+
             for (const toFilterElement of toFilterElements ?? []) {
                 const filterValue = toFilterElement.dataset.filterValue as string;
 
                 if (filterValue.includes(toTest)) {
+                    hasFilter = true;
                     toFilterElement.classList.add("filtered");
                 }
             }
+
+            this.#filter = hasFilter ? trimmed : "";
+        } else {
+            this.#filter = "";
         }
     }
 
@@ -526,10 +531,6 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
                 SidebarPF2eHUD.closeFilter(true);
                 SidebarPF2eHUD.filter = "";
             }
-        });
-
-        addListener(html, "input", "blur", () => {
-            SidebarPF2eHUD.closeFilter(false);
         });
 
         addListener(html, "input", "input", (el) => {
