@@ -88,6 +88,8 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
             R.mapToObj(([key, entries]) => [key, entries])
         )
     );
+
+    MODULE.debugExpose({ getHealthStatusData });
 }
 
 type GlobalSetting = {
@@ -97,7 +99,5 @@ type GlobalSetting = {
 };
 
 type GlobalSettingKey = keyof GlobalSetting;
-
-MODULE.debugExpose({ getHealthStatusData });
 
 export { getGlobalSetting, getHealthStatusData, registerSettings };

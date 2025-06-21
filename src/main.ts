@@ -1,3 +1,4 @@
+import { HealthStatus } from "health-status";
 import { PersistentPF2eHUD, TokenPF2eHUD, TooltipPF2eHUD, TrackerPF2eHUD } from "hud";
 import { registerKeybinds } from "keybinds";
 import { MODULE, R, templatePath, userIsGM } from "module-helpers";
@@ -41,5 +42,6 @@ Hooks.on("ready", () => {
 });
 
 MODULE.devExpose({ huds: HUDS });
+MODULE.debugExpose({ HealthStatus });
 
 export { HUDS as hud };

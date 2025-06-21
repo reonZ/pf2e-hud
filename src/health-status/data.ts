@@ -3,7 +3,6 @@ import {
     ArrayField,
     localize,
     ModelPropFromDataField,
-    MODULE,
     R,
     SourcePropFromDataField,
 } from "module-helpers";
@@ -181,8 +180,6 @@ type HealthStatusSchema = {
 };
 
 type HealthStatusSource = SourceFromSchema<HealthStatusSchema>;
-
-MODULE.debugExpose({ HealthStatus });
 
 export { HealthStatus };
 export type { HealthStatusSource };
