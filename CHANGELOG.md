@@ -1,3 +1,9 @@
+# 2.5.1
+
+-   `Skill Sidebar`:
+    -   now sort skill actions by alphabetical order
+    -   fix skill action not requiring to be trained be disabled when not trained in the associated skill
+
 # 2.5.0
 
 -   this release contains the fully implemented `Skills` sidebar
