@@ -1,4 +1,4 @@
-import { createSlider, processSliderEvent, SliderData } from "hud";
+import { createSlider, FilterValue, processSliderEvent, SliderData } from "hud";
 import {
     ActiveSpell,
     addListenerAll,
@@ -23,7 +23,7 @@ import {
     spellSlotGroupIdToNumber,
     ValueAndMax,
 } from "module-helpers";
-import { SidebarFilter, SidebarPF2eHUD, SPELL_CATEGORIES, SpellCategoryType } from ".";
+import { SidebarPF2eHUD, SPELL_CATEGORIES, SpellCategoryType } from ".";
 
 class SpellsSidebarPF2eHUD extends SidebarPF2eHUD {
     get name(): "spells" {
@@ -37,12 +37,16 @@ class SpellsSidebarPF2eHUD extends SidebarPF2eHUD {
     protected _onClickAction(event: PointerEvent, target: HTMLElement): void {
         const action = target.dataset.action as EventAction;
 
+        if (action === "slider") {
+            processSliderEvent(event, target, this.#onSlider.bind(this));
+        }
+
+        if (event.button !== 0) return;
+
         if (action === "cast-spell") {
             this.#castSpell(target);
         } else if (action === "draw-item") {
             this.#drawItem(target);
-        } else if (action === "slider") {
-            processSliderEvent(event, target, this.#onSlider.bind(this));
         } else if (action === "toggle-signature") {
             this.#toggleSignature(target);
         } else if (action === "toggle-slot-expended") {
@@ -269,7 +273,7 @@ async function getSpellcastingData(actor: CreaturePF2e): Promise<SpellsHudContex
                     entryId,
                     entryTooltip,
                     expended: entry.isFocusPool ? focusExpended : active.expended,
-                    filterValue: new SidebarFilter(spell),
+                    filterValue: new FilterValue(spell),
                     groupId: group.id,
                     isBroken,
                     isVirtual,
@@ -286,7 +290,7 @@ async function getSpellcastingData(actor: CreaturePF2e): Promise<SpellsHudContex
                 const groupRank = isFocusGroup ? 12 : entry.isRitual ? 13 : groupNumber;
 
                 const spellsGroup = (spellGroups[groupRank] ??= {
-                    filterValue: new SidebarFilter(),
+                    filterValue: new FilterValue(),
                     focusPool: entry.isFocusPool ? focusPool : null,
                     label: isFocusGroup
                         ? "PF2E.Focus.Spells"
@@ -331,7 +335,7 @@ type EventAction =
 type SpellGroupData = {
     label: string;
     focusPool: SliderData | null;
-    filterValue: SidebarFilter;
+    filterValue: FilterValue;
     slotSpells: SlotSpellData[];
 };
 
@@ -347,7 +351,7 @@ type SlotSpellData = Omit<
     entryId: string;
     entryTooltip: string;
     expended: boolean | undefined;
-    filterValue: SidebarFilter;
+    filterValue: FilterValue;
     groupId: SpellSlotGroupId;
     isBroken: boolean;
     isVirtual: boolean | undefined;

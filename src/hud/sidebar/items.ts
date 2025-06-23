@@ -17,8 +17,9 @@ import {
     tupleHasValue,
     usePhysicalItem,
 } from "module-helpers";
-import { SidebarFilter, SidebarPF2eHUD } from ".";
+import { SidebarPF2eHUD } from ".";
 import applications = foundry.applications;
+import { FilterValue } from "hud/shared";
 
 const _cached: { investedToggle?: string; investedLabel?: string } = {};
 
@@ -51,17 +52,17 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD {
                 data.sections,
                 R.filter((section): section is SidebarItemList => section.items.length > 0),
                 R.map(async (section) => {
-                    section.filterValue = new SidebarFilter();
+                    section.filterValue = new FilterValue();
 
                     // we don't want infinite depth of containers so we bring them all back to depth 1
                     const itemsPromises = extractContainers(section.items).map(async (itemData) => {
                         itemData.canBeUsed = await canBeUsed(itemData);
-                        itemData.filterValue = new SidebarFilter(itemData.item);
+                        itemData.filterValue = new FilterValue(itemData.item);
 
                         if (itemData.heldItems?.length) {
                             const heldItems = itemData.heldItems.map(async (heldItemData) => {
                                 heldItemData.canBeUsed = await canBeUsed(heldItemData);
-                                heldItemData.filterValue = new SidebarFilter(heldItemData.item);
+                                heldItemData.filterValue = new FilterValue(heldItemData.item);
 
                                 itemData.filterValue.add(heldItemData.filterValue);
 
@@ -99,6 +100,8 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD {
     }
 
     protected async _onClickAction(event: PointerEvent, target: HTMLElement) {
+        if (event.button !== 0) return;
+
         const item = await this.getItemFromElement<ItemPF2e<ActorPF2e>>(target);
         if (!item?.isOfType("physical")) return;
 
@@ -293,12 +296,12 @@ type SheetItemList = SheetInventory["sections"][number];
 
 type SidebarItem = Omit<InventoryItem, "heldItems"> & {
     canBeUsed: boolean;
-    filterValue: SidebarFilter;
+    filterValue: FilterValue;
     heldItems?: SidebarItem[];
 };
 
 type SidebarItemList = Omit<SheetItemList, "items"> & {
-    filterValue: SidebarFilter;
+    filterValue: FilterValue;
     items: SidebarItem[];
 };
 

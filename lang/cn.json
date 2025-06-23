@@ -82,6 +82,31 @@
         },
         "leftClick": "[左键点击]",
         "rightClick": "[右键点击]",
+        "actions": {
+            "borrowArcaneSpell": "借阅奥术",
+            "drive": {
+                "drive2": "驱动 <span class=\"action-glyph\">2</span>",
+                "drive1": "驱动 <span class=\"action-glyph\">1</span>",
+                "drive3": "驱动 <span class=\"action-glyph\">3</span>"
+            },
+            "recall-knowledge": {
+                "lore": "学识技能",
+                "proficiency": "熟练度",
+                "result": "结果",
+                "target": "目标",
+                "dc": "DC",
+                "skill": "技能",
+                "modifier": "调整值",
+                "first": "1st",
+                "second": "2nd",
+                "third": "3rd",
+                "fourth": "4th",
+                "fifth": "5th",
+                "sixth": "6th",
+                "specific": "特殊",
+                "unspecific": "非特殊"
+            }
+        },
         "spellcasting": {
             "charges": "充能",
             "staff": "法杖"
@@ -92,7 +117,7 @@
             "resolve": "使用决心点数"
         },
         "dialogs": {
-            "variants": {
+            "alternates": {
                 "dc": "DC",
                 "drag": "拖拽至快捷栏创建选项",
                 "title": "变体动作",
@@ -146,6 +171,11 @@
         },
         "sidebar": {
             "filter": "侧边栏过滤",
+            "skills": {
+                "alternate": "[右键点击]菜单变体",
+                "hideUntrained": "隐藏未受训",
+                "proficient": "熟练度"
+            },
             "spells": {
                 "broken": "消耗法术",
                 "cast": "施放法术"

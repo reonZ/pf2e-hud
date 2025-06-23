@@ -48,7 +48,7 @@ const ROLLOPTIONS_PLACEMENT = {
     items: "inventory",
     skills: "proficiencies",
     extras: undefined,
-} as const;
+} as const satisfies Record<SidebarName, string | undefined>;
 
 const _cached: { filter?: string } = {};
 
@@ -93,7 +93,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         position: {
             height: "auto",
         },
-        classes: ["pf2e-hud"],
+        classes: ["pf2e-hud-element"],
     };
 
     static get keybindsSchema(): KeybindingActionConfig[] {
@@ -199,8 +199,11 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
     }
 
     static closeSidebar() {
-        if (!this.#instance) return;
         this.#instance?.close();
+    }
+
+    static refresh() {
+        this.#instance?.render();
     }
 
     static get current(): SidebarName | null {
@@ -632,6 +635,11 @@ type BaseDragData = Partial<ReturnType<ItemPF2e["toDragData"]>> & {
     tokenId: string | null;
 };
 
+type SidebarDragData = {
+    img: string;
+    data: BaseDragData;
+};
+
 type SidebarHudRenderElements = {
     filterElement: HTMLElement;
     innerElement: HTMLElement;
@@ -641,3 +649,4 @@ type SidebarHudRenderElements = {
 MODULE.devExpose({ SidebarPF2eHUD });
 
 export { SidebarPF2eHUD };
+export type { SidebarDragData };

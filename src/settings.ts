@@ -1,5 +1,5 @@
 import { HealthStatus, HealthStatusMenu } from "health-status";
-import { BasePF2eHUD } from "hud";
+import { BasePF2eHUD, SidebarPF2eHUD } from "hud";
 import { hud } from "main";
 import {
     getSetting,
@@ -9,6 +9,7 @@ import {
     registerSetting,
     registerSettingMenu,
     RegisterSettingOptions,
+    setSetting,
     settingPath,
 } from "module-helpers";
 
@@ -16,6 +17,13 @@ const _globalSettings: Partial<GlobalSetting> = {};
 
 function getGlobalSetting<K extends GlobalSettingKey>(setting: K): GlobalSetting[K] {
     return (_globalSettings[setting] ??= getSetting(setting)) as GlobalSetting[K];
+}
+
+function setGlobalSetting<K extends GlobalSettingKey>(
+    setting: K,
+    value: GlobalSetting[K]
+): Promise<GlobalSetting[K]> {
+    return setSetting(setting, value);
 }
 
 function getHealthStatusData(): HealthStatus {
@@ -61,6 +69,16 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
         },
     });
 
+    registerGlobalSetting("hideUntrained", {
+        type: Boolean,
+        default: false,
+        scope: "user",
+        config: false,
+        onChange: () => {
+            SidebarPF2eHUD.refresh();
+        },
+    });
+
     registerGlobalSetting("useModifiers", {
         type: Boolean,
         default: false,
@@ -94,10 +112,11 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
 
 type GlobalSetting = {
     healthStatusData: HealthStatus;
-    useModifiers: boolean;
+    hideUntrained: boolean;
     highestSpeed: boolean;
+    useModifiers: boolean;
 };
 
 type GlobalSettingKey = keyof GlobalSetting;
 
-export { getGlobalSetting, getHealthStatusData, registerSettings };
+export { getGlobalSetting, getHealthStatusData, registerSettings, setGlobalSetting };

@@ -26,7 +26,7 @@ class ItemHudPopup extends BaseHudPopup {
         super(actor, options);
 
         this.#item = item as ItemPF2e;
-        this.#dataset = htmlClosest(event.target, ".item[data-item-id]")?.dataset;
+        this.#dataset = htmlClosest(event.target, ".item")?.dataset;
     }
 
     get item(): ItemPF2e {

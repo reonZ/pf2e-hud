@@ -1,0 +1,70 @@
+#pf2e-hud-sidebar[data-type="skills"] {
+    .hide-untrained {
+        width: var(--action-image-height);
+        display: flex;
+        justify-content: center;
+        position: relative;
+        height: var(--action-image-height);
+
+        span {
+            position: absolute;
+            left: calc(
+                var(--action-image-height) + var(--item-gap) + var(--item-name-padding) - 1px
+            );
+        }
+    }
+
+    [data-action="follow-the-expert"] {
+        margin-top: 2px;
+    }
+
+    header,
+    .lore {
+        display: flex;
+        align-items: center;
+        padding-inline: 0.2em;
+        justify-content: space-between;
+
+        a span {
+            color: var(--color-accent);
+            margin-right: 0.2em;
+            display: inline-block;
+            width: 1.6em;
+            text-align: end;
+        }
+
+        .rank {
+            font-size: 0.9em;
+        }
+    }
+
+    .lore-header {
+        justify-content: center;
+    }
+
+    .lore {
+        padding-block: 0.2em;
+
+        .name {
+            background: none;
+            padding: 0;
+        }
+    }
+}
+
+.application.dialog.pf2e-hud.skills {
+    input[type="number"] {
+        flex: 0 0 2em;
+        text-align: center;
+        padding: 0;
+    }
+
+    .form-footer {
+        .drag-img {
+            height: calc(1.25 * var(--input-height));
+            border-color: var(--color-light-5);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    }
+}

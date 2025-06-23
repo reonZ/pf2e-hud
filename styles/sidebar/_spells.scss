@@ -32,8 +32,8 @@
                     }
                 }
 
-                .cas,
-                .toggle-slot-expended {
+                .cast,
+                [data-action="toggle-slot-expended"] {
                     margin-top: 1px;
                 }
             }

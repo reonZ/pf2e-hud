@@ -1,4 +1,4 @@
-import { ItemPF2e, R, SpellcastingCategory } from "module-helpers";
+import { SpellcastingCategory } from "module-helpers";
 
 const SPELL_CATEGORIES: Record<SpellCategoryType, { icon: string; label: string }> = {
     charges: {
@@ -43,36 +43,6 @@ const SPELL_CATEGORIES: Record<SpellCategoryType, { icon: string; label: string 
     },
 };
 
-class SidebarFilter {
-    #list: string[];
-
-    constructor(...entries: (string | ItemPF2e | SidebarFilter)[]) {
-        this.#list = [];
-        this.add(...entries);
-    }
-
-    add(...entries: (string | ItemPF2e | SidebarFilter)[]) {
-        for (const entry of entries) {
-            if (entry instanceof Item) {
-                this.#list.push(entry.name);
-            } else if (entry instanceof SidebarFilter) {
-                this.#list.push(...entry.#list);
-            } else {
-                this.#list.push(entry);
-            }
-        }
-    }
-
-    toString(): string {
-        return R.pipe(
-            this.#list,
-            R.unique(),
-            R.map((entry) => entry.toLowerCase()),
-            R.join("|")
-        );
-    }
-}
-
 type SpellCategoryType =
     | Exclude<SpellcastingCategory, "items">
     | "charges"
@@ -81,5 +51,5 @@ type SpellCategoryType =
     | "scroll"
     | "flexible";
 
-export { SPELL_CATEGORIES, SidebarFilter };
+export { SPELL_CATEGORIES };
 export type { SpellCategoryType };

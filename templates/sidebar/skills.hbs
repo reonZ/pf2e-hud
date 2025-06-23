@@ -1,1 +1,53 @@
-<div>SKILLS</div>
+<div class="hide-untrained">
+    <input type="checkbox" data-action="toggle-hide-untrained" {{checked hideUntrained}}>
+    <span>{{@root.i18n 'hideUntrained'}}</span>
+</div>
+<div class="item action" data-item-uuid="{{follow.sourceId}}"
+    data-filter-value="{{follow.filterValue}}">
+    <div class="image" data-action="send-to-chat">
+        <img src="systems/pf2e/icons/actions/Passive.webp">
+        <i class="fa-solid fa-message chat"></i>
+    </div>
+    <div class="name">
+        <a data-action="item-description">{{follow.label}}</a>
+    </div>
+    <div class="controls">
+        <a class="use" data-action="follow-the-expert">
+            <i class="fa-solid {{ifThen follow.active 'fa-xmark' 'fa-play'}}"></i>
+        </a>
+    </div>
+</div>
+{{#each skillGroups as |skill|}}
+<header data-filter-value="{{skill.filterValue}}">
+    <a data-action="roll-skill" data-slug="{{skill.slug}}">
+        <span>{{skill.signedMod}}</span> {{skill.label}}
+    </a>
+    {{#if skill.proficiency}}
+    <div class="rank {{skill.proficiency.rank}}">
+        {{skill.proficiency.label}}
+    </div>
+    {{/if}}
+</header>
+{{#each skill.actions as |action|}}
+{{> (@root.partial 'statistic-action') action}}
+{{/each}}
+{{/each}}
+{{#if lores}}
+<header class="lore-header" data-filter-value="{{lores.filterValue}}">
+    <span>{{localize 'PF2E.LoreSkillsHeader'}}</span>
+</header>
+{{#each lores.skills as |skill|}}
+<div class="item lore" data-filter-value="{{skill.filterValue}}" data-action-id="lore"
+    draggable="true">
+    <div class="name">
+        <a data-action="roll-skill" data-slug="{{skill.slug}}">
+            <span>{{skill.signedMod}}</span> {{skill.label}}
+        </a>
+    </div>
+    <div class="rank {{skill.proficiency.rank}}">
+        {{skill.proficiency.label}}
+    </div>
+    <img src="{{skill.dragImg}}" class="drag-img">
+</div>
+{{/each}}
+{{/if}}

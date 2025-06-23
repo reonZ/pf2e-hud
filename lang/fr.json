@@ -82,6 +82,31 @@
         },
         "leftClick": "[Clic gauche]",
         "rightClick": "[Clic droit]",
+        "actions": {
+            "borrowArcaneSpell": "Emprunter un sort arcanique",
+            "drive": {
+                "drive1": "Conduire <span class=\"action-glyph\">1</span>",
+                "drive2": "Conduire <span class=\"action-glyph\">2</span>",
+                "drive3": "Conduire <span class=\"action-glyph\">3</span>"
+            },
+            "recall-knowledge": {
+                "result": "Résultat",
+                "modifier": "Mod.",
+                "target": "Cible",
+                "first": "1er",
+                "second": "2e",
+                "third": "3e",
+                "fourth": "4e",
+                "fifth": "5e",
+                "sixth": "6e",
+                "dc": "DD",
+                "unspecific": "Non spécifique",
+                "specific": "Spécifique",
+                "skill": "Compétence",
+                "lore": "Connaissance",
+                "proficiency": "Maîtrise"
+            }
+        },
         "spellcasting": {
             "charges": "Charges",
             "staff": "Bâton"
@@ -92,8 +117,8 @@
             "resolve": "Utiliser les Points de Résolution"
         },
         "dialogs": {
-            "variants": {
-                "title": "Variantes d'action",
+            "alternates": {
+                "title": "Variantes d'action - {label}",
                 "statistic": "Statistique",
                 "dc": "Degré de difficulté",
                 "drag": "Glisser pour créer un raccourci"
@@ -146,6 +171,11 @@
         },
         "sidebar": {
             "filter": "Filtre de sous-menu",
+            "skills": {
+                "alternate": "[Clic droit] Menu des variantes",
+                "hideUntrained": "Cacher Inexpérimenté",
+                "proficient": "Expérimenté"
+            },
             "spells": {
                 "broken": "Sort défectueux",
                 "cast": "Lancer le sort"

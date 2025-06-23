@@ -196,19 +196,16 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             event: PointerEvent,
             target: HTMLElement
         ): void {
-            type EventAction =
-                | "change-speed"
-                | "raise-shield"
-                | "recovery-check"
-                | "roll-statistic"
-                | "show-notes"
-                | "slider"
-                | "take-cover"
-                | "use-resolve"
-                | "update-alliance";
-
             const actor = this.actor;
             const action = target.dataset.action as EventAction;
+
+            if (action === "slider") {
+                processSliderEvent(event, target, this.#onSlider.bind(this));
+            } else if (action === "update-alliance") {
+                this.#updateAlliance(event);
+            }
+
+            if (event.button !== 0) return;
 
             if (action === "change-speed") {
                 this.#changeSpeed(target);
@@ -224,12 +221,8 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
                 if (actor?.isOfType("npc")) {
                     new NpcNotesHudPopup(actor).render(true);
                 }
-            } else if (action === "slider") {
-                processSliderEvent(event, target, this.#onSlider.bind(this));
             } else if (action === "take-cover") {
                 this.#takeCover(event);
-            } else if (action === "update-alliance") {
-                this.#updateAlliance(event);
             } else if (action === "use-resolve") {
                 useResolve(actor);
             }
@@ -519,6 +512,17 @@ interface AdvancedPF2eHUD {
     _prepareContext(options: ApplicationRenderOptions): Promise<AdvancedHudContext | {}>;
     _replaceHTML(result: unknown, content: HTMLElement, options: ApplicationRenderOptions): void;
 }
+
+type EventAction =
+    | "change-speed"
+    | "raise-shield"
+    | "recovery-check"
+    | "roll-statistic"
+    | "show-notes"
+    | "slider"
+    | "take-cover"
+    | "use-resolve"
+    | "update-alliance";
 
 type SidebarCoords = {
     origin: Point;

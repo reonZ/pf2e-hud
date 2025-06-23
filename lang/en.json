@@ -93,6 +93,31 @@
         },
         "leftClick": "[Left Click]",
         "rightClick": "[Right Click]",
+        "actions": {
+            "borrowArcaneSpell": "Borrow an Arcane Spell",
+            "drive": {
+                "drive1": "Drive <span class=\"action-glyph\">1</span>",
+                "drive2": "Drive <span class=\"action-glyph\">2</span>",
+                "drive3": "Drive <span class=\"action-glyph\">3</span>"
+            },
+            "recall-knowledge": {
+                "result": "Result",
+                "modifier": "Mod.",
+                "target": "Target",
+                "first": "1st",
+                "second": "2nd",
+                "third": "3rd",
+                "fourth": "4th",
+                "fifth": "5th",
+                "sixth": "6th",
+                "dc": "DC",
+                "unspecific": "Unspecific",
+                "specific": "Specific",
+                "skill": "Skill",
+                "lore": "Lore Skill",
+                "proficiency": "Proficiency"
+            }
+        },
         "spellcasting": {
             "charges": "Charges",
             "staff": "Staff"
@@ -103,11 +128,12 @@
             "resolve": "Use Resolve Point"
         },
         "dialogs": {
-            "variants": {
-                "title": "Action Variants",
-                "statistic": "Statistic",
+            "alternates": {
                 "dc": "Difficulty Class",
-                "drag": "Drag to create a shortcut"
+                "drag": "Drag to create a shortcut",
+                "statistic": "Statistic",
+                "title": "Action Variants - {label}",
+                "yes": "Use Variants"
             },
             "resolve": {
                 "title": "Use Resolve Point",
@@ -159,6 +185,11 @@
         },
         "sidebar": {
             "filter": "Sidebar Filter",
+            "skills": {
+                "alternate": "[Right Click] Variants Menu",
+                "hideUntrained": "Hide Untrained",
+                "proficient": "Proficient"
+            },
             "spells": {
                 "broken": "Broken Spell",
                 "cast": "Cast the Spell"

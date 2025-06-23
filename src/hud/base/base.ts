@@ -17,7 +17,7 @@ abstract class BasePF2eHUD<
             minimizable: false,
             frame: false,
         },
-        classes: ["pf2e-hud"],
+        classes: ["pf2e-hud-element"],
     };
 
     declare settings: TSettings;

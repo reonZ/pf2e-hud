@@ -281,15 +281,13 @@ class PersistentPF2eHUD
     protected _onClickAction(event: PointerEvent, target: HTMLElement): void {
         super._onClickAction(event, target);
 
-        type EventAction =
-            | "clear-hotbar"
-            | "mute-sound"
-            | "open-sheet"
-            | "set-actor"
-            | "toggle-clean"
-            | "toggle-hotbar-lock";
-
         const action = target.dataset.action as EventAction;
+
+        if (action === "set-actor") {
+            this.setSelectedToken(event);
+        }
+
+        if (event.button !== 0) return;
 
         if (action === "clear-hotbar") {
             clearHotbar();
@@ -298,8 +296,6 @@ class PersistentPF2eHUD
             this.element.classList.toggle("muted", game.audio.globalMute);
         } else if (action === "open-sheet") {
             this.actor?.sheet.render(true);
-        } else if (action === "set-actor") {
-            this.setSelectedToken(event);
         } else if (action === "toggle-clean") {
             this.settings.cleanPortrait = !this.settings.cleanPortrait;
         } else if (action === "toggle-hotbar-lock") {
@@ -344,6 +340,14 @@ function getSetActorData(hud: PersistentPF2eHUD): PersistentContextBase["setActo
         disabled: !hasSavedActor,
     };
 }
+
+type EventAction =
+    | "clear-hotbar"
+    | "mute-sound"
+    | "open-sheet"
+    | "set-actor"
+    | "toggle-clean"
+    | "toggle-hotbar-lock";
 
 type SetActorOptions = { token?: TokenPF2e };
 

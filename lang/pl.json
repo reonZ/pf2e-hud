@@ -93,6 +93,31 @@
         },
         "leftClick": "[Kliknij lewym]",
         "rightClick": "[Kliknij prawym]",
+        "actions": {
+            "borrowArcaneSpell": "Pożyczanie Tajemnego Zaklęcia",
+            "drive": {
+                "drive1": "Napęd <span class=\"action-glyph\">1</span>",
+                "drive2": "Napęd <span class=\"action-glyph\">2</span>",
+                "drive3": "Napęd <span class=\"action-glyph\">3</span>"
+            },
+            "recall-knowledge": {
+                "result": "Wynik",
+                "modifier": "Mod.",
+                "target": "Cel",
+                "first": "1.",
+                "second": "2.",
+                "third": "3.",
+                "fourth": "4.",
+                "fifth": "5.",
+                "sixth": "6.",
+                "dc": "ST",
+                "unspecific": "Nieokreślony",
+                "specific": "Określony",
+                "skill": "Umiejętność",
+                "lore": "Umiejętność wiedzy",
+                "proficiency": "Biegłość"
+            }
+        },
         "spellcasting": {
             "charges": "Ładunki",
             "staff": "Kostur"
@@ -103,7 +128,7 @@
             "resolve": "Użyj Punkt Determinacji"
         },
         "dialogs": {
-            "variants": {
+            "alternates": {
                 "title": "Warianty akcji",
                 "statistic": "Statystyka",
                 "dc": "Klasa Trudności",
@@ -159,6 +184,11 @@
         },
         "sidebar": {
             "filter": "Filtr paska bocznego",
+            "skills": {
+                "alternate": "Menu wariantów [prawy przycisk myszy]",
+                "hideUntrained": "Ukryj niewytrenowane",
+                "proficient": "Biegłość"
+            },
             "spells": {
                 "broken": "Przerwane zaklęcie",
                 "cast": "Rzuć zaklęcie"

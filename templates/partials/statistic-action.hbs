@@ -1,0 +1,34 @@
+<div class="statistic-wrapper">
+    <div class="item statistic{{#if isProficient}} proficient{{/if}}" data-item-uuid="{{sourceId}}"
+        {{#if (and isProficient (not variants.size))}}draggable="true" {{/if}}
+        data-filter-value="{{filterValue}}">
+        <div class="name">
+            <a data-action="item-description">
+                {{label}} {{{actionGlyph actionCost}}}
+            </a>
+        </div>
+        <div class="controls">
+            {{#if (and isProficient (not variants.size))}}
+            <a data-action="roll-statistic-action" data-statistic="{{statistic}}"
+                data-key="{{key}}">
+                <i class="fa-solid fa-dice-d20"></i>
+            </a>
+            {{/if}}
+            <a data-action="send-to-chat">
+                <i class="fa-solid fa-message"></i>
+            </a>
+        </div>
+        <img src="{{dragImg}}" class="drag-img">
+    </div>
+    {{#if (and isProficient variants.size)}}
+    <div class="variants">
+        {{#each variants as |variant|}}
+        <div class="variant" data-filter-value="{{variant.filterValue}}"
+            data-action="roll-statistic-action" data-statistic="{{../statistic}}"
+            data-key="{{../key}}" data-variant="{{variant.slug}}" draggable="true">
+            {{{variant.label}}}
+        </div>
+        {{/each}}
+    </div>
+    {{/if}}
+</div>
