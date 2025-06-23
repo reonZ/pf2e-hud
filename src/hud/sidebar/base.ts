@@ -35,7 +35,7 @@ import {
     templatePath,
 } from "module-helpers";
 import {
-    ActionSidebarPF2eHUD,
+    ActionsSidebarPF2eHUD,
     ExtrasSidebarPF2eHUD,
     ItemsSidebarPF2eHUD,
     SkillsSidebarPF2eHUD,
@@ -74,7 +74,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
 
     static get #sidebars() {
         return {
-            actions: ActionSidebarPF2eHUD,
+            actions: ActionsSidebarPF2eHUD,
             extras: ExtrasSidebarPF2eHUD,
             items: ItemsSidebarPF2eHUD,
             skills: SkillsSidebarPF2eHUD,
@@ -264,7 +264,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         SidebarPF2eHUD.#instance = this;
         SidebarPF2eHUD.#filter = "";
 
-        this.element.dataset.tooltipClass = "pf2e-hud";
+        this.element.dataset.tooltipClass = "pf2e-hud-element";
 
         this.#mouseDownEvent.activate();
 
