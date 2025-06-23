@@ -2,7 +2,8 @@
     .window-content {
         padding: 0;
         overflow-y: auto;
-        max-width: 40em;
+        min-width: 30em;
+        max-width: 50em;
 
         hr {
             margin: revert;
@@ -41,6 +42,7 @@
             gap: var(--space-6);
             justify-content: center;
             flex-direction: column;
+            margin-top: 0.5em;
         }
     }
 
@@ -73,6 +75,14 @@
 
     .text-content {
         padding-inline: 0.5em;
+    }
+}
+
+body.theme-dark .application.pf2e-hud-popup {
+    .item-summary {
+        span[data-pf2-action][data-secret] {
+            background: revert;
+        }
     }
 }
 
