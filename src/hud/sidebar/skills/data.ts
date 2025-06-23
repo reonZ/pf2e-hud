@@ -85,6 +85,10 @@ class SkillAction implements Required<IStatisticAction> {
         return this.#data.actionCost ?? null;
     }
 
+    get useInstance(): boolean {
+        return !!this.#data.useInstance;
+    }
+
     get sourceId(): CompendiumUUID {
         return this.#data.sourceId;
     }
@@ -336,6 +340,11 @@ class SkillActionGroup extends Collection<SkillAction> {
 
         const actions = this.map((action) => {
             if (!isProficient && !showUntrained && action.requireTrained) return;
+            if (
+                action.useInstance &&
+                (!isCharacter || !hasItemWithSourceId(actor, action.sourceId, "feat"))
+            )
+                return;
 
             const prepared = action.prepare(actor) as PreparedSkillAction;
             prepared.isProficient = !action.requireTrained || isProficient;
