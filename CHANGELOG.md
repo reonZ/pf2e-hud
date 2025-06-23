@@ -1,3 +1,17 @@
+# 2.5.0
+
+-   this release contains the fully implemented `Skills` sidebar
+-   disable `[Right-Click]` on elements that don't have any use for it
+-   `Popup`:
+    -   add minimum width and increase maximum width
+    -   fix styling of secret inline links when using dark-theme
+-   `Sidebar`:
+    -   when no match was found, the filter isn't saved anymore so the next time you press the key won't feel like nothing is happening (as normally it would reset the filter)
+    -   make sure to re-apply the filter whenever the sidebar is re-rendered
+    -   minute styling improvements
+-   `Skill Sidebar`:
+    -   add a `Hide Untrained` checkbox at the top of the sidebar to toggle the setting (setting which doesn't show in the `Game Settings` menu anymore)
+
 # 2.4.0
 
 -   this release contains the sidebar `Filter`, sidebar `Roll Option Toggles` and the fully implemented `Spells` sidebar
