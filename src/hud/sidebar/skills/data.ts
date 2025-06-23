@@ -338,14 +338,14 @@ class SkillActionGroup extends Collection<SkillAction> {
             if (!isProficient && !showUntrained && action.requireTrained) return;
 
             const prepared = action.prepare(actor) as PreparedSkillAction;
-            prepared.isProficient = isProficient;
+            prepared.isProficient = !action.requireTrained || isProficient;
 
             return prepared;
         }).filter(R.isTruthy);
 
         return {
             ...gettersToData<SkillActionGroup>(this),
-            actions,
+            actions: R.sortBy(actions, R.prop("label")),
             isCharacter,
             proficiency,
             signedMod: signedInteger(statistic?.mod ?? 0),
