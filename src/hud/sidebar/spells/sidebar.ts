@@ -5,26 +5,21 @@ import {
     ApplicationRenderOptions,
     ConsumablePF2e,
     CreaturePF2e,
-    datasetToData,
     dataToDatasetString,
-    EquipAnnotationData,
-    equipItemToUse,
-    ErrorPF2e,
     getEquipAnnotation,
-    htmlClosest,
     localeCompare,
     OneToTen,
     R,
     SpellcastingCategory,
     SpellcastingSheetData,
     SpellcastingSlotGroup,
-    SpellSlotGroupId,
+    SpellPF2e,
     spellSlotGroupIdToNumber,
     ValueAndMax,
 } from "module-helpers";
-import { SPELL_CATEGORIES, SpellCategoryType, SpellSidebarItem } from ".";
+import { SlotSpellData, SPELL_CATEGORIES, SpellCategoryType, SpellSidebarItem } from ".";
 
-class SpellsSidebarPF2eHUD extends SidebarPF2eHUD {
+class SpellsSidebarPF2eHUD extends SidebarPF2eHUD<SpellPF2e, SpellSidebarItem> {
     get name(): "spells" {
         return "spells";
     }
@@ -42,14 +37,17 @@ class SpellsSidebarPF2eHUD extends SidebarPF2eHUD {
 
         if (event.button !== 0) return;
 
+        const sidebarItem = this.getSidebarItemFromElement(target);
+        if (!sidebarItem) return;
+
         if (action === "cast-spell") {
-            this.#castSpell(target);
+            sidebarItem.cast();
         } else if (action === "draw-item") {
-            this.#drawItem(target);
+            sidebarItem.drawItem();
         } else if (action === "toggle-signature") {
-            this.#toggleSignature(target);
+            sidebarItem.toggleSignature();
         } else if (action === "toggle-slot-expended") {
-            this.#toggleSlotExpended(target);
+            sidebarItem.toggleSlotExpended();
         }
     }
 
@@ -68,61 +66,6 @@ class SpellsSidebarPF2eHUD extends SidebarPF2eHUD {
         }
     }
 
-    #drawItem(target: HTMLElement) {
-        const actor = this.actor;
-        const data = datasetToData<EquipAnnotationData & { parentId: string }>(target.dataset);
-        const item = actor.inventory.get(data.parentId, { strict: true });
-
-        if (item && actor.isOfType("character")) {
-            equipItemToUse(actor, item, data);
-        }
-    }
-
-    /**
-     * https://github.com/foundryvtt/pf2e/blob/92f410ea3863aa46fe9594ca73874c5f7d565bf3/src/module/actor/creature/sheet.ts#L220
-     */
-    #toggleSignature(target: HTMLElement) {
-        const itemId = htmlClosest(target, "[data-item-id]")?.dataset.itemId;
-        const spell = this.actor.items.get(itemId, { strict: true });
-        if (!spell?.isOfType("spell")) return;
-        return spell.update({ "system.location.signature": !spell.system.location.signature });
-    }
-
-    /**
-     * https://github.com/foundryvtt/pf2e/blob/92f410ea3863aa46fe9594ca73874c5f7d565bf3/src/module/actor/creature/sheet.ts#L172
-     */
-    #castSpell(target: HTMLElement) {
-        const spellRow = htmlClosest(target, "[data-item-id]");
-        const { itemId, entryId, slotId } = spellRow?.dataset ?? {};
-        const collection = this.actor.spellcasting.collections.get(entryId, { strict: true });
-        const spell = collection.get(itemId, { strict: true });
-        const maybeCastRank = Number(spellRow?.dataset.castRank) || NaN;
-
-        if (Number.isInteger(maybeCastRank) && maybeCastRank.between(1, 10)) {
-            const rank = maybeCastRank as OneToTen;
-            return (
-                spell.parentItem?.consume() ??
-                collection.entry.cast(spell, { rank, slotId: Number(slotId) })
-            );
-        }
-    }
-
-    /**
-     * https://github.com/foundryvtt/pf2e/blob/92f410ea3863aa46fe9594ca73874c5f7d565bf3/src/module/actor/creature/sheet.ts#L207
-     */
-    #toggleSlotExpended(target: HTMLElement) {
-        const row = htmlClosest(target, "[data-item-id]");
-        const groupId = coerceToSpellGroupId(row?.dataset.groupId);
-        if (!groupId) throw ErrorPF2e("Unexpected error toggling expended state");
-
-        const slotId = Number(row?.dataset.slotId) || 0;
-        const entryId = row?.dataset.entryId ?? "";
-        const expend = row?.dataset.slotExpended === undefined;
-        const collection = this.actor.spellcasting.collections.get(entryId);
-
-        return collection?.setSlotExpendedState(groupId, slotId, expend);
-    }
-
     #onSlider(action: "focus", direction: 1 | -1) {
         if (action === "focus") {
             const actor = this.actor;
@@ -136,15 +79,6 @@ class SpellsSidebarPF2eHUD extends SidebarPF2eHUD {
             }
         }
     }
-}
-
-/**
- * https://github.com/foundryvtt/pf2e/blob/92f410ea3863aa46fe9594ca73874c5f7d565bf3/src/module/item/spellcasting-entry/helpers.ts#L36
- */
-function coerceToSpellGroupId(value: unknown): SpellSlotGroupId | null {
-    if (value === "cantrips") return value;
-    const numericValue = Number(value) || NaN;
-    return numericValue.between(1, 10) ? (numericValue as OneToTen) : null;
 }
 
 async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHudContext> {
@@ -254,7 +188,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                 const active = group.active[slotId];
                 if (!active?.spell || active.uses?.max === 0) continue;
 
-                const spell = active.spell;
+                const spell = active.spell as SpellPF2e<CreaturePF2e>;
                 if (isVessels && !vesselsData.primary.includes(spell.id)) continue;
 
                 const isVirtual = entry.isSpontaneous && !isCantrip && active.virtual;
@@ -263,11 +197,11 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                         ? { toggled: active.signature }
                         : undefined;
 
-                const spellData = {
+                const spellData: SlotSpellData = {
                     ...entryData,
                     annotation,
                     canTogglePrepared: entry.isPrepared && !isCantrip,
-                    castRank: active.castRank ?? spell.rank,
+                    castRank: (active.castRank ?? spell.rank) as OneToTen,
                     category,
                     categoryType,
                     entryId,
