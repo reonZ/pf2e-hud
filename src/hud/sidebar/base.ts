@@ -609,6 +609,24 @@ abstract class SidebarPF2eHUD<
     #activateInnerListeners(html: HTMLElement) {
         addListenerAll(html, "[draggable='true']", "dragstart", this.#onDragStart.bind(this));
 
+        addListenerAll(html, `input[type="number"]`, "focus", (el: HTMLInputElement) => {
+            el.select();
+        });
+
+        addListenerAll(
+            html,
+            `input[type="number"]`,
+            "keyup",
+            (el, event) => {
+                if (event.key === "Enter") {
+                    event.stopPropagation();
+
+                    el.blur();
+                }
+            },
+            true
+        );
+
         addListenerAll(
             html,
             "input[data-item-id][data-item-property]",
