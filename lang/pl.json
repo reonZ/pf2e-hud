@@ -50,7 +50,7 @@
                 }
             },
             "sidebar": {
-                "title": "Paski boczne"
+                "title": "Pasek boczny"
             },
             "token": {
                 "title": "HUD tokena",
@@ -96,9 +96,9 @@
         "actions": {
             "borrowArcaneSpell": "Pożyczanie Tajemnego Zaklęcia",
             "drive": {
-                "drive1": "Napęd <span class=\"action-glyph\">1</span>",
-                "drive2": "Napęd <span class=\"action-glyph\">2</span>",
-                "drive3": "Napęd <span class=\"action-glyph\">3</span>"
+                "drive1": "Prowadzenie <span class=\"action-glyph\">1</span>",
+                "drive2": "Prowadzenie <span class=\"action-glyph\">2</span>",
+                "drive3": "Prowadzenie <span class=\"action-glyph\">3</span>"
             },
             "recall-knowledge": {
                 "result": "Wynik",
@@ -129,10 +129,11 @@
         },
         "dialogs": {
             "alternates": {
-                "title": "Warianty akcji",
-                "statistic": "Statystyka",
                 "dc": "Klasa Trudności",
-                "drag": "Przeciągnij, aby utworzyć skrót"
+                "drag": "Przeciągnij, aby utworzyć skrót",
+                "statistic": "Statystyka",
+                "title": "Warianty akcji - {label}",
+                "yes": "Użyj wariantów"
             },
             "resolve": {
                 "title": "Użyj Punktu Determinacji",
