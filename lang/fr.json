@@ -171,6 +171,19 @@
         },
         "sidebar": {
             "filter": "Filtre de sous-menu",
+            "actions": {
+                "blasts": "Explosions élementaires",
+                "ranged": "Portée {max} ft.",
+                "rangedWithIncrement": "Portée {increment}/{max} ft.",
+                "reach": "Allonge {reach} ft.",
+                "reset": "Réinitialiser les utilisations",
+                "stances": "Postures",
+                "stowedWeapons": {
+                    "shown": "Les armes stockées sont visibles",
+                    "hidden": "Les armes stockées sont cachées"
+                },
+                "thrown": "Lancer {increment}/{max} ft."
+            },
             "skills": {
                 "alternate": "[Clic droit] Menu des variantes",
                 "hideUntrained": "Cacher Inexpérimenté",

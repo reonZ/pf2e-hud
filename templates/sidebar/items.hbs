@@ -50,13 +50,13 @@
     <div class="sub-spacer"></div>
     {{/if}}
     {{!-- image --}}
-    {{> (@root.partial 'item-image') item}}
+    {{> (@root.partial 'item-image') this}}
     {{!-- details --}}
     <div class="details">
         {{!-- name --}}
         <div class="name">
             <a {{#if (or @root.isGM item.isIdentified)}}class="rarity-{{item.system.traits.rarity}}"
-                {{/if}} data-action="item-description">{{item.name}}</a>
+                {{/if}} data-action="item-description">{{label}}</a>
         </div>
         {{!-- extras --}}
         <div class="extras" data-tooltip-direction="DOWN">
@@ -166,8 +166,8 @@
     </div>
 </div>
 {{!-- subitems --}}
-{{#each item.subitems as |subitem|}}
-{{> item-row item=subitem isSubitem=true}}
+{{#each subItems as |subItem|}}
+{{> item-row subItem}}
 {{/each}}
 {{!-- stowed items --}}
 {{#if (and isContainer (not item.isCollapsed))}}

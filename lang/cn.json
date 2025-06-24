@@ -171,6 +171,19 @@
         },
         "sidebar": {
             "filter": "侧边栏过滤",
+            "actions": {
+                "blasts": "元素冲击",
+                "ranged": "射程{max}尺",
+                "rangedWithIncrement": "射程{increment}/{max}尺",
+                "reach": "触及{reach}尺",
+                "reset": "重置使用次数",
+                "stances": "架势",
+                "stowedWeapons": {
+                    "shown": "存放武器已显示",
+                    "hidden": "存放武器已隐藏"
+                },
+                "thrown": "投掷{increment}/{max}尺"
+            },
             "skills": {
                 "alternate": "[右键点击]菜单变体",
                 "hideUntrained": "隐藏未受训",

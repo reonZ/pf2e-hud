@@ -1,11 +1,17 @@
 import { HealthStatus } from "health-status";
-import { PersistentPF2eHUD, TokenPF2eHUD, TooltipPF2eHUD, TrackerPF2eHUD } from "hud";
+import {
+    PersistentPF2eHUD,
+    prepareActionGroups,
+    TokenPF2eHUD,
+    TooltipPF2eHUD,
+    TrackerPF2eHUD,
+} from "hud";
 import { registerKeybinds } from "keybinds";
 import { MODULE, R, templatePath, userIsGM } from "module-helpers";
 import { registerSettings } from "settings";
 
 MODULE.register("pf2e-hud");
-// MODULE.enableDebugMode();
+MODULE.enableDebugMode();
 
 const HUDS = {
     persistent: new PersistentPF2eHUD(),
@@ -24,6 +30,7 @@ Hooks.on("init", () => {
         ),
         ["actor-hud", "tooltip"].map((x) => templatePath(x)),
     ];
+
     foundry.applications.handlebars.loadTemplates(templates.flat());
 
     registerKeybinds(HUDS);
@@ -33,6 +40,10 @@ Hooks.on("init", () => {
         hud._initialize();
         hud.init(isGM);
     }
+});
+
+Hooks.on("setup", () => {
+    prepareActionGroups();
 });
 
 Hooks.on("ready", () => {

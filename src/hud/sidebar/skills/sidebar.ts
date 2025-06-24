@@ -4,19 +4,35 @@ import {
     ApplicationRenderOptions,
     findItemWithSourceId,
     getItemSourceFromUuid,
+    hasAnyItemWithSourceId,
     hasItemWithSourceId,
+    localize,
+    R,
+    signedInteger,
     StatisticRollParameters,
 } from "module-helpers";
 import { getGlobalSetting, setGlobalSetting } from "settings";
 import {
+    CHIRURGEON,
+    ExtractedSkillActionData,
+    ExtractedSkillActionGroupData,
     FOLLOW_THE_EXPERT,
     FOLLOW_THE_EXPERT_EFFECT,
     getSkillAction,
     getSkillActionGroups,
+    ISkill,
     LoreSkill,
-    PreparedSkillActionGroup,
+    SkillActionType,
+    SkillProficiency,
+    SkillsSidebarItem,
+    UNTRAINED_IMPROVISATION,
 } from ".";
 import { SidebarPF2eHUD } from "..";
+
+const _cached: {
+    followTheLeader?: Omit<FollowTheLeader, "active">;
+    proficient?: string;
+} = {};
 
 class SkillsSidebarPF2eHUD extends SidebarPF2eHUD {
     get name(): "skills" {
@@ -28,8 +44,55 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD {
     ): Promise<SkillSidebarContext> {
         const actor = this.actor;
         const hideUntrained = getGlobalSetting("hideUntrained");
-        const skillGroups = getSkillActionGroups().prepare(actor, !hideUntrained);
         const lores = actor.itemTypes.lore.map((item) => new LoreSkill(item));
+
+        const isCharacter = actor.isOfType("character");
+        const showUntrained = !hideUntrained;
+
+        const untrainedImprovisation =
+            isCharacter && hasAnyItemWithSourceId(actor, UNTRAINED_IMPROVISATION, "feat");
+
+        const skillGroups = getSkillActionGroups().map((group) => {
+            const statistic = actor.getStatistic(group.slug);
+            const rank = statistic?.rank ?? 0;
+
+            const isProficient =
+                !isCharacter ||
+                untrainedImprovisation ||
+                statistic?.proficient ||
+                (group.slug === "medicine" && hasItemWithSourceId(actor, CHIRURGEON, "feat"));
+
+            const proficiency = isCharacter
+                ? { rank, label: game.i18n.localize(`PF2E.ProficiencyLevel${rank}`) }
+                : statistic?.proficient
+                ? { rank, label: (_cached.proficient ??= localize("sidebar.skills.proficient")) }
+                : undefined;
+
+            const actions = group.map((action) => {
+                if (!isProficient && !showUntrained && action.requireTrained) return;
+                if (
+                    action.useInstance &&
+                    (!isCharacter || !hasItemWithSourceId(actor, action.sourceId, "feat"))
+                )
+                    return;
+
+                const prepared = action.toData() as PreparedSkillAction;
+                prepared.isProficient = !action.requireTrained || isProficient;
+
+                const sidebarSkill = new SkillsSidebarItem(prepared);
+                this.sidebarItems.set(sidebarSkill.uuid, sidebarSkill);
+
+                return sidebarSkill;
+            });
+
+            return {
+                ...group.toData(),
+                actions: R.sortBy(actions.filter(R.isTruthy), R.prop("label")),
+                isCharacter,
+                proficiency,
+                signedMod: signedInteger(statistic?.mod ?? 0),
+            };
+        });
 
         return {
             follow: getFollowTheExpertData(actor),
@@ -78,12 +141,11 @@ async function toggleFollowTheExpert(actor: ActorPF2e) {
     actor.createEmbeddedDocuments("Item", [source]);
 }
 
-let _follow: Omit<FollowTheLeader, "active"> | undefined;
 function getFollowTheExpertData(actor: ActorPF2e): FollowTheLeader {
-    if (!_follow) {
+    if (!_cached.followTheLeader) {
         const item = fromUuidSync(FOLLOW_THE_EXPERT) ?? { name: "" };
 
-        _follow = {
+        _cached.followTheLeader = {
             filterValue: new FilterValue(item.name),
             label: item.name,
             sourceId: FOLLOW_THE_EXPERT,
@@ -91,7 +153,7 @@ function getFollowTheExpertData(actor: ActorPF2e): FollowTheLeader {
     }
 
     return {
-        ..._follow,
+        ..._cached.followTheLeader,
         active: hasItemWithSourceId(actor, FOLLOW_THE_EXPERT_EFFECT, "effect"),
     };
 }
@@ -116,5 +178,17 @@ type FollowTheLeader = {
     filterValue: FilterValue;
     sourceId: CompendiumUUID;
 };
+
+type PreparedSkillAction = ExtractedSkillActionData & {
+    isProficient: boolean;
+};
+
+type PreparedSkillActionGroup = ExtractedSkillActionGroupData &
+    ISkill<SkillActionType> & {
+        actions: SkillsSidebarItem[];
+        isCharacter: boolean;
+        proficiency: SkillProficiency | undefined;
+        signedMod: string;
+    };
 
 export { SkillsSidebarPF2eHUD };

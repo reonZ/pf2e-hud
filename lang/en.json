@@ -185,6 +185,19 @@
         },
         "sidebar": {
             "filter": "Sidebar Filter",
+            "actions": {
+                "blasts": "Elemental Blasts",
+                "ranged": "Range {max} ft.",
+                "rangedWithIncrement": "Range {increment}/{max} ft.",
+                "reach": "Reach {reach} ft.",
+                "reset": "Reset Uses",
+                "stances": "Stances",
+                "stowedWeapons": {
+                    "shown": "Stowed Weapons are shown",
+                    "hidden": "Stowed Weapons are hidden"
+                },
+                "thrown": "Thrown {increment}/{max} ft."
+            },
             "skills": {
                 "alternate": "[Right Click] Variants Menu",
                 "hideUntrained": "Hide Untrained",

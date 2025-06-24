@@ -51,5 +51,5 @@ type SpellCategoryType =
     | "scroll"
     | "flexible";
 
-export { SPELL_CATEGORIES };
 export type { SpellCategoryType };
+export { SPELL_CATEGORIES };

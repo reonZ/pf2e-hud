@@ -321,6 +321,9 @@
             cursor: pointer;
 
             img {
+                width: revert;
+                height: revert;
+                position: revert;
                 border-radius: var(--outer-border-radius);
                 border: none;
             }
@@ -476,6 +479,8 @@
     --sidebar-external-padding: 1.8em;
 }
 
+@import "./actions";
+@import "./extras";
 @import "./items";
 @import "./skills";
 @import "./spells";

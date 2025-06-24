@@ -1,3 +1,9 @@
+#
+
+-   `Skill Sidebar`:
+    -   fix skill actions gated by feats always showing
+-   fix mouseover tooltips broken styling
+
 # 2.5.1
 
 -   `Skill Sidebar`:

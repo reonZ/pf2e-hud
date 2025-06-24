@@ -1,1 +1,25 @@
-<div>ACTIONS</div>
+{{#if stances}}
+<header data-filter-value="{{stances.filterValue}}">
+    <div class="name">{{@root.i18n 'stances'}}</div>
+</header>
+{{/if}}
+{{#each stances.actions as |stance|}}
+<div class="item action" data-item-id="{{stance.id}}" draggable="true"
+    data-effect-uuid="{{stance.uuid}}" data-filter-value="{{stance.filterValue}}">
+    {{> (@root.partial 'item-image') stance}}
+    <div class="name">
+        <a data-action="item-description">{{stance.label}}</a>
+    </div>
+    <div class="controls">
+        <a {{#unless ../stances.canUseStances}}class="disabled" {{/unless}}
+            data-action="toggle-stance">
+            <i class="fa-solid fa-toggle-{{ifThen stance.active 'large-on' 'off'}}"></i>
+        </a>
+    </div>
+</div>
+{{/each}}
+{{#if blasts}}
+<header data-filter-value="{{blasts.filterValue}}">
+    <div class="name">{{@root.i18n 'blasts'}}</div>
+</header>
+{{/if}}

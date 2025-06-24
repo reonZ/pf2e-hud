@@ -1,21 +1,22 @@
 import { FilterValue, getMapLabel, getMapValue, SidebarDragData } from "hud";
 import {
+    AbilityItemPF2e,
     Action,
     ActionVariantUseOptions,
     ActorPF2e,
     AttributeString,
     createFormData,
     createHTMLElement,
+    FeatPF2e,
     getActionIcon,
     gettersToData,
-    hasAnyItemWithSourceId,
-    hasItemWithSourceId,
     htmlQuery,
     isInstanceOf,
     localize,
     localizeIfExist,
     LorePF2e,
     ModifierPF2e,
+    MODULE,
     R,
     signedInteger,
     SingleCheckAction,
@@ -29,27 +30,31 @@ import {
 } from "module-helpers";
 import {
     ACTION_IMAGES,
-    CHIRURGEON,
     RAW_STATISTICS,
     SHARED_ACTIONS,
     SkillActionData,
     SkillActionType,
     SkillSlugSfe2,
-    UNTRAINED_IMPROVISATION,
 } from ".";
 
 class SkillAction implements Required<IStatisticAction> {
     #actionKey?: string;
     #data: SkillActionData;
     #filterValue?: FilterValue;
+    #item: FeatPF2e | AbilityItemPF2e;
     #label?: string;
     #statistic: SkillActionType;
     #systemPrefix?: string;
     #dragImg?: ImageFilePath;
     #variants?: SkillVariants;
 
-    constructor(statistic: SkillActionType, data: SkillActionData) {
+    constructor(
+        statistic: SkillActionType,
+        data: SkillActionData,
+        item: FeatPF2e | AbilityItemPF2e
+    ) {
         this.#data = data;
+        this.#item = item;
         this.#statistic = statistic;
     }
 
@@ -59,6 +64,10 @@ class SkillAction implements Required<IStatisticAction> {
 
     get statistic(): SkillActionType {
         return this.#statistic;
+    }
+
+    get item(): FeatPF2e | AbilityItemPF2e {
+        return this.#item;
     }
 
     get rollOptions(): string[] {
@@ -168,7 +177,7 @@ class SkillAction implements Required<IStatisticAction> {
         ));
     }
 
-    prepare(actor: ActorPF2e): Omit<PreparedSkillAction, "isProficient"> {
+    toData(): ExtractedSkillActionData {
         return gettersToData<SkillAction>(this);
     }
 
@@ -304,61 +313,8 @@ class SkillActionGroup extends Collection<SkillAction> {
         ));
     }
 
-    prepare(
-        actor: ActorPF2e,
-        showUntrained: boolean,
-        cached: PrepareSkillCached
-    ): PreparedSkillActionGroup {
-        const isCharacter = actor.isOfType("character");
-        const statistic = actor.getStatistic(this.slug);
-        const rank = statistic?.rank ?? 0;
-
-        const isProficient = (() => {
-            if (!isCharacter || statistic?.proficient) {
-                return true;
-            }
-
-            if (
-                this.slug === "medicine" &&
-                (cached.isChirurgeon ??= hasItemWithSourceId(actor, CHIRURGEON, "feat"))
-            ) {
-                return true;
-            }
-
-            return (cached.hasUntrainedImprovisation ??= hasAnyItemWithSourceId(
-                actor,
-                UNTRAINED_IMPROVISATION,
-                "feat"
-            ));
-        })();
-
-        const proficiency = isCharacter
-            ? { rank, label: game.i18n.localize(`PF2E.ProficiencyLevel${rank}`) }
-            : statistic?.proficient
-            ? { rank, label: localize("sidebar.skills.proficient") }
-            : undefined;
-
-        const actions = this.map((action) => {
-            if (!isProficient && !showUntrained && action.requireTrained) return;
-            if (
-                action.useInstance &&
-                (!isCharacter || !hasItemWithSourceId(actor, action.sourceId, "feat"))
-            )
-                return;
-
-            const prepared = action.prepare(actor) as PreparedSkillAction;
-            prepared.isProficient = !action.requireTrained || isProficient;
-
-            return prepared;
-        }).filter(R.isTruthy);
-
-        return {
-            ...gettersToData<SkillActionGroup>(this),
-            actions: R.sortBy(actions, R.prop("label")),
-            isCharacter,
-            proficiency,
-            signedMod: signedInteger(statistic?.mod ?? 0),
-        };
+    toData(): ExtractedSkillActionGroupData {
+        return gettersToData<SkillActionGroup>(this);
     }
 }
 
@@ -412,18 +368,11 @@ class SkillActionGroups<T extends SkillActionGroup = SkillActionGroup> extends C
     constructor(groups?: T[]) {
         super(groups?.map((group) => [group.slug, group]));
     }
-
-    prepare(actor: ActorPF2e, showUntrained: boolean): PreparedSkillActionGroup[] {
-        const cached = {};
-        return this.map((group) => group.prepare(actor, showUntrained, cached));
-    }
 }
 
 let _cachedStatisticActionGroups: SkillActionGroups | undefined;
-function getSkillActionGroups(): SkillActionGroups {
-    if (_cachedStatisticActionGroups) {
-        return _cachedStatisticActionGroups;
-    }
+async function prepareActionGroups() {
+    if (_cachedStatisticActionGroups) return;
 
     const currentSystem = game.system.id;
     const skillActionGroups: SkillActionGroup[] = [];
@@ -431,25 +380,27 @@ function getSkillActionGroups(): SkillActionGroups {
     for (const { actions, statistic, system } of RAW_STATISTICS) {
         if (system && system !== currentSystem) continue;
 
-        const groupActions = R.pipe(
-            actions,
-            R.map((action) => {
-                const data = R.isString(action)
-                    ? { ...SHARED_ACTIONS[action], key: action }
-                    : action;
+        const actionsPromise = actions.map(async (action) => {
+            const data = R.isString(action) ? { ...SHARED_ACTIONS[action], key: action } : action;
+            if (data.system && data.system !== currentSystem) return;
 
-                if (!data.system || data.system === currentSystem) {
-                    return new SkillAction(statistic, data);
-                }
-            }),
-            R.filter(R.isTruthy)
-        );
+            const sourceItem = await fromUuid<FeatPF2e | AbilityItemPF2e>(data.sourceId);
+            if (!(sourceItem instanceof Item)) return;
 
+            return new SkillAction(statistic, data, sourceItem);
+        });
+
+        const groupActions = R.filter(await Promise.all(actionsPromise), R.isTruthy);
         const skillActionGroup = new SkillActionGroup(statistic, groupActions);
+
         skillActionGroups.push(skillActionGroup);
     }
 
-    return (_cachedStatisticActionGroups = new SkillActionGroups(skillActionGroups));
+    _cachedStatisticActionGroups = new SkillActionGroups(skillActionGroups);
+}
+
+function getSkillActionGroups(): SkillActionGroups {
+    return _cachedStatisticActionGroups!;
 }
 
 function getSkillAction(statistic: string, action: string): SkillAction | undefined {
@@ -479,24 +430,6 @@ interface ISkill<TSlug extends string = string> {
 }
 
 type SkillProficiency = { rank: ZeroToFour | ""; label: string };
-
-type PrepareSkillCached = {
-    hasUntrainedImprovisation?: boolean;
-    isChirurgeon?: boolean;
-};
-
-interface PreparedSkillAction extends Prettify<ExtractReadonly<SkillAction>> {
-    isProficient: boolean;
-}
-
-interface PreparedSkillActionGroup
-    extends Prettify<ExtractReadonly<SkillActionGroup>>,
-        ISkill<SkillActionType> {
-    actions: PreparedSkillAction[];
-    isCharacter: boolean;
-    proficiency: SkillProficiency | undefined;
-    signedMod: string;
-}
 
 type SkillVariants = Collection<ActionVariant | MapVariant>;
 
@@ -535,8 +468,20 @@ interface IStatisticAction {
     variants?: SkillVariants;
 }
 
+type ExtractedSkillActionGroupData = ExtractReadonly<SkillActionGroup>;
+type ExtractedSkillActionData = ExtractReadonly<SkillAction>;
+
 type RollStatisticRollOptions = Partial<ActionVariantUseOptions> &
     (SingleCheckActionVariantData | SkillActionOptions);
 
-export { getSkillAction, getSkillActionGroups, LoreSkill, SkillActionGroups };
-export type { PreparedSkillActionGroup, SkillVariants };
+MODULE.devExpose({ getSkillActionGroups, getSkillAction });
+
+export { getSkillAction, getSkillActionGroups, LoreSkill, prepareActionGroups, SkillActionGroups };
+export type {
+    ExtractedSkillActionData,
+    ExtractedSkillActionGroupData,
+    ISkill,
+    SkillActionRollOptions,
+    SkillProficiency,
+    SkillVariants,
+};

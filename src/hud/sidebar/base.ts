@@ -1,6 +1,7 @@
 import {
     addSidebarsListeners,
     BaseActorPF2eHUD,
+    FilterValue,
     getItemFromElement,
     getSidebars,
     IAdvancedPF2eHUD,
@@ -52,9 +53,58 @@ const ROLLOPTIONS_PLACEMENT = {
 
 const _cached: { filter?: string } = {};
 
-abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
+abstract class BaseSidebarItem<
+    TItem extends ItemPF2e = ItemPF2e,
+    TData extends Record<string, any> = Record<string, any>
+> {
+    #filterValue?: FilterValue;
+
+    abstract get item(): TItem;
+
+    constructor(data: TData) {
+        for (const [key, value] of R.entries(data)) {
+            Object.defineProperty(this, key, {
+                value,
+                writable: false,
+                configurable: false,
+                enumerable: true,
+            });
+        }
+    }
+
+    get id(): string {
+        return this.item.id;
+    }
+
+    get uuid(): string {
+        return this.item.uuid;
+    }
+
+    get img(): ImageFilePath {
+        return this.item.img;
+    }
+
+    get label(): string {
+        return this.item.name;
+    }
+
+    get filterValue(): FilterValue {
+        return (this.#filterValue ??= new FilterValue(this.label));
+    }
+
+    get dragImg(): ImageFilePath {
+        return this.img;
+    }
+}
+
+abstract class SidebarPF2eHUD<
+    TItem extends ItemPF2e = ItemPF2e,
+    TSidebarItem extends BaseSidebarItem<TItem> = BaseSidebarItem<TItem>
+> extends foundry.applications.api.ApplicationV2 {
     static #instance: SidebarPF2eHUD | null = null;
     static #filter: string = "";
+
+    #sidebarItems: Collection<TSidebarItem> = new Collection();
 
     #parent: IAdvancedPF2eHUD & BaseActorPF2eHUD;
     #filterElement: HTMLElement | undefined;
@@ -249,13 +299,21 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
         return coords;
     }
 
-    getItemFromElement<T extends ItemPF2e>(el: HTMLElement, sync: true): T | null;
-    getItemFromElement<T extends ItemPF2e>(
-        el: HTMLElement,
-        sync?: false
-    ): T | null | Promise<T | null>;
-    getItemFromElement(el: HTMLElement, sync?: boolean) {
-        return getItemFromElement(this.actor, el, sync as any);
+    get sidebarItems(): Collection<TSidebarItem> {
+        return this.#sidebarItems;
+    }
+
+    getSidebarItemFromElement(el: HTMLElement): TSidebarItem | null {
+        const { itemId, itemUuid } = htmlClosest(el, ".item")?.dataset ?? {};
+        return this.sidebarItems.get(itemUuid ?? itemId ?? "") ?? null;
+    }
+
+    async getItemFromElement(el: HTMLElement): Promise<TItem | null> {
+        return (
+            this.getSidebarItemFromElement(el)?.item ??
+            getItemFromElement<TItem>(this.actor, el) ??
+            null
+        );
     }
 
     protected _activateListeners(html: HTMLElement) {}
@@ -302,9 +360,17 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
 
         this.#mouseDownEvent.disable();
 
+        this.#sidebarItems.clear();
+
         this.parent.removeEventListener("position", this.#parentPositionListener);
         this.parent.removeEventListener("close", this.#parentCloseListener);
         this.parent.removeEventListener("render", this.#parentRenderListener);
+    }
+
+    protected _configureRenderOptions(options: ApplicationRenderOptions): void {
+        super._configureRenderOptions(options);
+
+        this.sidebarItems.clear();
     }
 
     protected async _renderHTML(
@@ -470,12 +536,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
     #onDragStart(target: HTMLElement, event: DragEvent) {
         if (!event.dataTransfer) return;
 
-        const parent = target.dataset.dragParent
-            ? htmlClosest(target, target.dataset.dragParent)!
-            : target;
-
-        const item = this.getItemFromElement(target, true);
-        const img = parent.querySelector<HTMLImageElement>(".drag-img")?.src ?? item?.img ?? "";
+        const { dragImg, item } = this.getSidebarItemFromElement(target) ?? {};
 
         const baseDragData: BaseDragData = {
             actorId: this.actor.id,
@@ -494,7 +555,7 @@ abstract class SidebarPF2eHUD extends foundry.applications.api.ApplicationV2 {
 
         const draggable = createHTMLElement("div", {
             classes: ["pf2e-hud-draggable"],
-            content: `<img src="${img}">`,
+            content: `<img src="${dragImg}">`,
         });
 
         document.body.append(draggable);
@@ -635,8 +696,12 @@ type BaseDragData = Partial<ReturnType<ItemPF2e["toDragData"]>> & {
     tokenId: string | null;
 };
 
-type SidebarDragData = {
-    img: string;
+type ElementDragData = {
+    img: ImageFilePath;
+    item: ItemPF2e;
+};
+
+type SidebarDragData = ElementDragData & {
     data: BaseDragData;
 };
 
@@ -648,5 +713,5 @@ type SidebarHudRenderElements = {
 
 MODULE.devExpose({ SidebarPF2eHUD });
 
-export { SidebarPF2eHUD };
-export type { SidebarDragData };
+export { BaseSidebarItem, SidebarPF2eHUD };
+export type { ElementDragData, SidebarDragData };
