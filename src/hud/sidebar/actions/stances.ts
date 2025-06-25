@@ -142,6 +142,16 @@ function canUseStances(actor: ActorPF2e) {
     return hasTokenThatMatches(actor, (token) => token.inCombat);
 }
 
+function activateStancesListeners(
+    event: MouseEvent,
+    sidebarItem: ActionsSidebarStance,
+    action: "toggle-stance" | (string & {})
+) {
+    if (action === "toggle-stance") {
+        sidebarItem.toggle(event.ctrlKey);
+    }
+}
+
 type StanceData = {
     active: EffectPF2e<ActorPF2e> | null;
     effect: EffectPF2e | CompendiumIndexData;
@@ -152,4 +162,4 @@ type StanceData = {
 
 type StanceWithExistingEffect = Omit<StanceData, "active"> & { active: EffectPF2e<ActorPF2e> };
 
-export { ActionsSidebarStance, canUseStances, getStances };
+export { ActionsSidebarStance, activateStancesListeners, canUseStances, getStances };

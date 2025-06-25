@@ -6,7 +6,13 @@ import {
     createHook,
     ItemPF2e,
 } from "module-helpers";
-import { ActionsSidebarStance, canUseStances, getStances, SidebarPF2eHUD } from "..";
+import {
+    ActionsSidebarStance,
+    activateStancesListeners,
+    canUseStances,
+    getStances,
+    SidebarPF2eHUD,
+} from "..";
 
 class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<ItemPF2e, ActionsSidebarStance> {
     #combatantHooks = createHook(
@@ -55,13 +61,13 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<ItemPF2e, ActionsSidebarStanc
     protected _onClickAction(event: PointerEvent, target: HTMLElement): void {
         if (event.button !== 0) return;
 
-        const action = target.dataset.action as EventAction;
+        const action = target.dataset.action as string;
 
         const sidebarItem = this.getSidebarItemFromElement(target);
         if (!sidebarItem) return;
 
-        if (action === "toggle-stance" && sidebarItem instanceof ActionsSidebarStance) {
-            sidebarItem.toggle(event.ctrlKey);
+        if (sidebarItem instanceof ActionsSidebarStance) {
+            activateStancesListeners(event, sidebarItem, action);
         }
     }
 
@@ -71,8 +77,6 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<ItemPF2e, ActionsSidebarStanc
         }
     }
 }
-
-type EventAction = "toggle-stance";
 
 type ActionsSidebarContext = {
     stances: MaybeFalsy<StancesContext>;
