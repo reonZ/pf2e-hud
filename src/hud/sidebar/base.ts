@@ -1,7 +1,6 @@
 import {
     addSidebarsListeners,
     BaseActorPF2eHUD,
-    FilterValue,
     getItemFromElement,
     getSidebars,
     IAdvancedPF2eHUD,
@@ -30,72 +29,20 @@ import {
     MODULE,
     postSyncElement,
     preSyncElement,
-    R,
     render,
-    RollOptionToggle,
     templatePath,
 } from "module-helpers";
 import {
     ActionsSidebarPF2eHUD,
+    BaseSidebarItem,
     ExtrasSidebarPF2eHUD,
     ItemsSidebarPF2eHUD,
     SkillsSidebarPF2eHUD,
     SpellsSidebarPF2eHUD,
 } from ".";
-
-const ROLLOPTIONS_PLACEMENT = {
-    actions: "actions",
-    spells: "spellcasting",
-    items: "inventory",
-    skills: "proficiencies",
-    extras: undefined,
-} as const satisfies Record<SidebarName, string | undefined>;
+import { getRollOptionsData } from "./rolloptions";
 
 const _cached: { filter?: string } = {};
-
-abstract class BaseSidebarItem<
-    TItem extends ItemPF2e = ItemPF2e,
-    TData extends Record<string, any> = Record<string, any>
-> {
-    #filterValue?: FilterValue;
-
-    abstract get item(): TItem;
-
-    constructor(data: TData) {
-        for (const [key, value] of R.entries(data)) {
-            Object.defineProperty(this, key, {
-                value,
-                writable: false,
-                configurable: false,
-                enumerable: true,
-            });
-        }
-    }
-
-    get id(): string {
-        return this.item.id;
-    }
-
-    get uuid(): string {
-        return this.item.uuid;
-    }
-
-    get img(): ImageFilePath {
-        return this.item.img;
-    }
-
-    get label(): string {
-        return this.item.name;
-    }
-
-    get filterValue(): FilterValue {
-        return (this.#filterValue ??= new FilterValue(this.label));
-    }
-
-    get dragImg(): ImageFilePath {
-        return this.img;
-    }
-}
 
 abstract class SidebarPF2eHUD<
     TItem extends ItemPF2e = ItemPF2e,
@@ -403,37 +350,32 @@ abstract class SidebarPF2eHUD<
             dataset: { panel: "filter" },
         });
 
-        const selectedPlacement = ROLLOPTIONS_PLACEMENT[this.name];
-        if (selectedPlacement) {
-            const actor = this.actor;
-            const toggles = getRollOptionsData(actor, selectedPlacement);
+        const toggles = getRollOptionsData(this.actor, this.name);
+        if (toggles.length) {
+            const togglesTemplate = await foundry.applications.handlebars.renderTemplate(
+                "systems/pf2e/templates/actors/partials/toggles.hbs",
+                { toggles }
+            );
 
-            if (toggles?.length) {
-                const togglesTemplate = await foundry.applications.handlebars.renderTemplate(
-                    "systems/pf2e/templates/actors/partials/toggles.hbs",
-                    { toggles }
-                );
+            const togglesElement = createHTMLElementContent({
+                content: togglesTemplate,
+            });
 
-                const togglesElement = createHTMLElementContent({
-                    content: togglesTemplate,
-                });
+            for (const { itemId, img } of toggles) {
+                if (!img) continue;
 
-                for (const { itemId, img } of toggles) {
-                    if (!img) continue;
+                const imgEl = createHTMLElement("img", { classes: ["drag-img"] });
+                imgEl.src = img;
 
-                    const imgEl = createHTMLElement("img", { classes: ["drag-img"] });
-                    imgEl.src = img;
+                const toggleRow = htmlQuery(togglesElement, `[data-item-id="${itemId}"]`);
 
-                    const toggleRow = htmlQuery(togglesElement, `[data-item-id="${itemId}"]`);
-
-                    if (toggleRow) {
-                        toggleRow.draggable = true;
-                        toggleRow.appendChild(imgEl);
-                    }
+                if (toggleRow) {
+                    toggleRow.draggable = true;
+                    toggleRow.appendChild(imgEl);
                 }
-
-                listElement.prepend(togglesElement);
             }
+
+            listElement.prepend(togglesElement);
         }
 
         return { filterElement, innerElement, sidebarElement };
@@ -683,29 +625,6 @@ abstract class SidebarPF2eHUD<
     }
 }
 
-function getRollOptionsData(actor: ActorPF2e, selected: RolloptionPlacement): RollOptionsData[] {
-    return R.pipe(
-        R.values(actor.synthetics.toggles).flatMap((domain) => Object.values(domain)),
-        R.filter(({ placement, option, domain }) => {
-            return (
-                placement === selected && (domain !== "elemental-blast" || option !== "action-cost")
-            );
-        }),
-        R.map((toggle): RollOptionsData => {
-            return {
-                ...toggle,
-                img: actor.items.get(toggle.itemId)?.img,
-            };
-        })
-    );
-}
-
-type RolloptionPlacement = ValueOf<typeof ROLLOPTIONS_PLACEMENT>;
-
-type RollOptionsData = RollOptionToggle & {
-    img: ImageFilePath | undefined;
-};
-
 type BaseDragData = Partial<ReturnType<ItemPF2e["toDragData"]>> & {
     actorId: string;
     actorUUID: ActorUUID;
@@ -731,5 +650,5 @@ type SidebarHudRenderElements = {
 
 MODULE.devExpose({ SidebarPF2eHUD });
 
-export { BaseSidebarItem, SidebarPF2eHUD };
+export { SidebarPF2eHUD };
 export type { ElementDragData, SidebarDragData };
