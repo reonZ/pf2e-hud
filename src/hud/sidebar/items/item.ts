@@ -19,11 +19,11 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
         super(data);
 
         if (this.heldItems?.length) {
-            this.filterValue.add(...this.heldItems.map((x) => x.filterValue));
+            this.filterValue.add(...this.heldItems);
         }
 
         if (this.subItems?.length) {
-            this.filterValue.add(...this.subItems.map((x) => x.filterValue));
+            this.filterValue.add(...this.subItems);
         }
     }
 

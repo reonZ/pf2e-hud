@@ -238,7 +238,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                     slotSpells: [],
                 });
 
-                spellsGroup.filterValue.add(...slotSpells.map((x) => x.spell));
+                spellsGroup.filterValue.add(...slotSpells);
                 spellsGroup.slotSpells.push(...slotSpells);
             }
         }

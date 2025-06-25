@@ -1,23 +1,25 @@
-import { ActorPF2e, ItemPF2e, R, ValueAndMax, ZeroToTwo } from "module-helpers";
+import { ActorPF2e, R, ValueAndMax, ZeroToTwo } from "module-helpers";
 
 const COVER_UUID = "Compendium.pf2e.other-effects.Item.I9lfZUiCwMiGogVi";
+
+type FilterValueEntry = string | FilterValue | { filterValue: FilterValue };
 
 class FilterValue {
     #list: string[];
 
-    constructor(...entries: (string | ItemPF2e | FilterValue)[]) {
+    constructor(...entries: FilterValueEntry[]) {
         this.#list = [];
         this.add(...entries);
     }
 
-    add(...entries: (string | ItemPF2e | FilterValue)[]) {
+    add(...entries: FilterValueEntry[]) {
         for (const entry of entries) {
-            if (entry instanceof Item) {
-                this.#list.push(entry.name);
+            if (R.isString(entry)) {
+                this.#list.push(entry);
             } else if (entry instanceof FilterValue) {
                 this.#list.push(...entry.#list);
-            } else {
-                this.#list.push(entry);
+            } else if ("filterValue" in entry && entry.filterValue instanceof FilterValue) {
+                this.#list.push(...entry.filterValue.#list);
             }
         }
     }

@@ -299,10 +299,7 @@ class SkillActionGroup extends Collection<SkillAction> {
     }
 
     get filterValue(): FilterValue {
-        return (this.#filterValue ??= new FilterValue(
-            this.label,
-            ...this.map((action) => action.filterValue)
-        ));
+        return (this.#filterValue ??= new FilterValue(this.label, ...this));
     }
 
     get label(): string {

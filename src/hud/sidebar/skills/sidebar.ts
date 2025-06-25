@@ -99,7 +99,7 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD {
             hideUntrained,
             isCharacter: actor.isOfType("character"),
             lores: lores.length && {
-                filterValue: new FilterValue(...lores.map((lore) => lore.filterValue)),
+                filterValue: new FilterValue(...lores),
                 skills: lores,
             },
             skillGroups,

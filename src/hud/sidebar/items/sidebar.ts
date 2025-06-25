@@ -78,7 +78,7 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
                         }
 
                         const sidebarItem = addSidebarItem(itemData);
-                        section.filterValue.add(sidebarItem.filterValue);
+                        section.filterValue.add(sidebarItem);
 
                         return sidebarItem;
                     });
