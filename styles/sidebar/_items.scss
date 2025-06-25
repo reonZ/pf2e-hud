@@ -106,6 +106,10 @@
                     .bulk {
                         font-size: 0.95em;
                         margin-top: -0.05em;
+
+                        span {
+                            min-width: 1.2em;
+                        }
                     }
 
                     .temporary {
