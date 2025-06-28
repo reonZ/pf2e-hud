@@ -1,12 +1,21 @@
-#
+# 2.6.0
 
--   `Skill Sidebar`:
+-   this release contains the fully implemented `Actions` sidebar
+-   `Sidebar`:
+    -   roll-option sections are now part of the filter workflow
+    -   fix `Enter` key refocusing the field after the update
+-   `Actions Sidebar`:
+    -   now display the different stance & action icons instead of plain action-cost whenever possible
+    -   add a toggle-show-shields button to the attacks header (disabled by default) that show/hide shields
+        -   shield attachments are not affected by this option
+    -   add `Remove Effect` button to actions with self-applied effects when the actor currently has the effect on
+-   `Skills Sidebar`:
     -   fix skill actions gated by feats always showing
 -   fix mouseover tooltips broken styling
 
 # 2.5.1
 
--   `Skill Sidebar`:
+-   `Skills Sidebar`:
     -   now sort skill actions by alphabetical order
     -   fix skill action not requiring to be trained be disabled when not trained in the associated skill
 
@@ -21,7 +30,7 @@
     -   when no match was found, the filter isn't saved anymore so the next time you press the key won't feel like nothing is happening (as normally it would reset the filter)
     -   make sure to re-apply the filter whenever the sidebar is re-rendered
     -   minute styling improvements
--   `Skill Sidebar`:
+-   `Skills Sidebar`:
     -   add a `Hide Untrained` checkbox at the top of the sidebar to toggle the setting (setting which doesn't show in the `Game Settings` menu anymore)
 
 # 2.4.0
