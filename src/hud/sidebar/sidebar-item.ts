@@ -7,7 +7,7 @@ abstract class BaseSidebarItem<
 > {
     #filterValue?: FilterValue;
 
-    abstract get item(): TItem;
+    abstract readonly item: TItem;
 
     constructor(data: TData) {
         for (const [key, value] of R.entries(data)) {
@@ -38,10 +38,6 @@ abstract class BaseSidebarItem<
 
     get filterValue(): FilterValue {
         return (this.#filterValue ??= new FilterValue(this.label));
-    }
-
-    get dragImg(): ImageFilePath {
-        return this.img;
     }
 }
 

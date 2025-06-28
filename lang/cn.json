@@ -178,10 +178,6 @@
                 "reach": "触及{reach}尺",
                 "reset": "重置使用次数",
                 "stances": "架势",
-                "stowedWeapons": {
-                    "shown": "存放武器已显示",
-                    "hidden": "存放武器已隐藏"
-                },
                 "thrown": "投掷{increment}/{max}尺"
             },
             "skills": {

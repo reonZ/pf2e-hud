@@ -192,10 +192,6 @@
                 "reach": "Zasięg {reach} stóp",
                 "reset": "Resetowanie użycia",
                 "stances": "Postawy",
-                "stowedWeapons": {
-                    "shown": "Broń schowana jest wyświetlana",
-                    "hidden": "Broń schowana jest ukryta"
-                },
                 "thrown": "Rzut {increment}/{max} stóp"
             },
             "skills": {

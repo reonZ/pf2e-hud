@@ -34,12 +34,6 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
             return !!macro || (isConsumable && itemData.hasCharges && !item.isAmmo);
         };
 
-        const addSidebarItem = (data: SidebarItem) => {
-            const item = new ItemsSidebarItem(data);
-            this.sidebarItems.set(item.id, item);
-            return item;
-        };
-
         data.sections = await Promise.all(
             R.pipe(
                 data.sections,
@@ -54,7 +48,7 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
                         if (itemData.heldItems?.length) {
                             const heldItems = itemData.heldItems.map(async (heldItemData) => {
                                 heldItemData.canBeUsed = await canBeUsed(heldItemData);
-                                return addSidebarItem(heldItemData);
+                                return this.addSidebarItem(ItemsSidebarItem, "id", heldItemData);
                             });
 
                             itemData.heldItems = await Promise.all(heldItems);
@@ -73,11 +67,11 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
                                     unitBulk: null,
                                 };
 
-                                return addSidebarItem(subItemData);
+                                return this.addSidebarItem(ItemsSidebarItem, "id", subItemData);
                             });
                         }
 
-                        const sidebarItem = addSidebarItem(itemData);
+                        const sidebarItem = this.addSidebarItem(ItemsSidebarItem, "id", itemData);
                         section.filterValue.add(sidebarItem);
 
                         return sidebarItem;

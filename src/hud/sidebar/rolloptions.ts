@@ -17,7 +17,8 @@ function getRollOptionsData(actor: ActorPF2e, selected: SidebarName): RollOption
         R.values(actor.synthetics.toggles).flatMap((domain) => Object.values(domain)),
         R.filter(({ placement, option, domain }) => {
             return (
-                placement === selected && (domain !== "elemental-blast" || option !== "action-cost")
+                placement === selectedPlacement &&
+                (domain !== "elemental-blast" || option !== "action-cost")
             );
         }),
         R.map((toggle): RollOptionsData => {

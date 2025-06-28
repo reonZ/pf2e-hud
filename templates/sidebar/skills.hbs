@@ -1,4 +1,4 @@
-<div class="hide-untrained">
+<div class="hide-untrained" data-filter-value="">
     <input type="checkbox" data-action="toggle-hide-untrained" {{checked hideUntrained}}>
     <span>{{@root.i18n 'hideUntrained'}}</span>
 </div>
@@ -47,7 +47,7 @@
     <div class="rank {{skill.proficiency.rank}}">
         {{skill.proficiency.label}}
     </div>
-    <img src="{{skill.dragImg}}" class="drag-img">
+    <img src="{{skill.img}}" class="drag-img">
 </div>
 {{/each}}
 {{/if}}

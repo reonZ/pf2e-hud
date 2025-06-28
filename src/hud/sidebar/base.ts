@@ -1,6 +1,7 @@
 import {
     addSidebarsListeners,
     BaseActorPF2eHUD,
+    FilterValue,
     getItemFromElement,
     getSidebars,
     IAdvancedPF2eHUD,
@@ -250,17 +251,19 @@ abstract class SidebarPF2eHUD<
         return this.#sidebarItems;
     }
 
-    getSidebarItemFromElement(el: HTMLElement): TSidebarItem | null {
-        const { itemId, itemUuid } = htmlClosest(el, ".item")?.dataset ?? {};
-        return this.sidebarItems.get(itemUuid ?? itemId ?? "") ?? null;
+    addSidebarItem<T extends TSidebarItem>(
+        ItemCls: ConstructorOf<T>,
+        prop: ExtractValuesOfType<T, string>[keyof T],
+        ...args: ConstructorParameters<ConstructorOf<T>>
+    ) {
+        const item = new ItemCls(...args);
+        this.sidebarItems.set(item[prop] as string, item);
+        return item;
     }
 
-    async getItemFromElement(el: HTMLElement): Promise<TItem | null> {
-        return (
-            this.getSidebarItemFromElement(el)?.item ??
-            getItemFromElement<TItem>(this.actor, el) ??
-            null
-        );
+    getSidebarItemFromElement<T extends TSidebarItem>(el: HTMLElement): T | null {
+        const { itemId, itemUuid } = htmlClosest(el, ".item")?.dataset ?? {};
+        return (this.sidebarItems.get(itemUuid ?? itemId ?? "") ?? null) as T | null;
     }
 
     protected _activateListeners(html: HTMLElement) {}
@@ -361,7 +364,7 @@ abstract class SidebarPF2eHUD<
                 content: togglesTemplate,
             });
 
-            for (const { itemId, img } of toggles) {
+            for (const { itemId, img, label } of toggles) {
                 if (!img) continue;
 
                 const imgEl = createHTMLElement("img", { classes: ["drag-img"] });
@@ -372,6 +375,7 @@ abstract class SidebarPF2eHUD<
                 if (toggleRow) {
                     toggleRow.draggable = true;
                     toggleRow.appendChild(imgEl);
+                    toggleRow.dataset.filterValue = new FilterValue(label).toString();
                 }
             }
 
@@ -478,7 +482,7 @@ abstract class SidebarPF2eHUD<
     #onDragStart(target: HTMLElement, event: DragEvent) {
         if (!event.dataTransfer) return;
 
-        const { dragImg, item } = this.getSidebarItemFromElement(target) ?? {};
+        const { img, item } = this.getSidebarItemFromElement(target) ?? {};
 
         const baseDragData: BaseDragData = {
             actorId: this.actor.id,
@@ -497,7 +501,7 @@ abstract class SidebarPF2eHUD<
 
         const draggable = createHTMLElement("div", {
             classes: ["pf2e-hud-draggable"],
-            content: `<img src="${dragImg}">`,
+            content: `<img src="${img}">`,
         });
 
         document.body.append(draggable);
@@ -578,6 +582,15 @@ abstract class SidebarPF2eHUD<
                 const { itemId, itemProperty } = el.dataset;
                 if (!itemId || !itemProperty) return;
 
+                const min = Number(el.min) || 0;
+                const max = Number(el.max) || Infinity;
+
+                if (el.valueAsNumber > max) {
+                    el.valueAsNumber = max;
+                } else if (el.valueAsNumber < min) {
+                    el.valueAsNumber = min;
+                }
+
                 this.actor.updateEmbeddedDocuments("Item", [
                     { _id: itemId, [itemProperty]: el.valueAsNumber },
                 ]);
@@ -586,7 +599,10 @@ abstract class SidebarPF2eHUD<
 
         addListenerAll(html, "[data-action='item-description']", async (el, event) => {
             const actor = this.actor;
-            const item = await this.getItemFromElement(el);
+            const item =
+                this.getSidebarItemFromElement(el)?.item ??
+                (await getItemFromElement<TItem>(this.actor, el)) ??
+                null;
 
             if (item) {
                 new ItemHudPopup(actor, item, event).render(true);

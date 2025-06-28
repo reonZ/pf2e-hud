@@ -41,7 +41,7 @@ class SpellSidebarItem extends BaseSidebarItem<SpellPF2e<CreaturePF2e>, SlotSpel
         return this.collection?.setSlotExpendedState(this.groupId, this.slotId, !this.expended);
     }
 }
-interface SpellSidebarItem extends BaseSidebarItem<SpellPF2e, SlotSpellData>, SlotSpellData {}
+interface SpellSidebarItem extends Readonly<SlotSpellData> {}
 
 type SlotSpellData = Omit<
     CustomSpellcastingEntry,

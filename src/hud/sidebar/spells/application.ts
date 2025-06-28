@@ -217,9 +217,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                     uses: getUses(active),
                 };
 
-                const sidebarSpell = new SpellSidebarItem(spellData);
-                this.sidebarItems.set(sidebarSpell.id, sidebarSpell);
-
+                const sidebarSpell = this.addSidebarItem(SpellSidebarItem, "id", spellData);
                 slotSpells.push(sidebarSpell);
             }
 

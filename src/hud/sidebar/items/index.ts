@@ -1,2 +1,2 @@
 export * from "./item";
-export * from "./sidebar";
+export * from "./application";

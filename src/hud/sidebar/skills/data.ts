@@ -45,7 +45,7 @@ class SkillAction implements Required<IStatisticAction> {
     #label?: string;
     #statistic: SkillActionType;
     #systemPrefix?: string;
-    #dragImg?: ImageFilePath;
+    #img?: ImageFilePath;
     #variants?: SkillVariants;
 
     constructor(
@@ -115,8 +115,8 @@ class SkillAction implements Required<IStatisticAction> {
         ));
     }
 
-    get dragImg(): ImageFilePath {
-        return (this.#dragImg ??=
+    get img(): ImageFilePath {
+        return (this.#img ??=
             ACTION_IMAGES[this.key] ??
             game.pf2e.actions.get(this.key)?.img ??
             getActionIcon(this.actionCost));
@@ -316,7 +316,7 @@ class SkillActionGroup extends Collection<SkillAction> {
 }
 
 class LoreSkill implements ISkill {
-    static #dragImg: ImageFilePath = "systems/pf2e/icons/spells/divine-decree.webp";
+    static #img: ImageFilePath = "systems/pf2e/icons/spells/divine-decree.webp";
 
     #filterValue?: FilterValue;
     #lore: LorePF2e<ActorPF2e>;
@@ -356,8 +356,8 @@ class LoreSkill implements ISkill {
         return (this.#proficiency ??= getLoreProficiency(this.#lore.actor, this.#statistic?.rank));
     }
 
-    get dragImg(): ImageFilePath {
-        return LoreSkill.#dragImg;
+    get img(): ImageFilePath {
+        return LoreSkill.#img;
     }
 }
 

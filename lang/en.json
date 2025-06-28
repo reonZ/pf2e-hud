@@ -191,13 +191,18 @@
                 "rangedWithIncrement": "Range {increment}/{max} ft.",
                 "reach": "Reach {reach} ft.",
                 "reset": "Reset Uses",
+                "shields": {
+                    "shown": "Shields are displayed",
+                    "hidden": "Shields are hidden"
+                },
                 "stances": "Stances",
                 "stowedWeapons": {
-                    "shown": "Stowed Weapons are shown",
-                    "hidden": "Stowed Weapons are hidden"
+                    "shown": "Stowed items are displayed",
+                    "hidden": "Stowed items are hidden"
                 },
                 "thrown": "Thrown {increment}/{max} ft."
             },
+            "removeEffect": "Remove Effect",
             "skills": {
                 "alternate": "[Right Click] Variants Menu",
                 "hideUntrained": "Hide Untrained",

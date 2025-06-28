@@ -1,4 +1,4 @@
-import { BaseSidebarItem } from "hud";
+import { FilterValue } from "hud";
 import {
     AbilityItemPF2e,
     actorItems,
@@ -7,10 +7,14 @@ import {
     FeatPF2e,
     findItemWithSourceId,
     getItemSourceFromUuid,
+    hasItemWithSourceId,
     hasTokenThatMatches,
     isSupressedFeat,
     ItemPF2e,
+    R,
 } from "module-helpers";
+import { ActionsSidebarPF2eHUD } from ".";
+import { BaseSidebarItem } from "..";
 
 const REPLACERS = new Map([
     [
@@ -42,52 +46,77 @@ const EXTRAS = new Map([
     ],
 ]);
 
-class ActionsSidebarStance extends BaseSidebarItem<FeatPF2e | AbilityItemPF2e, StanceData> {
-    get img(): ImageFilePath {
-        return this.effect.img;
+class ActionsStance extends BaseSidebarItem<
+    FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>,
+    StanceData
+> {
+    get uuid(): string {
+        return this.effectUUID;
     }
 
-    get uuid(): string {
-        return this.effect.uuid;
+    get actor(): ActorPF2e {
+        return this.item.actor;
+    }
+
+    get active(): boolean {
+        return hasItemWithSourceId(this.actor, this.effectUUID, "effect");
     }
 
     async toggle(force?: boolean) {
         const actor = this.item.actor;
         if (!force && !canUseStances(actor)) return;
 
-        const effectUUID = this.uuid;
-        const stances = (getStances(actor) ?? [])?.filter(
-            (stance): stance is StanceWithExistingEffect => !!stance.active
+        const effects = R.pipe(
+            getStances(actor) ?? [],
+            R.map(({ effectUUID }): [effectUUID: string, effectId: string] | undefined => {
+                const effect = findItemWithSourceId(actor, effectUUID, "effect");
+                return effect ? [effectUUID, effect.id] : undefined;
+            }),
+            R.filter(R.isTruthy)
         );
-        const stance = stances.findSplice((stance) => stance.effect.uuid === effectUUID);
 
-        if (stances.length) {
+        const effect = effects.findSplice(([effectUUID]) => {
+            return effectUUID === this.effectUUID;
+        });
+
+        if (effects.length) {
             await actor.deleteEmbeddedDocuments(
                 "Item",
-                stances.map(({ active }) => active.id)
+                effects.map(([_, id]) => id)
             );
         }
 
-        if (!stance) {
-            const source = await getItemSourceFromUuid(effectUUID, "EffectPF2e");
+        if (!effect) {
+            const source = await getItemSourceFromUuid(this.effectUUID, "EffectPF2e");
             if (!source) return;
 
-            foundry.utils.setProperty(source, "flags.core.sourceId", effectUUID);
-            foundry.utils.setProperty(source, "_stats.compendiumSource", effectUUID);
+            foundry.utils.setProperty(source, "flags.core.sourceId", this.effectUUID);
+            foundry.utils.setProperty(source, "_stats.compendiumSource", this.effectUUID);
 
             const [item] = await actor.createEmbeddedDocuments("Item", [source]);
             item?.toMessage();
-        } else if (!stances.length) {
-            await actor.deleteEmbeddedDocuments("Item", [stance.active.id]);
+        } else if (!effects.length) {
+            await actor.deleteEmbeddedDocuments("Item", [effect[1]]);
         }
     }
 }
 
-interface ActionsSidebarStance
-    extends BaseSidebarItem<FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>, StanceData>,
-        StanceData {
-    get item(): FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>;
-    get label(): string;
+interface ActionsStance extends Readonly<StanceData> {}
+
+function getSidebarStancesData(this: ActionsSidebarPF2eHUD): StancesContext | undefined {
+    const actor = this.actor;
+    const stances = getStances(actor);
+    if (!stances?.length) return;
+
+    const actions = stances?.map((data) => {
+        return this.addSidebarItem(ActionsStance, "id", data);
+    });
+
+    return {
+        actions,
+        canUseStances: canUseStances(actor),
+        filterValue: new FilterValue(...actions),
+    };
 }
 
 function isValidStance(stance: ItemPF2e): stance is FeatPF2e | AbilityItemPF2e {
@@ -120,12 +149,11 @@ function getStances(actor: ActorPF2e): StanceData[] | undefined {
             replaced.add(replacer.replace);
         }
 
-        const existingEffect = findItemWithSourceId(actor, effectUUID, "effect");
         const label = (replacer && fromUuidSync(replacer.replace)?.name) || item.name;
 
         const stanceData: StanceData = {
-            active: existingEffect,
-            effect,
+            effectUUID,
+            img: effect.img,
             item,
             label,
             sourceUUID,
@@ -142,24 +170,29 @@ function canUseStances(actor: ActorPF2e) {
     return hasTokenThatMatches(actor, (token) => token.inCombat);
 }
 
-function activateStancesListeners(
+function onStancesClickAction(
     event: MouseEvent,
-    sidebarItem: ActionsSidebarStance,
-    action: "toggle-stance" | (string & {})
+    sidebarItem: ActionsStance,
+    action: Stringptionel<"toggle-stance">
 ) {
     if (action === "toggle-stance") {
         sidebarItem.toggle(event.ctrlKey);
     }
 }
 
+type StancesContext = {
+    canUseStances: boolean;
+    filterValue: FilterValue;
+    actions: ActionsStance[];
+};
+
 type StanceData = {
-    active: EffectPF2e<ActorPF2e> | null;
-    effect: EffectPF2e | CompendiumIndexData;
+    effectUUID: string;
+    img: ImageFilePath;
     item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>;
     label: string;
     sourceUUID: ItemUUID;
 };
 
-type StanceWithExistingEffect = Omit<StanceData, "active"> & { active: EffectPF2e<ActorPF2e> };
-
-export { ActionsSidebarStance, activateStancesListeners, canUseStances, getStances };
+export { ActionsStance, canUseStances, getSidebarStancesData, getStances, onStancesClickAction };
+export type { StancesContext };

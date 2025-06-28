@@ -180,13 +180,12 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
         }
     }
 }
-interface ItemsSidebarItem
-    extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, SidebarItem>,
-        SidebarItem {
-    get item(): PhysicalItemPF2e<ActorPF2e>;
+
+interface ItemsSidebarItem extends Readonly<Omit<SidebarItem, "canBeUsed">> {
+    canBeUsed: boolean;
 }
 
-type SidebarItem = Omit<InventoryItem, "heldItems"> & {
+type SidebarItem = Omit<InventoryItem<PhysicalItemPF2e<ActorPF2e>>, "heldItems"> & {
     canBeUsed: boolean;
     isSubitem: boolean;
     heldItems?: ItemsSidebarItem[];

@@ -52,6 +52,9 @@ class ItemHudPopup extends BaseHudPopup {
 
     async _renderFrame(options: ApplicationRenderOptions) {
         const frame = await super._renderFrame(options);
+        const item = this.actor.items.get(this.item.id);
+        if (!item || item.type !== this.item.type) return frame;
+
         const configBtn = `<button type="button" class="header-control" data-action="send-to-chat" 
         data-tooltip="PF2E.NPC.SendToChat" aria-label="PF2E.NPC.SendToChat">
         <i class="fa-solid fa-message"></i></button>`;

@@ -1,5 +1,187 @@
 #pf2e-hud-sidebar[data-type="actions"] {
+    --min-width: 16em;
+    --max-column-width: 19.5em;
+
+    --category-width: 1.2em;
+
+    --attack-background: #171f693d;
+    --attack-border-color: #353d83;
+
+    --damage-background: #5e000052;
+    --damage-border-color: #5d3232;
+
+    --select-font-size: var(--font-size-13);
+
+    --variant-font-size: var(--font-size-11);
+    --variant-background: #372e20;
+
+    --strike-name-font-size: var(--font-size-15);
+
     a.disabled {
         color: var(--color-disabled);
+    }
+
+    header {
+        &.blasts {
+            .controls {
+                inset: 0 0 0 auto;
+                align-items: normal;
+                gap: 0;
+
+                > span {
+                    width: 2.2ch;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    &:not(.selected) {
+                        cursor: pointer;
+                        background: var(--variant-background);
+                    }
+
+                    &.selected {
+                        cursor: revert;
+                        background: var(--variant-background-selected);
+                        color: var(--variant-color-selected);
+                        box-shadow: var(--variant-box-shadow-selected);
+                    }
+                }
+            }
+        }
+
+        &.strikes {
+            .controls {
+                a:not(.active) {
+                    color: var(--color-disabled);
+                }
+            }
+        }
+    }
+
+    .item {
+        a.active {
+            color: var(--color-active);
+        }
+
+        .controls {
+            [data-action="use-action"],
+            [data-action="reset-action"],
+            [data-action="toggle-stance"],
+            [data-action="toggle-exploration"] {
+                margin-top: 2px;
+            }
+
+            a.active {
+                color: var(--color-active);
+            }
+
+            [data-action="toggle-stance"],
+            [data-action="toggle-exploration"] {
+                font-size: 1.1em;
+            }
+
+            [data-action="toggle-stance"] {
+                &.disabled {
+                    cursor: default;
+                    pointer-events: all;
+                }
+            }
+        }
+
+        .category {
+            display: flex;
+            width: var(--category-width);
+            justify-content: center;
+
+            img {
+                filter: invert(0.8);
+                border: none;
+                height: 1.35em;
+                margin-bottom: -0.2em;
+            }
+
+            i {
+                font-size: 0.95em;
+            }
+        }
+
+        .variants {
+            &.controls,
+            &.versatiles {
+                margin-left: calc(var(--category-width) + var(--variant-gap));
+            }
+        }
+
+        .variant {
+            select {
+                padding-inline: 0px;
+                font-size: var(--select-font-size);
+                width: max-content;
+                height: 100%;
+
+                @supports (-moz-appearance: none) {
+                    padding-inline: 3px;
+                }
+            }
+
+            &.ammo {
+                padding: 0;
+
+                .magazine {
+                    display: flex;
+                    align-items: center;
+                    gap: var(--variant-gap);
+                    font-size: 1.2em;
+
+                    .icon {
+                        display: inline-block;
+                        width: 0.9rem;
+                        height: 0.9rem;
+                        background-image: url(../../../systems/pf2e/assets/icons/heavy-bullets.svg);
+                        filter: invert(0.8);
+                        background-repeat: no-repeat;
+                        background-position-y: 1px;
+                        background-size: cover;
+                    }
+                }
+
+                &:has(.magazine) {
+                    padding: 0 3px 0 0;
+                }
+            }
+
+            &.attack {
+                background: var(--attack-background);
+                border-color: var(--attack-border-color);
+            }
+
+            &.auxiliary {
+                &:has(select) {
+                    padding-block: 0;
+                    padding-right: 0;
+
+                    span:first-child {
+                        padding-top: 2px;
+                    }
+                }
+            }
+
+            &.damage {
+                background: var(--damage-background);
+                border-color: var(--damage-border-color);
+            }
+
+            &.info {
+                cursor: help;
+            }
+
+            &.trait {
+                background: var(--variant-background-hover);
+            }
+        }
+
+        &.attack {
+            flex-direction: column;
+        }
     }
 }

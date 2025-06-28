@@ -1,63 +1,315 @@
-import { CharacterPF2e, ElementTrait, R } from "module-helpers";
+import { FilterValue } from "hud";
+import {
+    AbilityItemPF2e,
+    CharacterPF2e,
+    CharacterSheetData,
+    CheckRoll,
+    DamageRoll,
+    DamageType,
+    EffectTrait,
+    ElementalBlast,
+    ElementTrait,
+    localize,
+    objectHasKey,
+    R,
+    RollOptionToggle,
+} from "module-helpers";
+import { ActionsSidebarPF2eHUD } from ".";
+import { BaseSidebarItem } from "..";
 
-async function getElementalBlastsContext(
-    actor: CharacterPF2e
-): Promise<ContextBlastsData | undefined> {
-    const blastOption = actor.synthetics.toggles["elemental-blast"]?.["action-cost"];
-    if (!blastOption) return;
+const ELEMENTAL_BLAST_IMG = "icons/magic/symbols/elements-air-earth-fire-water.webp";
 
-    const blasts = await getElementalBlastsData(actor);
-    if (!blasts) return;
+const _cached: { labels: Record<string, string> } = {
+    labels: {},
+};
+
+class ActionsSidebarBlastCost extends BaseSidebarItem<
+    AbilityItemPF2e<CharacterPF2e>,
+    ElementalBlastCost
+> {
+    #rollOptions?: RollOptionToggle;
+    #costs?: BlastRollOptionsCost[];
+
+    get img(): ImageFilePath {
+        return ELEMENTAL_BLAST_IMG;
+    }
+
+    get rollOption(): RollOptionToggle | undefined {
+        return (this.#rollOptions ??= getBlastsRollOption(this.item.actor));
+    }
+
+    get selected(): BlastRollOptionsCost | undefined {
+        return this.costs?.find((cost) => cost.selected);
+    }
+
+    get costs(): BlastRollOptionsCost[] | undefined {
+        return (this.#costs ??= this.rollOption?.suboptions.map(({ selected, value, label }) => {
+            return {
+                selected,
+                cost: value as "1" | "2",
+                label: value === "1" ? "Ⅰ" : "Ⅱ",
+                tooltip: label,
+            };
+        }));
+    }
+
+    toggleRollOption() {
+        const selected = this.selected;
+        if (!selected) return;
+
+        this.item.actor.toggleRollOption(
+            "elemental-blast",
+            "action-cost",
+            this.id,
+            true,
+            selected.cost === "1" ? "2" : "1"
+        );
+    }
 }
 
+interface ActionsSidebarBlastCost extends Readonly<ElementalBlastCost> {}
+
+class ActionsSidebarBlast extends BaseSidebarItem<
+    AbilityItemPF2e<CharacterPF2e>,
+    ElementalBlastsData
+> {
+    #reach?: string;
+
+    get blastId(): BlastId {
+        return `blast-${this.element}`;
+    }
+
+    get actor(): CharacterPF2e {
+        return this.item.actor;
+    }
+
+    get reach(): string {
+        if (!this.#reach) {
+            const isReach = this.action.infusion?.traits.melee.includes("reach");
+            const reach = this.actor.attributes.reach.base + (isReach ? 5 : 0);
+
+            this.#reach = localize("sidebar.actions.reach", { reach });
+        }
+
+        return this.#reach;
+    }
+
+    attack(
+        event: MouseEvent,
+        melee: boolean,
+        mapIncreases: number
+    ): Promise<Rolled<CheckRoll> | null> {
+        return this.action.attack({
+            damageType: this.damageType,
+            element: this.element,
+            event,
+            mapIncreases,
+            melee,
+        });
+    }
+
+    damage(
+        event: MouseEvent,
+        melee: boolean,
+        outcome: BlastOutcome
+    ): Promise<Rolled<DamageRoll> | null> {
+        return this.action.damage({
+            damageType: this.damageType,
+            element: this.element,
+            event,
+            melee,
+            outcome,
+        });
+    }
+
+    setDamageType(damageType: DamageType) {
+        this.action.setDamageType({
+            damageType,
+            element: this.element,
+        });
+    }
+
+    formulaTooltip(melee: boolean, type: "damage" | "critical") {
+        return this.formula[melee ? "melee" : "ranged"][type];
+    }
+}
+
+interface ActionsSidebarBlast extends Readonly<ElementalBlastsData> {}
+
+async function getSidebarBlastsData(
+    this: ActionsSidebarPF2eHUD
+): Promise<BlastsContext | undefined> {
+    const actor = this.actor as CharacterPF2e;
+    if (!getBlastsRollOption(actor)) return;
+
+    const blasts = await getElementalBlastsData(actor);
+    if (!blasts?.length) return;
+
+    const actions = blasts.map((data) => this.addSidebarItem(ActionsSidebarBlast, "blastId", data));
+    const cost = this.addSidebarItem(ActionsSidebarBlastCost, "id", { item: blasts[0].item });
+
+    return {
+        actions,
+        cost,
+        filterValue: new FilterValue(...actions),
+    };
+}
+
+/**
+ * slightly modified version of
+ * https://github.com/foundryvtt/pf2e/blob/7329c2e1f7bed53e2cae3bae3c35135b22d97a13/src/module/actor/character/sheet.ts#L1178
+ */
+async function getElementalBlastsData(
+    actor: CharacterPF2e,
+    elementTrait: ElementTrait
+): Promise<ElementalBlastsData | undefined>;
+async function getElementalBlastsData(
+    actor: CharacterPF2e,
+    elementTrait?: never
+): Promise<ElementalBlastsData[] | undefined>;
 async function getElementalBlastsData(
     actor: CharacterPF2e,
     elementTrait?: ElementTrait
-): Promise<ElementalBlastsData | undefined> {
-    const blastData = new game.pf2e.ElementalBlast(actor);
+): Promise<ElementalBlastsData[] | ElementalBlastsData | undefined> {
+    const action = new game.pf2e.ElementalBlast(actor);
+    const item = action.item;
+    if (!item) return;
 
     const configs = elementTrait
-        ? R.filter([blastData.configs.find((c) => c.element === elementTrait)], R.isTruthy)
-        : blastData.configs;
+        ? R.filter([action.configs.find((c) => c.element === elementTrait)], R.isTruthy)
+        : action.configs;
 
-    /**
-     * https://github.com/foundryvtt/pf2e/blob/7329c2e1f7bed53e2cae3bae3c35135b22d97a13/src/module/actor/character/sheet.ts#L1178
-     */
-    const blastsPromise = configs.map(async (config) => {
-        const damageType = config.damageTypes.find((dt) => dt.selected)?.value ?? "untyped";
-        const formulaFor = (outcome: "success" | "criticalSuccess", melee = true) => {
-            return blastData.damage({
-                element: config.element,
+    const blastsData: ElementalBlastsData[] = await Promise.all(
+        configs.map(async (config): Promise<ElementalBlastsData> => {
+            const damageType = config.damageTypes.find((dt) => dt.selected)?.value ?? "untyped";
+            const formulaFor = (outcome: BlastOutcome, melee = true) => {
+                return action.damage({
+                    element: config.element,
+                    damageType,
+                    melee,
+                    outcome,
+                    getFormula: true,
+                });
+            };
+
+            return {
+                ...config,
+                action,
                 damageType,
-                melee,
-                outcome,
-                getFormula: true,
-            });
-        };
-
-        return {
-            ...config,
-            damageType,
-            formula: {
-                melee: {
-                    damage: await formulaFor("success"),
-                    critical: await formulaFor("criticalSuccess"),
+                formula: {
+                    melee: {
+                        damage: await formulaFor("success"),
+                        critical: await formulaFor("criticalSuccess"),
+                    },
+                    ranged: {
+                        damage: await formulaFor("success", false),
+                        critical: await formulaFor("criticalSuccess", false),
+                    },
                 },
-                ranged: {
-                    damage: await formulaFor("success", false),
-                    critical: await formulaFor("criticalSuccess", false),
-                },
-            },
-        };
-    });
+                item,
+                label: (_cached.labels[config.label] ??= game.i18n.localize(config.label)),
+            };
+        })
+    );
 
-    // const blastData = (
-    //     await Promise.all(action.configs.map((c) => this.#getBlastData(action, c)))
-    // ).sort((a, b) => a.label.localeCompare(b.label, game.i18n.lang));
+    if (elementTrait) {
+        return blastsData[0];
+    } else {
+        return blastsData.sort((a, b) => a.label.localeCompare(b.label, game.i18n.lang));
+    }
 }
 
-type ElementalBlastsData = {};
+function getBlastsRollOption(actor: CharacterPF2e): RollOptionToggle {
+    return actor.synthetics.toggles["elemental-blast"]?.["action-cost"];
+}
 
-type ContextBlastsData = {};
+function onBlastsClickAction(
+    event: MouseEvent,
+    sidebarItem: ActionsSidebarBlastCost | ActionsSidebarBlast,
+    action: Stringptionel<CostEventAction>,
+    target: HTMLElement
+) {
+    if (event.button !== 0) return;
 
-export { getElementalBlastsContext };
+    if (sidebarItem instanceof ActionsSidebarBlastCost) {
+        onBlastCostClickAction(sidebarItem, action as CostEventAction);
+    } else {
+        onBlastClickAction(event, sidebarItem, action as BlastEventAction, target);
+    }
+}
+
+function onBlastClickAction(
+    event: MouseEvent,
+    sidebarItem: ActionsSidebarBlast,
+    action: BlastEventAction,
+    target: HTMLElement
+) {
+    if (action === "blast-attack") {
+        const { mapIncreases, melee } = target.dataset as BlastAttackDataset;
+        sidebarItem.attack(event, melee === "true", Number(mapIncreases));
+    } else if (action === "blast-damage") {
+        const { melee, outcome } = target.dataset as BlastDamageDataset;
+        sidebarItem.damage(event, melee === "true", outcome);
+    } else if (action === "blast-set-damage-type") {
+        const type = target.dataset.value;
+
+        if (objectHasKey(CONFIG.PF2E.damageTypes, type)) {
+            sidebarItem.setDamageType(type);
+        }
+    }
+}
+
+function onBlastCostClickAction(sidebarItem: ActionsSidebarBlastCost, action: CostEventAction) {
+    if (action === "toggle-blast-action-cost") {
+        sidebarItem.toggleRollOption();
+    }
+}
+
+type BlastId = `blast-${EffectTrait}`;
+
+type BlastOutcome = "success" | "criticalSuccess";
+
+type BlastDamageDataset = {
+    melee: `${boolean}`;
+    outcome: BlastOutcome;
+};
+
+type BlastAttackDataset = {
+    melee: `${boolean}`;
+    mapIncreases: `${number}`;
+};
+
+type BlastsContext = {
+    actions: ActionsSidebarBlast[];
+    cost: ActionsSidebarBlastCost;
+    filterValue: FilterValue;
+};
+
+type BlastEventAction = "blast-attack" | "blast-damage" | "blast-set-damage-type";
+type CostEventAction = "toggle-blast-action-cost";
+
+type ElementalBlastsData = CharacterSheetData["elementalBlasts"][number] & {
+    action: ElementalBlast;
+    item: AbilityItemPF2e<CharacterPF2e>;
+};
+
+type ElementalBlastCost = {
+    item: AbilityItemPF2e<CharacterPF2e>;
+};
+
+type BlastRollOptionsCost = {
+    selected: boolean;
+    cost: "1" | "2";
+    label: string;
+    tooltip: string;
+};
+
+export {
+    ActionsSidebarBlast,
+    ActionsSidebarBlastCost,
+    getBlastsRollOption,
+    getElementalBlastsData,
+    getSidebarBlastsData,
+    onBlastsClickAction,
+};
+export type { BlastsContext };

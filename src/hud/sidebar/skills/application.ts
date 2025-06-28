@@ -79,10 +79,7 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD {
                 const prepared = action.toData() as PreparedSkillAction;
                 prepared.isProficient = !action.requireTrained || isProficient;
 
-                const sidebarSkill = new SkillsSidebarItem(prepared);
-                this.sidebarItems.set(sidebarSkill.uuid, sidebarSkill);
-
-                return sidebarSkill;
+                return this.addSidebarItem(SkillsSidebarItem, "uuid", prepared);
             });
 
             return {
