@@ -364,13 +364,16 @@ abstract class SidebarPF2eHUD<
                 content: togglesTemplate,
             });
 
-            for (const { itemId, img, label } of toggles) {
+            for (const { itemId, img, label, option, domain } of toggles) {
                 if (!img) continue;
 
                 const imgEl = createHTMLElement("img", { classes: ["drag-img"] });
                 imgEl.src = img;
 
-                const toggleRow = htmlQuery(togglesElement, `[data-item-id="${itemId}"]`);
+                const toggleRow = htmlQuery(
+                    togglesElement,
+                    `[data-item-id="${itemId}"][data-domain="${domain}"][data-option="${option}"]`
+                );
 
                 if (toggleRow) {
                     toggleRow.draggable = true;
