@@ -296,18 +296,6 @@
         }
     }
 
-    .statistic-wrapper {
-        &:not(:first-child) {
-            margin-top: var(--item-spacing);
-        }
-
-        &:hover {
-            .controls {
-                display: flex;
-            }
-        }
-    }
-
     .item {
         display: flex;
         min-width: var(--min-width);
@@ -447,6 +435,20 @@
 
         &:not(:first-child) {
             margin-top: var(--item-spacing);
+        }
+    }
+
+    .statistic-wrapper {
+        &:not(:first-child) {
+            margin-top: var(--item-spacing);
+        }
+
+        &:hover {
+            .item.statistic {
+                .controls {
+                    display: flex;
+                }
+            }
         }
     }
 
