@@ -5,6 +5,7 @@ import {
     ApplicationConfiguration,
     ApplicationRenderOptions,
     CharacterPF2e,
+    createToggleKeybind,
     executeWhenReady,
     htmlQuery,
     localize,
@@ -31,6 +32,13 @@ class PersistentPF2eHUD
     implements IAdvancedPF2eHUD
 {
     #actor: ActorPF2e | null = null;
+
+    #setActorKeybind = createToggleKeybind({
+        name: "setActor",
+        onUp: () => {
+            this.#setSelectedToken();
+        },
+    });
 
     static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
         id: "pf2e-hud-persistent",
@@ -80,6 +88,10 @@ class PersistentPF2eHUD
         ];
     }
 
+    get keybindsSchema(): KeybindingActionConfig[] {
+        return [this.#setActorKeybind.configs];
+    }
+
     get actor(): PersistentHudActor | null {
         return this.#actor as PersistentHudActor | null;
     }
@@ -119,6 +131,7 @@ class PersistentPF2eHUD
         executeWhenReady(() => {
             if (mode !== "disabled") {
                 this.render(true);
+                this.#setActorKeybind.toggle(mode === "manual");
             } else {
                 this.close({ force: true });
             }
@@ -302,6 +315,16 @@ class PersistentPF2eHUD
             toggleFoundryBtn("hotbar-controls-right", "lock");
             this.element.classList.toggle("locked", ui.hotbar.locked);
         }
+    }
+
+    #setSelectedToken() {
+        const token = R.only(canvas.tokens.controlled);
+
+        if (!token || !this.isValidActor(token.actor)) {
+            return warning("persistent.error.selectOne");
+        }
+
+        this.setActor(token.actor, { token });
     }
 }
 

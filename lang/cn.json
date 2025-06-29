@@ -1,6 +1,12 @@
 {
     "pf2e-hud": {
         "keybindings": {
+            "persistent": {
+                "setActor": {
+                    "name": "设置受控角色",
+                    "hint": "设置选中指示物角色受控。"
+                }
+            },
             "sidebar": {
                 "filter": {
                     "name": "应用侧边栏筛选",

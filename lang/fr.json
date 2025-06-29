@@ -1,6 +1,12 @@
 {
     "pf2e-hud": {
         "keybindings": {
+            "persistent": {
+                "setActor": {
+                    "name": "Spécifier l'acteur persistant",
+                    "hint": "Spécifier l'acteur de token sélectionné comme persistant."
+                }
+            },
             "sidebar": {
                 "filter": {
                     "name": "Utiliser le filtre du sous-menu",
