@@ -1,11 +1,15 @@
 import { FilterValue } from "hud";
 import {
+    AbilityItemPF2e,
     ActorPF2e,
     ApplicationRenderOptions,
+    FeatPF2e,
     findItemWithSourceId,
     getItemSourceFromUuid,
     hasAnyItemWithSourceId,
     hasItemWithSourceId,
+    htmlClosest,
+    htmlQuery,
     localize,
     R,
     signedInteger,
@@ -18,25 +22,32 @@ import {
     ExtractedSkillActionGroupData,
     FOLLOW_THE_EXPERT,
     FOLLOW_THE_EXPERT_EFFECT,
-    getSkillAction,
     getSkillActionGroups,
     ISkill,
     LoreSkill,
-    SkillActionType,
     SkillProficiency,
     SkillsSidebarItem,
     UNTRAINED_IMPROVISATION,
 } from ".";
-import { SidebarPF2eHUD } from "..";
+import { SidebarPF2eHUD, StatisticType } from "..";
 
 const _cached: {
     followTheLeader?: Omit<FollowTheLeader, "active">;
     proficient?: string;
 } = {};
 
-class SkillsSidebarPF2eHUD extends SidebarPF2eHUD {
+class SkillsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e | AbilityItemPF2e, SkillsSidebarItem> {
     get name(): "skills" {
         return "skills";
+    }
+
+    getSidebarItemFromElement<T extends SkillsSidebarItem>(el: HTMLElement): T | null {
+        const wrapper = htmlClosest(el, ".statistic-wrapper");
+        const { itemId, itemUuid, statistic } = htmlQuery(wrapper, ".item")?.dataset ?? {};
+
+        return (this.sidebarItems.get(
+            itemUuid && statistic ? `${statistic}-${itemUuid}` : itemUuid ?? itemId ?? ""
+        ) ?? null) as T | null;
     }
 
     protected async _prepareContext(
@@ -79,7 +90,11 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD {
                 const prepared = action.toData() as PreparedSkillAction;
                 prepared.isProficient = !action.requireTrained || isProficient;
 
-                return this.addSidebarItem(SkillsSidebarItem, "uuid", prepared);
+                return this.addSidebarItem(
+                    SkillsSidebarItem,
+                    `${action.statistic}-${action.sourceId}`,
+                    prepared
+                );
             });
 
             return {
@@ -108,8 +123,8 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD {
         const action = target.dataset.action as EventAction;
 
         if (action === "roll-statistic-action") {
-            const { key, statistic, variant } = target.dataset as Record<string, string>;
-            getSkillAction(statistic, key)?.roll(actor, event, { variant });
+            const { variant } = target.dataset as Record<string, string>;
+            this.getSidebarItemFromElement(target)?.roll(actor, event, { variant });
         }
 
         if (event.button !== 0) return;
@@ -181,7 +196,7 @@ type PreparedSkillAction = ExtractedSkillActionData & {
 };
 
 type PreparedSkillActionGroup = ExtractedSkillActionGroupData &
-    ISkill<SkillActionType> & {
+    ISkill<StatisticType> & {
         actions: SkillsSidebarItem[];
         isCharacter: boolean;
         proficiency: SkillProficiency | undefined;

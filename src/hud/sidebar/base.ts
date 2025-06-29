@@ -37,11 +37,11 @@ import {
     ActionsSidebarPF2eHUD,
     BaseSidebarItem,
     ExtrasSidebarPF2eHUD,
+    getRollOptionsData,
     ItemsSidebarPF2eHUD,
     SkillsSidebarPF2eHUD,
     SpellsSidebarPF2eHUD,
 } from ".";
-import { getRollOptionsData } from "./rolloptions";
 
 const _cached: { filter?: string } = {};
 
@@ -91,7 +91,7 @@ abstract class SidebarPF2eHUD<
         position: {
             height: "auto",
         },
-        classes: ["pf2e-hud-element"],
+        classes: ["pf2e-hud-element", "pf2e-hud-colors"],
     };
 
     static get keybindsSchema(): KeybindingActionConfig[] {
@@ -253,11 +253,14 @@ abstract class SidebarPF2eHUD<
 
     addSidebarItem<T extends TSidebarItem>(
         ItemCls: ConstructorOf<T>,
-        prop: ExtractValuesOfType<T, string>[keyof T],
+        prop: ExtractValuesOfType<T, string>[keyof T] | (string & {}),
         ...args: ConstructorParameters<ConstructorOf<T>>
     ) {
         const item = new ItemCls(...args);
-        this.sidebarItems.set(item[prop] as string, item);
+        this.sidebarItems.set(
+            prop in item ? (item[prop as keyof typeof item] as string) : (prop as string),
+            item
+        );
         return item;
     }
 

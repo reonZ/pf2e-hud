@@ -1,39 +1,40 @@
 .pf2e-hud-element {
     --outer-background-color: #4d4d4d;
     --outer-background: url("../../../ui/denim075.png") repeat var(--outer-background-color);
-    --outer-box-shadow-color: #111111;
-    --outer-box-shadow-blur: 20px;
-    --outer-box-shadow: 0 0 var(--outer-box-shadow-blur) var(--outer-box-shadow-color);
     --outer-border-color: #111111;
+    --outer-border-radius: 4px;
     --outer-border-width: 1px;
     --outer-border: var(--outer-border-width) solid var(--outer-border-color);
-    --outer-border-radius: 4px;
+    --outer-box-shadow-blur: 20px;
+    --outer-box-shadow-color: #111111;
+    --outer-box-shadow: 0 0 var(--outer-box-shadow-blur) var(--outer-box-shadow-color);
     --outer-padding: 4px;
 
     --tooltip-background: var(--outer-background);
-    --tooltip-box-shadow-color: var(--outer-box-shadow-color);
-    --tooltip-box-shadow-blur: 10px;
-    --tooltip-box-shadow: 0 0 var(--tooltip-box-shadow-blur) var(--tooltip-box-shadow-color);
     --tooltip-border-color: #877a35;
     --tooltip-border-width: 1px;
     --tooltip-border: var(--tooltip-border-width) solid var(--tooltip-border-color);
-    --tooltip-padding: 0.5em 0.6em;
+    --tooltip-box-shadow-blur: 10px;
+    --tooltip-box-shadow-color: var(--outer-box-shadow-color);
+    --tooltip-box-shadow: 0 0 var(--tooltip-box-shadow-blur) var(--tooltip-box-shadow-color);
     --tooltip-color: #fbe1b7;
+    --tooltip-padding: 0.5em 0.6em;
 
-    --color: #efe6d8;
-    --color-alt: #cbcbc3;
     --color-accent: #c54c4c;
-    --color-highlight: #ffffff;
     --color-active: #db2828;
-    --color-reversed: #191919;
+    --color-alt: #cbcbc3;
+    --color-darker: #999;
     --color-disabled: #ffffff4f;
+    --color-highlight: #ffffff;
+    --color-reversed: #191919;
+    --color: #efe6d8;
 
-    --input-width: 2.4em;
-    --input-width-small: 1.8em;
     --input-background: #ffffff0f;
+    --input-width-small: 1.8em;
+    --input-width: 2.4em;
 
-    --icon-width: 1.4em;
     --icon-color: #d4d7de;
+    --icon-width: 1.4em;
 
     --sidebar-external-padding: 10px;
 

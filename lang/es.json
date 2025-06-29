@@ -89,8 +89,6 @@
                 }
             }
         },
-        "leftClick": "[Clic izquierdo]",
-        "rightClick": "[Clic derecho]",
         "actor-hud": {
             "alliance": "Alianza: {value}",
             "temp": "Puntos de golpe temporales",
@@ -135,6 +133,7 @@
             },
             "default": "Muerto, Moribundo, Herido, Magullado, Rasguñado, Perfecto"
         },
+        "leftClick": "[Clic izquierdo]",
         "persistent": {
             "error": {
                 "selectOne": "Elije un token de PNJ/PJ para establecerlo como tu actor persistente."
@@ -157,6 +156,7 @@
             "skills": "Habilidades",
             "extras": "Extras"
         },
+        "rightClick": "[Clic derecho]",
         "tooltip": {
             "distance": {
                 "feet": "ft.",

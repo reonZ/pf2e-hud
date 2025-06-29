@@ -2,6 +2,7 @@ import { HealthStatus } from "health-status";
 import {
     PersistentPF2eHUD,
     prepareActionGroups,
+    prepareExtrasActions,
     TokenPF2eHUD,
     TooltipPF2eHUD,
     TrackerPF2eHUD,
@@ -44,6 +45,7 @@ Hooks.on("init", () => {
 
 Hooks.on("setup", () => {
     prepareActionGroups();
+    prepareExtrasActions();
 });
 
 Hooks.on("ready", () => {

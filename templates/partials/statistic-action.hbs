@@ -1,7 +1,7 @@
 <div class="statistic-wrapper">
     <div class="item statistic{{#if isProficient}} proficient{{/if}}" data-item-uuid="{{sourceId}}"
-        {{#if (and isProficient (not variants.size))}}draggable="true" {{/if}}
-        data-filter-value="{{filterValue}}">
+        data-statistic="{{statistic}}" {{#if (and isProficient (not
+        variants.size))}}draggable="true" {{/if}} data-filter-value="{{filterValue}}">
         <div class="name">
             <a data-action="item-description">
                 {{label}} {{{actionGlyph actionCost}}}
@@ -18,7 +18,6 @@
                 <i class="fa-solid fa-message"></i>
             </a>
         </div>
-        <img src="{{img}}" class="drag-img">
     </div>
     {{#if (and isProficient variants.size)}}
     <div class="variants">
@@ -31,4 +30,5 @@
         {{/each}}
     </div>
     {{/if}}
+    <img src="{{img}}" class="drag-img">
 </div>

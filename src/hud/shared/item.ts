@@ -11,7 +11,7 @@ function getItemFromElement<T extends ItemPF2e>(
     sync?: false
 ): T | null | Promise<T | null>;
 function getItemFromElement(actor: ActorPF2e, el: HTMLElement, sync?: boolean) {
-    const element = htmlClosest(el, ".item");
+    const element = htmlClosest(el, "[data-item-id]") ?? htmlClosest(el, "[data-item-uuid]");
     if (!element) return null;
 
     const { parentId, itemId, itemUuid, itemType, actionIndex, entryId } = element.dataset;

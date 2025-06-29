@@ -1,4 +1,5 @@
-import { ActionCost, SkillSlug } from "module-helpers";
+import { ActionCost } from "module-helpers";
+import { RawBaseActionData, StatisticType } from "..";
 
 const FOLLOW_THE_EXPERT = "Compendium.pf2e.actionspf2e.Item.tfa4Sh7wcxCEqL29";
 const FOLLOW_THE_EXPERT_EFFECT = "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3XWMkd3";
@@ -11,14 +12,6 @@ const UNTRAINED_IMPROVISATION = [
     "Compendium.pf2e.feats-srd.Item.jNrpvEqfncdGZPak", // Halfling Ingenuity
     "Compendium.pf2e.feats-srd.Item.TOyqtUUnOkOLl1Pm", // Eclectic Skill
 ];
-
-const ACTION_IMAGES: Record<string, ImageFilePath> = {
-    lore: "systems/pf2e/icons/spells/divine-decree.webp",
-    treatWounds: "systems/pf2e/icons/spells/delay-affliction.webp",
-    "recall-knowledge": "systems/pf2e/icons/spells/brain-drain.webp",
-    "learn-a-spell": "systems/pf2e/icons/equipment/adventuring-gear/writing-set.webp",
-    "identify-magic": "systems/pf2e/icons/equipment/adventuring-gear/magnifying-glass.webp",
-};
 
 const SHARED_ACTIONS = {
     "recall-knowledge": {
@@ -491,12 +484,8 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
     },
 ];
 
-type SkillActionData = {
-    key: string;
-    actionCost?: ActionCost["value"] | ActionCost["type"];
+type SkillActionData = RawBaseActionData & {
     img?: ImageFilePath;
-    /** item use for description and send-to-chat */
-    sourceId: CompendiumItemUUID;
     label?: string;
     requireTrained?: boolean;
     rollOptions?: string[];
@@ -509,19 +498,14 @@ type SkillActionData = {
 };
 
 type RawStatisticActionGroup = {
-    actions: (SkillActionData | SharedAction)[];
-    statistic: SkillActionType;
+    actions: (SkillActionData | SharedActionKey)[];
+    statistic: StatisticType;
     system?: "pf2e" | "sf2e";
 };
 
-type SharedAction = keyof typeof SHARED_ACTIONS;
-
-type SkillActionType = SkillSlug | SkillSlugSfe2 | "perception";
-
-type SkillSlugSfe2 = "computers" | "piloting";
+type SharedActionKey = keyof typeof SHARED_ACTIONS;
 
 export {
-    ACTION_IMAGES,
     CHIRURGEON,
     FOLLOW_THE_EXPERT,
     FOLLOW_THE_EXPERT_EFFECT,
@@ -529,4 +513,4 @@ export {
     SHARED_ACTIONS,
     UNTRAINED_IMPROVISATION,
 };
-export type { SkillActionData, SkillActionType, SkillSlugSfe2 };
+export type { SkillActionData };

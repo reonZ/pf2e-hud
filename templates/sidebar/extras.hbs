@@ -1,1 +1,94 @@
-<div>EXTRAS</div>
+{{!-- initiative --}}
+{{#if initiative}}
+<div class="row initiative" data-filter-value="{{@root.filterValue 'PF2E.InitiativeLabel'}}">
+    <a data-action="roll-initiative">
+        <i class="fa-solid fa-dice-d20"></i>
+        {{localize 'PF2E.InitiativeLabel'}}
+    </a>
+    <select name="system.initiative.statistic">
+        {{selectOptions statistics selected='perception'}}
+    </select>
+</div>
+<hr>
+{{/if}}
+{{!-- rest & daily preps --}}
+{{#if isCharacter}}
+<div class="row" data-filter-value="{{@root.filterValue 'PF2E.Actor.Character.Rest.Label'}}">
+    <a data-action="rest-for-the-night">
+        <i class="fa-solid fa-bed"></i>
+        {{localize 'PF2E.Actor.Character.Rest.Label'}}
+    </a>
+</div>
+{{#if dailies}}
+<div class="row dailies" data-filter-value="{{@root.filterValue 'pf2e-dailies.sheet.title'}}">
+    {{#if dailies.canPrep}}
+    <a data-action="prepare-dailies">
+        <i class="fa-solid fa-mug-saucer"></i>
+        {{localize 'pf2e-dailies.sheet.title'}}
+    </a>
+    {{else}}
+    <span>
+        <i class="fa-solid fa-mug-saucer"></i>
+        {{localize 'pf2e-dailies.sheet.title'}}
+    </span>
+    <i class="end fa-solid fa-circle-info" data-tooltip="{{dailies.tooltip}}"
+        data-tooltip-class="pf2e pf2e-dailies-summary"></i>
+    {{/if}}
+</div>
+{{/if}}
+<hr>
+{{/if}}
+{{!-- special resources --}}
+{{#if resources.length}}
+{{#each resources as |resource|}}
+<div class="row resource" data-section="{{resource.slug}}" data-item-uuid="{{resource.itemUUID}}"
+    data-filter-value="{{@root.filterValue resource.label}}">
+    <div class="name">
+        <a data-action="item-description">{{resource.label}}</a>
+    </div>
+    <div class="numbers">
+        <input type="number" data-resource="{{resource.slug}}" value="{{resource.value}}" min="0"
+            max="{{resource.max}}">
+        <span class="separator">/</span>
+        <input type="number" value="{{resource.max}}" placeholder="0" disabled />
+    </div>
+</div>
+{{/each}}
+<hr>
+{{/if}}
+{{!-- actions --}}
+{{#each actions as |action|}}
+{{> (@root.partial 'statistic-action') action}}
+{{/each}}
+<hr>
+{{!-- macros --}}
+{{#if macros.length}}
+{{#each macros as |macro|}}
+<div class="item macro" data-uuid="{{macro.uuid}}"
+    data-filter-value="{{@root.filterValue macro.name localize=false}}">
+    <div class="image">
+        <img src="{{macro.img}}">
+    </div>
+    <div class="details">
+        <div class="name">{{macro.name}}</div>
+        <div class="extras">
+            <div class="item-controls">
+                <a data-action="use-macro" {{{@root.i18n.tooltip 'use' }}}>
+                    <i class="fa-duotone fa-play"></i>
+                </a>
+            </div>
+            <div class="item-controls">
+                <a data-action="edit-macro" {{{@root.i18n.tooltip 'edit' }}}>
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </a>
+                <a data-action="delete-macro" {{{@root.i18n.tooltip 'delete.title' }}}>
+                    <i class="fa-solid fa-trash"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{{/each}}
+{{else}}
+<div class="no-macro">{{@root.i18n 'noMacro'}}</div>
+{{/if}}

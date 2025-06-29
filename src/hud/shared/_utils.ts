@@ -1,4 +1,12 @@
-import { ActorPF2e, R, ValueAndMax, ZeroToTwo } from "module-helpers";
+import {
+    ActorInitiative,
+    ActorPF2e,
+    EffectPF2e,
+    eventToRollParams,
+    InitiativeRollResult,
+    R,
+    ValueAndMax,
+} from "module-helpers";
 
 const COVER_UUID = "Compendium.pf2e.other-effects.Item.I9lfZUiCwMiGogVi";
 
@@ -34,19 +42,7 @@ class FilterValue {
     }
 }
 
-function getMapValue(map: 1 | 2, agile = false) {
-    return map === 1 ? (agile ? -4 : -5) : agile ? -8 : -10;
-}
-
-function getMapLabel(map: ZeroToTwo, agile?: boolean) {
-    return map === 0
-        ? game.i18n.localize("PF2E.Roll.Normal")
-        : game.i18n.format("PF2E.MAPAbbreviationLabel", {
-              penalty: getMapValue(map, agile),
-          });
-}
-
-function getCoverEffect(actor: ActorPF2e) {
+function getCoverEffect(actor: ActorPF2e): EffectPF2e<ActorPF2e> | undefined {
     return actor.itemTypes.effect.find((effect) => effect.sourceId === COVER_UUID);
 }
 
@@ -62,6 +58,28 @@ function createSlider(
     };
 }
 
+function rollInitiative(
+    event: Event,
+    actor: ActorPF2e,
+    statistic?: string
+): Promise<InitiativeRollResult | null> | undefined {
+    const args = eventToRollParams(event, { type: "check" });
+
+    if (!statistic) {
+        return actor.initiative?.roll(args);
+    }
+
+    const ActorInit = actor.initiative?.constructor as ConstructorOf<ActorInitiative> | undefined;
+    if (!ActorInit) return;
+
+    const initiative = new ActorInit(actor, {
+        statistic,
+        tiebreakPriority: actor.system.initiative!.tiebreakPriority,
+    });
+
+    return initiative.roll(args);
+}
+
 type SliderData = {
     action: string;
     canBack: boolean;
@@ -69,5 +87,5 @@ type SliderData = {
     value: number;
 };
 
-export { createSlider, FilterValue, getCoverEffect, getMapLabel, getMapValue };
+export { createSlider, FilterValue, getCoverEffect, rollInitiative };
 export type { SliderData };

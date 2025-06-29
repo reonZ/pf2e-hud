@@ -20,3 +20,49 @@
         border: 1px solid rgb(92, 82, 24);
     }
 }
+
+.pf2e-hud-colors {
+    --color-rarity-uncommon: #cb8470;
+    --color-rarity-rare: #5996f7;
+    --color-rarity-unique: #d05fff;
+
+    --color-rank-0: #787878;
+    --color-rank-1: #6070ff;
+    --color-rank-2: #b739ff;
+    --color-rank-3: #bc7f05;
+    --color-rank-4: #db2020;
+
+    .rank {
+        &.\30 {
+            color: var(--color-rank-0);
+        }
+
+        &.\31 {
+            color: var(--color-rank-1);
+        }
+
+        &.\32 {
+            color: var(--color-rank-2);
+        }
+
+        &.\33 {
+            color: var(--color-rank-3);
+        }
+
+        &.\34 {
+            color: var(--color-rank-4);
+        }
+    }
+
+    .rarity-uncommon {
+        color: var(--color-rarity-uncommon);
+    }
+
+    .rarity-rare {
+        color: var(--color-rarity-rare);
+    }
+
+    .rarity-unique {
+        color: var(--color-rarity-unique);
+    }
+}

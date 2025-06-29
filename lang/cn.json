@@ -80,8 +80,6 @@
                 }
             }
         },
-        "leftClick": "[左键点击]",
-        "rightClick": "[右键点击]",
         "actions": {
             "borrowArcaneSpell": "借阅奥术",
             "drive": {
@@ -106,10 +104,6 @@
                 "specific": "特殊",
                 "unspecific": "非特殊"
             }
-        },
-        "spellcasting": {
-            "charges": "充能",
-            "staff": "法杖"
         },
         "actor-hud": {
             "alliance": "关系：{value}",
@@ -154,6 +148,7 @@
             },
             "default": "死亡, 奄奄一息, 欠佳, 受创, 微伤, 完好"
         },
+        "leftClick": "[左键点击]",
         "persistent": {
             "error": {
                 "selectOne": "选择一个NPC/角色指示物以设置你的受控角色。"
@@ -169,6 +164,24 @@
                 }
             }
         },
+        "recall-knowledge": {
+            "lore": "学识技能",
+            "proficiency": "熟练度",
+            "result": "结果",
+            "target": "目标",
+            "dc": "DC",
+            "skill": "技能",
+            "modifier": "调整值",
+            "first": "1st",
+            "second": "2nd",
+            "third": "3rd",
+            "fourth": "4th",
+            "fifth": "5th",
+            "sixth": "6th",
+            "specific": "特殊",
+            "unspecific": "非特殊"
+        },
+        "rightClick": "[右键点击]",
         "sidebar": {
             "filter": "侧边栏过滤",
             "actions": {
@@ -179,6 +192,15 @@
                 "reset": "重置使用次数",
                 "stances": "架势",
                 "thrown": "投掷{increment}/{max}尺"
+            },
+            "extras": {
+                "delete": {
+                    "title": "删除宏",
+                    "content": "你确定你想要删除该宏吗？"
+                },
+                "edit": "编辑宏",
+                "noMacro": "拖拽宏至此",
+                "use": "执行宏"
             },
             "skills": {
                 "alternate": "[右键点击]菜单变体",
@@ -196,6 +218,10 @@
             "spells": "施法",
             "skills": "技能",
             "extras": "额外选项"
+        },
+        "spellcasting": {
+            "charges": "充能",
+            "staff": "法杖"
         },
         "tooltip": {
             "distance": {

@@ -91,8 +91,6 @@
                 }
             }
         },
-        "leftClick": "[Left Click]",
-        "rightClick": "[Right Click]",
         "actions": {
             "borrowArcaneSpell": "Borrow an Arcane Spell",
             "drive": {
@@ -117,10 +115,6 @@
                 "lore": "Lore Skill",
                 "proficiency": "Proficiency"
             }
-        },
-        "spellcasting": {
-            "charges": "Charges",
-            "staff": "Staff"
         },
         "actor-hud": {
             "alliance": "Alliance: {value}",
@@ -167,6 +161,7 @@
             },
             "default": "Dead, At Death's Door, Not Feeling Good, Seen Better Days, Barely Hurt, Perfectly Fine"
         },
+        "leftClick": "[Left Click]",
         "persistent": {
             "error": {
                 "selectOne": "Select a single NPC/Character token to set as your persistent actor."
@@ -183,6 +178,24 @@
                 }
             }
         },
+        "recall-knowledge": {
+            "result": "Result",
+            "modifier": "Mod.",
+            "target": "Target",
+            "first": "1st",
+            "second": "2nd",
+            "third": "3rd",
+            "fourth": "4th",
+            "fifth": "5th",
+            "sixth": "6th",
+            "dc": "DC",
+            "unspecific": "Unspecific",
+            "specific": "Specific",
+            "skill": "Skill",
+            "lore": "Lore Skill",
+            "proficiency": "Proficiency"
+        },
+        "rightClick": "[Right Click]",
         "sidebar": {
             "filter": "Sidebar Filter",
             "actions": {
@@ -202,6 +215,15 @@
                 },
                 "thrown": "Thrown {increment}/{max} ft."
             },
+            "extras": {
+                "delete": {
+                    "title": "Delete Macro",
+                    "content": "Are you sure you want to delete this macro?"
+                },
+                "edit": "Edit Macro",
+                "noMacro": "Drop Macros Here",
+                "use": "Run Macro"
+            },
             "removeEffect": "Remove Effect",
             "skills": {
                 "alternate": "[Right Click] Variants Menu",
@@ -219,6 +241,10 @@
             "spells": "Spellcasting",
             "skills": "Skills",
             "extras": "Extras"
+        },
+        "spellcasting": {
+            "charges": "Charges",
+            "staff": "Staff"
         },
         "tooltip": {
             "distance": {

@@ -80,8 +80,6 @@
                 }
             }
         },
-        "leftClick": "[Clic gauche]",
-        "rightClick": "[Clic droit]",
         "actions": {
             "borrowArcaneSpell": "Emprunter un sort arcanique",
             "drive": {
@@ -107,10 +105,7 @@
                 "proficiency": "Maîtrise"
             }
         },
-        "spellcasting": {
-            "charges": "Charges",
-            "staff": "Bâton"
-        },
+
         "actor-hud": {
             "alliance": "Alliance : {value}",
             "temp": "Points de vie temporaires",
@@ -154,6 +149,7 @@
             },
             "default": "Mort, Au seuil de la mort, Ne se sent pas bien, A connu des jours meilleurs, Légèrement blessé, En pleine santé"
         },
+        "leftClick": "[Clic gauche]",
         "persistent": {
             "error": {
                 "selectOne": "Sélectionnez un seul jeton de PNJ ou PJ pour être votre acteur persistant."
@@ -169,6 +165,24 @@
                 }
             }
         },
+        "recall-knowledge": {
+            "result": "Résultat",
+            "modifier": "Mod.",
+            "target": "Cible",
+            "first": "1er",
+            "second": "2e",
+            "third": "3e",
+            "fourth": "4e",
+            "fifth": "5e",
+            "sixth": "6e",
+            "dc": "DD",
+            "unspecific": "Non spécifique",
+            "specific": "Spécifique",
+            "skill": "Compétence",
+            "lore": "Connaissance",
+            "proficiency": "Maîtrise"
+        },
+        "rightClick": "[Clic droit]",
         "sidebar": {
             "filter": "Filtre de sous-menu",
             "actions": {
@@ -179,6 +193,15 @@
                 "reset": "Réinitialiser les utilisations",
                 "stances": "Postures",
                 "thrown": "Lancer {increment}/{max} ft."
+            },
+            "extras": {
+                "delete": {
+                    "title": "Effacer la Macro",
+                    "content": "Souhaitez-vous effacer cette macro ?"
+                },
+                "edit": "Modifier la Macro",
+                "noMacro": "Glissez vos macros ici",
+                "use": "Utiliser la Macro"
             },
             "skills": {
                 "alternate": "[Clic droit] Menu des variantes",
@@ -196,6 +219,10 @@
             "spells": "Incantation",
             "skills": "Compétences",
             "extras": "Extras"
+        },
+        "spellcasting": {
+            "charges": "Charges",
+            "staff": "Bâton"
         },
         "tooltip": {
             "distance": {
