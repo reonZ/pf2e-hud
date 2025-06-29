@@ -1,3 +1,15 @@
+# 2.7.0
+
+-   this release contains the fully implemented `Extras` sidebar
+-   `Token HUD`, `Popup` and `Sidebar` will now fadeout whenever anything is dragged across the screen
+-   `Extras Sidebar`:
+    -   now inject the `Effect: Aid` link in the resulting message when using the `Aid` action
+    -   you can now open the item sheet of resources
+-   `Skills Sidebar`:
+    -   fix action controls not showing up on mouseover
+    -   fix all shared actions (e.g. `Identify Magic`) always using the same statistic
+-   fix token bounds mismatch for `Token Tooltip` & `Token HUD` on scenes with grid size other than 100px
+
 # 2.6.0
 
 -   this release contains the fully implemented `Actions` sidebar
