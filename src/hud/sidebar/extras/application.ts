@@ -44,6 +44,7 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e, ExtrasSidebar
     ): Promise<ExtrasSidebarContext> {
         const actor = this.actor;
         const isCharacter = actor.isOfType("character");
+
         const actions = getExtrasActions().map((action) => {
             const data = action.toData();
             return this.addSidebarItem(ExtrasSidebarItem, "uuid", data);

@@ -18,7 +18,7 @@ import {
     ValueAndMax,
 } from "module-helpers";
 import { ActionsSidebarPF2eHUD } from ".";
-import { BaseSidebarItem, getSkillActionGroups } from "..";
+import { BaseSidebarItem, getExtrasActions, getSkillActionGroups } from "..";
 
 const ACTION_TYPES = {
     action: { sort: 0, label: "PF2E.ActionsActionsHeader" },
@@ -32,7 +32,7 @@ const SKILL_EXCLUDE_EXCLUDE = [
     "Compendium.pf2e.actionspf2e.Item.IE2nThCmoyhQA0Jn", // avoid-notice
 ];
 
-const _cachedExcludedSkills: string[] = [];
+const _cachedExcludedActions: string[] = [];
 
 class ActionsSidebarAction extends BaseSidebarItem<
     FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>,
@@ -78,17 +78,21 @@ class ActionsSidebarAction extends BaseSidebarItem<
 
 interface ActionsSidebarAction extends Readonly<ActionData> {}
 
-function getExcludedSkills(): string[] {
-    if (_cachedExcludedSkills.length === 0) {
+function getExcludedActions(): string[] {
+    if (_cachedExcludedActions.length === 0) {
         const skillActions = getSkillActionGroups().contents.flatMap((x) => x.contents);
 
         for (const { sourceId } of skillActions) {
             if (SKILL_EXCLUDE_EXCLUDE.includes(sourceId)) continue;
-            _cachedExcludedSkills.push(sourceId);
+            _cachedExcludedActions.push(sourceId);
+        }
+
+        for (const { sourceId } of getExtrasActions()) {
+            _cachedExcludedActions.push(sourceId);
         }
     }
 
-    return _cachedExcludedSkills;
+    return _cachedExcludedActions;
 }
 
 const _cached: { useLabel?: string; removeEffect?: string } = {};
@@ -107,7 +111,7 @@ async function getSidebarActionsData(
     const hasKineticAura = !!actor.rollOptions.all["self:effect:kinetic-aura"];
     const explorations = isCharacter ? actor.system.exploration : [];
     const inParty = isCharacter ? actor.parties.size > 0 : false;
-    const excludedActions = getExcludedSkills();
+    const excludedActions = getExcludedActions();
     const sections: PartialRecord<SectionType, ActionSection> = {};
     const useLabel = (_cached.useLabel ??= game.i18n.localize("PF2E.Action.Use"));
     const removeEffect = (_cached.removeEffect ??= localize("sidebar.removeEffect"));
