@@ -4,7 +4,7 @@
 -   `Token HUD`, `Popup` and `Sidebar` will now fadeout whenever anything is dragged across the screen
 -   `Extras Sidebar`:
     -   now inject the `Effect: Aid` link in the resulting message when using the `Aid` action
-    -   you can now open the item sheet of resources
+    -   you can now open the descriptio popup of resources
 -   `Skills Sidebar`:
     -   fix action controls not showing up on mouseover
     -   fix all shared actions (e.g. `Identify Magic`) always using the same statistic
