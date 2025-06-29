@@ -5,6 +5,7 @@ import {
     ApplicationConfiguration,
     ApplicationRenderOptions,
     CharacterPF2e,
+    createHook,
     createToggleKeybind,
     executeWhenReady,
     htmlQuery,
@@ -32,6 +33,11 @@ class PersistentPF2eHUD
     implements IAdvancedPF2eHUD
 {
     #actor: ActorPF2e | null = null;
+
+    #controlTokenHook = createHook(
+        "controlToken",
+        foundry.utils.debounce(() => this.render(), 1)
+    );
 
     #setActorKeybind = createToggleKeybind({
         name: "setActor",
@@ -130,8 +136,10 @@ class PersistentPF2eHUD
 
         executeWhenReady(() => {
             if (mode !== "disabled") {
-                this.render(true);
+                this.#controlTokenHook.toggle(mode === "select");
                 this.#setActorKeybind.toggle(mode === "manual");
+
+                this.render(true);
             } else {
                 this.close({ force: true });
             }
@@ -158,8 +166,14 @@ class PersistentPF2eHUD
     ): Promise<this> {
         this._cleanupActor();
 
+        const mode = this.settings.mode;
+
         this.#actor =
-            this.settings.mode === "manual" ? this.savedActor ?? game.user.character : null;
+            mode === "manual"
+                ? this.savedActor ?? game.user.character
+                : mode === "select"
+                ? R.only(canvas.tokens.controlled)?.actor ?? null
+                : null;
 
         if (this.#actor) {
             this.#actor.apps[this.id] = this;
