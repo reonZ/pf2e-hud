@@ -87,6 +87,7 @@ abstract class BaseTokenPF2eHUD<
 
         super._updatePosition(position);
 
+        const gridSize = canvas.grid.size;
         const scale = token.worldTransform.a;
         const uiScale = canvas.dimensions.uiScale;
         const transform = canvas.stage.worldTransform;
@@ -97,8 +98,8 @@ abstract class BaseTokenPF2eHUD<
         const worldWidth = bounds.width * scale;
         const worldHeight = bounds.height * scale;
 
-        const width = worldWidth / uiScale;
-        const height = worldHeight / uiScale;
+        const width = (worldWidth / uiScale) * (gridSize / 100);
+        const height = (worldHeight / uiScale) * (gridSize / 100);
         const left = worldLeft + (worldWidth - width) / 2;
         const top = worldTop + (worldHeight - height) / 2;
 
