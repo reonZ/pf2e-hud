@@ -191,9 +191,18 @@
                 "rangedWithIncrement": "Dystans {increment}/{max} stóp",
                 "reach": "Zasięg {reach} stóp",
                 "reset": "Resetowanie użycia",
+                "shields": {
+                    "shown": "Tarcze są wyświetlane",
+                    "hidden": "Tarcze są ukryte"
+                },
                 "stances": "Postawy",
+                "stowedWeapons": {
+                    "shown": "Schowane przedmioty są wyświetlane",
+                    "hidden": "Schowane przedmioty są ukryte"
+                },
                 "thrown": "Rzut {increment}/{max} stóp"
             },
+            "removeEffect": "Usuń efekt",
             "skills": {
                 "alternate": "Menu wariantów [prawy przycisk myszy]",
                 "hideUntrained": "Ukryj niewytrenowane",
