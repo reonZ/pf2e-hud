@@ -1,6 +1,7 @@
 import {
     ActorInitiative,
     ActorPF2e,
+    ApplicationV2,
     EffectPF2e,
     eventToRollParams,
     InitiativeRollResult,
@@ -80,6 +81,34 @@ function rollInitiative(
     return initiative.roll(args);
 }
 
+function makeFadeable(app: ApplicationV2) {
+    const onDragStart = (event: DragEvent) => {
+        requestAnimationFrame(() => {
+            app.element.classList.add("pf2e-hud-fadeout");
+
+            window.addEventListener(
+                "dragend",
+                () => {
+                    setTimeout(() => {
+                        app.element.classList.remove("pf2e-hud-fadeout");
+                    }, 500);
+                },
+                { once: true, capture: true }
+            );
+        });
+    };
+
+    window.addEventListener("dragstart", onDragStart, true);
+
+    app.addEventListener(
+        "close",
+        () => {
+            window.removeEventListener("dragstart", onDragStart, true);
+        },
+        { once: true }
+    );
+}
+
 type SliderData = {
     action: string;
     canBack: boolean;
@@ -87,5 +116,5 @@ type SliderData = {
     value: number;
 };
 
-export { createSlider, FilterValue, getCoverEffect, rollInitiative };
+export { createSlider, FilterValue, getCoverEffect, makeFadeable, rollInitiative };
 export type { SliderData };

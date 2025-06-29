@@ -29,6 +29,10 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e, ExtrasSidebar
         return getFlag<string[]>(this.worldActor, "macros", game.user.id)?.slice() ?? [];
     }
 
+    get fadeoutOnDrag(): boolean {
+        return false;
+    }
+
     getSidebarItemFromElement<T extends ExtrasSidebarItem>(el: HTMLElement): T | null {
         const wrapper = htmlClosest(el, ".statistic-wrapper");
         const { itemId, itemUuid } = htmlQuery(wrapper, ".item")?.dataset ?? {};

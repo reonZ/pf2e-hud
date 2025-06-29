@@ -6,6 +6,7 @@ import {
     getSidebars,
     IAdvancedPF2eHUD,
     ItemHudPopup,
+    makeFadeable,
     sendItemToChat,
     SidebarCoords,
     SidebarName,
@@ -251,6 +252,10 @@ abstract class SidebarPF2eHUD<
         return this.#sidebarItems;
     }
 
+    get fadeoutOnDrag(): boolean {
+        return true;
+    }
+
     addSidebarItem<T extends TSidebarItem>(
         ItemCls: ConstructorOf<T>,
         prop: ExtractValuesOfType<T, string>[keyof T] | (string & {}),
@@ -282,6 +287,10 @@ abstract class SidebarPF2eHUD<
         this.parent.addEventListener("position", this.#parentPositionListener);
         this.parent.addEventListener("close", this.#parentCloseListener, { once: true });
         this.parent.addEventListener("render", this.#parentRenderListener);
+
+        if (this.fadeoutOnDrag) {
+            makeFadeable(this);
+        }
     }
 
     protected _onRender(context: object, options: ApplicationRenderOptions): void {

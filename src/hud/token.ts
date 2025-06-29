@@ -25,6 +25,7 @@ import {
     HUDSettingsList,
     IAdvancedPF2eHUD,
     makeAdvancedHUD,
+    makeFadeable,
     SidebarCoords,
     SidebarMenu,
 } from ".";
@@ -146,6 +147,8 @@ class TokenPF2eHUD
     protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
         this.#canvasPanHook.activate();
         this.#mouseDownEvent.activate();
+
+        makeFadeable(this);
     }
 
     protected _onClose(options: ApplicationClosingOptions) {

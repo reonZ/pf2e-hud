@@ -83,7 +83,6 @@
             [data-action="toggle-stance"] {
                 &.disabled {
                     cursor: default;
-                    pointer-events: all;
                 }
             }
         }
@@ -182,6 +181,18 @@
 
         &.attack {
             flex-direction: column;
+        }
+    }
+
+    &:not(.pf2e-hud-fadeout) {
+        .item {
+            .controls {
+                [data-action="toggle-stance"] {
+                    &.disabled {
+                        pointer-events: all;
+                    }
+                }
+            }
         }
     }
 }

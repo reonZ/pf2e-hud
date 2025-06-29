@@ -1,3 +1,4 @@
+import { makeFadeable } from "hud";
 import {
     ActorPF2e,
     ApplicationClosingOptions,
@@ -38,6 +39,10 @@ abstract class BaseHudPopup<TActor extends ActorPF2e = ActorPF2e> extends foundr
     close(options: ApplicationClosingOptions = {}): Promise<this> {
         options.animate = false;
         return super.close(options);
+    }
+
+    protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
+        makeFadeable(this);
     }
 
     _onClose(options?: ApplicationClosingOptions) {

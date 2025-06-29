@@ -103,7 +103,6 @@
     .inner,
     [data-panel="filter"],
     [data-panel="sidebars"] {
-        pointer-events: all;
         border: var(--outer-border);
         box-shadow: var(--outer-box-shadow);
         background: var(--outer-background);
@@ -143,7 +142,6 @@
         &.visible {
             opacity: 1;
             visibility: visible;
-            pointer-events: all;
         }
     }
 
@@ -453,6 +451,20 @@
 
     .item .variants {
         margin-top: 2px;
+    }
+
+    &:not(.pf2e-hud-fadeout) {
+        .inner,
+        [data-panel="filter"],
+        [data-panel="sidebars"] {
+            pointer-events: all;
+        }
+
+        [data-panel="filter"] {
+            &.visible {
+                pointer-events: all;
+            }
+        }
     }
 }
 

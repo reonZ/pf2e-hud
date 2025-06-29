@@ -21,6 +21,12 @@
     }
 }
 
+.pf2e-hud-fadeout {
+    opacity: 0.1;
+    transition: opacity 250ms;
+    pointer-events: none;
+}
+
 .pf2e-hud-colors {
     --color-rarity-uncommon: #cb8470;
     --color-rarity-rare: #5996f7;

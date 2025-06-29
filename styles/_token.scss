@@ -39,7 +39,6 @@
     container: pf2e-hud-token-exploded / size;
 
     [data-panel] {
-        pointer-events: all;
         width: max-content;
         position: absolute;
         border: var(--outer-border);
@@ -95,6 +94,12 @@
         [data-panel="info"] {
             right: 50%;
             transform: translateX(50%);
+        }
+    }
+
+    &:not(.pf2e-hud-fadeout) {
+        [data-panel] {
+            pointer-events: all;
         }
     }
 
@@ -164,7 +169,6 @@
         width: max-content;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        pointer-events: all;
         top: 50%;
         transform: translateY(-50%);
 
@@ -207,6 +211,12 @@
         [data-panel="sidebars"] {
             grid-template-columns: repeat(5, 1fr);
             justify-items: center;
+        }
+    }
+
+    &:not(.pf2e-hud-fadeout) {
+        .wrapper {
+            pointer-events: all;
         }
     }
 }
