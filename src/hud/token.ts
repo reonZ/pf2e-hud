@@ -112,7 +112,8 @@ class TokenPF2eHUD
     }
 
     protected _configurate(): void {
-        const enabled = this.settings.enabled;
+        const enabled =
+            this.settings.enabled && !["select", "combat"].includes(hud.persistent.settings.mode);
 
         this._toggleTokenHooks(enabled);
         this.#tokenClickLeftWrapper.toggle(enabled);
@@ -139,8 +140,6 @@ class TokenPF2eHUD
             !actor.isOfType("loot", "party") &&
             actor.isOwner &&
             !hud.persistent.isCurrentActor(actor, true)
-            // && (hud.persistent.getSetting("autoSet") !== "select" ||
-            // !hud.persistent.acceptsActor(actor))
         );
     }
 

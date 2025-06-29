@@ -67,6 +67,7 @@ class PersistentPF2eHUD
                 choices: SELECTION_MODES,
                 onChange: () => {
                     this.configurate();
+                    hud.token.configurate();
                 },
             },
             {
@@ -164,6 +165,7 @@ class PersistentPF2eHUD
         options?: boolean | DeepPartial<ApplicationRenderOptions>,
         _options?: DeepPartial<ApplicationRenderOptions>
     ): Promise<this> {
+        console.trace();
         this._cleanupActor();
 
         const mode = this.settings.mode;
