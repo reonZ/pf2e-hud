@@ -157,7 +157,9 @@ class PersistentPF2eHUD
         _options?: DeepPartial<ApplicationRenderOptions>
     ): Promise<this> {
         this._cleanupActor();
-        this.#actor = this.settings.mode === "manual" ? this.savedActor : null;
+
+        this.#actor =
+            this.settings.mode === "manual" ? this.savedActor ?? game.user.character : null;
 
         if (this.#actor) {
             this.#actor.apps[this.id] = this;
