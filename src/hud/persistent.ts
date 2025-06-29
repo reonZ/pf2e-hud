@@ -165,24 +165,27 @@ class PersistentPF2eHUD
         options?: boolean | DeepPartial<ApplicationRenderOptions>,
         _options?: DeepPartial<ApplicationRenderOptions>
     ): Promise<this> {
-        console.trace();
         this._cleanupActor();
 
         const mode = this.settings.mode;
 
-        this.#actor =
+        const prospectActor =
             mode === "manual"
                 ? this.savedActor ?? game.user.character
                 : mode === "select"
-                ? R.only(canvas.tokens.controlled)?.actor ?? null
+                ? R.only(canvas.tokens.controlled)?.actor
+                : mode === "combat"
+                ? game.combat?.combatant?.actor
                 : null;
 
+        this.#actor = this.isValidActor(prospectActor) ? prospectActor : null;
+
+        //  TODO is this stil useful?
+        // if (this.#actor?.token) {
+        //     this.#actor.token.baseActor.apps[this.id] = this;
+        // } else
         if (this.#actor) {
             this.#actor.apps[this.id] = this;
-
-            if (this.#actor.token) {
-                this.#actor.token.baseActor.apps[this.id] = this;
-            }
         }
 
         return super.render(options, _options);
