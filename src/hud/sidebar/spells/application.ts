@@ -124,6 +124,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                   ];
 
         const category = SPELL_CATEGORIES[categoryType as SpellCategoryType];
+        if (!category) continue;
 
         const entryDc = entry.statistic?.dc.value;
         const entryDcLabel = entryDc
