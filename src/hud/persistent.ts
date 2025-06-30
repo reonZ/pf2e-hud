@@ -33,6 +33,7 @@ class PersistentPF2eHUD
     implements IAdvancedPF2eHUD
 {
     #actor: ActorPF2e | null = null;
+    #portraitElement: HTMLElement | null = null;
 
     #controlTokenHook = createHook(
         "controlToken",
@@ -157,17 +158,26 @@ class PersistentPF2eHUD
 
     isCurrentActor(actor: Maybe<ActorPF2e>, flash?: boolean): actor is PersistentHudActor {
         const isCurrentActor = super.isCurrentActor(actor);
-        // if (isCurrentActor && flash){ this.flash();}
+
+        if (isCurrentActor && flash) {
+            this.flash();
+        }
+
         return isCurrentActor;
     }
 
-    render(
+    async render(
         options?: boolean | DeepPartial<ApplicationRenderOptions>,
         _options?: DeepPartial<ApplicationRenderOptions>
     ): Promise<this> {
-        this._cleanupActor();
-
         const mode = this.settings.mode;
+        const usedOptions = typeof options === "object" ? options : _options;
+
+        if (usedOptions?.renderContext === "updateCombat" && mode !== "combat") {
+            return this;
+        }
+
+        this._cleanupActor();
 
         const prospectActor =
             mode === "manual"
@@ -179,13 +189,15 @@ class PersistentPF2eHUD
                 : null;
 
         this.#actor = this.isValidActor(prospectActor) ? prospectActor : null;
+        this.#portraitElement = null;
 
-        //  TODO is this stil useful?
-        // if (this.#actor?.token) {
-        //     this.#actor.token.baseActor.apps[this.id] = this;
-        // } else
         if (this.#actor) {
             this.#actor.apps[this.id] = this;
+
+            //  TODO is this stil needed?
+            // if (this.#actor.token) {
+            //     this.#actor.token.baseActor.apps[this.id] = this;
+            // }
         }
 
         return super.render(options, _options);
@@ -197,10 +209,11 @@ class PersistentPF2eHUD
         }
 
         const hotbar = document.getElementById("hotbar");
-
         if (hotbar) {
             document.getElementById("ui-bottom")?.prepend(hotbar);
         }
+
+        this.#portraitElement = null;
 
         return super.close(options);
     }
@@ -242,6 +255,24 @@ class PersistentPF2eHUD
         }
 
         this.setActor(token.actor, { token });
+    }
+
+    flash() {
+        const off = { boxShadow: "0 0 0px transparent" };
+        const on = {
+            boxShadow:
+                "0 0 var(--flash-outset-blur) 0px var(--flash-outset-color), inset 0 0 var(--flash-inset-blur) 0px var(--flash-inset-color)",
+        };
+
+        const portrait = (this.#portraitElement ??= htmlQuery(
+            this.element,
+            `[data-panel="portrait"]`
+        ));
+
+        portrait?.querySelector(".flash")?.animate([off, on, on, on, off], {
+            duration: 200,
+            iterations: 2,
+        });
     }
 
     async _prepareContext(

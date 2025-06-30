@@ -43,7 +43,14 @@
                 }
             },
             "persistent": {
-                "title": "HUD Persistant"
+                "title": "HUD Persistant",
+                "mode": {
+                    "choices": {
+                        "disabled": "Désactivé",
+                        "select": "Sur sélection de jeton",
+                        "combat": "Combattant actuel"
+                    }
+                }
             },
             "sidebar": {
                 "title": "Sous-menus"

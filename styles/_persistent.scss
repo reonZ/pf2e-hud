@@ -1,6 +1,6 @@
 #pf2e-hud-persistent {
-    --panel-gap: 3px;
     --panel-background: url("../../../ui/denim075.png") repeat;
+    --panel-gap: 3px;
 
     --column-1fr: 3.8em;
     --column-2fr: calc(var(--column-1fr) * 2);
@@ -9,6 +9,12 @@
     --row-1fr: 2.05em;
     --row-2fr: calc(var(--row-1fr) * 2);
     --row-3fr: calc(var(--row-1fr) * 3);
+
+    --flash-color: 255, 255, 0;
+    --flash-inset-blur: 30px;
+    --flash-inset-color: rgba(var(--flash-color), 0.55);
+    --flash-outset-blur: 20px;
+    --flash-outset-color: rgb(var(--flash-color));
 
     --sidebar-arrow-color: #2c2c2c;
 

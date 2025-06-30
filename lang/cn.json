@@ -43,7 +43,14 @@
                 }
             },
             "persistent": {
-                "title": "受控HUD"
+                "title": "受控HUD",
+                "mode": {
+                    "choices": {
+                        "disabled": "禁用",
+                        "select": "所选择的指示物",
+                        "combat": "当前回合的参战者"
+                    }
+                }
             },
             "sidebar": {
                 "title": "侧边栏"
