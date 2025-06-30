@@ -1,5 +1,13 @@
 {
     "pf2e-hud": {
+        "keybindings": {
+            "sidebar": {
+                "filter": {
+                    "name": "Usar el filtro lateral",
+                    "hint": "Permitir el filtrado del contenido actual de la barra lateral."
+                }
+            }
+        },
         "settings": {
             "menus": {
                 "healthStatusMenu": {
@@ -7,6 +15,10 @@
                     "label": "Configurar Estado de salud",
                     "hint": "Configurar las divisiones del estado de salud para que se muestren en los HUDs."
                 }
+            },
+            "enabled": {
+                "name": "Activo",
+                "hint": "Activa este elemento en el HUD de tu cliente."
             },
             "global": {
                 "highestSpeed": {
@@ -16,15 +28,6 @@
                 "useModifiers": {
                     "name": "Usar modificadores",
                     "hint": "Mostrar modificadores en vez de la dificutadl en los diferentes elementos del HUD."
-                },
-                "showAlliance": {
-                    "name": "Botón de alianzas",
-                    "hint": "Mostrar el boton de alianza/disposición en los diferentes elementos del HUD.",
-                    "choices": {
-                        "disabled": "Desactivado",
-                        "gm": "Solo el GM",
-                        "all": "Todos"
-                    }
                 }
             },
             "advanced": {
@@ -46,12 +49,11 @@
                     }
                 }
             },
+            "sidebar": {
+                "title": "Sidebar"
+            },
             "token": {
                 "title": "HUD de token",
-                "close": {
-                    "name": "Cerrar completamente al hacer clic",
-                    "hint": "Mientras esté activo, hacer clic en cualquier parte del tablero cerrará el HUD completamente. Mientras esté desactivado, perderá el foco de cualquier campo de entrada o cerrará el menú lateral abierto primero."
-                },
                 "mode": {
                     "name": "Modo de visualización",
                     "hint": "Elegir el modo de visualización del HUD del token.",
@@ -89,17 +91,43 @@
                 }
             }
         },
+        "actions": {
+            "borrowArcaneSpell": "Tomar presado un Conjuro Arcano",
+            "drive": {
+                "drive1": "Drive <span class=\"action-glyph\">1</span>",
+                "drive2": "Drive <span class=\"action-glyph\">2</span>",
+                "drive3": "Drive <span class=\"action-glyph\">3</span>"
+            },
+            "recall-knowledge": {
+                "result": "Resultado",
+                "modifier": "Mod.",
+                "target": "OBjetivo",
+                "first": "1ro",
+                "second": "2do",
+                "third": "3ro",
+                "fourth": "4to",
+                "fifth": "5to",
+                "sixth": "6to",
+                "dc": "CD",
+                "unspecific": "Sin especificar",
+                "specific": "Específico",
+                "skill": "Habilidad",
+                "lore": "Saberes",
+                "proficiency": "Competencia"
+            }
+        },
         "actor-hud": {
             "alliance": "Alianza: {value}",
             "temp": "Puntos de golpe temporales",
             "resolve": "Usar punto de resolución"
         },
         "dialogs": {
-            "variants": {
-                "title": "Variantes de acción",
-                "statistic": "Estadística",
+            "alternates": {
                 "dc": "Clase de dificultad",
-                "drag": "Arrastrar para crear un atajo"
+                "drag": "Arrastra para crear un atajo",
+                "statistic": "Estadística",
+                "title": "Acciones Variantes - {label}",
+                "yes": "Usar Variantes"
             },
             "resolve": {
                 "title": "Usar puntos de resolución",
@@ -143,10 +171,68 @@
                     "always": "Mostrar siempre la UI en el retrato",
                     "hover": "Mostrar la UI únicamente cuando se pasa al ratón por el retrato"
                 },
+                "editAvatar": "Edit Avatar",
                 "setActor": {
                     "set": "Elegir el token seleccionado como actor persistente",
                     "unset": "Deseleccionar como actor persistente"
                 }
+            }
+        },
+        "recall-knowledge": {
+            "result": "Resultado",
+            "modifier": "Mod.",
+            "target": "OBjetivo",
+            "first": "1ro",
+            "second": "2do",
+            "third": "3ro",
+            "fourth": "4to",
+            "fifth": "5to",
+            "sixth": "6to",
+            "dc": "CD",
+            "unspecific": "Sin especificar",
+            "specific": "Específico",
+            "skill": "Habilidad",
+            "lore": "Saberes",
+            "proficiency": "Competencia"
+        }
+        "rightClick": "[Clic derecho]",
+        "sidebar": {
+            "filter": "Filtro de barra lateral",
+            "actions": {
+                "blasts": "Explosiones elementales",
+                "ranged": "Rango {max} ft.",
+                "rangedWithIncrement": "Rango {increment}/{max} ft.",
+                "reach": "Alcance {reach} ft.",
+                "reset": "Reiniciar Usos",
+                "shields": {
+                    "shown": "Los escudos se muestran",
+                    "hidden": "Los escudos se ocultan"
+                },
+                "stances": "Formas",
+                "stowedWeapons": {
+                    "shown": "Los objetos guardados se muestran",
+                    "hidden": "Los objetos guardados no se muestran"
+                },
+                "thrown": "Lanzado {increment}/{max} ft."
+            },
+            "extras": {
+                "delete": {
+                    "title": "Borrar Macro",
+                    "content": "¿Seguro que quieres borrar esta macro?"
+                },
+                "edit": "Editar Macro",
+                "noMacro": "Suelta la Macro aquí",
+                "use": "Ejecutar Macro"
+            },
+            "removeEffect": "Quitar efecto",
+            "skills": {
+                "alternate": "[Clic derecho] menú de variantes",
+                "hideUntrained": "Ocultar sin entrenar",
+                "proficient": "Competente"
+            },
+            "spells": {
+                "broken": "Conjuro roto Spell",
+                "cast": "Lanza el conjuro"
             }
         },
         "sidebars": {
@@ -156,7 +242,10 @@
             "skills": "Habilidades",
             "extras": "Extras"
         },
-        "rightClick": "[Clic derecho]",
+        "spellcasting": {
+            "charges": "Cargas",
+            "staff": "Bastón"
+        },
         "tooltip": {
             "distance": {
                 "feet": "ft.",
