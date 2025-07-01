@@ -1,0 +1,76 @@
+#pf2e-hud-avatar-editor {
+    gap: 0;
+
+    .window-content {
+        gap: 1em;
+
+        .form-group {
+            gap: 2em;
+
+            label {
+                flex: 0;
+                white-space: nowrap;
+            }
+
+            .form-fields {
+                flex: 1;
+
+                button {
+                    flex: 0 0 36px;
+                }
+            }
+        }
+
+        .buttons {
+            margin-top: 1em;
+            display: flex;
+            gap: 4px;
+
+            button {
+                margin: 0;
+            }
+
+            .color {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                input[type="checkbox"] {
+                    margin-bottom: 1px;
+                }
+
+                input[type="color"] {
+                    height: 100%;
+                    outline: none;
+                    border: none;
+                    background: none;
+                    padding: 0;
+                    appearance: none;
+                }
+            }
+        }
+    }
+
+    .viewport {
+        --ratio: 0.8624338624338624;
+
+        position: relative;
+        height: 512px;
+        aspect-ratio: var(--ratio) / 1;
+
+        .border,
+        .image {
+            position: absolute;
+            inset: 0;
+            background-repeat: no-repeat;
+        }
+
+        .border {
+            opacity: 0.3;
+            pointer-events: none;
+            background-image: url("../images/avatar-border-white.webp");
+            background-size: 100% 100%;
+        }
+    }
+}

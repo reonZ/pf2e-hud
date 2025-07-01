@@ -1,0 +1,46 @@
+<form data-tooltip-direction="UP">
+    <div class="form-group">
+        <label>{{localize 'DOCUMENT.FIELDS.img.label'}}</label>
+        <div class="form-fields">
+            <input type="text" name="src" placeholder="" disabled>
+            <button type="button" data-tooltip="FILES.BrowseTooltip" data-action="open-browser"
+                {{disabled noBrowser}}>
+                <i class="fa-solid fa-file-import fa-fw"></i>
+            </button>
+            <button type="button" {{{@root.i18n.tooltip 'src.actor' }}}
+                data-action="use-actor-image">
+                <i class="fa-solid fa-image-portrait"></i>
+            </button>
+            <button type="button" {{disabled noTokenImage}} {{{@root.i18n.tooltip 'src.token' }}}
+                data-action="use-token-image">
+                <i class="fa-solid fa-circle-user"></i>
+            </button>
+        </div>
+    </div>
+    <div class="buttons">
+        <button type="button" data-action="save">
+            <i class="fa-solid fa-floppy-disk"></i>
+            {{@root.i18n 'save'}}
+        </button>
+        <button type="button" data-action="cancel">
+            <i class="fa-solid fa-xmark"></i>
+            {{@root.i18n 'cancel'}}
+        </button>
+        <div class="color">
+            <input type="checkbox" name="colorEnabled" {{{@root.i18n.tooltip 'color.enabled' }}}>
+            <input type="color" name="colorBackground" {{{@root.i18n.tooltip 'color.background' }}}>
+        </div>
+        <button type="button" data-action="reset">
+            <i class="fa-solid fa-rotate-left"></i>
+            {{@root.i18n 'reset'}}
+        </button>
+        <button type="button" data-action="contain">
+            <i class="fa-solid fa-expand"></i>
+            {{@root.i18n 'contain'}}
+        </button>
+    </div>
+</form>
+<div class="viewport">
+    <div class="image"></div>
+    <div class="border"></div>
+</div>

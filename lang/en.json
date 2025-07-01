@@ -127,6 +127,23 @@
             "temp": "Temporary Hit Points",
             "resolve": "Use Resolve Point"
         },
+        "avatar-editor": {
+            "title": "Edit Avatar - {name}",
+            "cancel": "Cancel",
+            "color": {
+                "background": "Background Color",
+                "enabled": "Enable Background Color"
+            },
+            "contain": "Contain",
+            "reset": "Reset",
+            "save": "Save",
+            "src": {
+                "actor": "Use Actor Image",
+                "token": "Use Token Image",
+                "none": "Couldn't find a valid image source",
+                "video": "Videos are not supported with this feature"
+            }
+        },
         "dialogs": {
             "alternates": {
                 "dc": "Difficulty Class",

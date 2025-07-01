@@ -127,6 +127,17 @@
             "temp": "Tymczasowe Punkty Wytrzymałości",
             "resolve": "Użyj Punkt Determinacji"
         },
+        "avatar-editor": {
+            "title": "Edytuj awatar - {name}",
+            "cancel": "Anuluj",
+            "contain": "Zawartość",
+            "reset": "Reset",
+            "save": "Zapisz",
+            "src": {
+                "actor": "Użyj obrazu aktora",
+                "token": "Użyj obrazu tokena"
+            }
+        },
         "dialogs": {
             "alternates": {
                 "dc": "Klasa Trudności",

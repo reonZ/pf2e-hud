@@ -8,6 +8,7 @@ import {
     createHook,
     createToggleKeybind,
     executeWhenReady,
+    getDataFlag,
     htmlQuery,
     localize,
     NPCPF2e,
@@ -25,6 +26,7 @@ import {
     ReturnedAdvancedHudContext,
     SidebarCoords,
 } from ".";
+import { AvatarEditor, AvatarModel } from "avatar-editor";
 
 const SELECTION_MODES = ["disabled", "manual", "select", "combat"] as const;
 
@@ -131,6 +133,10 @@ class PersistentPF2eHUD
 
     get sidebarCeption(): boolean {
         return false;
+    }
+
+    get portraitElement(): HTMLElement | null {
+        return (this.#portraitElement ??= htmlQuery(this.element, `[data-panel="portrait"]`));
     }
 
     protected _configurate(): void {
@@ -258,16 +264,12 @@ class PersistentPF2eHUD
     }
 
     flash() {
+        const portrait = this.portraitElement;
         const off = { boxShadow: "0 0 0px transparent" };
         const on = {
             boxShadow:
                 "0 0 var(--flash-outset-blur) 0px var(--flash-outset-color), inset 0 0 var(--flash-inset-blur) 0px var(--flash-inset-color)",
         };
-
-        const portrait = (this.#portraitElement ??= htmlQuery(
-            this.element,
-            `[data-panel="portrait"]`
-        ));
 
         portrait?.querySelector(".flash")?.animate([off, on, on, on, off], {
             duration: 200,
@@ -332,6 +334,10 @@ class PersistentPF2eHUD
         }
 
         super._replaceHTML(result, content, options);
+
+        requestAnimationFrame(() => {
+            this.#setupAvatar(content);
+        });
     }
 
     protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
@@ -341,6 +347,10 @@ class PersistentPF2eHUD
     protected _cleanupActor(): void {
         super._cleanupActor();
         this.#actor = null;
+    }
+
+    get worldActor(): PersistentHudActor | null {
+        return (this.actor?.token?.baseActor ?? this.actor) as PersistentHudActor | null;
     }
 
     protected _onClickAction(event: PointerEvent, target: HTMLElement): void {
@@ -356,6 +366,12 @@ class PersistentPF2eHUD
 
         if (action === "clear-hotbar") {
             clearHotbar();
+        } else if (action === "edit-avatar") {
+            const worldActor = this.worldActor;
+
+            if (worldActor) {
+                new AvatarEditor(worldActor).render(true);
+            }
         } else if (action === "mute-sound") {
             toggleFoundryBtn("hotbar-controls-left", "mute");
             this.element.classList.toggle("muted", game.audio.globalMute);
@@ -377,6 +393,32 @@ class PersistentPF2eHUD
         }
 
         this.setActor(token.actor, { token });
+    }
+
+    #setupAvatar(html: HTMLElement) {
+        const worldActor = this.worldActor;
+        const avatarElement = htmlQuery(html, ".avatar");
+        if (!avatarElement || !worldActor) return;
+
+        const avatarData = getDataFlag(worldActor, AvatarModel, "customAvatar");
+        if (!avatarData) {
+            avatarElement.style.backgroundImage = `url("${worldActor.img}")`;
+            return;
+        }
+
+        const { position, src, scales, color } = avatarData;
+
+        avatarElement.style.backgroundImage = `url("${src}")`;
+        avatarElement.style.backgroundSize = `${scales.x * 100}% ${scales.y * 100}%`;
+
+        const offsetX = position.x * avatarElement.clientWidth;
+        const offsetY = position.y * avatarElement.clientHeight;
+
+        avatarElement.style.backgroundPosition = `${offsetX}px ${offsetY}px`;
+
+        if (color.enabled) {
+            avatarElement.style.backgroundColor = color.value;
+        }
     }
 }
 
@@ -418,6 +460,7 @@ function getSetActorData(hud: PersistentPF2eHUD): PersistentContextBase["setActo
 
 type EventAction =
     | "clear-hotbar"
+    | "edit-avatar"
     | "mute-sound"
     | "open-sheet"
     | "set-actor"

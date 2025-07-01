@@ -123,6 +123,17 @@
             "temp": "临时生命值",
             "resolve": "使用决心点数"
         },
+        "avatar-editor": {
+            "title": "编辑化身 - {name}",
+            "cancel": "取消",
+            "contain": "容器",
+            "reset": "恢复默认",
+            "save": "保存",
+            "src": {
+                "actor": "使用角色画像",
+                "token": "使用指示物画像"
+            }
+        },
         "dialogs": {
             "alternates": {
                 "dc": "DC",

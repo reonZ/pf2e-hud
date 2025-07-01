@@ -116,7 +116,7 @@
             inset: 0;
             background-position: center top;
             background-repeat: no-repeat;
-            background-size: cover;
+            background-size: contain;
 
             &[data-action] {
                 cursor: pointer;

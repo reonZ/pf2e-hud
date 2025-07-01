@@ -124,6 +124,17 @@
             "temp": "Points de vie temporaires",
             "resolve": "Utiliser les Points de Résolution"
         },
+        "avatar-editor": {
+            "title": "Éditer l'Avatar - {name}",
+            "cancel": "Annuler",
+            "contain": "Contient",
+            "reset": "Réinitialiser",
+            "save": "Sauvegarder",
+            "src": {
+                "actor": "Utiliser l'image de l'acteur",
+                "token": "Utiliser l'image du token"
+            }
+        },
         "dialogs": {
             "alternates": {
                 "title": "Variantes d'action - {label}",
