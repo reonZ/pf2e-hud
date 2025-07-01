@@ -175,6 +175,10 @@
         },
         "leftClick": "[Clic gauche]",
         "persistent": {
+            "effects": {
+                "shift": "Majuscule",
+                "toggle": "Afficher/masquer les effets"
+            },
             "error": {
                 "selectOne": "Sélectionnez un seul jeton de PNJ ou PJ pour être votre acteur persistant."
             },

@@ -180,6 +180,10 @@
         },
         "leftClick": "[Kliknij lewym]",
         "persistent": {
+            "effects": {
+                "shift": "Zmiana",
+                "toggle": "Przełącz efekty"
+            },
             "error": {
                 "selectOne": "Wybierz pojedynczy token NPC/postaci, aby ustawić go jako stałego aktora."
             },

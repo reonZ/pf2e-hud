@@ -1,4 +1,12 @@
 <div data-panel="menu">
+    {{#if hasActor}}
+    <div class="group single">
+        <a class="effects-toggle" data-section="effects" data-action="toggle-effects"
+            {{{@root.i18n.tooltip 'effects.toggle' }}}>
+            <i class="fa-solid fa-person-rays"></i>
+        </a>
+    </div>
+    {{/if}}
     {{#if (or setActor hasActor)}}
     <div class="group">
         {{#if setActor}}

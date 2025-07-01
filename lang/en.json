@@ -186,6 +186,10 @@
         },
         "leftClick": "[Left Click]",
         "persistent": {
+            "effects": {
+                "shift": "Shift",
+                "toggle": "Toggle Effects"
+            },
             "error": {
                 "selectOne": "Select a single NPC/Character token to set as your persistent actor."
             },

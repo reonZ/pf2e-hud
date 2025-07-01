@@ -46,6 +46,14 @@
     font-size: var(--hud-font-size);
     scale: var(--ui-scale);
 
+    [data-panel] {
+        a.inactive {
+            i {
+                color: var(--color-disabled);
+            }
+        }
+    }
+
     i {
         width: var(--icon-width);
         text-align: center;

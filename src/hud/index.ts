@@ -2,6 +2,7 @@ export * from "./shared";
 export * from "./popup";
 export * from "./sidebar";
 export * from "./base";
+export * from "./effects";
 export * from "./persistent";
 export * from "./tooltip";
 export * from "./token";

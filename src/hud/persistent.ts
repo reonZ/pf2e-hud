@@ -1,3 +1,4 @@
+import { AvatarEditor, AvatarModel } from "avatar-editor";
 import { hud } from "main";
 import {
     ActorPF2e,
@@ -18,15 +19,16 @@ import {
     warning,
 } from "module-helpers";
 import {
+    activateEffectsListeners,
     AdvancedHudContext,
     BaseActorPF2eHUD,
     HUDSettingsList,
     IAdvancedPF2eHUD,
     makeAdvancedHUD,
+    renderEffectsPanel,
     ReturnedAdvancedHudContext,
     SidebarCoords,
 } from ".";
-import { AvatarEditor, AvatarModel } from "avatar-editor";
 
 const SELECTION_MODES = ["disabled", "manual", "select", "combat"] as const;
 
@@ -95,6 +97,16 @@ class PersistentPF2eHUD
                     }
                 },
             },
+            {
+                key: "showEffects",
+                type: Boolean,
+                default: true,
+                scope: "user",
+                config: false,
+                onChange: (value) => {
+                    this.updateEffectsPanel();
+                },
+            },
         ];
     }
 
@@ -137,6 +149,10 @@ class PersistentPF2eHUD
 
     get portraitElement(): HTMLElement | null {
         return (this.#portraitElement ??= htmlQuery(this.element, `[data-panel="portrait"]`));
+    }
+
+    get effectsPanel(): HTMLElement | null {
+        return htmlQuery(this.element, `[data-panel="effects"]`);
     }
 
     protected _configurate(): void {
@@ -277,6 +293,42 @@ class PersistentPF2eHUD
         });
     }
 
+    async updateEffectsPanel() {
+        const currentPanel = this.effectsPanel;
+        const effectsBtn = htmlQuery(this.element, ".effects-toggle");
+
+        if (!this.settings.showEffects) {
+            effectsBtn?.classList.add("inactive");
+            return currentPanel?.remove();
+        }
+
+        const effectsPanel = await renderEffectsPanel.call(this);
+
+        if (currentPanel) {
+            if (effectsPanel) {
+                currentPanel.replaceWith(effectsPanel);
+            } else {
+                currentPanel.remove();
+            }
+        } else if (effectsPanel) {
+            this.element.appendChild(effectsPanel);
+        }
+
+        if (effectsPanel) {
+            if (currentPanel) {
+                currentPanel.replaceWith(effectsPanel);
+            } else {
+                this.element.appendChild(effectsPanel);
+            }
+
+            activateEffectsListeners.call(this);
+        } else if (currentPanel) {
+            currentPanel.remove();
+        }
+
+        effectsBtn?.classList.toggle("inactive", !effectsPanel);
+    }
+
     async _prepareContext(
         options: ApplicationRenderOptions
     ): Promise<PersistentContext | PersistentContextBase> {
@@ -336,6 +388,7 @@ class PersistentPF2eHUD
         super._replaceHTML(result, content, options);
 
         requestAnimationFrame(() => {
+            this.updateEffectsPanel();
             this.#setupAvatar(content);
         });
     }
@@ -372,6 +425,8 @@ class PersistentPF2eHUD
             if (worldActor) {
                 new AvatarEditor(worldActor).render(true);
             }
+        } else if (action === "toggle-effects") {
+            this.settings.showEffects = !this.settings.showEffects;
         } else if (action === "mute-sound") {
             toggleFoundryBtn("hotbar-controls-left", "mute");
             this.element.classList.toggle("muted", game.audio.globalMute);
@@ -465,6 +520,7 @@ type EventAction =
     | "open-sheet"
     | "set-actor"
     | "toggle-clean"
+    | "toggle-effects"
     | "toggle-hotbar-lock";
 
 type SetActorOptions = { token?: TokenPF2e };
@@ -475,6 +531,7 @@ type PersistentSettings = {
     cleanPortrait: boolean;
     mode: (typeof SELECTION_MODES)[number];
     savedActor: string;
+    showEffects: boolean;
 };
 
 type PersistentContext = AdvancedHudContext &
