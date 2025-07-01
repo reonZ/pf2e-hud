@@ -1,3 +1,21 @@
+# 2.8.0
+
+-   this release implements all the remaining `Persistent HUD` features with the exception of `Persistent Shortcuts`
+-   `Actions Sidebar`:
+    -   fix actions present in the `Extras` sidebar not being excluded from the list of actions
+-   `Spells Sidebar`:
+    -   fix breaking error when the actor contains unrecognized spellcasting entries
+-   `Token HUD`:
+    -   is now disabled if the `Persistent HUD` mode is set to either `On Token Selection` or `Current Combatant`
+-   `Persistent HUD`:
+    -   you can now set a background color to the custom avatar
+    -   the fallback to assigned actor and the `Set Selected Token` keybind are only used when the `Selection Mode` is set to `Manual`
+    -   remove the `Keep Last Persistent` setting
+        -   the behavior is partially reproducible by disabling the `Left-Click to Release Objects` foundry setting
+    -   remove the `Disable Flash` setting, i think it is too subtle to be a real nuisance that requires a setting
+    -   remove the `Hold Shift for Effects` setting
+        -   it is now the default behavior of the effects panel whenever you want to click on one of the icons
+
 # 2.7.0
 
 -   this release contains the fully implemented `Extras` sidebar
