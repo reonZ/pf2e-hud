@@ -118,10 +118,17 @@
             background-position: center top;
             background-repeat: no-repeat;
             background-size: contain;
+            overflow: hidden;
 
             &[data-action] {
                 cursor: pointer;
                 box-shadow: inset 0 0 8px 1px var(--outer-border-color);
+            }
+
+            img {
+                position: absolute;
+                max-width: none;
+                max-height: none;
             }
         }
     }

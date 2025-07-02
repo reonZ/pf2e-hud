@@ -1,4 +1,4 @@
-import { AvatarEditor, AvatarModel } from "avatar-editor";
+import { AvatarEditor, AvatarModel, calculateAvatarPosition, loadAvatar } from "avatar-editor";
 import { hud } from "main";
 import {
     ActorPF2e,
@@ -387,9 +387,10 @@ class PersistentPF2eHUD
 
         super._replaceHTML(result, content, options);
 
+        this.#setupAvatar(content);
+
         requestAnimationFrame(() => {
             this.updateEffectsPanel();
-            this.#setupAvatar(content);
         });
     }
 
@@ -450,29 +451,28 @@ class PersistentPF2eHUD
         this.setActor(token.actor, { token });
     }
 
-    #setupAvatar(html: HTMLElement) {
+    async #setupAvatar(html: HTMLElement) {
         const worldActor = this.worldActor;
         const avatarElement = htmlQuery(html, ".avatar");
         if (!avatarElement || !worldActor) return;
 
-        const avatarData = getDataFlag(worldActor, AvatarModel, "customAvatar");
+        const avatarData = getDataFlag(worldActor, AvatarModel, "avatar", { strict: true });
         if (!avatarData) {
-            avatarElement.style.backgroundImage = `url("${worldActor.img}")`;
+            avatarElement.innerHTML = "";
+            avatarElement.style.setProperty("background-image", `url("${worldActor.img}")`);
+            avatarElement.style.removeProperty("background-color");
             return;
         }
 
-        const { position, src, scales, color } = avatarData;
+        const image = await loadAvatar(avatarElement, avatarData);
 
-        avatarElement.style.backgroundImage = `url("${src}")`;
-        avatarElement.style.backgroundSize = `${scales.x * 100}% ${scales.y * 100}%`;
+        avatarElement.style.removeProperty("background-image");
+        calculateAvatarPosition(avatarData, image);
 
-        const offsetX = position.x * avatarElement.clientWidth;
-        const offsetY = position.y * avatarElement.clientHeight;
-
-        avatarElement.style.backgroundPosition = `${offsetX}px ${offsetY}px`;
-
-        if (color.enabled) {
-            avatarElement.style.backgroundColor = color.value;
+        if (avatarData.color.enabled) {
+            avatarElement.style.setProperty("background-color", avatarData.color.value);
+        } else {
+            avatarElement.style.removeProperty("background-color");
         }
     }
 }

@@ -1,3 +1,4 @@
+import { AvatarModel } from "avatar-editor";
 import { HealthStatus } from "health-status";
 import {
     PersistentPF2eHUD,
@@ -57,6 +58,6 @@ Hooks.on("ready", () => {
 });
 
 MODULE.devExpose({ huds: HUDS });
-MODULE.debugExpose({ HealthStatus });
+MODULE.debugExpose({ AvatarModel, HealthStatus });
 
 export { HUDS as hud };

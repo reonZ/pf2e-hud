@@ -17,13 +17,16 @@ class AvatarModel extends foundry.abstract.DataModel<null, AvatarDataSchema> {
                     initial: "#000000",
                 }),
             }),
-            position: new PositionField(),
+            position: new PositionField({
+                required: false,
+                nullable: true,
+                initial: undefined,
+            }),
             scale: new fields.NumberField({
                 required: false,
                 nullable: false,
                 initial: 1,
             }),
-            scales: new PositionField({ initial: () => ({ x: 1, y: 1 }) }),
             src: new fields.FilePathField({
                 required: true,
                 nullable: false,
@@ -42,9 +45,8 @@ type AvatarColorSchema = {
 
 type AvatarDataSchema = {
     color: SchemaField<AvatarColorSchema, false, false, true>;
-    position: PositionField;
+    position: PositionField<false, true, false>;
     scale: fields.NumberField<number, number, false, false, true>;
-    scales: PositionField;
     src: fields.FilePathField<
         ImageFilePath | VideoFilePath,
         ImageFilePath | VideoFilePath,

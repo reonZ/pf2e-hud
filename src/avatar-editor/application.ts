@@ -2,20 +2,20 @@ import {
     addListener,
     ApplicationConfiguration,
     ApplicationRenderOptions,
-    CharacterPF2e,
+    CreaturePF2e,
+    FlagData,
     getDataFlag,
     htmlQuery,
     localize,
-    NPCPF2e,
+    MODULE,
     render,
-    setFlag,
     warning,
 } from "module-helpers";
 import { AvatarModel } from ".";
 
 class AvatarEditor extends foundry.applications.api.ApplicationV2 {
-    #actor: CharacterPF2e | NPCPF2e;
-    #data!: AvatarModel;
+    #actor: CreaturePF2e;
+    #data!: FlagData<AvatarModel>;
     #img?: HTMLImageElement;
     #inputElement: HTMLInputElement | null = null;
     #viewport: HTMLElement | null = null;
@@ -29,12 +29,8 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
         },
     };
 
-    constructor(
-        actor: CharacterPF2e | NPCPF2e,
-        options: DeepPartial<ApplicationConfiguration> = {}
-    ) {
+    constructor(actor: CreaturePF2e, options: DeepPartial<ApplicationConfiguration> = {}) {
         super(options);
-
         this.#actor = actor;
     }
 
@@ -42,12 +38,8 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
         return localize("avatar-editor.title", this.actor);
     }
 
-    get actor(): CharacterPF2e | NPCPF2e {
+    get actor(): CreaturePF2e {
         return this.#actor;
-    }
-
-    get scale(): number {
-        return this.#data.scale;
     }
 
     get inputElement(): HTMLInputElement | null {
@@ -94,18 +86,50 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
         if (action === "cancel") {
             this.close();
         } else if (action === "contain") {
-            this.#updateImage({ contain: true });
+            this.#data.updateSource({ position: undefined, scale: 1 });
+            this.#updateImage();
         } else if (action === "open-browser") {
             this.#openBrowser();
         } else if (action === "reset") {
             this.#resetData();
         } else if (action === "save") {
-            this.#saveData();
+            this.#data.setFlag();
+            this.close();
         } else if (action === "use-actor-image") {
             this.#setImage(actor.img);
         } else if (action === "use-token-image") {
             this.#setImage(actor.prototypeToken.texture.src);
         }
+    }
+
+    #openBrowser() {
+        new foundry.applications.apps.FilePicker.implementation({
+            callback: (path: string) => {
+                this.#setImage(path as ImageFilePath | VideoFilePath);
+            },
+            allowUpload: false,
+            type: "image",
+            current: this.#data.src || this.actor.img,
+        }).render(true);
+    }
+
+    #setImage(src: Maybe<ImageFilePath | VideoFilePath>) {
+        if (!src) {
+            return warning("avatar-editor.src.none");
+        }
+
+        if (foundry.helpers.media.VideoHelper.hasVideoExtension(src)) {
+            return warning("avatar-editor.src.video");
+        }
+
+        const inputElement = this.inputElement;
+
+        if (inputElement) {
+            inputElement.value = src;
+        }
+
+        this.#data.updateSource({ src, position: undefined, scale: 1 });
+        this.#loadImage();
     }
 
     #updateColor() {
@@ -131,121 +155,51 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
         }
     }
 
-    #saveData() {
-        const viewport = this.viewportImage;
-        if (!viewport) return;
-
-        this.#data.updateSource({
-            position: {
-                x: this.#data.position.x / viewport.clientWidth,
-                y: this.#data.position.y / viewport.clientHeight,
-            },
-        });
-
-        setFlag(this.actor, "customAvatar", this.#data);
-        this.close();
-    }
-
-    #openBrowser() {
-        new foundry.applications.apps.FilePicker.implementation({
-            callback: (path: string) => {
-                this.#setImage(path as ImageFilePath | VideoFilePath);
-            },
-            allowUpload: false,
-            type: "image",
-            current: this.#data.src || this.actor.img,
-        }).render(true);
-    }
-
     #resetData() {
         const actor = this.actor;
-        const data = getDataFlag(actor, AvatarModel, "customAvatar")?.clone();
 
-        this.#data = data ?? new AvatarModel({ src: actor.img });
-        this.#loadImage({ contain: !data, init: true });
+        const data = getDataFlag(actor, AvatarModel, "avatar", {
+            fallback: { src: actor.img },
+        });
+
+        if (!data) {
+            throw MODULE.Error("an error occured in AvatarEditor");
+        }
+
+        this.#data = data;
+
+        this.#loadImage();
         this.#updateColor();
     }
 
-    #setImage(src: Maybe<ImageFilePath | VideoFilePath>) {
-        if (!src) {
-            return warning("avatar-editor.src.none");
-        }
-
-        if (foundry.helpers.media.VideoHelper.hasVideoExtension(src)) {
-            return warning("avatar-editor.src.video");
-        }
-
-        const inputElement = this.inputElement;
-
-        if (inputElement) {
-            inputElement.value = src;
-        }
-
-        this.#data.updateSource({ src });
-        this.#loadImage({ contain: true });
-    }
-
-    async #loadImage(options?: ImageOptions) {
+    async #loadImage() {
         const inputElement = this.inputElement;
         const viewport = this.viewportImage;
         if (!inputElement || !viewport) return;
 
-        const src = this.#data.src;
-        const img: HTMLImageElement = await new Promise((resolve, reject) => {
-            const img = new Image();
+        this.#img = await loadAvatar(viewport, this.#data);
 
-            img.onload = () => resolve(img);
-            img.onerror = reject;
-            img.src = src;
-        });
+        inputElement.value = this.#img.src;
 
-        inputElement.value = src;
-        viewport.style.backgroundImage = `url("${src}")`;
-
-        this.#img = img;
-        this.#updateImage(options);
+        this.#updateImage();
     }
 
-    async #updateImage({ contain, init }: ImageOptions = {}) {
+    async #updateImage() {
         const img = this.#img;
-        const viewport = this.viewportImage;
-        if (!img || !viewport) return;
+        if (!img) return;
 
-        const scale = contain ? 1 : this.#data.scale;
-        const width = img.width;
-        const height = img.height;
+        calculatePosition(this.#data, img);
 
-        const scales: Point = { x: scale, y: scale };
-        const viewW = viewport.clientWidth;
-        const viewH = viewport.clientHeight;
-        const ratio = viewW / viewH;
-
-        if (width / ratio >= height) {
-            scales.y *= (img.height / img.width) * ratio;
-        } else {
-            scales.x *= img.width / img.height / ratio;
+        if (this.#data.position == null) {
+            this.#data.updateSource({ scale: 1 });
+            this.#savePosition();
         }
-
-        const position: Point = contain
-            ? {
-                  x: (viewW - viewW * scales.x) / 2,
-                  y: (viewH - viewH * scales.y) / 2,
-              }
-            : {
-                  x: this.#data.position.x * (init ? viewW : 1),
-                  y: this.#data.position.y * (init ? viewH : 1),
-              };
-
-        viewport.style.backgroundSize = `${scales.x * 100}% ${scales.y * 100}%`;
-        viewport.style.backgroundPosition = `${position.x}px ${position.y}px`;
-
-        this.#data.updateSource({ position, scale, scales });
     }
 
     #activateListeners(html: HTMLElement) {
         addListener(html, ".image", "wheel", (el, event) => {
             const delta = event.deltaY >= 0 ? -1 : 1;
-            this.#data.updateSource({ scale: this.scale + delta * 0.05 });
+            this.#data.updateSource({ scale: this.#data.scale + delta * 0.05 });
             this.#updateImage();
         });
 
@@ -260,10 +214,16 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
         });
 
         addListener(html, ".image", "pointerdown", (el, event) => {
+            const img = this.#img;
+            const viewport = this.viewportImage;
+            if (!img || !viewport) return;
+
+            const { left, top } = getComputedStyle(img);
+
             const originX = event.pageX;
             const originY = event.pageY;
-            const originOffsetX = this.#data.position.x;
-            const originOffsetY = this.#data.position.y;
+            const originOffsetX = parseInt(left);
+            const originOffsetY = parseInt(top);
 
             const position: Point = {
                 x: originOffsetX,
@@ -274,18 +234,89 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
                 position.x = originOffsetX + (event.pageX - originX);
                 position.y = originOffsetY + (event.pageY - originY);
 
-                el.style.backgroundPosition = `${position.x}px ${position.y}px`;
+                img.style.left = `${position.x}px`;
+                img.style.top = `${position.y}px`;
             };
 
             const pointerUp = (event: PointerEvent) => {
                 window.removeEventListener("pointermove", pointerMove);
-                this.#data.updateSource({ position });
+                this.#savePosition();
             };
 
             window.addEventListener("pointermove", pointerMove);
             window.addEventListener("pointerup", pointerUp, { once: true });
         });
     }
+
+    #savePosition() {
+        const img = this.#img;
+        const scale = this.#data.scale;
+        const viewH = this.viewportImage?.clientHeight;
+        if (!viewH || !img) return;
+
+        const { left, top } = getComputedStyle(img);
+
+        this.#data.updateSource({
+            position: {
+                x: parseInt(left) / viewH / scale,
+                y: parseInt(top) / viewH / scale,
+            },
+        });
+    }
+}
+
+async function loadAvatar(parent: HTMLElement, data: AvatarModel): Promise<HTMLImageElement> {
+    const src = data.src;
+
+    const img: HTMLImageElement = await new Promise((resolve, reject) => {
+        const img = new Image();
+
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+    });
+
+    parent.replaceChildren(img);
+
+    return img;
+}
+
+function calculatePosition(data: AvatarModel, img: HTMLImageElement) {
+    if (data.position == null) {
+        return calculateContainedPosition(img);
+    }
+
+    const viewport = img.parentElement as HTMLElement;
+
+    const scale = data.scale;
+    const { x, y } = data.position;
+    const viewH = viewport.clientHeight;
+
+    img.height = viewH * scale;
+    img.style.left = `${viewH * scale * x}px`;
+    img.style.top = `${viewH * scale * y}px`;
+}
+
+function calculateContainedPosition(img: HTMLImageElement) {
+    const viewport = img.parentElement as HTMLElement;
+
+    const viewW = viewport.clientWidth;
+    const viewH = viewport.clientHeight;
+    const viewR = viewW / viewH;
+    const imgW = img.width;
+    const imgH = img.height;
+
+    const scale = imgW / viewR >= imgH ? ((viewW / imgW) * imgH) / viewH : 1;
+
+    img.height = viewH * scale;
+
+    const position: Point = {
+        x: (viewW - img.width) / 2,
+        y: (viewH - img.height) / 2,
+    };
+
+    img.style.left = `${position.x}px`;
+    img.style.top = `${position.y}px`;
 }
 
 type EventAction =
@@ -301,6 +332,4 @@ type AvatarEditorContext = {
     noBrowser: boolean;
 };
 
-type ImageOptions = { contain?: boolean; init?: boolean };
-
-export { AvatarEditor };
+export { AvatarEditor, calculatePosition as calculateAvatarPosition, loadAvatar };

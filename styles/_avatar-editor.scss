@@ -64,6 +64,16 @@
             position: absolute;
             inset: 0;
             background-repeat: no-repeat;
+
+            img {
+                position: absolute;
+                max-width: none;
+                max-height: none;
+            }
+        }
+
+        .image {
+            overflow: hidden;
         }
 
         .border {
