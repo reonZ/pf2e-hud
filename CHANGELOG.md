@@ -1,3 +1,8 @@
+# 2.9.0
+
+-   `Persistent HUD`:
+    -   now support video avatar
+
 # 2.8.0
 
 -   this release implements all the remaining `Persistent HUD` features with the exception of `Persistent Shortcuts`
