@@ -118,10 +118,6 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
             return warning("avatar-editor.src.none");
         }
 
-        // if (foundry.helpers.media.VideoHelper.hasVideoExtension(src)) {
-        //     return warning("avatar-editor.src.video");
-        // }
-
         const inputElement = this.inputElement;
 
         if (inputElement) {

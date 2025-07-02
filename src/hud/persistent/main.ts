@@ -18,17 +18,16 @@ import {
     TokenPF2e,
     warning,
 } from "module-helpers";
+import { PersistentEffectsPF2eHUD } from ".";
 import {
-    activateEffectsListeners,
     AdvancedHudContext,
     BaseActorPF2eHUD,
     HUDSettingsList,
     IAdvancedPF2eHUD,
     makeAdvancedHUD,
-    renderEffectsPanel,
     ReturnedAdvancedHudContext,
     SidebarCoords,
-} from ".";
+} from "..";
 
 const SELECTION_MODES = ["disabled", "manual", "select", "combat"] as const;
 
@@ -37,6 +36,7 @@ class PersistentPF2eHUD
     implements IAdvancedPF2eHUD
 {
     #actor: ActorPF2e | null = null;
+    #effectsPanel = new PersistentEffectsPF2eHUD(this);
     #portraitElement: HTMLElement | null = null;
 
     #controlTokenHook = createHook(
@@ -104,7 +104,7 @@ class PersistentPF2eHUD
                 scope: "user",
                 config: false,
                 onChange: (value) => {
-                    this.updateEffectsPanel();
+                    this.#effectsPanel.refresh();
                 },
             },
         ];
@@ -149,10 +149,6 @@ class PersistentPF2eHUD
 
     get portraitElement(): HTMLElement | null {
         return (this.#portraitElement ??= htmlQuery(this.element, `[data-panel="portrait"]`));
-    }
-
-    get effectsPanel(): HTMLElement | null {
-        return htmlQuery(this.element, `[data-panel="effects"]`);
     }
 
     protected _configurate(): void {
@@ -236,6 +232,7 @@ class PersistentPF2eHUD
         }
 
         this.#portraitElement = null;
+        this.#effectsPanel.close();
 
         return super.close(options);
     }
@@ -293,52 +290,18 @@ class PersistentPF2eHUD
         });
     }
 
-    async updateEffectsPanel() {
-        const currentPanel = this.effectsPanel;
-        const effectsBtn = htmlQuery(this.element, ".effects-toggle");
-
-        if (!this.settings.showEffects) {
-            effectsBtn?.classList.add("inactive");
-            return currentPanel?.remove();
-        }
-
-        const effectsPanel = await renderEffectsPanel.call(this);
-
-        if (currentPanel) {
-            if (effectsPanel) {
-                currentPanel.replaceWith(effectsPanel);
-            } else {
-                currentPanel.remove();
-            }
-        } else if (effectsPanel) {
-            this.element.appendChild(effectsPanel);
-        }
-
-        if (effectsPanel) {
-            if (currentPanel) {
-                currentPanel.replaceWith(effectsPanel);
-            } else {
-                this.element.appendChild(effectsPanel);
-            }
-
-            activateEffectsListeners.call(this);
-        } else if (currentPanel) {
-            currentPanel.remove();
-        }
-
-        effectsBtn?.classList.toggle("inactive", !effectsPanel);
-    }
-
     async _prepareContext(
         options: ApplicationRenderOptions
     ): Promise<PersistentContext | PersistentContextBase> {
         const actor = this.actor!;
         const context = (await super._prepareContext(options)) as ReturnedAdvancedHudContext;
         const setActor = getSetActorData(this);
+        const noEffects = !this.settings.showEffects;
 
         if (!context.hasActor) {
             return {
                 ...context,
+                noEffects,
                 setActor,
             };
         }
@@ -347,6 +310,7 @@ class PersistentPF2eHUD
             ...context,
             ac: actor.attributes.ac.value,
             avatar: actor.img,
+            noEffects,
             setActor,
         };
     }
@@ -373,7 +337,7 @@ class PersistentPF2eHUD
         return persistent + actorHud + shortcuts;
     }
 
-    _replaceHTML(result: string, content: HTMLElement, options: ApplicationRenderOptions): void {
+    async _replaceHTML(result: string, content: HTMLElement, options: ApplicationRenderOptions) {
         const hotbar = document.getElementById("hotbar");
 
         content.innerHTML = result;
@@ -388,10 +352,7 @@ class PersistentPF2eHUD
         super._replaceHTML(result, content, options);
 
         this.#setupAvatar(content);
-
-        requestAnimationFrame(() => {
-            this.updateEffectsPanel();
-        });
+        this.#effectsPanel.refresh();
     }
 
     protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
@@ -426,13 +387,13 @@ class PersistentPF2eHUD
             if (worldActor) {
                 new AvatarEditor(worldActor).render(true);
             }
-        } else if (action === "toggle-effects") {
-            this.settings.showEffects = !this.settings.showEffects;
         } else if (action === "mute-sound") {
             toggleFoundryBtn("hotbar-controls-left", "mute");
             this.element.classList.toggle("muted", game.audio.globalMute);
         } else if (action === "open-sheet") {
             this.actor?.sheet.render(true);
+        } else if (action === "toggle-effects") {
+            this.settings.showEffects = !this.settings.showEffects;
         } else if (action === "toggle-clean") {
             this.settings.cleanPortrait = !this.settings.cleanPortrait;
         } else if (action === "toggle-hotbar-lock") {
@@ -542,6 +503,7 @@ type PersistentContext = AdvancedHudContext &
     };
 
 type PersistentContextBase = {
+    noEffects: boolean;
     setActor: { tooltip: string; disabled: boolean } | undefined;
 };
 
