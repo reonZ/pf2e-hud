@@ -16,7 +16,7 @@ import { AvatarModel } from ".";
 class AvatarEditor extends foundry.applications.api.ApplicationV2 {
     #actor: CreaturePF2e;
     #data!: FlagData<AvatarModel>;
-    #img?: HTMLImageElement;
+    #img?: HTMLImageElement | HTMLVideoElement;
     #inputElement: HTMLInputElement | null = null;
     #viewport: HTMLElement | null = null;
 
@@ -86,7 +86,7 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
         if (action === "cancel") {
             this.close();
         } else if (action === "contain") {
-            this.#data.updateSource({ position: undefined, scale: 1 });
+            this.#data.updateSource({ position: undefined });
             this.#updateImage();
         } else if (action === "open-browser") {
             this.#openBrowser();
@@ -108,7 +108,7 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
                 this.#setImage(path as ImageFilePath | VideoFilePath);
             },
             allowUpload: false,
-            type: "image",
+            type: "imagevideo",
             current: this.#data.src || this.actor.img,
         }).render(true);
     }
@@ -118,9 +118,9 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
             return warning("avatar-editor.src.none");
         }
 
-        if (foundry.helpers.media.VideoHelper.hasVideoExtension(src)) {
-            return warning("avatar-editor.src.video");
-        }
+        // if (foundry.helpers.media.VideoHelper.hasVideoExtension(src)) {
+        //     return warning("avatar-editor.src.video");
+        // }
 
         const inputElement = this.inputElement;
 
@@ -128,7 +128,7 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
             inputElement.value = src;
         }
 
-        this.#data.updateSource({ src, position: undefined, scale: 1 });
+        this.#data.updateSource({ src, position: undefined });
         this.#loadImage();
     }
 
@@ -188,10 +188,10 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
         const img = this.#img;
         if (!img) return;
 
-        calculatePosition(this.#data, img);
+        const scale = calculatePosition(this.#data, img);
 
         if (this.#data.position == null) {
-            this.#data.updateSource({ scale: 1 });
+            this.#data.updateSource({ scale });
             this.#savePosition();
         }
     }
@@ -265,23 +265,55 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
     }
 }
 
-async function loadAvatar(parent: HTMLElement, data: AvatarModel): Promise<HTMLImageElement> {
+async function loadAvatar(
+    parent: HTMLElement,
+    data: AvatarModel
+): Promise<HTMLImageElement | HTMLVideoElement> {
     const src = data.src;
 
-    const img: HTMLImageElement = await new Promise((resolve, reject) => {
-        const img = new Image();
+    const img = foundry.helpers.media.VideoHelper.hasVideoExtension(src)
+        ? await loadVideo(src)
+        : await loadImage(src);
 
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = src;
-    });
-
-    parent.replaceChildren(img);
+    if (img) {
+        parent.replaceChildren(img);
+    }
 
     return img;
 }
 
-function calculatePosition(data: AvatarModel, img: HTMLImageElement) {
+function loadVideo(src: VideoFilePath): Promise<HTMLVideoElement> {
+    return new Promise((resolve, reject) => {
+        const video = document.createElement("video");
+        video.autoplay = true;
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+
+        video.onloadedmetadata = () => {
+            video.onloadedmetadata = null;
+            resolve(video);
+        };
+
+        video.onerror = reject;
+        video.src = src;
+    });
+}
+
+function loadImage(src: ImageFilePath): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+
+        img.onload = () => {
+            resolve(img);
+        };
+
+        img.onerror = reject;
+        img.src = src;
+    });
+}
+
+function calculatePosition(data: AvatarModel, img: HTMLImageElement | HTMLVideoElement): number {
     if (data.position == null) {
         return calculateContainedPosition(img);
     }
@@ -295,28 +327,35 @@ function calculatePosition(data: AvatarModel, img: HTMLImageElement) {
     img.height = viewH * scale;
     img.style.left = `${viewH * scale * x}px`;
     img.style.top = `${viewH * scale * y}px`;
+
+    return scale;
 }
 
-function calculateContainedPosition(img: HTMLImageElement) {
+function calculateContainedPosition(img: HTMLImageElement | HTMLVideoElement): number {
     const viewport = img.parentElement as HTMLElement;
+    const isVideo = img instanceof HTMLVideoElement;
 
     const viewW = viewport.clientWidth;
     const viewH = viewport.clientHeight;
     const viewR = viewW / viewH;
-    const imgW = img.width;
-    const imgH = img.height;
+    const imgW = isVideo ? img.videoWidth : img.width;
+    const imgH = isVideo ? img.videoHeight : img.height;
 
     const scale = imgW / viewR >= imgH ? ((viewW / imgW) * imgH) / viewH : 1;
 
     img.height = viewH * scale;
 
+    const { width, height } = getComputedStyle(img);
+
     const position: Point = {
-        x: (viewW - img.width) / 2,
-        y: (viewH - img.height) / 2,
+        x: (viewW - parseInt(width)) / 2,
+        y: (viewH - parseInt(height)) / 2,
     };
 
     img.style.left = `${position.x}px`;
     img.style.top = `${position.y}px`;
+
+    return scale;
 }
 
 type EventAction =
