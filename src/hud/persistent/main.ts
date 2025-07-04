@@ -2,6 +2,7 @@ import { AvatarEditor, AvatarModel, calculateAvatarPosition, loadAvatar } from "
 import { hud } from "main";
 import {
     ActorPF2e,
+    addListener,
     ApplicationClosingOptions,
     ApplicationConfiguration,
     ApplicationRenderOptions,
@@ -351,6 +352,8 @@ class PersistentPF2eHUD
         this.#setupAvatar(content);
         this.#effectsPanel.refresh();
         this.#shortcutsPanel.render(true);
+
+        this.#activateListeners(content);
     }
 
     protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
@@ -433,6 +436,15 @@ class PersistentPF2eHUD
         } else {
             avatarElement.style.removeProperty("background-color");
         }
+    }
+
+    #activateListeners(html: HTMLElement) {
+        const actor = this.actor;
+        if (!actor) return;
+
+        addListener(html, ".avatar", "drop", (el, event) => {
+            actor.sheet._onDrop(event);
+        });
     }
 }
 
