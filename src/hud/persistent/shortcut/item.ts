@@ -10,13 +10,19 @@ import {
     BasePersistentShortcut,
     BaseShortcutSchema,
     generateBaseShortcutFields,
+    getItemSlug,
     ShortcutTooltipData,
 } from ".";
+import fields = foundry.data.fields;
 
 function generateItemShortcutFields(type: string): ItemShortcutSchema {
     return {
         ...generateBaseShortcutFields(type),
         itemId: new IdField({
+            required: true,
+            nullable: false,
+        }),
+        slug: new fields.StringField({
             required: true,
             nullable: false,
         }),
@@ -28,7 +34,11 @@ class ItemShortcut<
     TItem extends PhysicalItemPF2e<CreaturePF2e>
 > extends BasePersistentShortcut<TSchema, TItem> {
     get disabled(): boolean {
-        return !this.item;
+        return !this.item || this.dropped;
+    }
+
+    get dropped(): boolean {
+        return this.item?.system.equipped.carryType === "dropped";
     }
 
     use(event: Event): void {
@@ -47,23 +57,46 @@ class ItemShortcut<
     }
 
     _item(): TItem | null {
-        return this.actor.items.get<TItem>(this.itemId) ?? null;
+        const exact = this.actor.items.get<TItem>(this.itemId);
+
+        if (exact || !this.slug) {
+            return exact ?? null;
+        }
+
+        const same = this.actor.itemTypes[this.type].find(
+            (item) => getItemSlug(item) === this.slug
+        );
+
+        return (same ?? null) as TItem | null;
     }
 
     _tooltipData(): ShortcutTooltipData {
-        return {
-            altUse: game.i18n.localize("PF2E.EditItemTitle"),
-        };
+        const data = super._tooltipData();
+
+        data.altUse = game.i18n.localize("PF2E.EditItemTitle");
+
+        if (!data.reason) {
+            data.reason = this.dropped
+                ? "dropped"
+                : (this.item?.quantity ?? 0) < 1
+                ? "quantity"
+                : undefined;
+        }
+
+        return data;
     }
 }
 
 interface ItemShortcut<
     TSchema extends BaseShortcutSchema,
     TItem extends PhysicalItemPF2e<CreaturePF2e>
-> extends ModelPropsFromSchema<ItemShortcutSchema> {}
+> extends ModelPropsFromSchema<ItemShortcutSchema> {
+    type: "consumable" | "equipment";
+}
 
 type ItemShortcutSchema = BaseShortcutSchema & {
     itemId: IdField<true, false, false>;
+    slug: fields.StringField<string, string, true, false, false>;
 };
 
 export { generateItemShortcutFields, ItemShortcut };

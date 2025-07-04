@@ -1,56 +1,56 @@
-import { ConsumablePF2e, CreaturePF2e } from "module-helpers";
-import { generateItemShortcutFields, getItemSlug, ItemShortcut, ItemShortcutSchema } from ".";
-import fields = foundry.data.fields;
+import { ConsumablePF2e, CreaturePF2e, localize, R, ValueAndMaybeMax } from "module-helpers";
+import {
+    generateItemShortcutFields,
+    ItemShortcut,
+    ItemShortcutSchema,
+    ShortcutTooltipData,
+} from ".";
 
 class ConsumableShortcut extends ItemShortcut<
     ConsumableShortcutSchema,
     ConsumablePF2e<CreaturePF2e>
 > {
     static defineSchema(): ConsumableShortcutSchema {
-        return {
-            ...generateItemShortcutFields("consumable"),
-            slug: new fields.StringField({
-                required: true,
-                nullable: false,
-            }),
-        };
+        return generateItemShortcutFields("consumable");
     }
 
-    get disabled(): boolean {
-        const counter = this.counter;
-        return !counter || !counter.value;
+    get canUse(): boolean {
+        return super.canUse && this.counter.value > 0;
     }
 
-    get counter(): { value: number } {
+    get greyed(): boolean {
+        return this.counter.value < 1;
+    }
+
+    get uses(): number | undefined {
         const item = this.item;
-        const uses =
-            item?.uses.max && (item.uses.max > 1 || item.category === "wand")
-                ? item.uses.value
-                : undefined;
-
-        return { value: uses ?? item?.quantity ?? 0 };
+        return item?.uses.max && (item.uses.max > 1 || item.category === "wand")
+            ? item.uses.value
+            : undefined;
     }
 
-    _item(): ConsumablePF2e<CreaturePF2e> | null {
-        const exact = this.actor.items.get<ConsumablePF2e<CreaturePF2e>>(this.itemId);
+    _counter(): ValueAndMaybeMax {
+        return { value: this.uses ?? this.item?.quantity ?? 0 };
+    }
 
-        if (exact || !this.slug) {
-            return exact ?? null;
+    _tooltipData(): ShortcutTooltipData {
+        const data = super._tooltipData();
+
+        if (!data.reason) {
+            const uses = this.uses;
+            data.reason = R.isNonNullish(uses) && uses < 1 ? "uses" : undefined;
         }
 
-        const same = this.actor.itemTypes.consumable.find(
-            (item) => getItemSlug(item) === this.slug
-        );
-
-        return same ?? null;
+        return data;
     }
 }
 
-interface ConsumableShortcut extends ModelPropsFromSchema<ConsumableShortcutSchema> {}
+interface ConsumableShortcut extends ModelPropsFromSchema<ConsumableShortcutSchema> {
+    get counter(): ValueAndMaybeMax;
+    type: "consumable";
+}
 
-type ConsumableShortcutSchema = ItemShortcutSchema & {
-    slug: fields.StringField<string, string, true, false, false>;
-};
+type ConsumableShortcutSchema = ItemShortcutSchema;
 
 type ConsumableShortcutData = SourceFromSchema<ConsumableShortcutSchema>;
 

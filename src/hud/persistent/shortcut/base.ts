@@ -1,4 +1,11 @@
-import { createHTMLElement, CreaturePF2e, ItemPF2e, localize, render } from "module-helpers";
+import {
+    createHTMLElement,
+    CreaturePF2e,
+    ItemPF2e,
+    localize,
+    render,
+    ValueAndMaybeMax,
+} from "module-helpers";
 import fields = foundry.data.fields;
 
 function generateBaseShortcutFields<T extends string>(type: T): BaseShortcutSchema {
@@ -31,6 +38,7 @@ abstract class BasePersistentShortcut<
     TItem extends ItemPF2e
 > extends foundry.abstract.DataModel<null, TSchema> {
     #actor: CreaturePF2e;
+    #counter?: ValueAndMaybeMax | null;
     #item: TItem | null | undefined;
     #tooltip: HTMLElement | undefined;
 
@@ -44,6 +52,10 @@ abstract class BasePersistentShortcut<
     }
 
     abstract get disabled(): boolean;
+
+    get greyed(): boolean {
+        return false;
+    }
 
     get actor(): CreaturePF2e {
         return this.#actor;
@@ -65,8 +77,20 @@ abstract class BasePersistentShortcut<
         return this.item?.img ?? this.img;
     }
 
-    get counter(): { value: number } | undefined {
-        return undefined;
+    get counter(): ValueAndMaybeMax | null {
+        if (this.#counter !== undefined) {
+            return this.#counter;
+        }
+
+        return (this.#counter = this._counter());
+    }
+
+    get canUse(): boolean {
+        return !this.disabled;
+    }
+
+    get canAltUse(): boolean {
+        return !this.disabled;
     }
 
     abstract use(event: Event): void;
@@ -78,19 +102,9 @@ abstract class BasePersistentShortcut<
             return this.#tooltip;
         }
 
-        const data = foundry.utils.mergeObject(
-            this._tooltipData(),
-            {
-                altUse: localize("shortcuts.tooltip", this.type),
-                disabled: this.disabled,
-                img: this.usedImage,
-                subtitle: game.i18n.localize(`TYPES.Item.${this.item?.type ?? this.type}`),
-                title: this.title,
-            } satisfies Required<ShortcutTooltipData>,
-            { insertKeys: true, inplace: false, overwrite: false }
-        );
-
+        const data = this._tooltipData();
         data.altUse = `${localize("rightClick")} ${data.altUse}`;
+        data.reason = data.reason ? localize("shortcuts.tooltip.reason", data.reason) : undefined;
 
         return (this.#tooltip ??= createHTMLElement("div", {
             classes: ["content"],
@@ -98,8 +112,19 @@ abstract class BasePersistentShortcut<
         }));
     }
 
+    _counter(): ValueAndMaybeMax | null {
+        return null;
+    }
+
     _tooltipData(): ShortcutTooltipData {
-        return {};
+        return {
+            altUse: localize("shortcuts.tooltip", this.type),
+            disabled: this.disabled,
+            img: this.usedImage,
+            reason: !this.item ? "match" : undefined,
+            subtitle: game.i18n.localize(`TYPES.Item.${this.item?.type ?? this.type}`),
+            title: this.title,
+        };
     }
 }
 
@@ -110,6 +135,7 @@ type ShortcutTooltipData = {
     altUse?: string;
     disabled?: boolean;
     img?: ImageFilePath;
+    reason?: string;
     subtitle?: string;
     title?: string;
 };

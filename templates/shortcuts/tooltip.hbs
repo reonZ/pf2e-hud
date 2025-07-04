@@ -1,8 +1,13 @@
-<div class="header{{#if disabled}} disabled{{/if}}">
+<div class="header{{#if disabled}} disabled{{else if reason}} greyed{{/if}}">
     <div class="image" style="background-image: url({{img}});"></div>
     <div class="title">{{title}}</div>
     <div class="subtitle">{{subtitle}}</div>
 </div>
+{{#if reason}}
+<div class="details left">
+    {{reason}}
+</div>
+{{/if}}
 <div class="details right">
     {{#unless disabled}}
     <div>{{altUse}}</div>

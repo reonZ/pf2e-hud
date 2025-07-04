@@ -131,21 +131,16 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 
         game.tooltip.deactivate();
 
-        if (event.button === 2 && event.shiftKey) {
-            this.remove(slot);
-            return;
-        }
-
-        if (shortcut.disabled) return;
-
         if (event.button === 0) {
-            shortcut.use(event);
+            shortcut.canUse && shortcut.use(event);
+        } else if (event.shiftKey) {
+            this.remove(slot);
         } else if (event.ctrlKey) {
-            if (this.actor && shortcut.item) {
+            if (this.actor && shortcut.item && !shortcut.disabled) {
                 new ItemHudPopup(this.actor, shortcut.item, event).render(true);
             }
         } else {
-            shortcut.altUse(event);
+            shortcut.canAltUse && shortcut.altUse(event);
         }
     }
 

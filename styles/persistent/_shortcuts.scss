@@ -50,12 +50,15 @@
             }
         }
 
-        &.inactive {
-            cursor: default;
-
+        &.inactive,
+        &.greyed {
             .image {
                 filter: grayscale(1);
             }
+        }
+
+        &.inactive {
+            cursor: default;
 
             > *:not(.image) {
                 display: none;
@@ -121,7 +124,8 @@
                 border: 2px solid #ffd70026;
             }
 
-            &.disabled {
+            &.disabled,
+            &.greyed {
                 filter: grayscale(1);
             }
         }

@@ -5,9 +5,19 @@ class EquipmentShortcut extends ItemShortcut<EquipmentShortcutSchema, EquipmentP
     static defineSchema(): EquipmentShortcutSchema {
         return generateItemShortcutFields("equipment");
     }
+
+    get canUse(): boolean {
+        return super.canUse && (this.item?.quantity ?? 0) > 0;
+    }
+
+    get greyed(): boolean {
+        return (this.item?.quantity ?? 0) < 1;
+    }
 }
 
-interface EquipmentShortcut extends ModelPropsFromSchema<EquipmentShortcutSchema> {}
+interface EquipmentShortcut extends ModelPropsFromSchema<EquipmentShortcutSchema> {
+    type: "equipment";
+}
 
 type EquipmentShortcutSchema = ItemShortcutSchema;
 
