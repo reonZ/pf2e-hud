@@ -1,10 +1,11 @@
 #pf2e-hud-sidebar[data-type="skills"] {
     .hide-untrained {
-        width: var(--action-image-height);
         display: flex;
-        justify-content: center;
         position: relative;
         height: var(--action-image-height);
+        min-width: var(--min-width);
+        max-width: var(--max-column-width);
+        align-items: center;
 
         span {
             position: absolute;

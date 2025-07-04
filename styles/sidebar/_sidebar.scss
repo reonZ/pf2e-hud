@@ -48,24 +48,27 @@
     pointer-events: none;
 
     input[type="checkbox"] {
-        appearance: initial;
-        height: 1.2em;
-        aspect-ratio: 1 / 1;
-        background: var(--hud-input-color);
+        height: 1.3em;
+        width: 1.7em;
         margin: 0;
-        border: 2px solid var(--hud-input-color);
-        border-radius: 2px;
-
-        &::before {
-            content: none;
-        }
 
         &::after {
-            content: none;
+            font-size: 1.7em;
+        }
+
+        &:not(:checked) {
+            display: flex;
+            justify-content: center;
+
+            &::before {
+                color: var(--hud-input-color);
+            }
         }
 
         &:checked {
-            background: var(--hud-input-checked-color);
+            &::after {
+                color: var(--color);
+            }
         }
     }
 
@@ -196,10 +199,11 @@
                 display: flex;
                 flex-wrap: wrap;
                 row-gap: 0.2em;
-            }
+                column-gap: 0.1em;
 
-            input[type="checkbox"] {
-                margin: 0 0.5em 0 0;
+                span {
+                    margin-top: 1px;
+                }
             }
 
             select {

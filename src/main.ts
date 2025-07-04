@@ -9,7 +9,7 @@ import {
     TrackerPF2eHUD,
 } from "hud";
 import { registerKeybinds } from "keybinds";
-import { MODULE, R, templatePath, userIsGM } from "module-helpers";
+import { createHTMLElement, MODULE, R, templatePath, userIsGM } from "module-helpers";
 import { registerSettings } from "settings";
 
 MODULE.register("pf2e-hud");
@@ -42,6 +42,27 @@ Hooks.on("init", () => {
         hud._initialize();
         hud.init(isGM);
     }
+
+    // we preload foundry checkboxes to avoid weirdness with sidebars toggles
+    const fakeCheckboxes = R.map([true, false], (checked) => {
+        const fakeCheckbox = createHTMLElement("input", {
+            classes: ["fake"],
+        });
+
+        fakeCheckbox.type = "checkbox";
+        fakeCheckbox.checked = checked;
+
+        document.body.appendChild(fakeCheckbox);
+
+        return fakeCheckbox;
+    });
+
+    // we remove the preloaded checkboxes to not pollute the DOM
+    setTimeout(() => {
+        for (const checkbox of fakeCheckboxes) {
+            checkbox.remove();
+        }
+    }, 1000);
 });
 
 Hooks.on("setup", () => {
