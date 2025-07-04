@@ -1,0 +1,129 @@
+// https://github.com/foundryvtt/pf2e/blob/7baadf276f3d3f13fd77adf411387312ab287042/src/styles/system/_effects-panel.scss
+#pf2e-hud-persistent [data-panel="effects"] {
+    --icon-height: 32px;
+
+    background: none;
+    border: none;
+    padding: 0;
+
+    article {
+        display: flex;
+        gap: var(--panel-gap);
+        overflow: auto;
+        pointer-events: initial;
+        scrollbar-gutter: stable;
+
+        .effect-item {
+            border-radius: 4px;
+            display: flex;
+            justify-content: end;
+
+            &[data-badge-type="formula"] .icon {
+                cursor: pointer;
+
+                /* Show fa-dice-d20 */
+                &:hover::before {
+                    content: "\f6cf";
+                    background: rgba(0, 0, 0, 0.5);
+                    font-family: var(--font-awesome);
+                    font-weight: 900;
+                    font-size: var(--font-size-20);
+                    color: var(--text-light);
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding-bottom: 4px; // offset
+                }
+            }
+
+            > .icon {
+                align-items: center;
+                background-repeat: no-repeat;
+                background-size: contain;
+                box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
+                border: 1px solid var(--color-cool-4);
+                border-radius: 4px;
+                color: transparent;
+                display: flex;
+                justify-content: center;
+                position: relative;
+                height: var(--icon-height);
+                width: var(--icon-height);
+
+                &.aura {
+                    border-radius: 50%;
+                    box-shadow: 0px 0px 6px 3px white;
+                }
+
+                &.unidentified {
+                    filter: drop-shadow(0 0 8px var(--visibility-gm-bg));
+                }
+
+                .expired {
+                    position: absolute;
+                    left: 0;
+                    bottom: 0;
+                    width: 100%;
+                    padding: 0;
+                    font-family: var(--sans-serif);
+                    font-size: var(--font-size-9);
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    text-rendering: optimizeLegibility;
+                    color: var(--text-light);
+                    background-color: var(--primary);
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .linked {
+                    position: absolute;
+                    display: inline-block;
+                    bottom: 0;
+                    right: 0;
+                    padding: 0px 2px;
+                    color: var(--text-light);
+                    background-color: rgba(0, 0, 0, 0.75);
+                }
+
+                .value-wrapper {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    max-width: calc(100% + 2px);
+                    padding: 0px 2px;
+
+                    color: var(--text-light);
+                    background-color: rgba(0, 0, 0, 0.75);
+                    font-size: var(--font-size-11);
+                    letter-spacing: -0.05em;
+                    white-space: nowrap;
+                    overflow: hidden;
+
+                    border-radius: 0 2px 0 0;
+
+                    .value {
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        strong {
+                            display: inline-block;
+                            padding-right: 1px; // prevent clipping
+                        }
+                    }
+                }
+            }
+        }
+
+        > hr {
+            margin: 0;
+            height: var(--icon-height);
+            background: none;
+            width: 0;
+            border-right: 1px solid #e9db8d;
+            margin-inline: 1px;
+        }
+    }
+}

@@ -210,6 +210,12 @@
             "unspecific": "非特殊"
         },
         "rightClick": "[右键点击]",
+        "shortcuts": {
+            "error": {
+                "wrongActor": "你仅可以在相同的受控角色创建快捷栏选项。",
+                "wrongType": "你无法以此方式在快捷栏创建选项。"
+            }
+        },
         "sidebar": {
             "filter": "侧边栏过滤",
             "actions": {

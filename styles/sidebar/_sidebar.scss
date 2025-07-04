@@ -43,7 +43,7 @@
 
     position: absolute;
     padding: var(--sidebar-external-padding);
-    max-height: 100vh;
+    // max-height: 100vh;
     max-width: 100vw;
     pointer-events: none;
 
@@ -118,7 +118,7 @@
         min-width: var(--min-width);
         min-height: var(--min-height);
         max-width: calc(100vw - var(--sidebar-external-padding) * 2);
-        max-height: calc(min(100vh, var(--max-height)) - var(--sidebar-external-padding) * 2);
+        max-height: calc(var(--max-height) - var(--sidebar-external-padding) * 2);
 
         &:has(.filtered) {
             [data-filter-value]:not(.filtered) {

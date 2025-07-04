@@ -8,6 +8,7 @@ import {
     ItemHudPopup,
     makeFadeable,
     sendItemToChat,
+    ShortcutData,
     SidebarCoords,
     SidebarName,
 } from "hud";
@@ -92,7 +93,7 @@ abstract class SidebarPF2eHUD<
         position: {
             height: "auto",
         },
-        classes: ["pf2e-hud-element", "pf2e-hud-colors"],
+        classes: ["pf2e-hud-element", "pf2e-hud-colors", "theme-dark", "themed"],
     };
 
     static get keybindsSchema(): KeybindingActionConfig[] {
@@ -232,17 +233,31 @@ abstract class SidebarPF2eHUD<
         return this.parent.actor as ActorPF2e;
     }
 
-    get sidebarCoords(): SidebarCoords {
-        const coords = this.parent.sidebarCoords;
+    get coords(): SidebarCoords & { bounds: DOMRect } {
+        const uiScale = canvas.dimensions.uiScale;
+        const coords = this.parent.sidebarCoords as SidebarCoords & { bounds: DOMRect };
+
+        const bounds = this.element.getBoundingClientRect();
+
+        const offsetWidth = (bounds.width / uiScale - bounds.width) / 2;
+        const offsetHeight = (bounds.height / uiScale - bounds.height) / 2;
+
+        coords.origin.x -= bounds.width / uiScale / 2;
+        coords.origin.y -= bounds.height / uiScale / 2;
+
+        coords.limits.left -= offsetWidth;
+        coords.limits.right -= offsetWidth;
+        coords.limits.top -= offsetHeight;
+        coords.limits.bottom -= offsetHeight;
+
+        coords.bounds = bounds;
+
         const maxHeight = window.innerHeight;
-        const filterHeight = this.#filterElement?.offsetHeight ?? 0 - 5;
+        const filterHeight = (this.#filterElement?.offsetHeight ?? 0) + 5;
+        const offsetFilter = filterHeight - filterHeight * uiScale;
 
-        if (coords.limits.bottom > maxHeight - filterHeight) {
-            const newBottom = maxHeight - filterHeight;
-            const diff = coords.limits.bottom - newBottom;
-
-            coords.limits.bottom = newBottom;
-            coords.limits.top = Math.max(coords.limits.top - diff, 0);
+        if (coords.limits.bottom > maxHeight - filterHeight - offsetFilter) {
+            coords.limits.bottom = maxHeight - filterHeight - offsetFilter;
         }
 
         return coords;
@@ -454,13 +469,12 @@ abstract class SidebarPF2eHUD<
 
     protected _updatePosition(position: ApplicationPosition): ApplicationPosition {
         const element = this.element;
-        const { limits, origin } = this.sidebarCoords;
-        const bounds = this.element.getBoundingClientRect();
+        const { bounds, limits, origin } = this.coords;
 
         super._updatePosition(position);
 
-        position.left = origin.x - bounds.width / 2;
-        position.top = origin.y - bounds.height / 2;
+        position.left = origin.x;
+        position.top = origin.y;
 
         if (position.top + bounds.height > limits.bottom) {
             position.top = limits.bottom - bounds.height;
@@ -497,21 +511,18 @@ abstract class SidebarPF2eHUD<
     #onDragStart(target: HTMLElement, event: DragEvent) {
         if (!event.dataTransfer) return;
 
-        const { img, item } = this.getSidebarItemFromElement(target) ?? {};
+        const sidebarItem = this.getSidebarItemFromElement(target);
+        if (!sidebarItem) return;
 
-        const baseDragData: BaseDragData = {
+        const img = sidebarItem.img;
+
+        const dragData: SidebarDragData = {
             actorId: this.actor.id,
             actorUUID: this.actor.uuid,
-            fromSidebar: true,
+            fromSidebar: sidebarItem.toShortcut(),
             sceneId: canvas.scene?.id ?? null,
             tokenId: this.actor.token?.id ?? null,
-            ...item?.toDragData(),
-        };
-
-        const dragData = {
-            ...baseDragData,
-            // ...extraDragData,
-            // ...toggleDragData,
+            ...sidebarItem.item.toDragData(),
         };
 
         const draggable = createHTMLElement("div", {
@@ -532,11 +543,13 @@ abstract class SidebarPF2eHUD<
         const innerElement = this.#innerElement;
         if (!innerElement) return;
 
-        const { limits } = this.sidebarCoords;
+        const { limits } = this.coords;
+
+        const uiScale = canvas.dimensions.uiScale;
         const elementStyle = getComputedStyle(element);
         const innerStyle = getComputedStyle(innerElement);
-        const viewportHeight = window.innerHeight;
-        const allottedHeight = (limits?.bottom ?? viewportHeight) - (limits?.top ?? 0);
+        const viewportHeight = window.innerHeight / uiScale;
+        const allottedHeight = (limits.bottom - limits.top) / uiScale;
         const maxHeight = Math.min(allottedHeight, viewportHeight);
 
         const maxInnerHeight =
@@ -656,21 +669,14 @@ abstract class SidebarPF2eHUD<
     }
 }
 
-type BaseDragData = Partial<ReturnType<ItemPF2e["toDragData"]>> & {
+type SidebarDragData = {
     actorId: string;
     actorUUID: ActorUUID;
-    fromSidebar: true;
+    fromSidebar: ShortcutData | undefined;
     sceneId: string | null;
     tokenId: string | null;
-};
-
-type ElementDragData = {
-    img: ImageFilePath;
-    item: ItemPF2e;
-};
-
-type SidebarDragData = ElementDragData & {
-    data: BaseDragData;
+    type: string;
+    itemType: string;
 };
 
 type SidebarHudRenderElements = {
@@ -682,4 +688,4 @@ type SidebarHudRenderElements = {
 MODULE.devExpose({ SidebarPF2eHUD });
 
 export { SidebarPF2eHUD };
-export type { ElementDragData, SidebarDragData };
+export type { SidebarDragData };

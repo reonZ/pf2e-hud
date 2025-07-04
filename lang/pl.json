@@ -217,6 +217,12 @@
             "proficiency": "Biegłość"
         },
         "rightClick": "[Kliknij prawym]",
+        "shortcuts": {
+            "error": {
+                "wrongActor": "Skróty można tworzyć tylko od tego samego stałego aktora.",
+                "wrongType": "Nie można utworzyć skrótu tego typu."
+            }
+        },
         "sidebar": {
             "filter": "Filtr paska bocznego",
             "actions": {

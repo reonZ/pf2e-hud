@@ -1,7 +1,9 @@
+import { ConsumableShortcutData, EquipmentShortcutData, getItemSlug } from "hud";
 import {
     ActorPF2e,
     createHTMLElement,
     ErrorPF2e,
+    getItemSourceId,
     htmlClosest,
     IdentifyItemPopup,
     InventoryItem,
@@ -179,11 +181,36 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
             usePhysicalItem(event, item);
         }
     }
+
+    toShortcut(): ItemShortcutData | undefined {
+        const item = this.item;
+
+        if (this.item.isOfType("consumable")) {
+            return {
+                img: this.img,
+                itemId: item.id,
+                name: this.label,
+                slug: getItemSlug(item),
+                sourceId: getItemSourceId(this.item),
+                type: "consumable",
+            };
+        } else if (this.item.isOfType("equipment")) {
+            return {
+                img: this.img,
+                itemId: item.id,
+                name: this.label,
+                sourceId: getItemSourceId(this.item),
+                type: "equipment",
+            };
+        }
+    }
 }
 
 interface ItemsSidebarItem extends Readonly<Omit<SidebarItem, "canBeUsed">> {
     canBeUsed: boolean;
 }
+
+type ItemShortcutData = ConsumableShortcutData | EquipmentShortcutData;
 
 type SidebarItem = Omit<InventoryItem<PhysicalItemPF2e<ActorPF2e>>, "heldItems"> & {
     canBeUsed: boolean;

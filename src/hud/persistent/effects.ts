@@ -3,7 +3,6 @@ import {
     addListenerAll,
     AfflictionPF2e,
     ApplicationClosingOptions,
-    ApplicationConfiguration,
     ApplicationRenderOptions,
     ConditionPF2e,
     createHTMLElement,
@@ -15,36 +14,11 @@ import {
     htmlQuery,
     isInstanceOf,
 } from "module-helpers";
-import { PersistentPF2eHUD } from ".";
+import { PersistentPartPF2eHUD } from ".";
 
-class PersistentEffectsPF2eHUD extends foundry.applications.api.ApplicationV2 {
-    #parent: PersistentPF2eHUD;
-
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
-        id: "pf2e-hud-persistent-effects",
-        window: {
-            resizable: false,
-            minimizable: false,
-            frame: false,
-            positioned: false,
-        },
-    };
-
-    constructor(parent: PersistentPF2eHUD, options?: DeepPartial<ApplicationConfiguration>) {
-        super(options);
-        this.#parent = parent;
-    }
-
-    get parent(): PersistentPF2eHUD {
-        return this.#parent;
-    }
-
-    get actor(): CreaturePF2e | null {
-        return this.parent.worldActor;
-    }
-
-    get currentPanel(): HTMLElement | null {
-        return htmlQuery(this.parent.element, `[data-panel="effects"]`);
+class PersistentEffectsPF2eHUD extends PersistentPartPF2eHUD {
+    get name(): "effects" {
+        return "effects";
     }
 
     get toggleBtn(): HTMLElement | null {
@@ -59,23 +33,12 @@ class PersistentEffectsPF2eHUD extends foundry.applications.api.ApplicationV2 {
         }
     }
 
-    close(options: ApplicationClosingOptions = {}): Promise<this> {
-        return super.close({ animate: false });
-    }
-
     protected _onClose(options: ApplicationClosingOptions): void {
         this.toggleBtn?.classList.add("inactive");
     }
 
     protected _onRender(context: object, options: ApplicationRenderOptions): void {
-        const currentPanel = this.currentPanel;
-
-        if (currentPanel) {
-            currentPanel.replaceWith(this.element);
-        } else {
-            this.parent.element.appendChild(this.element);
-        }
-
+        super._onRender(context, options);
         this.toggleBtn?.classList.remove("inactive");
     }
 
@@ -107,18 +70,7 @@ class PersistentEffectsPF2eHUD extends foundry.applications.api.ApplicationV2 {
         );
     }
 
-    protected _replaceHTML(
-        result: string,
-        content: HTMLElement,
-        options: ApplicationRenderOptions
-    ): void {
-        content.innerHTML = result;
-        content.dataset.panel = "effects";
-
-        this.#activateListeners(content);
-    }
-
-    #activateListeners(html: HTMLElement) {
+    _activateListeners(html: HTMLElement) {
         const actor = this.actor as CreaturePF2e;
         if (!actor) return;
 

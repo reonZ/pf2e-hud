@@ -1,4 +1,4 @@
-import { FilterValue } from "hud";
+import { FilterValue, ShortcutData } from "hud";
 import { ItemPF2e, R } from "module-helpers";
 
 abstract class BaseSidebarItem<
@@ -39,6 +39,8 @@ abstract class BaseSidebarItem<
     get filterValue(): FilterValue {
         return (this.#filterValue ??= new FilterValue(this.label));
     }
+
+    abstract toShortcut(): ShortcutData | undefined;
 }
 
 export { BaseSidebarItem };

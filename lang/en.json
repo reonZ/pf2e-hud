@@ -184,7 +184,7 @@
             },
             "default": "Dead, At Death's Door, Not Feeling Good, Seen Better Days, Barely Hurt, Perfectly Fine"
         },
-        "leftClick": "[Left Click]",
+        "leftClick": "[Left-Click]",
         "persistent": {
             "effects": {
                 "shift": "Shift",
@@ -222,7 +222,19 @@
             "lore": "Lore Skill",
             "proficiency": "Proficiency"
         },
-        "rightClick": "[Right Click]",
+        "rightClick": "[Right-Click]",
+        "shortcuts": {
+            "error": {
+                "wrongActor": "You can only create shortcuts from the same persistent actor.",
+                "wrongType": "You cannot create a shortcut of that type."
+            },
+            "tooltip": {
+                "click": {
+                    "control": "[Ctrl-Right-Click] Item Popup",
+                    "shift": "[Shift-Right-Click] Remove Shortcut"
+                }
+            }
+        },
         "sidebar": {
             "filter": "Sidebar Filter",
             "actions": {

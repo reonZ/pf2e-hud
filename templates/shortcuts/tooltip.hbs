@@ -1,0 +1,12 @@
+<div class="header{{#if disabled}} disabled{{/if}}">
+    <div class="image" style="background-image: url({{img}});"></div>
+    <div class="title">{{title}}</div>
+    <div class="subtitle">{{subtitle}}</div>
+</div>
+<div class="details right">
+    {{#unless disabled}}
+    <div>{{altUse}}</div>
+    <div>{{@root.i18n 'click.control'}}</div>
+    {{/unless}}
+    <div>{{@root.i18n 'click.shift'}}</div>
+</div>

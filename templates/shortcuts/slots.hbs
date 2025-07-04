@@ -1,0 +1,19 @@
+{{#each shortcuts as |shortcut slot|}}
+{{#if shortcut.isEmpty}}
+<div class="shortcut empty" data-slot="{{slot}}"></div>
+{{else}}
+<div class="item shortcut{{#if shortcut.disabled}} inactive{{/if}}" data-slot="{{slot}}"
+    data-action="shortcut-slot" {{#if shortcut.itemId}} data-item-id="{{shortcut.itemId}}" {{/if}}>
+    <div class="image" style="background-image: url({{shortcut.usedImage}});">
+    </div>
+    {{#if shortcut.counter}}
+    <div class="counter boxed">
+        <span>
+            {{shortcut.counter.value}}
+        </span>
+    </div>
+    {{/if}}
+    <div class="overlay"></div>
+</div>
+{{/if}}
+{{/each}}

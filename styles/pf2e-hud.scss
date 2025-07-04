@@ -1,7 +1,7 @@
 @import "./advanced";
 @import "./avatar-editor";
 @import "./health-status";
-@import "./persistent";
+@import "./persistent/main";
 @import "./popup";
 @import "./shared";
 @import "./sidebar/sidebar";
@@ -72,4 +72,10 @@
     .rarity-unique {
         color: var(--color-rarity-unique);
     }
+}
+
+body > input[type="checkbox"].fake {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
 }

@@ -18,7 +18,7 @@ import {
     TokenPF2e,
     warning,
 } from "module-helpers";
-import { PersistentEffectsPF2eHUD } from ".";
+import { PersistentEffectsPF2eHUD, PersistentShortcutsPF2eHUD } from ".";
 import {
     AdvancedHudContext,
     BaseActorPF2eHUD,
@@ -38,6 +38,7 @@ class PersistentPF2eHUD
     #actor: ActorPF2e | null = null;
     #effectsPanel = new PersistentEffectsPF2eHUD(this);
     #portraitElement: HTMLElement | null = null;
+    #shortcutsPanel = new PersistentShortcutsPF2eHUD(this);
 
     #controlTokenHook = createHook(
         "controlToken",
@@ -325,16 +326,12 @@ class PersistentPF2eHUD
         const actorHud = actor
             ? await render("actor-hud", { ...context, i18n: "actor-hud" })
             : R.pipe(
-                  ["alliance", "details", "info", "resources", "sidebars", "statistics"],
+                  ["alliance", "details", "info", "sidebars", "statistics"],
                   R.map((x) => `<div data-panel="${x}"></div>`),
                   R.join("")
               );
 
-        const character = !actor || actor.isOfType("character") ? "character" : "";
-        const slots = R.times(18, () => `<div class="shortcut empty"></div>`).join("");
-        const shortcuts = `<div data-panel="shortcuts" class="${character}">${slots}</div>`;
-
-        return persistent + actorHud + shortcuts;
+        return persistent + actorHud;
     }
 
     async _replaceHTML(result: string, content: HTMLElement, options: ApplicationRenderOptions) {
@@ -353,6 +350,7 @@ class PersistentPF2eHUD
 
         this.#setupAvatar(content);
         this.#effectsPanel.refresh();
+        this.#shortcutsPanel.render(true);
     }
 
     protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
