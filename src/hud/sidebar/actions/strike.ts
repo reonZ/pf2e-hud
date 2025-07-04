@@ -1,4 +1,4 @@
-import { FilterValue, getNpcStrikeImage } from "hud";
+import { FilterValue, getNpcStrikeImage, ShortcutData } from "hud";
 import {
     ActorPF2e,
     addListenerAll,
@@ -113,6 +113,10 @@ class ActionsSidebarStrike extends BaseSidebarItem<
         if ("auxiliaryActions" in this) {
             (this.auxiliaryActions as WeaponAuxiliaryAction[]).at(index)?.execute({ selection });
         }
+    }
+
+    toShortcut(): ShortcutData | undefined {
+        return;
     }
 }
 interface ActionsSidebarStrike extends Readonly<StrikeData> {}

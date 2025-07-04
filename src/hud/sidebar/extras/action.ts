@@ -1,4 +1,6 @@
+import { ShortcutData } from "hud";
 import { AbilityItemPF2e, ActorPF2e } from "module-helpers";
+import { rollRecallKnowledge } from ".";
 import {
     BaseSidebarItem,
     BaseStatisticRollOptions,
@@ -6,7 +8,6 @@ import {
     ExtractedExtraActionData,
     getExtraAction,
 } from "..";
-import { rollRecallKnowledge } from "./recall-knowledge";
 
 class ExtrasSidebarItem extends BaseSidebarItem<AbilityItemPF2e, ExtractedExtraActionData> {
     async roll(actor: ActorPF2e, event: MouseEvent, options: BaseStatisticRollOptions) {
@@ -29,6 +30,10 @@ class ExtrasSidebarItem extends BaseSidebarItem<AbilityItemPF2e, ExtractedExtraA
         }
 
         getExtraAction(this.sourceId)?.roll(actor, event, rollOptions);
+    }
+
+    toShortcut(): ShortcutData | undefined {
+        return;
     }
 }
 

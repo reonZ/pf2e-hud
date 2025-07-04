@@ -1,3 +1,4 @@
+import { ShortcutData } from "hud";
 import {
     CreaturePF2e,
     EquipAnnotationData,
@@ -39,6 +40,10 @@ class SpellSidebarItem extends BaseSidebarItem<SpellPF2e<CreaturePF2e>, SlotSpel
 
     toggleSlotExpended() {
         return this.collection?.setSlotExpendedState(this.groupId, this.slotId, !this.expended);
+    }
+
+    toShortcut(): ShortcutData | undefined {
+        return;
     }
 }
 interface SpellSidebarItem extends Readonly<SlotSpellData> {}

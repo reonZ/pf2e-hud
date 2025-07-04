@@ -1,3 +1,4 @@
+import { ShortcutData } from "hud";
 import { AbilityItemPF2e, ActorPF2e, FeatPF2e } from "module-helpers";
 import {
     BaseSidebarItem,
@@ -18,6 +19,10 @@ class SkillsSidebarItem extends BaseSidebarItem<
         };
 
         getSkillAction(this.statistic, this.key)?.roll(actor, event, rollOptions);
+    }
+
+    toShortcut(): ShortcutData | undefined {
+        return;
     }
 }
 

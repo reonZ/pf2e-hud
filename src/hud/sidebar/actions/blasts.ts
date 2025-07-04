@@ -1,4 +1,4 @@
-import { FilterValue } from "hud";
+import { FilterValue, ShortcutData } from "hud";
 import {
     AbilityItemPF2e,
     CharacterPF2e,
@@ -64,6 +64,10 @@ class ActionsSidebarBlastCost extends BaseSidebarItem<
             true,
             selected.cost === "1" ? "2" : "1"
         );
+    }
+
+    toShortcut(): ShortcutData | undefined {
+        return;
     }
 }
 
@@ -131,6 +135,10 @@ class ActionsSidebarBlast extends BaseSidebarItem<
 
     formulaTooltip(melee: boolean, type: "damage" | "critical") {
         return this.formula[melee ? "melee" : "ranged"][type];
+    }
+
+    toShortcut(): ShortcutData | undefined {
+        return;
     }
 }
 

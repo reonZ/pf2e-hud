@@ -1,4 +1,4 @@
-import { FilterValue } from "hud";
+import { FilterValue, ShortcutData } from "hud";
 import {
     AbilityItemPF2e,
     actorItems,
@@ -98,6 +98,10 @@ class ActionsStance extends BaseSidebarItem<
         } else if (!effects.length) {
             await actor.deleteEmbeddedDocuments("Item", [effect[1]]);
         }
+    }
+
+    toShortcut(): ShortcutData | undefined {
+        return;
     }
 }
 

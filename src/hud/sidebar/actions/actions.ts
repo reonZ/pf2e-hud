@@ -1,4 +1,4 @@
-import { FilterValue } from "hud";
+import { FilterValue, ShortcutData } from "hud";
 import {
     AbilityItemPF2e,
     ActionType,
@@ -73,6 +73,10 @@ class ActionsSidebarAction extends BaseSidebarItem<
     use(event: Event) {
         const item = this.item;
         return item?.isOfType("feat", "action") && useAction(event, item);
+    }
+
+    toShortcut(): ShortcutData | undefined {
+        return;
     }
 }
 
