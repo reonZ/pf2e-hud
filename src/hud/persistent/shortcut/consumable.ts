@@ -1,4 +1,4 @@
-import { ConsumablePF2e, CreaturePF2e, localize, R, ValueAndMaybeMax } from "module-helpers";
+import { ConsumablePF2e, CreaturePF2e, R, ValueAndMaybeMax } from "module-helpers";
 import {
     generateItemShortcutFields,
     ItemShortcut,
@@ -29,12 +29,12 @@ class ConsumableShortcut extends ItemShortcut<
             : undefined;
     }
 
-    _counter(): ValueAndMaybeMax {
+    get counter(): ValueAndMaybeMax {
         return { value: this.uses ?? this.item?.quantity ?? 0 };
     }
 
-    _tooltipData(): ShortcutTooltipData {
-        const data = super._tooltipData();
+    tooltipData(): ShortcutTooltipData {
+        const data = super.tooltipData();
 
         if (!data.reason) {
             const uses = this.uses;
@@ -46,7 +46,6 @@ class ConsumableShortcut extends ItemShortcut<
 }
 
 interface ConsumableShortcut extends ModelPropsFromSchema<ConsumableShortcutSchema> {
-    get counter(): ValueAndMaybeMax;
     type: "consumable";
 }
 

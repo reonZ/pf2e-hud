@@ -2,35 +2,37 @@ import { ItemHudPopup, SidebarDragData } from "hud";
 import {
     ApplicationRenderContext,
     ApplicationRenderOptions,
+    createHTMLElement,
+    dataToDatasetString,
     getDragEventData,
     getFlag,
-    ItemPF2e,
+    localize,
     R,
     render,
     updateFlag,
     warning,
 } from "module-helpers";
 import {
-    BasePersistentShortcut,
-    BaseShortcutSchema,
     ConsumableShortcut,
     ConsumableShortcutData,
     EquipmentShortcut,
     EquipmentShortcutData,
+    IPersistentShortcut,
     PersistentPartPF2eHUD,
+    ShortcutDataset,
+    ShortcutTooltipData,
 } from ".";
 
 const SHORTCUTS = {
     consumable: ConsumableShortcut,
     equipment: EquipmentShortcut,
-} satisfies Record<
-    ShortcutType,
-    ConstructorOf<BasePersistentShortcut<BaseShortcutSchema, ItemPF2e>>
->;
+} satisfies Record<ShortcutType, ConstructorOf<BasePersistentShortcut>>;
+
+type BasePersistentShortcut = foundry.abstract.DataModel & IPersistentShortcut;
 
 class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     #tab: `${number}` = "1";
-    #shortcuts: Map<number, BasePersistentShortcut<BaseShortcutSchema, ItemPF2e>> = new Map();
+    #shortcuts: Map<number, BasePersistentShortcut> = new Map();
 
     get nbSlots(): number {
         return 18;
@@ -104,6 +106,9 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         }
 
         return {
+            dataset: (data: ShortcutDataset | undefined) => {
+                return data ? dataToDatasetString(data) : "";
+            },
             shortcuts,
         };
     }
@@ -170,22 +175,49 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                 }
             });
 
-            target.addEventListener("pointerenter", async (event) => {
-                const slot = this.#getSlotFromElement(target);
-                const tooltip = await this.#shortcuts.get(slot)?.tooltip();
-                if (!tooltip) return;
-
-                game.tooltip.activate(this.element, {
-                    cssClass: "pf2e-hud-shortcut-tooltip",
-                    direction: "UP",
-                    html: tooltip,
-                });
-            });
+            target.addEventListener("pointerenter", (event) =>
+                this.#generateTooltip(event, target)
+            );
 
             target.addEventListener("pointerleave", async (event) => {
                 game.tooltip.deactivate();
             });
         }
+    }
+
+    async #generateTooltip(event: PointerEvent, target: HTMLElement) {
+        const slot = this.#getSlotFromElement(target);
+        const shortcut = this.#shortcuts.get(slot);
+        if (!shortcut) return;
+
+        type GeneratedTooltipData = ShortcutTooltipData & {
+            img: ImageFilePath;
+            disabled: boolean;
+        };
+
+        const tooltip = (shortcut._tooltip ??= await (async () => {
+            const shortcutData = shortcut.tooltipData();
+            const data: GeneratedTooltipData = {
+                ...shortcutData,
+                altUse: `${localize("rightClick")} ${shortcutData.altUse}`,
+                disabled: shortcut.disabled,
+                img: shortcut.usedImage,
+                reason: shortcutData.reason
+                    ? localize("shortcuts.tooltip.reason", shortcutData.reason)
+                    : undefined,
+            };
+
+            return createHTMLElement("div", {
+                classes: ["content"],
+                content: await render("shortcuts/tooltip", data),
+            });
+        })());
+
+        game.tooltip.activate(this.element, {
+            cssClass: "pf2e-hud-shortcut-tooltip",
+            direction: "UP",
+            html: tooltip,
+        });
     }
 
     #getSlotFromElement(el: HTMLElement): number {
@@ -216,6 +248,7 @@ type ShortcutData = ConsumableShortcutData | EquipmentShortcutData;
 type ShortcutType = ShortcutData["type"];
 
 type PersistentShortcutsContext = {
+    dataset: (data: ShortcutDataset | undefined) => string;
     shortcuts: (PersistentShortcut | { isEmpty: true })[];
 };
 
