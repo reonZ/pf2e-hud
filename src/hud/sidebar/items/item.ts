@@ -191,7 +191,6 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
             itemId: item.id,
             name: this.label,
             slug: getItemSlug(item),
-            sourceId: getItemSourceId(this.item),
             type: this.item.type,
         };
     }

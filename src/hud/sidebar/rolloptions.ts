@@ -1,5 +1,5 @@
-import { SidebarName } from "hud";
-import { ActorPF2e, R, RollOptionToggle } from "module-helpers";
+import { BaseSidebarItem, ShortcutData, SidebarName, SidebarPF2eHUD } from "hud";
+import { ActorPF2e, ItemPF2e, R, RollOptionToggle } from "module-helpers";
 
 const ROLLOPTIONS_PLACEMENT = {
     actions: "actions",
@@ -9,29 +9,37 @@ const ROLLOPTIONS_PLACEMENT = {
     extras: undefined,
 } as const satisfies Record<SidebarName, string | undefined>;
 
-function getRollOptionsData(actor: ActorPF2e, selected: SidebarName): RollOptionsData[] {
-    const selectedPlacement = ROLLOPTIONS_PLACEMENT[selected];
+class ToggleSidebarItem extends BaseSidebarItem<ItemPF2e<ActorPF2e>, SidebarToggle> {
+    get img(): ImageFilePath {
+        return this.item.img;
+    }
+
+    toShortcut(): ShortcutData | undefined {
+        return;
+    }
+}
+
+interface ToggleSidebarItem extends Readonly<SidebarToggle> {}
+
+function getRollOptionsData(this: SidebarPF2eHUD): ToggleSidebarItem[] {
+    const selectedPlacement = ROLLOPTIONS_PLACEMENT[this.name];
     if (!selectedPlacement) return [];
 
     return R.pipe(
-        R.values(actor.synthetics.toggles).flatMap((domain) => Object.values(domain)),
-        R.filter(({ placement, option, domain }) => {
-            return (
-                placement === selectedPlacement &&
-                (domain !== "elemental-blast" || option !== "action-cost")
-            );
+        R.values(this.actor.synthetics.toggles).flatMap((domain) => Object.values(domain)),
+        R.map((toggle): ToggleSidebarItem | false | undefined => {
+            if (toggle.placement !== selectedPlacement) return;
+            if (toggle.domain === "elemental-blast" && toggle.option === "action-cost") return;
+
+            const item = this.actor.items.get(toggle.itemId);
+            return item && this.addSidebarItem(ToggleSidebarItem, "itemId", { ...toggle, item });
         }),
-        R.map((toggle): RollOptionsData => {
-            return {
-                ...toggle,
-                img: actor.items.get(toggle.itemId)?.img,
-            };
-        })
+        R.filter(R.isTruthy)
     );
 }
 
-type RollOptionsData = RollOptionToggle & {
-    img: ImageFilePath | undefined;
+type SidebarToggle = RollOptionToggle & {
+    item: ItemPF2e<ActorPF2e>;
 };
 
 export { getRollOptionsData };

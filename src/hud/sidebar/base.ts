@@ -1,7 +1,6 @@
 import {
     addSidebarsListeners,
     BaseActorPF2eHUD,
-    FilterValue,
     getItemFromElement,
     getSidebars,
     IAdvancedPF2eHUD,
@@ -109,6 +108,10 @@ abstract class SidebarPF2eHUD<
                 },
             },
         ];
+    }
+
+    static get instance(): SidebarPF2eHUD | null {
+        return this.#instance;
     }
 
     static get innerElement(): HTMLElement | undefined {
@@ -380,7 +383,7 @@ abstract class SidebarPF2eHUD<
             dataset: { panel: "filter" },
         });
 
-        const toggles = getRollOptionsData(this.actor, this.name);
+        const toggles = getRollOptionsData.call(this);
         if (toggles.length) {
             const togglesTemplate = await foundry.applications.handlebars.renderTemplate(
                 "systems/pf2e/templates/actors/partials/toggles.hbs",
@@ -391,7 +394,7 @@ abstract class SidebarPF2eHUD<
                 content: togglesTemplate,
             });
 
-            for (const { itemId, img, label, option, domain } of toggles) {
+            for (const { filterValue, itemId, img, option, domain } of toggles) {
                 if (!img) continue;
 
                 const imgEl = createHTMLElement("img", { classes: ["drag-img"] });
@@ -405,7 +408,7 @@ abstract class SidebarPF2eHUD<
                 if (toggleRow) {
                     toggleRow.draggable = true;
                     toggleRow.appendChild(imgEl);
-                    toggleRow.dataset.filterValue = new FilterValue(label).toString();
+                    toggleRow.dataset.filterValue = filterValue.toString();
                 }
             }
 
