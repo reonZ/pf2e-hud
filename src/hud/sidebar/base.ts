@@ -236,15 +236,16 @@ abstract class SidebarPF2eHUD<
         return this.parent.actor as ActorPF2e;
     }
 
-    get coords(): SidebarCoords & { bounds: DOMRect } {
-        const uiScale = canvas.dimensions.uiScale;
-        const coords = this.parent.sidebarCoords as SidebarCoords & { bounds: DOMRect };
+    get coords(): UpdatedSidebarCoords {
+        const uiScale = game.settings.get<{ uiScale?: number }>("core", "uiConfig")?.uiScale ?? 1;
+        const coords = this.parent.sidebarCoords as UpdatedSidebarCoords;
 
         const bounds = this.element.getBoundingClientRect();
 
         const offsetWidth = (bounds.width / uiScale - bounds.width) / 2;
         const offsetHeight = (bounds.height / uiScale - bounds.height) / 2;
 
+        coords.uiScale = uiScale;
         coords.origin.x -= bounds.width / uiScale / 2;
         coords.origin.y -= bounds.height / uiScale / 2;
 
@@ -546,9 +547,8 @@ abstract class SidebarPF2eHUD<
         const innerElement = this.#innerElement;
         if (!innerElement) return;
 
-        const { limits } = this.coords;
+        const { limits, uiScale } = this.coords;
 
-        const uiScale = canvas.dimensions.uiScale;
         const elementStyle = getComputedStyle(element);
         const innerStyle = getComputedStyle(innerElement);
         const viewportHeight = window.innerHeight / uiScale;
@@ -687,6 +687,8 @@ type SidebarHudRenderElements = {
     innerElement: HTMLElement;
     sidebarElement: HTMLElement | undefined;
 };
+
+type UpdatedSidebarCoords = SidebarCoords & { bounds: DOMRect; uiScale: number };
 
 MODULE.devExpose({ SidebarPF2eHUD });
 
