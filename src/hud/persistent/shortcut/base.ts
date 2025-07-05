@@ -70,20 +70,12 @@ abstract class PersistentShortcut<
         return null;
     }
 
-    get disabled(): boolean {
-        return !this.item;
-    }
-
-    get greyed(): boolean {
-        return false;
-    }
-
     get canUse(): boolean {
-        return !this.disabled;
+        return !!this.item;
     }
 
     get canAltUse(): boolean {
-        return !this.disabled;
+        return !!this.item;
     }
 
     get usedImage(): ImageFilePath {
@@ -98,32 +90,38 @@ abstract class PersistentShortcut<
         return null;
     }
 
+    get unusableReason(): string | undefined {
+        return !this.item ? "" : undefined;
+    }
+
+    get subtitle(): string {
+        return game.i18n.localize(`TYPES.Item.${this.item?.type ?? this.type}`);
+    }
+
+    get title(): string {
+        return this.item?.name ?? this.name;
+    }
+
+    get altUseLabel(): string {
+        return game.i18n.localize("PF2E.EditItemTitle");
+    }
+
     abstract use(event: Event): void;
     abstract altUse(event: Event): void;
-
-    tooltipData(): ShortcutTooltipData {
-        return {
-            altUse: game.i18n.localize("PF2E.EditItemTitle"),
-            subtitle: game.i18n.localize(`TYPES.Item.${this.item?.type ?? this.type}`),
-            title: this.item?.name ?? this.name,
-            reason: !this.item ? "match" : undefined,
-        };
-    }
 
     async tooltip(): Promise<HTMLElement> {
         if (this.#tooltip) {
             return this.#tooltip;
         }
 
-        const baseData = this.tooltipData();
-        const data: GeneratedTooltipData = {
-            ...baseData,
-            altUse: `${localize("rightClick")} ${baseData.altUse}`,
-            disabled: this.disabled,
+        const reason = this.unusableReason;
+        const data: ShortcutTooltipData = {
+            altUse: this.canAltUse ? `${localize("rightClick")} ${this.altUseLabel}` : null,
+            hasItem: !!this.item,
             img: this.usedImage,
-            reason: baseData.reason
-                ? localize("shortcuts.tooltip.reason", baseData.reason)
-                : undefined,
+            reason: reason ? localize("shortcuts.tooltip.reason", reason) : null,
+            subtitle: this.subtitle,
+            title: this.title,
         };
 
         return (this.#tooltip = createHTMLElement("div", {
@@ -137,15 +135,12 @@ interface PersistentShortcut<TSchema extends BaseShortcutSchema, TItem extends I
     extends ModelPropsFromSchema<BaseShortcutSchema> {}
 
 type ShortcutTooltipData = {
-    altUse: string;
-    reason?: string;
+    altUse: string | null;
+    hasItem: boolean;
+    img: ImageFilePath;
+    reason: string | null;
     subtitle: string;
     title: string;
-};
-
-type GeneratedTooltipData = ShortcutTooltipData & {
-    img: ImageFilePath;
-    disabled: boolean;
 };
 
 type BaseShortcutSchema = {
@@ -157,4 +152,4 @@ type BaseShortcutSchema = {
 type ShortcutDataset = { itemId: string } | { sourceId: DocumentUUID };
 
 export { generateBaseShortcutFields, PersistentShortcut };
-export type { BaseShortcutSchema, ShortcutDataset, ShortcutTooltipData };
+export type { BaseShortcutSchema, ShortcutDataset };

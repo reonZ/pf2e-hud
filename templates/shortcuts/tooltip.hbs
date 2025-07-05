@@ -9,9 +9,11 @@
 </div>
 {{/if}}
 <div class="details right">
-    {{#unless disabled}}
+    {{#if altUse}}
     <div>{{altUse}}</div>
+    {{/if}}
+    {{#if hasItem}}
     <div>{{@root.i18n 'click.control'}}</div>
-    {{/unless}}
+    {{/if}}
     <div>{{@root.i18n 'click.shift'}}</div>
 </div>

@@ -137,7 +137,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         } else if (event.shiftKey) {
             this.remove(slot);
         } else if (event.ctrlKey) {
-            if (this.actor && shortcut.item && !shortcut.disabled) {
+            if (this.actor && shortcut.item) {
                 new ItemHudPopup(this.actor, shortcut.item, event).render(true);
             }
         } else {

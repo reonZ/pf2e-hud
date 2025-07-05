@@ -12,7 +12,6 @@ import {
     getItemSlug,
     PersistentShortcut,
     ShortcutDataset,
-    ShortcutTooltipData,
 } from ".";
 import fields = foundry.data.fields;
 
@@ -45,11 +44,7 @@ abstract class ItemShortcut<
     }
 
     get canUse(): boolean {
-        return !this.disabled;
-    }
-
-    get canAltUse(): boolean {
-        return !this.disabled;
+        return super.canUse && !this.dropped;
     }
 
     get dropped(): boolean {
@@ -60,12 +55,22 @@ abstract class ItemShortcut<
         return this.item ? { itemId: this.item.id } : null;
     }
 
-    get disabled(): boolean {
+    get greyed(): boolean {
         return !this.item || this.dropped;
     }
 
-    get greyed(): boolean {
-        return false;
+    get quantity(): number {
+        return this.item?.quantity ?? 0;
+    }
+
+    get unusableReason(): string | undefined {
+        return !this.item
+            ? "match"
+            : this.dropped
+            ? "dropped"
+            : this.quantity < 1
+            ? "quantity"
+            : undefined;
     }
 
     use(event: Event): void {
@@ -78,20 +83,6 @@ abstract class ItemShortcut<
 
     altUse(event: Event): void {
         this.item?.sheet.render(true);
-    }
-
-    tooltipData(): ShortcutTooltipData {
-        const data = super.tooltipData();
-
-        data.reason = !this.item
-            ? "match"
-            : this.dropped
-            ? "dropped"
-            : (this.item?.quantity ?? 0) < 1
-            ? "quantity"
-            : undefined;
-
-        return data;
     }
 }
 
