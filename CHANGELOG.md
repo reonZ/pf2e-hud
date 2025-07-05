@@ -1,3 +1,8 @@
+# 2.10.1
+
+-   `Sidebar`:
+    -   fix positioning & limits using the wrong scale value making sidebars going crazy on scenes with grid size other than 100
+
 # 2.10.0
 
 -   this release implements the `Items` shortcuts

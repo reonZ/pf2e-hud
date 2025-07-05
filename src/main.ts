@@ -13,7 +13,7 @@ import { createHTMLElement, MODULE, R, templatePath, userIsGM } from "module-hel
 import { registerSettings } from "settings";
 
 MODULE.register("pf2e-hud");
-MODULE.enableDebugMode();
+// MODULE.enableDebugMode();
 
 const HUDS = {
     persistent: new PersistentPF2eHUD(),
