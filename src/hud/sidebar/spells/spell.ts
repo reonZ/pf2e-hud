@@ -21,7 +21,8 @@ class SpellSidebarItem extends BaseSidebarItem<SpellPF2e<CreaturePF2e>, SlotSpel
     }
 
     cast() {
-        this.spell.spellcasting?.cast(this.spell, { rank: this.castRank, slotId: this.slotId });
+        this.spell.parentItem?.consume() ??
+            this.spell.spellcasting?.cast(this.spell, { rank: this.castRank, slotId: this.slotId });
     }
 
     drawItem() {
