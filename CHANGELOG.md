@@ -1,3 +1,25 @@
+# 2.10.0
+
+-   this release implements the `Items` shortcuts
+-   `Persistent HUD`:
+    -   implement drop item on portrait
+    -   fix empty hud showing the resources panel behind the shortcuts'
+-   `Persistent Shortcuts`:
+    -   shortcuts are no longer removed when the original item isn't found (they are simply disabled)
+        -   the module will try to find matching items whenever the original one can't be found
+    -   shortcuts now always have a `[Click]` and `[Right-Click]` usage
+    -   you can also `[Ctrl-Right-Click]` to open the description popup for the associated item
+    -   shortcuts now have a proper tooltip when hovered over displaying more info
+-   `Items Shortcuts`:
+    -   you can now create `equipment` shortcuts
+    -   `[Right-Click]` opens the item sheet
+-   `Sidebar`:
+    -   make checkboxes active state more readable
+    -   fix sidebar positioning and limits when using a scale other than 1
+-   `Spells Sidebar`:
+    -   fix identical prepared spells in different slots all sharing the same item
+    -   fix item spells not consuming any use
+
 # 2.9.0
 
 -   `Persistent HUD`:
