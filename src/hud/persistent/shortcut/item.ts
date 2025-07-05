@@ -3,13 +3,14 @@ import {
     CreaturePF2e,
     EquipmentPF2e,
     IdField,
+    ItemType,
     usePhysicalItem,
 } from "module-helpers";
 import {
     BaseShortcutSchema,
     generateBaseShortcutFields,
     getItemSlug,
-    IPersistentShortcut,
+    PersistentShortcut,
     ShortcutDataset,
     ShortcutTooltipData,
 } from ".";
@@ -30,24 +31,17 @@ function generateItemShortcutFields(type: string): ItemShortcutSchema {
 }
 
 abstract class ItemShortcut<
-        TSchema extends BaseShortcutSchema,
-        TItem extends EquipmentPF2e<CreaturePF2e> | ConsumablePF2e<CreaturePF2e>
-    >
-    extends foundry.abstract.DataModel<null, TSchema>
-    implements IPersistentShortcut
-{
-    #item: Maybe<TItem>;
-
-    constructor(
+    TSchema extends ItemShortcutSchema,
+    TItem extends ItemShortcutItem
+> extends PersistentShortcut<TSchema, TItem> {
+    static getItem(
         actor: CreaturePF2e,
-        data?: DeepPartial<SourceFromSchema<TSchema>>,
-        options?: DataModelConstructionOptions<null>
-    ) {
-        super(data, options);
-
-        this.#item =
-            (actor.items.get(this.itemId) as TItem) ??
-            actor.itemTypes[this.type].find((item) => getItemSlug(item) === this.slug);
+        data: SourceFromSchema<ItemShortcutSchema>
+    ): Maybe<ItemShortcutItem> {
+        const item =
+            actor.items.get(data.itemId) ??
+            actor.itemTypes[data.type as ItemType].find((item) => getItemSlug(item) === data.slug);
+        return item as Maybe<ItemShortcutItem>;
     }
 
     get canUse(): boolean {
@@ -62,9 +56,8 @@ abstract class ItemShortcut<
         return this.item?.system.equipped.carryType === "dropped";
     }
 
-    get dataset(): ShortcutDataset | undefined {
-        if (!this.item) return;
-        return { itemId: this.item.id };
+    get dataset(): ShortcutDataset | null {
+        return this.item ? { itemId: this.item.id } : null;
     }
 
     get disabled(): boolean {
@@ -73,14 +66,6 @@ abstract class ItemShortcut<
 
     get greyed(): boolean {
         return false;
-    }
-
-    get item(): Maybe<TItem> {
-        return this.#item;
-    }
-
-    get usedImage(): ImageFilePath {
-        return this.img;
     }
 
     use(event: Event): void {
@@ -96,27 +81,26 @@ abstract class ItemShortcut<
     }
 
     tooltipData(): ShortcutTooltipData {
-        return {
-            altUse: game.i18n.localize("PF2E.EditItemTitle"),
-            subtitle: game.i18n.localize(`TYPES.Item.${this.type}`),
-            title: this.item?.name ?? this.name,
-            reason: !this.item
-                ? "match"
-                : this.dropped
-                ? "dropped"
-                : (this.item?.quantity ?? 0) < 1
-                ? "quantity"
-                : undefined,
-        };
+        const data = super.tooltipData();
+
+        data.reason = !this.item
+            ? "match"
+            : this.dropped
+            ? "dropped"
+            : (this.item?.quantity ?? 0) < 1
+            ? "quantity"
+            : undefined;
+
+        return data;
     }
 }
 
-interface ItemShortcut<
-    TSchema extends BaseShortcutSchema,
-    TItem extends EquipmentPF2e<CreaturePF2e> | ConsumablePF2e<CreaturePF2e>
-> extends ModelPropsFromSchema<ItemShortcutSchema> {
+interface ItemShortcut<TSchema extends ItemShortcutSchema, TItem extends ItemShortcutItem>
+    extends ModelPropsFromSchema<ItemShortcutSchema> {
     type: "consumable" | "equipment";
 }
+
+type ItemShortcutItem = EquipmentPF2e<CreaturePF2e> | ConsumablePF2e<CreaturePF2e>;
 
 type ItemShortcutSchema = BaseShortcutSchema & {
     itemId: IdField<true, false, false>;

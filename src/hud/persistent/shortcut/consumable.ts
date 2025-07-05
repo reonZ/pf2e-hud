@@ -10,6 +10,8 @@ class ConsumableShortcut extends ItemShortcut<
     ConsumableShortcutSchema,
     ConsumablePF2e<CreaturePF2e>
 > {
+    #uses?: number | null;
+
     static defineSchema(): ConsumableShortcutSchema {
         return generateItemShortcutFields("consumable");
     }
@@ -22,11 +24,16 @@ class ConsumableShortcut extends ItemShortcut<
         return this.counter.value < 1;
     }
 
-    get uses(): number | undefined {
+    get uses(): number | null {
+        if (this.#uses !== undefined) {
+            return this.#uses;
+        }
+
         const item = this.item;
-        return item?.uses.max && (item.uses.max > 1 || item.category === "wand")
-            ? item.uses.value
-            : undefined;
+        return (this.#uses =
+            item?.uses.max && (item.uses.max > 1 || item.category === "wand")
+                ? item.uses.value
+                : null);
     }
 
     get counter(): ValueAndMaybeMax {
@@ -36,10 +43,17 @@ class ConsumableShortcut extends ItemShortcut<
     tooltipData(): ShortcutTooltipData {
         const data = super.tooltipData();
 
-        if (!data.reason) {
-            const uses = this.uses;
-            data.reason = R.isNonNullish(uses) && uses < 1 ? "uses" : undefined;
-        }
+        data.reason = !this.item
+            ? "match"
+            : this.dropped
+            ? "dropped"
+            : R.isNullish(this.uses)
+            ? (this.item?.quantity ?? 0) < 1
+                ? "quantity"
+                : undefined
+            : this.uses < 1
+            ? "uses"
+            : undefined;
 
         return data;
     }

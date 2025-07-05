@@ -2,11 +2,9 @@ import { ItemHudPopup, SidebarDragData } from "hud";
 import {
     ApplicationRenderContext,
     ApplicationRenderOptions,
-    createHTMLElement,
     dataToDatasetString,
     getDragEventData,
     getFlag,
-    localize,
     R,
     render,
     updateFlag,
@@ -17,22 +15,20 @@ import {
     ConsumableShortcutData,
     EquipmentShortcut,
     EquipmentShortcutData,
-    IPersistentShortcut,
     PersistentPartPF2eHUD,
+    PersistentShortcut,
     ShortcutDataset,
-    ShortcutTooltipData,
+    ToggleShortcutData,
 } from ".";
 
 const SHORTCUTS = {
     consumable: ConsumableShortcut,
     equipment: EquipmentShortcut,
-} satisfies Record<ShortcutType, ConstructorOf<BasePersistentShortcut>>;
-
-type BasePersistentShortcut = foundry.abstract.DataModel & IPersistentShortcut;
+} satisfies Record<string, ConstructorOf<PersistentShortcut>>;
 
 class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     #tab: `${number}` = "1";
-    #shortcuts: Map<number, BasePersistentShortcut> = new Map();
+    #shortcuts: Map<number, PersistentShortcut> = new Map();
 
     get nbSlots(): number {
         return 18;
@@ -190,33 +186,10 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         const shortcut = this.#shortcuts.get(slot);
         if (!shortcut) return;
 
-        type GeneratedTooltipData = ShortcutTooltipData & {
-            img: ImageFilePath;
-            disabled: boolean;
-        };
-
-        const tooltip = (shortcut._tooltip ??= await (async () => {
-            const shortcutData = shortcut.tooltipData();
-            const data: GeneratedTooltipData = {
-                ...shortcutData,
-                altUse: `${localize("rightClick")} ${shortcutData.altUse}`,
-                disabled: shortcut.disabled,
-                img: shortcut.usedImage,
-                reason: shortcutData.reason
-                    ? localize("shortcuts.tooltip.reason", shortcutData.reason)
-                    : undefined,
-            };
-
-            return createHTMLElement("div", {
-                classes: ["content"],
-                content: await render("shortcuts/tooltip", data),
-            });
-        })());
-
         game.tooltip.activate(this.element, {
             cssClass: "pf2e-hud-shortcut-tooltip",
             direction: "UP",
-            html: tooltip,
+            html: await shortcut.tooltip(),
         });
     }
 
@@ -231,8 +204,6 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         if (!actor || !ShortcutCls) return;
 
         try {
-            // TODO we may need to initialize the shortcut if anything async is required
-
             const shortcut = new ShortcutCls(actor, data as any);
             return shortcut.invalid ? undefined : shortcut;
         } catch (error) {
@@ -241,11 +212,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     }
 }
 
-type PersistentShortcut = InstanceType<(typeof SHORTCUTS)[keyof typeof SHORTCUTS]>;
-
-type ShortcutData = ConsumableShortcutData | EquipmentShortcutData;
-
-type ShortcutType = ShortcutData["type"];
+type ShortcutData = ConsumableShortcutData | EquipmentShortcutData | ToggleShortcutData;
 
 type PersistentShortcutsContext = {
     dataset: (data: ShortcutDataset | undefined) => string;
@@ -253,4 +220,4 @@ type PersistentShortcutsContext = {
 };
 
 export { PersistentShortcutsPF2eHUD };
-export type { ShortcutData, ShortcutType };
+export type { ShortcutData };
