@@ -7,6 +7,7 @@ import {
     CreaturePF2e,
     dataToDatasetString,
     getEquipAnnotation,
+    htmlClosest,
     localeCompare,
     OneToTen,
     R,
@@ -22,6 +23,17 @@ import { SlotSpellData, SPELL_CATEGORIES, SpellCategoryType, SpellSidebarItem } 
 class SpellsSidebarPF2eHUD extends SidebarPF2eHUD<SpellPF2e, SpellSidebarItem> {
     get name(): "spells" {
         return "spells";
+    }
+
+    getSidebarItemFromElement<T extends SpellSidebarItem>(el: HTMLElement): T | null {
+        const { itemId, groupId, slotId } = htmlClosest(el, ".item")?.dataset ?? {};
+        if (!itemId) return null;
+
+        const item = groupId
+            ? this.sidebarItems.get(`${itemId}-${groupId}-${slotId ?? "0"}`)
+            : this.sidebarItems.get(itemId);
+
+        return item as T | null;
     }
 
     protected async _prepareContext(options: ApplicationRenderOptions): Promise<SpellsHudContext> {
@@ -218,7 +230,11 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                     uses: getUses(active),
                 };
 
-                const sidebarSpell = this.addSidebarItem(SpellSidebarItem, "id", spellData);
+                const sidebarSpell = this.addSidebarItem(
+                    SpellSidebarItem,
+                    `${spell.id}-${group.id}-${slotId}`,
+                    spellData
+                );
                 slotSpells.push(sidebarSpell);
             }
 
