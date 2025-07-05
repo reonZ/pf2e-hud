@@ -2,7 +2,7 @@
 {{#if shortcut.isEmpty}}
 <div class="shortcut empty" data-slot="{{slot}}"></div>
 {{else}}
-<div class="item shortcut{{#if shortcut.disabled}} inactive {{else if shortcut.greyed}} greyed{{/if}}"
+<div class="item shortcut{{#if (not shortcut.item)}} inactive {{else if (not shortcut.canUse)}} greyed{{/if}}"
     data-slot="{{slot}}" data-action="shortcut-slot" {{{@root.dataset shortcut.dataset}}}>
     <div class="image" style="background-image: url({{shortcut.usedImage}});">
     </div>
@@ -11,6 +11,17 @@
         <span>
             {{shortcut.counter.value}}
         </span>
+    </div>
+    {{/if}}
+    {{#if shortcut.checkbox}}
+    <div class="checkbox">
+        {{#if shortcut.checkbox.checked}}
+        <i class="fa-regular fa-square-check"></i>
+        <i class="fa-solid fa-square-check"></i>
+        {{else}}
+        <i class="fa-regular fa-square"></i>
+        <i class="fa-solid fa-square"></i>
+        {{/if}}
     </div>
     {{/if}}
     <div class="overlay"></div>

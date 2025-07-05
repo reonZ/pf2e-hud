@@ -1,4 +1,10 @@
-import { BaseSidebarItem, ShortcutData, SidebarName, SidebarPF2eHUD } from "hud";
+import {
+    BaseSidebarItem,
+    ShortcutData,
+    SidebarName,
+    SidebarPF2eHUD,
+    ToggleShortcutData,
+} from "hud";
 import { ActorPF2e, ItemPF2e, R, RollOptionToggle } from "module-helpers";
 
 const ROLLOPTIONS_PLACEMENT = {
@@ -14,8 +20,13 @@ class ToggleSidebarItem extends BaseSidebarItem<ItemPF2e<ActorPF2e>, SidebarTogg
         return this.item.img;
     }
 
-    toShortcut(): ShortcutData | undefined {
-        return;
+    toShortcut(): ToggleShortcutData {
+        return {
+            img: this.img,
+            itemId: this.itemId,
+            name: this.item.name,
+            type: "toggle",
+        };
     }
 }
 

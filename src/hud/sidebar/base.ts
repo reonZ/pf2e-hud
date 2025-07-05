@@ -394,7 +394,7 @@ abstract class SidebarPF2eHUD<
                 content: togglesTemplate,
             });
 
-            for (const { filterValue, itemId, img, option, domain } of toggles) {
+            for (const { filterValue, itemId, img, option, domain, alwaysActive } of toggles) {
                 if (!img) continue;
 
                 const imgEl = createHTMLElement("img", { classes: ["drag-img"] });
@@ -406,7 +406,7 @@ abstract class SidebarPF2eHUD<
                 );
 
                 if (toggleRow) {
-                    toggleRow.draggable = true;
+                    toggleRow.draggable = !alwaysActive;
                     toggleRow.appendChild(imgEl);
                     toggleRow.dataset.filterValue = filterValue.toString();
                 }
