@@ -1,3 +1,20 @@
+# 2.11.0
+
+-   this release implements the `RollOption` shortcuts
+-   `Item Popup`:
+    -   add style for disabled use button
+-   `Persistent HUD`:
+    -   fix effects panel not working with linked actors
+-   `Persistent Shortcuts`:
+    -   convert `[Shift-Right-Click]` into `[Middle-Click]` to remove shortcuts
+        -   it is actually an `auxiliary` event under the hood and any non-standard mouse click will trigger it
+-   `RollOption Shortcuts`:
+    -   the module no longer snapshots the current suboption when draggin and creating a rolloption shortcut
+    -   `[Click]` enable/disable the rolloption, does nothing if it is an always-enabled rolloption
+    -   if a rolloption has at least 2 suboptions, the shortcut `[Right-Click]` will offer a select menu to pick one
+-   `Spells Sidebar`:
+    -   fix not being able to cast focus spells beyond the first slot
+
 # 2.10.1
 
 -   `Sidebar`:
