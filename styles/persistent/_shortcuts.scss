@@ -36,7 +36,7 @@
 
         .boxed {
             background: #000000a3;
-            padding: 0 0.2em;
+            padding: 0 0.3em;
             border-radius: 4px;
             display: flex;
         }
@@ -50,10 +50,46 @@
             }
         }
 
+        .checkbox {
+            bottom: calc(var(--offset) - 4.5px);
+            right: calc(var(--offset) - 1.5px);
+
+            i {
+                width: min-content;
+                font-size: 1.4em;
+
+                &:last-child {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    opacity: 0.6;
+                    color: black;
+                }
+            }
+        }
+
+        &:hover {
+            .image {
+                filter: brightness(1.2);
+            }
+
+            .overlay {
+                box-shadow: inset 0 0 5px #000000;
+            }
+        }
+
         &.inactive,
         &.greyed {
             .image {
                 filter: grayscale(1);
+            }
+        }
+
+        &.greyed {
+            &:hover {
+                .overlay {
+                    box-shadow: inset 0 0 5px #ffffff;
+                }
             }
         }
 
@@ -69,12 +105,6 @@
             background: rgb(0 0 0 / 37%);
             border-style: dashed;
             cursor: default;
-        }
-
-        &:hover {
-            .overlay {
-                box-shadow: inset 0 0 5px #fba757;
-            }
         }
     }
 }

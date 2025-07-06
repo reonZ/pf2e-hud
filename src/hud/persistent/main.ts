@@ -106,7 +106,7 @@ class PersistentPF2eHUD
                 scope: "user",
                 config: false,
                 onChange: (value) => {
-                    this.#effectsPanel.refresh();
+                    this.effectsPanel.refresh();
                 },
             },
         ];
@@ -151,6 +151,14 @@ class PersistentPF2eHUD
 
     get portraitElement(): HTMLElement | null {
         return (this.#portraitElement ??= htmlQuery(this.element, `[data-panel="portrait"]`));
+    }
+
+    get effectsPanel(): PersistentEffectsPF2eHUD {
+        return this.#effectsPanel;
+    }
+
+    get shortcutsPanel(): PersistentShortcutsPF2eHUD {
+        return this.#shortcutsPanel;
     }
 
     protected _configurate(): void {
@@ -234,7 +242,8 @@ class PersistentPF2eHUD
         }
 
         this.#portraitElement = null;
-        this.#effectsPanel.close();
+        this.effectsPanel.close();
+        this.shortcutsPanel.close();
 
         return super.close(options);
     }
@@ -350,8 +359,8 @@ class PersistentPF2eHUD
         super._replaceHTML(result, content, options);
 
         this.#setupAvatar(content);
-        this.#effectsPanel.refresh();
-        this.#shortcutsPanel.render(true);
+        this.effectsPanel.refresh();
+        this.shortcutsPanel.render(true);
 
         this.#activateListeners(content);
     }

@@ -233,6 +233,11 @@
                     "control": "[Ctrl-Right-Click] Item Popup",
                     "middle": "[Middle-Click] Remove Shortcut"
                 },
+                "disabled": "Disabled",
+                "enabled": "Enabled",
+                "subtitle": {
+                    "toggle": "Roll Option"
+                },
                 "reason": {
                     "dropped": "Item Not Carried",
                     "match": "No Match",

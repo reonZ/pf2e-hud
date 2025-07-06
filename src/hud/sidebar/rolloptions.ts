@@ -1,11 +1,13 @@
+import { BaseSidebarItem, SidebarName, SidebarPF2eHUD, ToggleShortcutData } from "hud";
 import {
-    BaseSidebarItem,
-    ShortcutData,
-    SidebarName,
-    SidebarPF2eHUD,
-    ToggleShortcutData,
-} from "hud";
-import { ActorPF2e, ItemPF2e, R, RollOptionToggle } from "module-helpers";
+    ActorPF2e,
+    createHTMLElement,
+    createHTMLElementContent,
+    htmlQuery,
+    ItemPF2e,
+    R,
+    RollOptionToggle,
+} from "module-helpers";
 
 const ROLLOPTIONS_PLACEMENT = {
     actions: "actions",
@@ -20,17 +22,77 @@ class ToggleSidebarItem extends BaseSidebarItem<ItemPF2e<ActorPF2e>, SidebarTogg
         return this.item.img;
     }
 
+    get itemKey(): string {
+        return generateToggleKey(this);
+    }
+
+    get elementSelector(): string {
+        return `[data-item-id="${this.itemId}"][data-domain="${this.domain}"][data-option="${this.option}"]`;
+    }
+
     toShortcut(): ToggleShortcutData {
         return {
+            domain: this.domain,
             img: this.img,
-            itemId: this.itemId,
+            itemId: this.item.id,
             name: this.item.name,
+            option: this.option,
             type: "toggle",
         };
     }
 }
 
 interface ToggleSidebarItem extends Readonly<SidebarToggle> {}
+
+function generateToggleKey(options: { itemId: string; domain: string; option: string }): string;
+function generateToggleKey(options: {
+    itemId?: string;
+    domain?: string;
+    option?: string;
+}): string | undefined;
+function generateToggleKey({
+    itemId,
+    domain,
+    option,
+}: {
+    itemId?: string;
+    domain?: string;
+    option?: string;
+}): string | undefined {
+    if (!itemId || !domain || !option) return;
+    return `${itemId}-${domain}-${option}`;
+}
+
+async function createRollOptionsElements(this: SidebarPF2eHUD): Promise<HTMLElement | undefined> {
+    const toggles = getRollOptionsData.call(this);
+    if (!toggles.length) return;
+
+    const togglesTemplate = await foundry.applications.handlebars.renderTemplate(
+        "systems/pf2e/templates/actors/partials/toggles.hbs",
+        { toggles }
+    );
+
+    const togglesElement = createHTMLElementContent({
+        content: togglesTemplate,
+    });
+
+    for (const { filterValue, img, alwaysActive, elementSelector } of toggles) {
+        if (!img) continue;
+
+        const imgEl = createHTMLElement("img", { classes: ["drag-img"] });
+        imgEl.src = img;
+
+        const toggleRow = htmlQuery(togglesElement, elementSelector);
+
+        if (toggleRow) {
+            toggleRow.draggable = !alwaysActive;
+            toggleRow.appendChild(imgEl);
+            toggleRow.dataset.filterValue = filterValue.toString();
+        }
+    }
+
+    return togglesElement;
+}
 
 function getRollOptionsData(this: SidebarPF2eHUD): ToggleSidebarItem[] {
     const selectedPlacement = ROLLOPTIONS_PLACEMENT[this.name];
@@ -43,7 +105,7 @@ function getRollOptionsData(this: SidebarPF2eHUD): ToggleSidebarItem[] {
             if (toggle.domain === "elemental-blast" && toggle.option === "action-cost") return;
 
             const item = this.actor.items.get(toggle.itemId);
-            return item && this.addSidebarItem(ToggleSidebarItem, "itemId", { ...toggle, item });
+            return item && this.addSidebarItem(ToggleSidebarItem, "itemKey", { ...toggle, item });
         }),
         R.filter(R.isTruthy)
     );
@@ -53,4 +115,4 @@ type SidebarToggle = RollOptionToggle & {
     item: ItemPF2e<ActorPF2e>;
 };
 
-export { getRollOptionsData };
+export { createRollOptionsElements, generateToggleKey };

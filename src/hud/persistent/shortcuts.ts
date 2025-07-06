@@ -18,12 +18,14 @@ import {
     PersistentPartPF2eHUD,
     PersistentShortcut,
     ShortcutDataset,
+    ToggleShortcut,
     ToggleShortcutData,
 } from ".";
 
 const SHORTCUTS = {
     consumable: ConsumableShortcut,
     equipment: EquipmentShortcut,
+    toggle: ToggleShortcut,
 } satisfies Record<string, ConstructorOf<PersistentShortcut>>;
 
 class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
@@ -38,6 +40,10 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         return "shortcuts";
     }
 
+    get shortcuts(): Map<number, PersistentShortcut> {
+        return this.#shortcuts;
+    }
+
     get shortcutsData(): ShortcutData[] {
         if (!this.actor) {
             return [];
@@ -50,14 +56,14 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         const shortcut = this.#instantiateShortcut(data);
         if (!shortcut) return false;
 
-        this.#shortcuts.set(slot, shortcut);
+        this.shortcuts.set(slot, shortcut);
         this.save();
 
         return true;
     }
 
     remove(slot: number): boolean {
-        if (this.#shortcuts.delete(slot)) {
+        if (this.shortcuts.delete(slot)) {
             this.save();
             return true;
         }
@@ -70,7 +76,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 
         const toSave: ShortcutData[] = [];
 
-        for (const [slot, shortcut] of this.#shortcuts.entries()) {
+        for (const [slot, shortcut] of this.shortcuts.entries()) {
             if (!shortcut) continue;
             toSave[slot] = shortcut.toObject() as ShortcutData;
         }
@@ -85,7 +91,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     protected async _prepareContext(
         options: ApplicationRenderOptions
     ): Promise<PersistentShortcutsContext> {
-        this.#shortcuts.clear();
+        this.shortcuts.clear();
 
         const shortcuts: PersistentShortcutsContext["shortcuts"] = [];
         const shortcutsData = this.shortcutsData;
@@ -97,7 +103,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             shortcuts[slot] = shortcut ?? { isEmpty: true };
 
             if (shortcut) {
-                this.#shortcuts.set(slot, shortcut);
+                this.shortcuts.set(slot, shortcut);
             }
         }
 
@@ -151,12 +157,14 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                 }
             });
 
-            const shortcut = this.#shortcuts.get(slot);
+            const shortcut = this.shortcuts.get(slot);
             if (!shortcut) continue;
 
             target.addEventListener("click", (event) => {
-                game.tooltip.deactivate();
-                shortcut.canUse && shortcut.use(event);
+                if (shortcut.canUse) {
+                    game.tooltip.deactivate();
+                    shortcut.use(event);
+                }
             });
 
             target.addEventListener("auxclick", (event) => {

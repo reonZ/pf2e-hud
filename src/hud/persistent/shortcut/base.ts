@@ -67,7 +67,7 @@ abstract class PersistentShortcut<
     }
 
     get dataset(): ShortcutDataset | null {
-        return null;
+        return this.item ? { itemId: this.item.id } : null;
     }
 
     get canUse(): boolean {
@@ -91,11 +91,13 @@ abstract class PersistentShortcut<
     }
 
     get unusableReason(): string | undefined {
-        return !this.item ? "" : undefined;
+        return !this.item ? "match" : undefined;
     }
 
     get subtitle(): string {
-        return game.i18n.localize(`TYPES.Item.${this.item?.type ?? this.type}`);
+        return this.item
+            ? game.i18n.localize(`TYPES.Item.${this.item.type}`)
+            : localize("shortcuts.tooltip.subtitle", this.type);
     }
 
     get title(): string {
@@ -107,7 +109,10 @@ abstract class PersistentShortcut<
     }
 
     abstract use(event: Event): void;
-    abstract altUse(event: Event): void;
+
+    altUse(event: Event): void {
+        this.item?.sheet.render(true);
+    }
 
     async tooltip(): Promise<HTMLElement> {
         if (this.#tooltip) {

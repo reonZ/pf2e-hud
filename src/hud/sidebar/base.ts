@@ -22,7 +22,6 @@ import {
     ApplicationRenderOptions,
     assignStyle,
     createHTMLElement,
-    createHTMLElementContent,
     createToggleableEvent,
     htmlClosest,
     htmlQuery,
@@ -38,8 +37,9 @@ import {
 import {
     ActionsSidebarPF2eHUD,
     BaseSidebarItem,
+    createRollOptionsElements,
     ExtrasSidebarPF2eHUD,
-    getRollOptionsData,
+    generateToggleKey,
     ItemsSidebarPF2eHUD,
     SkillsSidebarPF2eHUD,
     SpellsSidebarPF2eHUD,
@@ -297,7 +297,12 @@ abstract class SidebarPF2eHUD<
         const target = htmlClosest(el, ".item") ?? htmlQueryIn(el, ".item-wrapper", ".item");
         if (!target) return null;
 
-        // TODO check for toggle first
+        const toggleKey = generateToggleKey(target.dataset);
+        const toggle = toggleKey ? this.sidebarItems.get(toggleKey) : undefined;
+
+        if (toggle) {
+            return toggle as T;
+        }
 
         const key = this.getSidebarItemKey(target.dataset);
         return key ? (this.sidebarItems.get(key) as T | null) : null;
@@ -394,36 +399,9 @@ abstract class SidebarPF2eHUD<
             dataset: { panel: "filter" },
         });
 
-        const toggles = getRollOptionsData.call(this);
-        if (toggles.length) {
-            const togglesTemplate = await foundry.applications.handlebars.renderTemplate(
-                "systems/pf2e/templates/actors/partials/toggles.hbs",
-                { toggles }
-            );
-
-            const togglesElement = createHTMLElementContent({
-                content: togglesTemplate,
-            });
-
-            for (const { filterValue, itemId, img, option, domain, alwaysActive } of toggles) {
-                if (!img) continue;
-
-                const imgEl = createHTMLElement("img", { classes: ["drag-img"] });
-                imgEl.src = img;
-
-                const toggleRow = htmlQuery(
-                    togglesElement,
-                    `[data-item-id="${itemId}"][data-domain="${domain}"][data-option="${option}"]`
-                );
-
-                if (toggleRow) {
-                    toggleRow.draggable = !alwaysActive;
-                    toggleRow.appendChild(imgEl);
-                    toggleRow.dataset.filterValue = filterValue.toString();
-                }
-            }
-
-            listElement.prepend(togglesElement);
+        const toggles = await createRollOptionsElements.call(this);
+        if (toggles) {
+            listElement.prepend(toggles);
         }
 
         return { filterElement, innerElement, sidebarElement };

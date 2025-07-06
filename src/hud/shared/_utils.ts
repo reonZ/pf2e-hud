@@ -90,7 +90,7 @@ function makeFadeable(app: ApplicationV2) {
                 "dragend",
                 () => {
                     setTimeout(() => {
-                        app.element.classList.remove("pf2e-hud-fadeout");
+                        app.element?.classList.remove("pf2e-hud-fadeout");
                     }, 500);
                 },
                 { once: true, capture: true }

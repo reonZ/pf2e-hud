@@ -6,13 +6,7 @@ import {
     ItemType,
     usePhysicalItem,
 } from "module-helpers";
-import {
-    BaseShortcutSchema,
-    generateBaseShortcutFields,
-    getItemSlug,
-    PersistentShortcut,
-    ShortcutDataset,
-} from ".";
+import { BaseShortcutSchema, generateBaseShortcutFields, getItemSlug, PersistentShortcut } from ".";
 import fields = foundry.data.fields;
 
 function generateItemShortcutFields(type: string): ItemShortcutSchema {
@@ -51,10 +45,6 @@ abstract class ItemShortcut<
         return this.item?.system.equipped.carryType === "dropped";
     }
 
-    get dataset(): ShortcutDataset | null {
-        return this.item ? { itemId: this.item.id } : null;
-    }
-
     get greyed(): boolean {
         return !this.item || this.dropped;
     }
@@ -73,16 +63,16 @@ abstract class ItemShortcut<
             : undefined;
     }
 
+    get subtitle(): string {
+        return game.i18n.localize(`TYPES.Item.${this.item?.type ?? this.type}`);
+    }
+
     use(event: Event): void {
         const item = this.item;
 
         if (item?.isOfType("consumable", "equipment")) {
             usePhysicalItem(event, item);
         }
-    }
-
-    altUse(event: Event): void {
-        this.item?.sheet.render(true);
     }
 }
 
