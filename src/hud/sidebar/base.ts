@@ -26,6 +26,7 @@ import {
     createToggleableEvent,
     htmlClosest,
     htmlQuery,
+    htmlQueryIn,
     ItemPF2e,
     localize,
     MODULE,
@@ -288,9 +289,18 @@ abstract class SidebarPF2eHUD<
         return item;
     }
 
+    getSidebarItemKey({ itemId, itemUuid }: DOMStringMap): string | undefined {
+        return itemUuid ?? itemId;
+    }
+
     getSidebarItemFromElement<T extends TSidebarItem>(el: HTMLElement): T | null {
-        const { itemId, itemUuid } = htmlClosest(el, ".item")?.dataset ?? {};
-        return (this.sidebarItems.get(itemUuid ?? itemId ?? "") ?? null) as T | null;
+        const target = htmlClosest(el, ".item") ?? htmlQueryIn(el, ".item-wrapper", ".item");
+        if (!target) return null;
+
+        // TODO check for toggle first
+
+        const key = this.getSidebarItemKey(target.dataset);
+        return key ? (this.sidebarItems.get(key) as T | null) : null;
     }
 
     protected _activateListeners(html: HTMLElement) {}

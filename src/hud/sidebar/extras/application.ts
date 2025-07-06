@@ -8,7 +8,7 @@ import {
     getDragEventData,
     getFlag,
     htmlClosest,
-    htmlQuery,
+    htmlQueryIn,
     MacroPF2e,
     R,
     setFlag,
@@ -31,12 +31,6 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e, ExtrasSidebar
 
     get fadeoutOnDrag(): boolean {
         return false;
-    }
-
-    getSidebarItemFromElement<T extends ExtrasSidebarItem>(el: HTMLElement): T | null {
-        const wrapper = htmlClosest(el, ".statistic-wrapper");
-        const { itemId, itemUuid } = htmlQuery(wrapper, ".item")?.dataset ?? {};
-        return (this.sidebarItems.get(itemUuid ?? itemId ?? "") ?? null) as T | null;
     }
 
     protected async _prepareContext(
@@ -108,8 +102,7 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e, ExtrasSidebar
         } else if (action === "rest-for-the-night") {
             game.pf2e.actions.restForTheNight({ actors: [actor] });
         } else if (action === "roll-initiative") {
-            const parent = htmlClosest(target, ".initiative");
-            const statistic = htmlQuery(parent, "select")?.value;
+            const statistic = htmlQueryIn(target, ".initiative", "select")?.value;
             rollInitiative(event, actor, statistic);
         } else if (action === "roll-statistic-action") {
             const { variant } = target.dataset as Record<string, string>;

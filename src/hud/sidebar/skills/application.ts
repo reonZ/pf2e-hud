@@ -8,8 +8,6 @@ import {
     getItemSourceFromUuid,
     hasAnyItemWithSourceId,
     hasItemWithSourceId,
-    htmlClosest,
-    htmlQuery,
     localize,
     R,
     signedInteger,
@@ -40,14 +38,8 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e | AbilityItemPF2e, Sk
     get name(): "skills" {
         return "skills";
     }
-
-    getSidebarItemFromElement<T extends SkillsSidebarItem>(el: HTMLElement): T | null {
-        const wrapper = htmlClosest(el, ".statistic-wrapper");
-        const { itemId, itemUuid, statistic } = htmlQuery(wrapper, ".item")?.dataset ?? {};
-
-        return (this.sidebarItems.get(
-            itemUuid && statistic ? `${statistic}-${itemUuid}` : itemUuid ?? itemId ?? ""
-        ) ?? null) as T | null;
+    getSidebarItemKey({ itemId, itemUuid, statistic }: DOMStringMap): string | undefined {
+        return itemUuid && statistic ? `${statistic}-${itemUuid}` : itemUuid ?? itemId;
     }
 
     protected async _prepareContext(

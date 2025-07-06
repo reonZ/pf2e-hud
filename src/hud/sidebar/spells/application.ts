@@ -7,7 +7,6 @@ import {
     CreaturePF2e,
     dataToDatasetString,
     getEquipAnnotation,
-    htmlClosest,
     localeCompare,
     OneToTen,
     R,
@@ -25,15 +24,8 @@ class SpellsSidebarPF2eHUD extends SidebarPF2eHUD<SpellPF2e, SpellSidebarItem> {
         return "spells";
     }
 
-    getSidebarItemFromElement<T extends SpellSidebarItem>(el: HTMLElement): T | null {
-        const { itemId, groupId, slotId } = htmlClosest(el, ".item")?.dataset ?? {};
-        if (!itemId) return null;
-
-        const item = groupId
-            ? this.sidebarItems.get(`${itemId}-${groupId}-${slotId ?? "0"}`)
-            : this.sidebarItems.get(itemId);
-
-        return item as T | null;
+    getSidebarItemKey({ itemId, groupId, slotId = "0" }: DOMStringMap): string | undefined {
+        return itemId && groupId ? `${itemId}-${groupId}-${slotId}` : itemId;
     }
 
     protected async _prepareContext(options: ApplicationRenderOptions): Promise<SpellsHudContext> {
