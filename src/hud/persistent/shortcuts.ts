@@ -45,11 +45,9 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     }
 
     get shortcutsData(): ShortcutData[] {
-        if (!this.actor) {
-            return [];
-        }
-
-        return getFlag(this.actor, "shortcuts", game.userId, this.#tab) ?? [];
+        const worldActor = this.worldActor;
+        if (!worldActor) return [];
+        return getFlag(worldActor, "shortcuts", game.userId, this.#tab) ?? [];
     }
 
     replace(slot: number, data: ShortcutData): boolean {
@@ -72,7 +70,8 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     }
 
     async save(): Promise<void> {
-        if (!this.actor) return;
+        const worldActor = this.worldActor;
+        if (!worldActor) return;
 
         const toSave: ShortcutData[] = [];
 
@@ -83,7 +82,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 
         const updateKey = `shortcuts.${game.userId}.${this.#tab}`;
         // we don't want to re-render the entire persistent HUD
-        await updateFlag(this.actor, { [updateKey]: toSave }, { render: false });
+        await updateFlag(worldActor, { [updateKey]: toSave }, { render: false });
 
         this.render();
     }

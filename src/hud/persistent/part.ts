@@ -31,6 +31,10 @@ abstract class PersistentPartPF2eHUD extends foundry.applications.api.Applicatio
     }
 
     get actor(): CreaturePF2e | null {
+        return this.parent.actor;
+    }
+
+    get worldActor(): CreaturePF2e | null {
         return this.parent.worldActor;
     }
 
