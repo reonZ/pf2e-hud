@@ -1,105 +1,6 @@
 {
     "pf2e-hud": {
-        "keybindings": {
-            "persistent": {
-                "setActor": {
-                    "name": "设置受控角色",
-                    "hint": "设置选中指示物角色受控。"
-                }
-            },
-            "sidebar": {
-                "filter": {
-                    "name": "应用侧边栏筛选",
-                    "hint": "允许对侧边栏内容进行筛选。"
-                }
-            }
-        },
-        "settings": {
-            "menus": {
-                "healthStatusMenu": {
-                    "name": "健康状况",
-                    "label": "配置健康状况",
-                    "hint": "设置显示在HUD的健康状况阶段。"
-                }
-            },
-            "enabled": {
-                "name": "启用",
-                "hint": "在客户端启用HUD元素。"
-            },
-            "global": {
-                "highestSpeed": {
-                    "name": "显示最高速度",
-                    "hint": "如果未手动选择显示速度类型，则即便陆地速度不为0也默认显示最高速度。"
-                },
-                "useModifiers": {
-                    "name": "使用调整值",
-                    "hint": "在不同的HUD元素中显示调整值而非DC。"
-                }
-            },
-            "advanced": {
-                "alliance": {
-                    "name": "盟友按钮",
-                    "hint": "在HUD上显示盟友/部署按钮。"
-                }
-            },
-            "persistent": {
-                "title": "受控HUD",
-                "mode": {
-                    "choices": {
-                        "disabled": "禁用",
-                        "select": "所选择的指示物",
-                        "combat": "当前回合的参战者"
-                    }
-                }
-            },
-            "sidebar": {
-                "title": "侧边栏"
-            },
-            "token": {
-                "title": "指示物HUD",
-                "mode": {
-                    "name": "显示模式",
-                    "hint": "选择指示物HUD的显示模式。",
-                    "choices": {
-                        "disabled": "禁用",
-                        "exploded": "分散",
-                        "left": "集中（左侧）",
-                        "right": "集中（右侧）"
-                    }
-                }
-            },
-            "tooltip": {
-                "title": "指示物提示工具",
-                "delay": {
-                    "name": "工具提示延迟",
-                    "hint": "在工具提示显示在屏幕上之前的延迟，以毫秒为单位。"
-                },
-                "distance": {
-                    "name": "显示距离",
-                    "hint": "将显示悬停指示物与自动参考的指示物之间的距离。",
-                    "choices": {
-                        "never": "从不",
-                        "weird": "以平方为单位",
-                        "idiot": "以尺为单位",
-                        "smart": "以米为单位"
-                    }
-                },
-                "draw": {
-                    "name": "距离拉线",
-                    "hint": "在悬停指示物与‘距离’目标间画这样粗度的线。"
-                },
-                "status": {
-                    "name": "显示健康状况"
-                }
-            }
-        },
         "actions": {
-            "borrowArcaneSpell": "借阅奥术",
-            "drive": {
-                "drive2": "驱动 <span class=\"action-glyph\">2</span>",
-                "drive1": "驱动 <span class=\"action-glyph\">1</span>",
-                "drive3": "驱动 <span class=\"action-glyph\">3</span>"
-            },
             "recall-knowledge": {
                 "lore": "学识技能",
                 "proficiency": "熟练度",
@@ -116,105 +17,218 @@
                 "sixth": "6th",
                 "specific": "特殊",
                 "unspecific": "非特殊"
+            },
+            "borrowArcaneSpell": "借阅奥术",
+            "drive": {
+                "drive2": "驱动 <span class=\"action-glyph\">2</span>",
+                "drive1": "驱动 <span class=\"action-glyph\">1</span>",
+                "drive3": "驱动 <span class=\"action-glyph\">3</span>"
             }
         },
-        "actor-hud": {
-            "alliance": "关系：{value}",
-            "temp": "临时生命值",
-            "resolve": "使用决心点数"
+        "tooltip": {
+            "distance": {
+                "meter": "m",
+                "square": "sq.",
+                "feet": "尺"
+            }
         },
-        "avatar-editor": {
-            "title": "编辑化身 - {name}",
-            "cancel": "取消",
-            "contain": "容器",
-            "reset": "恢复默认",
-            "save": "保存",
-            "src": {
-                "actor": "使用角色画像",
-                "token": "使用指示物画像"
+        "persistent": {
+            "menu": {
+                "clean": {
+                    "always": "始终在肖像上显示UI",
+                    "hover": "仅在悬停于肖像上时显示UI"
+                },
+                "editAvatar": "编辑头像",
+                "setActor": {
+                    "set": "设置选中指示物为受控角色",
+                    "unset": "解绑受控角色"
+                }
+            },
+            "error": {
+                "selectOne": "选择一个NPC/角色指示物以设置你的受控角色。"
+            },
+            "effects": {
+                "shift": "Shift",
+                "toggle": "开关效果显示"
+            }
+        },
+        "rightClick": "[右键点击]",
+        "leftClick": "[左键点击]",
+        "settings": {
+            "menus": {
+                "healthStatusMenu": {
+                    "name": "健康状况",
+                    "label": "配置健康状况",
+                    "hint": "设置显示在HUD的健康状况阶段。"
+                }
+            },
+            "sidebar": {
+                "title": "侧边栏"
+            },
+            "tooltip": {
+                "title": "指示物提示工具",
+                "delay": {
+                    "name": "工具提示延迟",
+                    "hint": "在工具提示显示在屏幕上之前的延迟，以毫秒为单位。"
+                },
+                "distance": {
+                    "name": "显示距离",
+                    "choices": {
+                        "never": "从不",
+                        "idiot": "以尺为单位",
+                        "smart": "以米为单位",
+                        "weird": "以平方为单位"
+                    },
+                    "hint": "将显示悬停指示物与自动参照的指示物之间的距离。"
+                },
+                "draw": {
+                    "name": "间距画线",
+                    "hint": "在悬停指示物与‘距离’目标之间画一条如下粗度的线。"
+                },
+                "status": {
+                    "name": "显示健康状况",
+                    "hint": "如果你的世界已启用，则生物的健康状况将以什么方式显示在工具提示中。"
+                }
+            },
+            "token": {
+                "title": "指示物HUD",
+                "mode": {
+                    "choices": {
+                        "left": "集中（左侧）",
+                        "right": "集中（右侧）",
+                        "exploded": "分散",
+                        "disabled": "禁用"
+                    },
+                    "name": "显示模式",
+                    "hint": "选择指示物HUD的显示模式。"
+                }
+            },
+            "persistent": {
+                "title": "受控HUD",
+                "mode": {
+                    "hint": "受控角色的选择模式。",
+                    "name": "选择模式",
+                    "choices": {
+                        "manual": "手动选择",
+                        "select": "所选择的指示物",
+                        "combat": "当前回合的参战者",
+                        "disabled": "禁用"
+                    }
+                }
+            },
+            "enabled": {
+                "name": "启用",
+                "hint": "在客户端启用HUD元素。"
+            },
+            "global": {
+                "highestSpeed": {
+                    "name": "显示最高速度",
+                    "hint": "如果未手动选择显示移动类型，则即便陆地速度不为0，也默认显示最高速度。"
+                },
+                "useModifiers": {
+                    "name": "使用调整值",
+                    "hint": "在不同的HUD元素中显示调整值而非DC。"
+                }
+            },
+            "advanced": {
+                "alliance": {
+                    "name": "关系按键",
+                    "hint": "在HUD上显示关系/部署按键。"
+                }
             }
         },
         "dialogs": {
-            "alternates": {
-                "dc": "DC",
-                "drag": "拖拽至快捷栏创建选项",
-                "title": "变体动作",
-                "statistic": "统计技能"
-            },
             "resolve": {
-                "title": "使用决心点数",
-                "full": "{name}的耐力值已满且不需要休息。",
                 "breather": {
                     "label": "小憩一刻",
                     "hint": "休息10分钟，消耗一个决心点，恢复你所有的耐力。"
                 },
                 "steel": {
                     "hint": "使用一个动作，消耗一个决心点，恢复你一半的耐力。"
+                },
+                "full": "{name}的耐力值已满且不需要休息。",
+                "title": "使用决心点数",
+                "yes": "消耗决心点数"
+            },
+            "alternates": {
+                "dc": "困难等级",
+                "drag": "拖拽至快捷栏创建选项",
+                "statistic": "统计技能",
+                "title": "动作变体 - {label}",
+                "yes": "使用变体"
+            }
+        },
+        "keybindings": {
+            "persistent": {
+                "setActor": {
+                    "name": "设置受控角色",
+                    "hint": "设置选中指示物角色为受控。"
                 }
+            },
+            "sidebar": {
+                "filter": {
+                    "name": "应用侧边栏筛选",
+                    "hint": "允许对侧边栏内容进行筛选。"
+                }
+            }
+        },
+        "actor-hud": {
+            "temp": "临时生命值",
+            "resolve": "使用决心点数",
+            "alliance": "关系：{value}"
+        },
+        "avatar-editor": {
+            "title": "编辑头像 - {name}",
+            "cancel": "取消",
+            "color": {
+                "background": "背景颜色",
+                "enabled": "启用背景颜色"
+            },
+            "contain": "容器",
+            "reset": "恢复默认",
+            "save": "保存",
+            "src": {
+                "actor": "使用角色画像",
+                "token": "使用指示物画像",
+                "none": "未找到有效的图像来源",
+                "video": "该功能尚不支持视频格式"
             }
         },
         "health-status": {
             "title": "健康状况",
             "enabled": "启用",
+            "add": "添加标记",
+            "delete": "删除标记",
             "save": "保存",
             "cancel": "取消",
             "import": {
-                "label": "导入健康状况设置",
+                "title": "导入健康状况设置",
                 "yes": "导入",
                 "no": "取消",
                 "error": "导入的数据无效。"
             },
-            "add": "添加标记",
-            "delete": "删除标记",
             "export": {
-                "label": "导出健康状况设置",
+                "title": "导出健康状况设置",
                 "confirm": "健康状况设置已被复制到剪贴板。"
             },
             "default": "死亡, 奄奄一息, 欠佳, 受创, 微伤, 完好"
         },
-        "leftClick": "[左键点击]",
-        "persistent": {
-            "effects": {
-                "shift": "Shift",
-                "toggle": "开关效果显示"
-            },
-            "error": {
-                "selectOne": "选择一个NPC/角色指示物以设置你的受控角色。"
-            },
-            "menu": {
-                "clean": {
-                    "always": "始终在肖像上显示UI",
-                    "hover": "仅在悬停于肖像上时显示UI"
-                },
-                "setActor": {
-                    "set": "设置选中指示物为受控角色",
-                    "unset": "解绑受控角色"
-                }
-            }
-        },
         "recall-knowledge": {
-            "lore": "学识技能",
-            "proficiency": "熟练度",
             "result": "结果",
-            "target": "目标",
-            "dc": "DC",
-            "skill": "技能",
             "modifier": "调整值",
+            "target": "目标",
             "first": "1st",
             "second": "2nd",
             "third": "3rd",
             "fourth": "4th",
             "fifth": "5th",
             "sixth": "6th",
+            "dc": "DC",
+            "unspecific": "非特殊",
             "specific": "特殊",
-            "unspecific": "非特殊"
-        },
-        "rightClick": "[右键点击]",
-        "shortcuts": {
-            "error": {
-                "wrongActor": "你仅可以在相同的受控角色创建快捷栏选项。",
-                "wrongType": "你无法以此方式在快捷栏创建选项。"
-            }
+            "skill": "技能",
+            "lore": "学识技能",
+            "proficiency": "熟练度"
         },
         "sidebar": {
             "filter": "侧边栏过滤",
@@ -224,18 +238,27 @@
                 "rangedWithIncrement": "射程{increment}/{max}尺",
                 "reach": "触及{reach}尺",
                 "reset": "重置使用次数",
+                "shields": {
+                    "shown": "盾牌已显示",
+                    "hidden": "盾牌已隐藏"
+                },
                 "stances": "架势",
+                "stowedWeapons": {
+                    "shown": "存放武器已显示",
+                    "hidden": "存放武器已隐藏"
+                },
                 "thrown": "投掷{increment}/{max}尺"
             },
             "extras": {
                 "delete": {
                     "title": "删除宏",
-                    "content": "你确定你想要删除该宏吗？"
+                    "content": "你确定要删除该宏吗？"
                 },
                 "edit": "编辑宏",
                 "noMacro": "拖拽宏至此",
                 "use": "执行宏"
             },
+            "removeEffect": "移除效果",
             "skills": {
                 "alternate": "[右键点击]菜单变体",
                 "hideUntrained": "隐藏未受训",
@@ -251,23 +274,34 @@
             "items": "库存",
             "spells": "施法",
             "skills": "技能",
-            "extras": "额外选项"
+            "extras": "杂项"
         },
         "spellcasting": {
             "charges": "充能",
             "staff": "法杖"
         },
-        "tooltip": {
-            "distance": {
-                "meter": "m",
-                "square": "sq.",
-                "feet": "尺"
+        "use-resolve": {
+            "full": "{name}的耐力值已满，不需要休息。",
+            "breather": {
+                "used": "{name}拥有{ratio}点SP，他消耗了一点决心点数与10分钟小憩片刻。耐力值已恢复。"
             }
         },
-        "use-resolve": {
-            "full": "{name}耐力值为满值，不需要休息。",
-            "breather": {
-                "used": "{name}拥有{ratio}SP并消耗了一点决心点数，10分钟时间小憩片刻。耐力值已回复。"
+        "shortcuts": {
+            "error": {
+                "wrongType": "你无法创建此类快捷栏选项。",
+                "wrongActor": "你只能为受控角色创建快捷栏选项。"
+            },
+            "tooltip": {
+                "click": {
+                    "control": "[Ctrl+右键点击] 物品弹出",
+                    "shift": "[Shift+右键点击] 移除快捷栏选项"
+                },
+                "reason": {
+                    "dropped": "未携带该物品",
+                    "uses": "无可用物品剩余",
+                    "quantity": "物品数为零",
+                    "match": "该物品不匹配"
+                }
             }
         }
     }
