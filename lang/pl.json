@@ -130,12 +130,18 @@
         "avatar-editor": {
             "title": "Edytuj awatar - {name}",
             "cancel": "Anuluj",
+            "color": {
+                "background": "Kolor tła",
+                "enabled": "Włącz kolor tła"
+            },
             "contain": "Zawartość",
             "reset": "Reset",
             "save": "Zapisz",
             "src": {
                 "actor": "Użyj obrazu aktora",
-                "token": "Użyj obrazu tokena"
+                "token": "Użyj obrazu tokena",
+                "none": "Nie można znaleźć prawidłowego źródła obrazu",
+                "video": "Ta funkcja nie obsługuje filmów wideo"
             }
         },
         "dialogs": {
@@ -221,6 +227,18 @@
             "error": {
                 "wrongActor": "Skróty można tworzyć tylko od tego samego stałego aktora.",
                 "wrongType": "Nie można utworzyć skrótu tego typu."
+            },
+            "tooltip": {
+                "click": {
+                    "control": "[Ctrl + Kliknij prawym] Wyskakujące okienko przedmiotu",
+                    "shift": "[Shift + Kliknij prawym] Usuń skrót"
+                },
+                "reason": {
+                    "dropped": "Przedmiot nie przeniesiony",
+                    "match": "Brak dopasowania",
+                    "uses": "Nie pozostało żadne użycie",
+                    "quantity": "Brak ilości"
+                }
             }
         },
         "sidebar": {
