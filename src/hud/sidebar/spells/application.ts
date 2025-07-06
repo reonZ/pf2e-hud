@@ -24,7 +24,7 @@ class SpellsSidebarPF2eHUD extends SidebarPF2eHUD<SpellPF2e, SpellSidebarItem> {
         return "spells";
     }
 
-    getSidebarItemKey({ itemId, groupId, slotId = "0" }: DOMStringMap): string | undefined {
+    getSidebarItemKey({ itemId, groupId, slotId = "x" }: DOMStringMap): string | undefined {
         return itemId && groupId ? `${itemId}-${groupId}-${slotId}` : itemId;
     }
 
@@ -224,7 +224,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
 
                 const sidebarSpell = this.addSidebarItem(
                     SpellSidebarItem,
-                    `${spell.id}-${group.id}-${slotId}`,
+                    `${spell.id}-${group.id}-${entry.isPrepared ? slotId : "x"}`,
                     spellData
                 );
                 slotSpells.push(sidebarSpell);
