@@ -71,6 +71,11 @@
         margin: 0;
         padding: 0 0.5em;
         width: auto;
+
+        &:disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
     }
 
     .text-content {
