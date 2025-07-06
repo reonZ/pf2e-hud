@@ -104,6 +104,8 @@ class ItemHudPopup extends BaseHudPopup {
     }
 
     protected _onClickAction(event: PointerEvent, target: HTMLElement): void {
+        if (event.button !== 0) return;
+
         type ActionEvent = "consume-item" | "send-to-chat";
 
         const action = target.dataset.action as ActionEvent;

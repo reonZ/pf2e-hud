@@ -80,6 +80,8 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
     }
 
     protected _onClickAction(event: PointerEvent, target: HTMLElement) {
+        if (event.button !== 0) return;
+
         const actor = this.actor;
         const action = target.dataset.action as EventAction;
 
