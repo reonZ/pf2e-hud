@@ -2,7 +2,8 @@
 {{#if shortcut.isEmpty}}
 <div class="shortcut empty" data-slot="{{slot}}"></div>
 {{else}}
-<div class="item shortcut{{#if (not shortcut.item)}} inactive {{else if (not shortcut.canUse)}} greyed{{/if}}"
+<div id="pf2e-hud-shortcut-{{slot}}"
+    class="item shortcut{{#if (not shortcut.item)}} inactive {{else if (not shortcut.canUse)}} greyed{{/if}}"
     data-slot="{{slot}}" data-action="shortcut-slot" {{{@root.dataset shortcut.dataset}}}>
     <div class="image" style="background-image: url({{shortcut.usedImage}});">
     </div>

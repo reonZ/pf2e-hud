@@ -51,7 +51,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     }
 
     replace(slot: number, data: ShortcutData): boolean {
-        const shortcut = this.#instantiateShortcut(data);
+        const shortcut = this.#instantiateShortcut(data, slot);
         if (!shortcut) return false;
 
         this.shortcuts.set(slot, shortcut);
@@ -97,7 +97,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 
         for (let slot = 0; slot < this.nbSlots; slot++) {
             const data = shortcutsData[slot];
-            const shortcut = data ? this.#instantiateShortcut(data) : undefined;
+            const shortcut = data ? this.#instantiateShortcut(data, slot) : undefined;
 
             shortcuts[slot] = shortcut ?? { isEmpty: true };
 
@@ -197,13 +197,13 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         }
     }
 
-    #instantiateShortcut(data: ShortcutData): PersistentShortcut | undefined {
+    #instantiateShortcut(data: ShortcutData, slot: number): PersistentShortcut | undefined {
         const actor = this.actor;
         const ShortcutCls = SHORTCUTS[data.type as keyof typeof SHORTCUTS];
         if (!actor || !ShortcutCls) return;
 
         try {
-            const shortcut = new ShortcutCls(actor, data as any);
+            const shortcut = new ShortcutCls(actor, data as any, slot);
             return shortcut.invalid ? undefined : shortcut;
         } catch (error) {
             // TODO log error

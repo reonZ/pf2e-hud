@@ -35,7 +35,7 @@ class ToggleSidebarItem extends BaseSidebarItem<ItemPF2e<ActorPF2e>, SidebarTogg
             domain: this.domain,
             img: this.img,
             itemId: this.item.id,
-            name: this.item.name,
+            name: this.label,
             option: this.option,
             type: "toggle",
         };
@@ -76,7 +76,7 @@ async function createRollOptionsElements(this: SidebarPF2eHUD): Promise<HTMLElem
         content: togglesTemplate,
     });
 
-    for (const { filterValue, img, alwaysActive, elementSelector } of toggles) {
+    for (const { filterValue, img, alwaysActive, elementSelector, suboptions } of toggles) {
         if (!img) continue;
 
         const imgEl = createHTMLElement("img", { classes: ["drag-img"] });
@@ -85,8 +85,9 @@ async function createRollOptionsElements(this: SidebarPF2eHUD): Promise<HTMLElem
         const toggleRow = htmlQuery(togglesElement, elementSelector);
 
         if (toggleRow) {
-            toggleRow.draggable = !alwaysActive;
+            toggleRow.draggable = !alwaysActive || suboptions.length > 1;
             toggleRow.appendChild(imgEl);
+            toggleRow.classList.add("item");
             toggleRow.dataset.filterValue = filterValue.toString();
         }
     }

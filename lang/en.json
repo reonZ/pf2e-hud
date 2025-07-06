@@ -229,6 +229,9 @@
                 "wrongType": "You cannot create a shortcut of that type."
             },
             "tooltip": {
+                "altUse": {
+                    "toggle": "Select SubOption"
+                },
                 "click": {
                     "control": "[Ctrl-Right-Click] Item Popup",
                     "middle": "[Middle-Click] Remove Shortcut"
@@ -239,6 +242,7 @@
                     "toggle": "Roll Option"
                 },
                 "reason": {
+                    "available": "Not Currently Available",
                     "dropped": "Item Not Carried",
                     "match": "No Match",
                     "uses": "No Use Remaining",

@@ -1,4 +1,5 @@
 import {
+    addListenerAll,
     createHTMLElement,
     CreaturePF2e,
     ItemPF2e,
@@ -34,7 +35,10 @@ abstract class PersistentShortcut<
     TItem extends ItemPF2e = ItemPF2e
 > extends foundry.abstract.DataModel<null, TSchema> {
     #actor: CreaturePF2e;
+    #element: HTMLElement | null = null;
     #item: Maybe<TItem>;
+    #radial?: HTMLElement;
+    #slot: number;
     #tooltip?: HTMLElement;
 
     static getItem(
@@ -47,11 +51,13 @@ abstract class PersistentShortcut<
     constructor(
         actor: CreaturePF2e,
         data: DeepPartial<SourceFromSchema<TSchema>>,
+        slot: number,
         options?: DataModelConstructionOptions<null>
     ) {
         super(data, options);
 
         this.#actor = actor;
+        this.#slot = slot;
         this.#item = (this.constructor as typeof PersistentShortcut).getItem(
             actor,
             data as SourceFromSchema<TSchema>
@@ -60,6 +66,10 @@ abstract class PersistentShortcut<
 
     get actor(): CreaturePF2e {
         return this.#actor;
+    }
+
+    get slot(): number {
+        return this.#slot;
     }
 
     get item(): Maybe<TItem> {
@@ -108,6 +118,10 @@ abstract class PersistentShortcut<
         return game.i18n.localize("PF2E.EditItemTitle");
     }
 
+    get element(): HTMLElement | null {
+        return (this.#element ??= document.getElementById(`pf2e-hud-shortcut-${this.slot}`));
+    }
+
     abstract use(event: Event): void;
 
     altUse(event: Event): void {
@@ -133,6 +147,43 @@ abstract class PersistentShortcut<
             classes: ["content"],
             content: await render("shortcuts/tooltip", data),
         }));
+    }
+
+    async radialMenu<T extends string>(
+        title: string,
+        options: { value: T; label: string; selected: boolean }[],
+        onSelect: (value: T) => void
+    ) {
+        const element = this.element;
+        if (!element) return;
+
+        if (this.#radial) {
+            element.appendChild(this.#radial);
+            return;
+        }
+
+        const radial = createHTMLElement("div", {
+            classes: ["radial-panel"],
+            content: await render("shortcuts/radial", { title, options }),
+        });
+
+        element.appendChild(radial);
+
+        const removeRadial = () => {
+            radial.remove();
+        };
+
+        addListenerAll(radial, ".radial-option", (el, event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            removeRadial();
+            onSelect(el.dataset.value as T);
+        });
+
+        radial.addEventListener("mouseleave", removeRadial);
+
+        this.#radial = radial;
     }
 }
 

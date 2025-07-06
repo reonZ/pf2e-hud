@@ -68,6 +68,54 @@
             }
         }
 
+        .radial-panel {
+            z-index: 100;
+            pointer-events: all;
+            position: absolute;
+            bottom: -0.5em;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--outer-background);
+            border: var(--outer-border);
+            border-radius: var(--outer-border-radius);
+            box-shadow: var(--outer-box-shadow);
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 0.3em;
+            gap: 0.1em;
+
+            header {
+                border-top: none;
+
+                .name {
+                    padding-inline: 1em;
+                    font-size: 1.2em;
+                }
+            }
+
+            .options {
+                padding-inline: 1.75em 0.5em;
+                margin: 0;
+                display: grid;
+                column-gap: 2em;
+                grid-template-columns: auto;
+
+                .radial-option {
+                    &:hover {
+                        span {
+                            color: var(--color-accent);
+                        }
+                    }
+
+                    &.selected {
+                        span {
+                            color: var(--color-active);
+                        }
+                    }
+                }
+            }
+        }
+
         &:hover {
             .image {
                 filter: brightness(1.2);

@@ -1,9 +1,29 @@
-import { CreaturePF2e, IdField, ItemPF2e, localize, RollOptionToggle } from "module-helpers";
+import {
+    CreaturePF2e,
+    IdField,
+    ItemPF2e,
+    localize,
+    RollOptionToggle,
+    Suboption,
+} from "module-helpers";
 import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut } from ".";
 import fields = foundry.data.fields;
 
 class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> {
-    #toggle?: RollOptionToggle | null;
+    #toggle: RollOptionToggle | null;
+    #selected: Suboption | undefined;
+
+    constructor(
+        actor: CreaturePF2e,
+        data: DeepPartial<SourceFromSchema<ToggleShortcutSchema>>,
+        slot: number,
+        options?: DataModelConstructionOptions<null>
+    ) {
+        super(actor, data, slot, options);
+
+        this.#toggle = this.actor.synthetics.toggles[this.domain]?.[this.option] ?? null;
+        this.#selected = this.#toggle?.suboptions.find((suboption) => suboption.selected);
+    }
 
     static defineSchema(): ToggleShortcutSchema {
         return {
@@ -30,30 +50,35 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
     }
 
     get toggle(): RollOptionToggle | null {
-        if (this.#toggle !== undefined) {
-            return this.#toggle;
-        }
+        return this.#toggle;
+    }
 
-        return (this.#toggle = this.actor.synthetics.toggles[this.domain]?.[this.option] ?? null);
+    get title(): string {
+        return this.toggle?.label ?? this.name;
+    }
+
+    get selected(): Suboption | undefined {
+        return this.#selected;
     }
 
     get subtitle(): string {
         const toggle = this.toggle;
-        const subtitle = localize("shortcuts.tooltip.subtitle", this.type);
-        const checked = toggle
-            ? localize("shortcuts.tooltip", toggle.checked ? "enabled" : "disabled")
-            : null;
 
-        return checked ? `${subtitle} (${checked})` : subtitle;
+        const subtitle = this.selected
+            ? game.i18n.localize(this.selected.label)
+            : localize("shortcuts.tooltip.subtitle", this.type);
+
+        const active =
+            toggle && !toggle.alwaysActive
+                ? localize("shortcuts.tooltip", toggle.checked ? "enabled" : "disabled")
+                : null;
+
+        return active ? `${subtitle} (${active})` : subtitle;
     }
 
     get canUse(): boolean {
         return super.canUse && !!this.toggle;
     }
-
-    // get canAltUse(): boolean {
-    //     return false;
-    // }
 
     get checkbox(): { checked: boolean } | null {
         const toggle = this.toggle;
@@ -61,22 +86,39 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
     }
 
     get unusableReason(): string | undefined {
-        return !this.item ? "match" : undefined;
+        return !this.item ? "match" : !this.toggle ? "available" : undefined;
     }
 
-    // get altUseLabel(): string {
-    //     return "";
-    // }
+    get altUseLabel(): string {
+        return (this.toggle?.suboptions.length ?? 0) > 1
+            ? localize("shortcuts.tooltip.altUse.toggle")
+            : super.altUseLabel;
+    }
 
     use(event: Event): void {
         const toggle = this.toggle;
-        if (!toggle) return;
+        if (!toggle || toggle.alwaysActive) return;
         this.actor.toggleRollOption(this.domain, this.option, !toggle.checked);
     }
 
-    // altUse(event: Event): void {
-    //     this.item?.sheet.render(true);
-    // }
+    altUse(event: Event): void {
+        const toggle = this.toggle;
+        const selected = this.selected;
+
+        if (!toggle || !selected || toggle.suboptions.length <= 1) {
+            return super.altUse(event);
+        }
+
+        this.radialMenu(this.title, toggle.suboptions, (value) => {
+            this.actor.toggleRollOption(
+                this.domain,
+                this.option,
+                this.itemId,
+                toggle.checked,
+                value
+            );
+        });
+    }
 }
 
 interface ToggleShortcut extends ModelPropsFromSchema<ToggleShortcutSchema> {}

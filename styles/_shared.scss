@@ -31,6 +31,9 @@
     --color-reversed: #191919;
     --color: #efe6d8;
 
+    --header-border: 1px solid #ffffff1f;
+    --header-background: #1e1e1e;
+
     --input-background: #ffffff0f;
     --input-width-small: 1.8em;
     --input-width: 2.4em;
@@ -79,6 +82,19 @@
         &.small {
             width: var(--input-width-small);
             flex: 0 0 var(--input-width-small);
+        }
+    }
+
+    header {
+        position: relative;
+        background: var(--header-background);
+        border: var(--header-border);
+        border-left: 0;
+        border-right: 0;
+        padding-block: 0.2em;
+
+        .name {
+            text-align: center;
         }
     }
 

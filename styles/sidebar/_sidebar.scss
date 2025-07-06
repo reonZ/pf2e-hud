@@ -6,9 +6,6 @@
     --nb-columns: 1;
     --max-column-width: 17em;
 
-    --header-border: 1px solid #ffffff1f;
-    --header-background: #1e1e1e;
-
     --item-gap: 0.2em;
     --item-spacing: 0.3em;
     --item-image-height: 2.6em;
@@ -200,6 +197,7 @@
                 flex-wrap: wrap;
                 row-gap: 0.2em;
                 column-gap: 0.1em;
+                flex: 1;
 
                 span {
                     margin-top: 1px;
@@ -207,6 +205,7 @@
             }
 
             select {
+                padding-inline: 4px;
                 flex: 1 1 var(--max-column-width);
 
                 &:disabled {
@@ -217,17 +216,6 @@
     }
 
     header {
-        position: relative;
-        background: var(--header-background);
-        border: var(--header-border);
-        border-left: 0;
-        border-right: 0;
-        padding-block: 0.2em;
-
-        .name {
-            text-align: center;
-        }
-
         .controls {
             position: absolute;
             inset: 0 0.2em 0 auto;
