@@ -231,7 +231,7 @@
             "tooltip": {
                 "click": {
                     "control": "[Ctrl-Right-Click] Item Popup",
-                    "shift": "[Shift-Right-Click] Remove Shortcut"
+                    "middle": "[Middle-Click] Remove Shortcut"
                 },
                 "reason": {
                     "dropped": "Item Not Carried",

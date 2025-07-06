@@ -125,30 +125,13 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         content.classList.toggle("character", !!this.actor?.isOfType("character"));
     }
 
-    protected _onClickAction(event: PointerEvent, target: HTMLElement): void {
-        const slot = this.#getSlotFromElement(target);
-        const shortcut = this.#shortcuts.get(slot);
-        if (!shortcut) return;
-
-        game.tooltip.deactivate();
-
-        if (event.button === 0) {
-            shortcut.canUse && shortcut.use(event);
-        } else if (event.shiftKey) {
-            this.remove(slot);
-        } else if (event.ctrlKey) {
-            if (this.actor && shortcut.item) {
-                new ItemHudPopup(this.actor, shortcut.item, event).render(true);
-            }
-        } else {
-            shortcut.canAltUse && shortcut.altUse(event);
-        }
-    }
-
     _activateListeners(html: HTMLElement): void {
         const shortcuts = html.querySelectorAll<HTMLElement>(".shortcut");
 
         for (const target of shortcuts) {
+            const slot = Number(target.dataset.slot);
+            if (isNaN(slot) || slot < 0 || slot > this.nbSlots) return;
+
             target.addEventListener("drop", (event) => {
                 const dragData = getDragEventData<SidebarDragData>(event);
 
@@ -162,40 +145,49 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                     return;
                 }
 
-                const slot = this.#getSlotFromElement(target);
-                if (slot < 0) return;
-
                 if (!this.replace(slot, dragData.fromSidebar)) {
                     warning("shortcuts.error.wrongType");
                     return;
                 }
             });
 
-            target.addEventListener("pointerenter", (event) =>
-                this.#generateTooltip(event, target)
-            );
+            const shortcut = this.#shortcuts.get(slot);
+            if (!shortcut) continue;
+
+            target.addEventListener("click", (event) => {
+                game.tooltip.deactivate();
+                shortcut.canUse && shortcut.use(event);
+            });
+
+            target.addEventListener("auxclick", (event) => {
+                if (event.button === 2) {
+                    game.tooltip.deactivate();
+
+                    if (event.ctrlKey) {
+                        if (this.actor && shortcut.item) {
+                            new ItemHudPopup(this.actor, shortcut.item, event).render(true);
+                        }
+                    } else {
+                        shortcut.canAltUse && shortcut.altUse(event);
+                    }
+                } else {
+                    this.remove(slot);
+                    game.tooltip.dismissLockedTooltips();
+                }
+            });
+
+            target.addEventListener("pointerenter", async (event) => {
+                game.tooltip.activate(this.element, {
+                    cssClass: "pf2e-hud-shortcut-tooltip",
+                    direction: "UP",
+                    html: await shortcut.tooltip(),
+                });
+            });
 
             target.addEventListener("pointerleave", async (event) => {
                 game.tooltip.deactivate();
             });
         }
-    }
-
-    async #generateTooltip(event: PointerEvent, target: HTMLElement) {
-        const slot = this.#getSlotFromElement(target);
-        const shortcut = this.#shortcuts.get(slot);
-        if (!shortcut) return;
-
-        game.tooltip.activate(this.element, {
-            cssClass: "pf2e-hud-shortcut-tooltip",
-            direction: "UP",
-            html: await shortcut.tooltip(),
-        });
-    }
-
-    #getSlotFromElement(el: HTMLElement): number {
-        const slot = Number(el.dataset.slot);
-        return isNaN(slot) || slot < 0 || slot > this.nbSlots ? -1 : slot;
     }
 
     #instantiateShortcut(data: ShortcutData): PersistentShortcut | undefined {
