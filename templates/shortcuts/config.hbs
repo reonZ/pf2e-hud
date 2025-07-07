@@ -1,0 +1,15 @@
+<div class="form-group">
+    <label>{{@root.i18n 'image'}}</label>
+    <div class="form-fields">
+        <input type="text" name="image" placeholder="{{image.placeholder}}" value="{{image.value}}"
+            disabled>
+        <button type="button" data-tooltip="FILES.BrowseTooltip" data-action="open-browser"
+            {{disabled noBrowser}}>
+            <i class="fa-solid fa-file-import fa-fw"></i>
+        </button>
+    </div>
+</div>
+<div class="form-group">
+    <label>{{@root.i18n 'name'}}</label>
+    <input type="text" name="name" placeholder="{{name.placeholder}}" value="{{name.value}}">
+</div>

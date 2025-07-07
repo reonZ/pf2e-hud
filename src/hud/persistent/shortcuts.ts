@@ -1,4 +1,4 @@
-import { createDraggable, FoundryDragData, ItemHudPopup, SidebarDragData } from "hud";
+import { createDraggable, FoundryDragData, ShortcutPopup, SidebarDragData } from "hud";
 import {
     ApplicationRenderContext,
     ApplicationRenderOptions,
@@ -217,7 +217,12 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 
                     if (event.ctrlKey || !shortcut.canAltUse) {
                         if (this.actor && shortcut.item) {
-                            new ItemHudPopup(this.actor, shortcut.item, event).render(true);
+                            new ShortcutPopup(
+                                this.actor,
+                                shortcut,
+                                this.save.bind(this),
+                                event
+                            ).render(true);
                         }
                     } else {
                         shortcut.item && shortcut.altUse(event);

@@ -7,7 +7,9 @@
     data-slot="{{slot}}" data-action="shortcut-slot" {{{@root.dataset shortcut.dataset}}}
     draggable="true">
     {{!-- image --}}
-    <div class="image" style="background-image: url({{shortcut.usedImage}});"></div>
+    <div class="image"
+        style="background-image: url({{ifThen shortcut.custom.img shortcut.custom.img shortcut.usedImage}});">
+    </div>
     {{!-- counter --}}
     {{#with shortcut.counter as |counter|}}
     <div class="counter boxed">

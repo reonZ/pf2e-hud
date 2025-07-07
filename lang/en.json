@@ -165,6 +165,11 @@
                 "yes": "Use Resolve"
             }
         },
+        "edit-shortcut": {
+            "image": "Image Path",
+            "name": "Shortcut Name",
+            "yes": "Save"
+        },
         "health-status": {
             "title": "Health Status",
             "enabled": "Enabled",
@@ -205,6 +210,11 @@
                 }
             }
         },
+        "popup": {
+            "shortcut": {
+                "config": "Configure Shortcut"
+            }
+        },
         "recall-knowledge": {
             "result": "Result",
             "modifier": "Mod.",
@@ -241,7 +251,7 @@
                 "click": {
                     "control": "[Ctrl-Right-Click]",
                     "middle": "[Middle-Click] Remove Shortcut",
-                    "popup": "Item Popup"
+                    "popup": "Shortcut Popup"
                 },
                 "disabled": "Disabled",
                 "enabled": "Enabled",

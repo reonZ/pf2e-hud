@@ -12,6 +12,17 @@ import fields = foundry.data.fields;
 
 function generateBaseShortcutFields<T extends string>(type: T): BaseShortcutSchema {
     return {
+        custom: new fields.SchemaField({
+            img: new fields.FilePathField({
+                categories: ["IMAGE"],
+                required: false,
+                nullable: true,
+            }),
+            name: new fields.StringField({
+                required: false,
+                nullable: true,
+            }),
+        }),
         img: new fields.FilePathField({
             categories: ["IMAGE"],
             required: true,
@@ -144,13 +155,14 @@ abstract class PersistentShortcut<
 
         const canAltUse = this.canAltUse;
         const reason = this.unusableReason;
+
         const data: ShortcutTooltipData = {
             altUse: canAltUse ? this.altUseLabel : null,
             hasItem: !!this.item,
-            img: this.usedImage,
+            img: this.custom.img || this.usedImage,
             reason: reason ? localize("shortcuts.tooltip.reason", reason) : null,
             subtitle: this.subtitle,
-            title: this.title,
+            title: this.custom.name || this.title,
         };
 
         return (this.#tooltip = createHTMLElement("div", {
@@ -174,7 +186,10 @@ abstract class PersistentShortcut<
 
         const radial = createHTMLElement("div", {
             classes: ["radial-panel"],
-            content: await render("shortcuts/radial", { title, options }),
+            content: await render("shortcuts/radial", {
+                title: this.custom.name || this.title,
+                options,
+            }),
         });
 
         element.appendChild(radial);
@@ -209,7 +224,13 @@ type ShortcutTooltipData = {
     title: string;
 };
 
+type ShortcutCustomSchema = {
+    img: fields.FilePathField<ImageFilePath, ImageFilePath, false, true, false>;
+    name: fields.StringField<string, string, false, true, false>;
+};
+
 type BaseShortcutSchema = {
+    custom: fields.SchemaField<ShortcutCustomSchema>;
     img: fields.FilePathField<ImageFilePath, ImageFilePath, true, false, false>;
     name: fields.StringField;
     type: fields.StringField<string, string, true, false, true>;

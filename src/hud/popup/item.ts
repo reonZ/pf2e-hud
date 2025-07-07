@@ -25,7 +25,7 @@ class ItemHudPopup extends BaseHudPopup {
     ) {
         super(actor, options);
 
-        this.#item = item as ItemPF2e;
+        this.#item = item;
         this.#dataset = htmlClosest(event.target, ".item")?.dataset;
     }
 
@@ -55,11 +55,11 @@ class ItemHudPopup extends BaseHudPopup {
         const item = this.actor.items.get(this.item.id);
         if (!item || item.type !== this.item.type) return frame;
 
-        const configBtn = `<button type="button" class="header-control" data-action="send-to-chat" 
+        const chatBtn = `<button type="button" class="header-control" data-action="send-to-chat" 
         data-tooltip="PF2E.NPC.SendToChat" aria-label="PF2E.NPC.SendToChat">
         <i class="fa-solid fa-message"></i></button>`;
 
-        this.window.close.insertAdjacentHTML("beforebegin", configBtn);
+        this.window.close.insertAdjacentHTML("beforebegin", chatBtn);
         return frame;
     }
 
