@@ -229,12 +229,16 @@
                 "wrongType": "Nie można utworzyć skrótu tego typu."
             },
             "tooltip": {
+                "altUse": {
+                    "toggle": "Wybierz opcję podrzędną"
+                },
                 "click": {
                     "control": "[Ctrl + Kliknij prawym]",
                     "shift": "[Shift + Kliknij prawym] Usuń skrót",
                     "popup": "Wyskakujące okienko przedmiotu"
                 },
                 "reason": {
+                    "available": "Aktualnie niedostępne",
                     "dropped": "Przedmiot nie przeniesiony",
                     "match": "Brak dopasowania",
                     "uses": "Nie pozostało żadne użycie",
