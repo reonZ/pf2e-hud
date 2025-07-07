@@ -229,11 +229,20 @@
                 "wrongType": "Nie można utworzyć skrótu tego typu."
             },
             "tooltip": {
+                "altUse": {
+                    "toggle": "Wybierz opcję podrzędną"
+                },
                 "click": {
                     "control": "[Ctrl + Kliknij prawym] Wyskakujące okienko przedmiotu",
-                    "shift": "[Shift + Kliknij prawym] Usuń skrót"
+                    "middle": "[Środkowy przycisk myszy] Usuń skrót"
+                },
+                "disabled": "Wyłączone",
+                "enabled": "Włączone",
+                "subtitle": {
+                    "toggle": "Opcje rzutu"
                 },
                 "reason": {
+                    "available": "Aktualnie niedostępne",
                     "dropped": "Przedmiot nie przeniesiony",
                     "match": "Brak dopasowania",
                     "uses": "Nie pozostało żadne użycie",
