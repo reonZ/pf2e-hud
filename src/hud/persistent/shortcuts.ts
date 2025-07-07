@@ -156,11 +156,23 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 
         const shortcuts = html.querySelectorAll<HTMLElement>(".shortcut");
 
+        const isLocked = (event: Event): boolean => {
+            if (!ui.hotbar.locked) return false;
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            warning("shortcuts.error.locked");
+            return true;
+        };
+
         for (const target of shortcuts) {
             const slot = Number(target.dataset.slot);
             if (isNaN(slot) || slot < 0 || slot > this.nbSlots) return;
 
             target.addEventListener("drop", (event) => {
+                if (isLocked(event)) return;
+
                 const dragData = getDragEventData<SidebarDragData | ShortcutDragData>(event);
 
                 if (!R.isPlainObject(dragData)) {
@@ -208,8 +220,9 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                         shortcut.canAltUse && shortcut.altUse(event);
                     }
                 } else {
-                    this.remove(slot);
                     game.tooltip.dismissLockedTooltips();
+                    if (isLocked(event)) return;
+                    this.remove(slot);
                 }
             });
 
@@ -226,6 +239,8 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             });
 
             target.addEventListener("dragstart", (event) => {
+                if (isLocked(event)) return;
+
                 game.tooltip.deactivate();
 
                 createDraggable<ShortcutDragData>(event, shortcut.usedImage, actor, shortcut.item, {

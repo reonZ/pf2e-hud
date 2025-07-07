@@ -225,6 +225,7 @@
         "rightClick": "[Right-Click]",
         "shortcuts": {
             "error": {
+                "locked": "The Shortcuts are locked with the Hotbar",
                 "wrongActor": "You can only create shortcuts from the same persistent actor.",
                 "wrongType": "You cannot create a shortcut of that type."
             },
