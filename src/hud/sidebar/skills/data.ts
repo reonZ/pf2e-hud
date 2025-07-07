@@ -146,8 +146,6 @@ class SkillActionGroup extends Collection<SkillAction> {
 }
 
 class LoreSkill implements ISkill {
-    static #img: ImageFilePath = "systems/pf2e/icons/spells/divine-decree.webp";
-
     #filterValue?: FilterValue;
     #lore: LorePF2e<ActorPF2e>;
     #proficiency?: SkillProficiency;
@@ -184,10 +182,6 @@ class LoreSkill implements ISkill {
 
     get proficiency(): SkillProficiency {
         return (this.#proficiency ??= getLoreProficiency(this.#lore.actor, this.#statistic?.rank));
-    }
-
-    get img(): ImageFilePath {
-        return LoreSkill.#img;
     }
 }
 
