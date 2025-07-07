@@ -212,7 +212,7 @@
         },
         "popup": {
             "shortcut": {
-                "config": "Configure Shortcut"
+                "config": "Customize Shortcut"
             }
         },
         "recall-knowledge": {

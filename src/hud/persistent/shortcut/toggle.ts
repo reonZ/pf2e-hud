@@ -90,7 +90,7 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
 
     get checkbox(): { checked: boolean } | null {
         const toggle = this.toggle;
-        return this.item && toggle?.alwaysActive === false ? { checked: toggle.checked } : null;
+        return this.item && !!toggle ? { checked: toggle.checked } : null;
     }
 
     get unusableReason(): string | undefined {
