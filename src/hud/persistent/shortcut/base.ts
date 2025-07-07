@@ -7,6 +7,7 @@ import {
     render,
     ValueAndMaybeMax,
 } from "module-helpers";
+import { ShortcutSlotId } from "..";
 import fields = foundry.data.fields;
 
 function generateBaseShortcutFields<T extends string>(type: T): BaseShortcutSchema {
@@ -118,8 +119,12 @@ abstract class PersistentShortcut<
         return game.i18n.localize("PF2E.EditItemTitle");
     }
 
+    get elementId(): ShortcutSlotId {
+        return `pf2e-hud-shortcut-${this.slot}`;
+    }
+
     get element(): HTMLElement | null {
-        return (this.#element ??= document.getElementById(`pf2e-hud-shortcut-${this.slot}`));
+        return (this.#element ??= document.getElementById(this.elementId));
     }
 
     abstract use(event: Event): void;

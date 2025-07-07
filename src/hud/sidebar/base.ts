@@ -1,6 +1,8 @@
 import {
     addSidebarsListeners,
     BaseActorPF2eHUD,
+    createDraggable,
+    FoundryDragData,
     getItemFromElement,
     getSidebars,
     IAdvancedPF2eHUD,
@@ -501,33 +503,12 @@ abstract class SidebarPF2eHUD<
     }
 
     #onDragStart(target: HTMLElement, event: DragEvent) {
-        if (!event.dataTransfer) return;
-
         const sidebarItem = this.getSidebarItemFromElement(target);
         if (!sidebarItem) return;
 
-        const img = sidebarItem.img;
-
-        const dragData: SidebarDragData = {
-            actorId: this.actor.id,
-            actorUUID: this.actor.uuid,
+        createDraggable<SidebarDragData>(event, sidebarItem.img, this.actor, sidebarItem.item, {
             fromSidebar: sidebarItem.toShortcut(),
-            sceneId: canvas.scene?.id ?? null,
-            tokenId: this.actor.token?.id ?? null,
-            ...sidebarItem.item.toDragData(),
-        };
-
-        const draggable = createHTMLElement("div", {
-            classes: ["pf2e-hud-draggable"],
-            content: `<img src="${img}">`,
         });
-
-        document.body.append(draggable);
-
-        event.dataTransfer.setDragImage(draggable, 16, 16);
-        event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
-
-        target.addEventListener("dragend", () => draggable.remove(), { once: true });
     }
 
     #setColumns() {
@@ -660,14 +641,8 @@ abstract class SidebarPF2eHUD<
     }
 }
 
-type SidebarDragData = {
-    actorId: string;
-    actorUUID: ActorUUID;
+type SidebarDragData = FoundryDragData & {
     fromSidebar: ShortcutData | undefined;
-    sceneId: string | null;
-    tokenId: string | null;
-    type: string;
-    itemType: string;
 };
 
 type SidebarHudRenderElements = {

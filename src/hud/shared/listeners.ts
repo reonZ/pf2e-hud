@@ -1,4 +1,4 @@
-import { ActorPF2e, addListenerAll, ItemPF2e, R } from "module-helpers";
+import { ActorPF2e, addListenerAll, createHTMLElement, ItemPF2e, R } from "module-helpers";
 
 function addTextNumberInputListeners(doc: ActorPF2e | ItemPF2e, html: HTMLElement) {
     const textNumbers = html.querySelectorAll<HTMLInputElement>("input[type='text'].text-number");
@@ -89,4 +89,53 @@ function processSliderEvent<TAction extends string>(
     callback(action, direction);
 }
 
-export { addEnterKeyListeners, addTextNumberInputListeners, processSliderEvent };
+function createDraggable<T extends FoundryDragData>(
+    event: DragEvent,
+    img: ImageFilePath,
+    actor: ActorPF2e,
+    item: Maybe<ItemPF2e>,
+    data: Omit<T, keyof FoundryDragData>
+) {
+    const target = event.target;
+    if (!event.dataTransfer || !(target instanceof HTMLElement)) return;
+
+    const draggable = createHTMLElement("div", {
+        classes: ["pf2e-hud-draggable"],
+        content: `<img src="${img}">`,
+    });
+
+    document.body.append(draggable);
+
+    const dragData: FoundryDragData = {
+        actorId: actor.id,
+        actorUUID: actor.uuid,
+        sceneId: canvas.scene?.id ?? null,
+        tokenId: actor.token?.id ?? null,
+        ...item?.toDragData(),
+        ...data,
+    };
+
+    event.dataTransfer.setDragImage(draggable, 16, 16);
+    event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
+
+    target.classList.add("dragging");
+
+    target.addEventListener(
+        "dragend",
+        () => {
+            target.classList.remove("dragging");
+            draggable.remove();
+        },
+        { once: true }
+    );
+}
+
+type FoundryDragData = {
+    actorId: string;
+    actorUUID: ActorUUID;
+    sceneId: string | null;
+    tokenId: string | null;
+};
+
+export { addEnterKeyListeners, addTextNumberInputListeners, createDraggable, processSliderEvent };
+export type { FoundryDragData };

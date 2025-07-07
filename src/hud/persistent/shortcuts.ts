@@ -1,4 +1,4 @@
-import { ItemHudPopup, SidebarDragData } from "hud";
+import { createDraggable, FoundryDragData, ItemHudPopup, SidebarDragData } from "hud";
 import {
     ApplicationRenderContext,
     ApplicationRenderOptions,
@@ -57,6 +57,26 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         this.shortcuts.set(slot, shortcut);
         this.save();
 
+        return true;
+    }
+
+    swap(slot: number, targetSlot: number): boolean {
+        if (slot === targetSlot) return false;
+
+        const shortcut = this.shortcuts.get(slot);
+        if (!shortcut) return false;
+
+        const targetShortcut = this.shortcuts.get(targetSlot);
+
+        this.shortcuts.set(targetSlot, shortcut);
+
+        if (targetShortcut) {
+            this.shortcuts.set(slot, targetShortcut);
+        } else {
+            this.shortcuts.delete(slot);
+        }
+
+        this.save();
         return true;
     }
 
@@ -131,6 +151,9 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     }
 
     _activateListeners(html: HTMLElement): void {
+        const actor = this.actor;
+        if (!actor) return;
+
         const shortcuts = html.querySelectorAll<HTMLElement>(".shortcut");
 
         for (const target of shortcuts) {
@@ -138,22 +161,29 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             if (isNaN(slot) || slot < 0 || slot > this.nbSlots) return;
 
             target.addEventListener("drop", (event) => {
-                const dragData = getDragEventData<SidebarDragData>(event);
+                const dragData = getDragEventData<SidebarDragData | ShortcutDragData>(event);
 
-                if (!R.isPlainObject(dragData) || !R.isPlainObject(dragData.fromSidebar)) {
-                    warning("shortcuts.error.wrongType");
-                    return;
+                if (!R.isPlainObject(dragData)) {
+                    return warning("shortcuts.error.wrongType");
                 }
 
                 if (!this.parent.actor || this.parent.actor.uuid !== dragData.actorUUID) {
-                    warning("shortcuts.error.wrongActor");
+                    return warning("shortcuts.error.wrongActor");
+                }
+
+                if ("fromSidebar" in dragData && R.isPlainObject(dragData.fromSidebar)) {
+                    if (!this.replace(slot, dragData.fromSidebar)) {
+                        warning("shortcuts.error.wrongType");
+                    }
                     return;
                 }
 
-                if (!this.replace(slot, dragData.fromSidebar)) {
-                    warning("shortcuts.error.wrongType");
+                if ("fromShortcut" in dragData && R.isPlainObject(dragData.fromShortcut)) {
+                    this.swap(dragData.fromShortcut.slot, slot);
                     return;
                 }
+
+                warning("shortcuts.error.wrongType");
             });
 
             const shortcut = this.shortcuts.get(slot);
@@ -194,6 +224,16 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             target.addEventListener("pointerleave", async (event) => {
                 game.tooltip.deactivate();
             });
+
+            target.addEventListener("dragstart", (event) => {
+                game.tooltip.deactivate();
+
+                createDraggable<ShortcutDragData>(event, shortcut.usedImage, actor, shortcut.item, {
+                    fromShortcut: {
+                        slot: shortcut.slot,
+                    },
+                });
+            });
         }
     }
 
@@ -218,5 +258,13 @@ type PersistentShortcutsContext = {
     shortcuts: (PersistentShortcut | { isEmpty: true })[];
 };
 
+type ShortcutDragData = FoundryDragData & {
+    fromShortcut: {
+        slot: number;
+    };
+};
+
+type ShortcutSlotId = `pf2e-hud-shortcut-${number}`;
+
 export { PersistentShortcutsPF2eHUD };
-export type { ShortcutData };
+export type { ShortcutData, ShortcutSlotId };
