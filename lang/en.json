@@ -224,6 +224,11 @@
         },
         "rightClick": "[Right-Click]",
         "shortcuts": {
+            "blast": {
+                "cost": {
+                    "label": "Elemental Blast Cost"
+                }
+            },
             "error": {
                 "locked": "The Shortcuts are locked with the Hotbar",
                 "wrongActor": "You can only create shortcuts from the same persistent actor.",

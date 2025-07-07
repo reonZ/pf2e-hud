@@ -9,6 +9,26 @@ import {
 import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut } from ".";
 import fields = foundry.data.fields;
 
+function generateToggleShortcutFields(type: string): ToggleShortcutSchema {
+    return {
+        ...generateBaseShortcutFields(type),
+        domain: new fields.StringField({
+            required: true,
+            nullable: false,
+            blank: false,
+        }),
+        itemId: new IdField({
+            required: true,
+            nullable: false,
+        }),
+        option: new fields.StringField({
+            required: true,
+            nullable: false,
+            blank: false,
+        }),
+    };
+}
+
 class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> {
     #toggle: RollOptionToggle | null;
     #selected: Suboption | undefined;
@@ -26,23 +46,7 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
     }
 
     static defineSchema(): ToggleShortcutSchema {
-        return {
-            ...generateBaseShortcutFields("toggle"),
-            domain: new fields.StringField({
-                required: true,
-                nullable: false,
-                blank: false,
-            }),
-            itemId: new IdField({
-                required: true,
-                nullable: false,
-            }),
-            option: new fields.StringField({
-                required: true,
-                nullable: false,
-                blank: false,
-            }),
-        };
+        return generateToggleShortcutFields("toggle");
     }
 
     static getItem(actor: CreaturePF2e, { itemId }: ToggleShortcutData): Maybe<ItemPF2e> {
@@ -66,7 +70,7 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
 
         const subtitle = this.selected
             ? game.i18n.localize(this.selected.label)
-            : localize("shortcuts.tooltip.subtitle", this.type);
+            : localize("shortcuts.tooltip.subtitle.toggle");
 
         const active =
             toggle && !toggle.alwaysActive
@@ -131,5 +135,5 @@ type ToggleShortcutSchema = BaseShortcutSchema & {
 
 type ToggleShortcutData = SourceFromSchema<ToggleShortcutSchema>;
 
-export { ToggleShortcut };
+export { generateToggleShortcutFields, ToggleShortcut };
 export type { ToggleShortcutData, ToggleShortcutSchema };

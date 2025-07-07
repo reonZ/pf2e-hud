@@ -117,6 +117,21 @@
             }
         }
 
+        &[data-type="blastCost"] {
+            .overlay {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                span {
+                    font-size: 2em;
+                    font-weight: bold;
+                    text-shadow: 0 0 2px #ffffff;
+                    color: var(--color-reversed);
+                }
+            }
+        }
+
         &.dragging {
             .image {
                 scale: 0.8;

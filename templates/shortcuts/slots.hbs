@@ -2,7 +2,7 @@
 {{#if shortcut.isEmpty}}
 <div class="shortcut empty" data-slot="{{slot}}"></div>
 {{else}}
-<div id="{{shortcut.elementId}}"
+<div id="{{shortcut.elementId}}" data-type="{{shortcut.type}}"
     class="item shortcut{{#if (not shortcut.item)}} inactive {{else if (not shortcut.canUse)}} greyed{{/if}}"
     data-slot="{{slot}}" data-action="shortcut-slot" {{{@root.dataset shortcut.dataset}}}
     draggable="true">
@@ -11,9 +11,7 @@
     {{!-- counter --}}
     {{#with shortcut.counter as |counter|}}
     <div class="counter boxed">
-        <span>
-            {{counter.value}}
-        </span>
+        <span>{{counter.value}}</span>
     </div>
     {{/with}}
     {{!-- checkbox --}}
@@ -29,7 +27,11 @@
     </div>
     {{/with}}
     {{!-- overlay --}}
-    <div class="overlay"></div>
+    <div class="overlay">
+        {{#with shortcut.overlay as |content|}}
+        <span>{{content}}</span>
+        {{/with}}
+    </div>
 </div>
 {{/if}}
 {{/each}}

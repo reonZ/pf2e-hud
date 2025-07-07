@@ -5,12 +5,14 @@ import {
     dataToDatasetString,
     getDragEventData,
     getFlag,
+    MODULE,
     R,
     render,
     updateFlag,
     warning,
 } from "module-helpers";
 import {
+    BlastCostShortcut,
     ConsumableShortcut,
     ConsumableShortcutData,
     EquipmentShortcut,
@@ -23,6 +25,7 @@ import {
 } from ".";
 
 const SHORTCUTS = {
+    blastCost: BlastCostShortcut,
     consumable: ConsumableShortcut,
     equipment: EquipmentShortcut,
     toggle: ToggleShortcut,
@@ -261,7 +264,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             const shortcut = new ShortcutCls(actor, data as any, slot);
             return shortcut.invalid ? undefined : shortcut;
         } catch (error) {
-            // TODO log error
+            MODULE.error(`An error occured while instantiating a shortcut in slot ${slot}`, error);
         }
     }
 }

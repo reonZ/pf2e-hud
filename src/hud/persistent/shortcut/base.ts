@@ -101,6 +101,10 @@ abstract class PersistentShortcut<
         return null;
     }
 
+    get overlay(): string | null {
+        return null;
+    }
+
     get unusableReason(): string | undefined {
         return !this.item ? "match" : undefined;
     }

@@ -17,7 +17,9 @@ const ROLLOPTIONS_PLACEMENT = {
     extras: undefined,
 } as const satisfies Record<SidebarName, string | undefined>;
 
-class ToggleSidebarItem extends BaseSidebarItem<ItemPF2e<ActorPF2e>, SidebarToggle> {
+class ToggleSidebarItem<
+    TItem extends ItemPF2e<ActorPF2e> = ItemPF2e<ActorPF2e>
+> extends BaseSidebarItem<TItem, SidebarToggle> {
     get img(): ImageFilePath {
         return this.item.img;
     }
@@ -42,7 +44,10 @@ class ToggleSidebarItem extends BaseSidebarItem<ItemPF2e<ActorPF2e>, SidebarTogg
     }
 }
 
-interface ToggleSidebarItem extends Readonly<SidebarToggle> {}
+interface ToggleSidebarItem<TItem extends ItemPF2e<ActorPF2e> = ItemPF2e<ActorPF2e>>
+    extends Readonly<SidebarToggle> {
+    readonly item: TItem;
+}
 
 function generateToggleKey(options: { itemId: string; domain: string; option: string }): string;
 function generateToggleKey(options: {
@@ -116,4 +121,5 @@ type SidebarToggle = RollOptionToggle & {
     item: ItemPF2e<ActorPF2e>;
 };
 
-export { createRollOptionsElements, generateToggleKey };
+export { createRollOptionsElements, generateToggleKey, ToggleSidebarItem };
+export type { SidebarToggle };

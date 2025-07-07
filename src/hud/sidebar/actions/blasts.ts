@@ -1,4 +1,4 @@
-import { FilterValue, ShortcutData } from "hud";
+import { FilterValue, ShortcutData, ToggleShortcutData } from "hud";
 import {
     AbilityItemPF2e,
     CharacterPF2e,
@@ -15,7 +15,7 @@ import {
     RollOptionToggle,
 } from "module-helpers";
 import { ActionsSidebarPF2eHUD } from ".";
-import { BaseSidebarItem } from "..";
+import { BaseSidebarItem, ToggleSidebarItem } from "..";
 
 const ELEMENTAL_BLAST_IMG = "icons/magic/symbols/elements-air-earth-fire-water.webp";
 
@@ -23,34 +23,35 @@ const _cached: { labels: Record<string, string> } = {
     labels: {},
 };
 
-class ActionsSidebarBlastCost extends BaseSidebarItem<
-    AbilityItemPF2e<CharacterPF2e>,
-    ElementalBlastCost
-> {
-    #rollOptions?: RollOptionToggle;
-    #costs?: BlastRollOptionsCost[];
+class ActionsSidebarBlastCost extends ToggleSidebarItem<AbilityItemPF2e<CharacterPF2e>> {
+    #costs: BlastRollOptionsCost[];
+    #selected: BlastRollOptionsCost;
 
-    get img(): ImageFilePath {
-        return ELEMENTAL_BLAST_IMG;
-    }
+    constructor(toggle: RollOptionToggle, item: AbilityItemPF2e<CharacterPF2e>) {
+        super({ ...toggle, item });
 
-    get rollOption(): RollOptionToggle | undefined {
-        return (this.#rollOptions ??= getBlastsRollOption(this.item.actor));
-    }
-
-    get selected(): BlastRollOptionsCost | undefined {
-        return this.costs?.find((cost) => cost.selected);
-    }
-
-    get costs(): BlastRollOptionsCost[] | undefined {
-        return (this.#costs ??= this.rollOption?.suboptions.map(({ selected, value, label }) => {
+        this.#costs = toggle.suboptions.map(({ selected, value, label }) => {
             return {
                 selected,
                 cost: value as "1" | "2",
                 label: value === "1" ? "Ⅰ" : "Ⅱ",
                 tooltip: label,
             };
-        }));
+        });
+
+        this.#selected = this.costs.find((cost) => cost.selected) ?? this.costs[0];
+    }
+
+    get img(): ImageFilePath {
+        return ELEMENTAL_BLAST_IMG;
+    }
+
+    get costs(): BlastRollOptionsCost[] {
+        return this.#costs;
+    }
+
+    get selected(): BlastRollOptionsCost {
+        return this.#selected;
     }
 
     toggleRollOption() {
@@ -66,12 +67,13 @@ class ActionsSidebarBlastCost extends BaseSidebarItem<
         );
     }
 
-    toShortcut(): ShortcutData | undefined {
-        return;
+    toShortcut(): ToggleShortcutData {
+        return {
+            ...super.toShortcut(),
+            type: "blastCost",
+        };
     }
 }
-
-interface ActionsSidebarBlastCost extends Readonly<ElementalBlastCost> {}
 
 class ActionsSidebarBlast extends BaseSidebarItem<
     AbilityItemPF2e<CharacterPF2e>,
@@ -148,13 +150,14 @@ async function getSidebarBlastsData(
     this: ActionsSidebarPF2eHUD
 ): Promise<BlastsContext | undefined> {
     const actor = this.actor as CharacterPF2e;
-    if (!getBlastsRollOption(actor)) return;
+    const toggle = actor.synthetics.toggles["elemental-blast"]?.["action-cost"];
+    if (!toggle) return;
 
     const blasts = await getElementalBlastsData(actor);
     if (!blasts?.length) return;
 
     const actions = blasts.map((data) => this.addSidebarItem(ActionsSidebarBlast, "blastId", data));
-    const cost = this.addSidebarItem(ActionsSidebarBlastCost, "id", { item: blasts[0].item });
+    const cost = this.addSidebarItem(ActionsSidebarBlastCost, "id", toggle, blasts[0].item);
 
     return {
         actions,
@@ -227,10 +230,6 @@ async function getElementalBlastsData(
     }
 }
 
-function getBlastsRollOption(actor: CharacterPF2e): RollOptionToggle {
-    return actor.synthetics.toggles["elemental-blast"]?.["action-cost"];
-}
-
 function onBlastsClickAction(
     event: MouseEvent,
     sidebarItem: ActionsSidebarBlastCost | ActionsSidebarBlast,
@@ -301,10 +300,6 @@ type ElementalBlastsData = CharacterSheetData["elementalBlasts"][number] & {
     item: AbilityItemPF2e<CharacterPF2e>;
 };
 
-type ElementalBlastCost = {
-    item: AbilityItemPF2e<CharacterPF2e>;
-};
-
 type BlastRollOptionsCost = {
     selected: boolean;
     cost: "1" | "2";
@@ -315,7 +310,7 @@ type BlastRollOptionsCost = {
 export {
     ActionsSidebarBlast,
     ActionsSidebarBlastCost,
-    getBlastsRollOption,
+    ELEMENTAL_BLAST_IMG,
     getElementalBlastsData,
     getSidebarBlastsData,
     onBlastsClickAction,
