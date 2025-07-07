@@ -9,7 +9,6 @@ import {
     CharacterPF2e,
     createHook,
     createToggleKeybind,
-    executeWhenReady,
     getDataFlag,
     htmlQuery,
     localize,
@@ -164,20 +163,29 @@ class PersistentPF2eHUD
     protected _configurate(): void {
         const mode = this.settings.mode;
 
-        executeWhenReady(() => {
-            if (mode !== "disabled") {
-                this.#controlTokenHook.toggle(mode === "select");
-                this.#setActorKeybind.toggle(mode === "manual");
+        if (mode !== "disabled") {
+            this.#controlTokenHook.toggle(mode === "select");
+            this.#setActorKeybind.toggle(mode === "manual");
 
-                this.render(true);
-            } else {
-                this.close({ force: true });
-            }
-        });
+            this.render(true);
+        } else {
+            this.close({ force: true });
+        }
     }
 
     init() {
-        this._configurate();
+        const mode = this.settings.mode;
+
+        this.#controlTokenHook.toggle(mode === "select");
+        this.#setActorKeybind.toggle(mode === "manual");
+    }
+
+    ready() {
+        if (this.settings.mode !== "disabled") {
+            this.render(true);
+        } else {
+            this.close({ force: true });
+        }
     }
 
     isValidActor(actor: Maybe<ActorPF2e>): actor is ActorPF2e {

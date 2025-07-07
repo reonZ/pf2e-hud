@@ -65,13 +65,11 @@ Hooks.on("init", () => {
     }, 1000);
 });
 
-Hooks.on("setup", () => {
-    prepareActionGroups();
-    prepareExtrasActions();
-});
-
-Hooks.on("ready", () => {
+Hooks.on("ready", async () => {
     const isGM = game.user.isGM;
+
+    await prepareActionGroups();
+    await prepareExtrasActions();
 
     for (const hud of R.values(HUDS)) {
         hud.ready(isGM);
