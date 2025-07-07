@@ -6,18 +6,20 @@
     class="item shortcut{{#if (not shortcut.item)}} inactive {{else if (not shortcut.canUse)}} greyed{{/if}}"
     data-slot="{{slot}}" data-action="shortcut-slot" {{{@root.dataset shortcut.dataset}}}
     draggable="true">
-    <div class="image" style="background-image: url({{shortcut.usedImage}});">
-    </div>
-    {{#if shortcut.counter}}
+    {{!-- image --}}
+    <div class="image" style="background-image: url({{shortcut.usedImage}});"></div>
+    {{!-- counter --}}
+    {{#with shortcut.counter as |counter|}}
     <div class="counter boxed">
         <span>
-            {{shortcut.counter.value}}
+            {{counter.value}}
         </span>
     </div>
-    {{/if}}
-    {{#if shortcut.checkbox}}
+    {{/with}}
+    {{!-- checkbox --}}
+    {{#with shortcut.checkbox as |checkbox|}}
     <div class="checkbox">
-        {{#if shortcut.checkbox.checked}}
+        {{#if checkbox.checked}}
         <i class="fa-regular fa-square-check"></i>
         <i class="fa-solid fa-square-check"></i>
         {{else}}
@@ -25,7 +27,8 @@
         <i class="fa-solid fa-square"></i>
         {{/if}}
     </div>
-    {{/if}}
+    {{/with}}
+    {{!-- overlay --}}
     <div class="overlay"></div>
 </div>
 {{/if}}
