@@ -1,6 +1,12 @@
 {
     "pf2e-hud": {
         "keybindings": {
+            "persistent": {
+                "setActor": {
+                    "name": "Elegir como actor persistente",
+                    "hint": "Elegir el token seleccionado como actor persistente."
+                }
+            },
             "sidebar": {
                 "filter": {
                     "name": "Usar el filtro lateral",
@@ -121,6 +127,23 @@
             "temp": "Puntos de golpe temporales",
             "resolve": "Usar punto de resolución"
         },
+        "avatar-editor": {
+            "title": "Editar Avatar - {name}",
+            "cancel": "Cancelar",
+            "color": {
+                "background": "Color de fondo",
+                "enabled": "Activar color de fondo"
+            },
+            "contain": "Contener",
+            "reset": "Reiniciar",
+            "save": "Guardar",
+            "src": {
+                "actor": "Usar la Imágen de Actor",
+                "token": "Usar la Imágen del Token",
+                "none": "No se pudo encontrar una imágen válida",
+                "video": "Los vídeos no están soportados"
+            }
+        },
         "dialogs": {
             "alternates": {
                 "dc": "Clase de dificultad",
@@ -163,6 +186,10 @@
         },
         "leftClick": "[Clic izquierdo]",
         "persistent": {
+            "effects": {
+                "shift": "Mayus",
+                "toggle": "Conmutar Efectos"
+            },
             "error": {
                 "selectOne": "Elije un token de PNJ/PJ para establecerlo como tu actor persistente."
             },
@@ -194,8 +221,35 @@
             "skill": "Habilidad",
             "lore": "Saberes",
             "proficiency": "Competencia"
-        }
+        },
         "rightClick": "[Clic derecho]",
+        "shortcuts": {
+            "error": {
+                "wrongActor": "Solo puedes crear atajos desde el mismo actor persistente.",
+                "wrongType": "No puedes crear un atajo de ese tipo."
+            },
+            "tooltip": {
+                "altUse": {
+                    "toggle": "Seleccionar Opción Alternativa"
+                },
+                "click": {
+                    "control": "[Ctrl-Clic-Derecho] Popup del item",
+                    "middle": "[Clic-Central] Quitar Atajo"
+                },
+                "disabled": "Desactivado",
+                "enabled": "Activado",
+                "subtitle": {
+                    "toggle": "Modos de tirar dados"
+                },
+                "reason": {
+                    "available": "No disponible en este momento",
+                    "dropped": "No llevas el objeto",
+                    "match": "No hay coincidencia",
+                    "uses": "No quedan usos",
+                    "quantity": "No hay cantidad suficiente"
+                }
+            }
+        },
         "sidebar": {
             "filter": "Filtro de barra lateral",
             "actions": {
