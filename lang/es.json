@@ -33,7 +33,7 @@
                 },
                 "useModifiers": {
                     "name": "Usar modificadores",
-                    "hint": "Mostrar modificadores en vez de la dificutadl en los diferentes elementos del HUD."
+                    "hint": "Mostrar modificadores en vez de la dificultad en los diferentes elementos del HUD."
                 }
             },
             "advanced": {
@@ -107,7 +107,7 @@
             "recall-knowledge": {
                 "result": "Resultado",
                 "modifier": "Mod.",
-                "target": "OBjetivo",
+                "target": "Objetivo",
                 "first": "1ro",
                 "second": "2do",
                 "third": "3ro",
