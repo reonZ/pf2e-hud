@@ -230,8 +230,9 @@
             },
             "tooltip": {
                 "click": {
-                    "control": "[Ctrl + Kliknij prawym] Wyskakujące okienko przedmiotu",
-                    "shift": "[Shift + Kliknij prawym] Usuń skrót"
+                    "control": "[Ctrl + Kliknij prawym]",
+                    "shift": "[Shift + Kliknij prawym] Usuń skrót",
+                    "popup": "Wyskakujące okienko przedmiotu"
                 },
                 "reason": {
                     "dropped": "Przedmiot nie przeniesiony",

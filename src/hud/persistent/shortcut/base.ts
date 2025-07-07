@@ -86,7 +86,7 @@ abstract class PersistentShortcut<
     }
 
     get canAltUse(): boolean {
-        return !!this.item;
+        return false;
     }
 
     get usedImage(): ImageFilePath {
@@ -142,9 +142,10 @@ abstract class PersistentShortcut<
             return this.#tooltip;
         }
 
+        const canAltUse = this.canAltUse;
         const reason = this.unusableReason;
         const data: ShortcutTooltipData = {
-            altUse: this.canAltUse ? `${localize("rightClick")} ${this.altUseLabel}` : null,
+            altUse: canAltUse ? this.altUseLabel : null,
             hasItem: !!this.item,
             img: this.usedImage,
             reason: reason ? localize("shortcuts.tooltip.reason", reason) : null,

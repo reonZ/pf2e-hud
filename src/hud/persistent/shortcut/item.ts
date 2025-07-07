@@ -41,6 +41,10 @@ abstract class ItemShortcut<
         return super.canUse && !this.dropped;
     }
 
+    get canAltUse(): boolean {
+        return !!this.item;
+    }
+
     get dropped(): boolean {
         return this.item?.system.equipped.carryType === "dropped";
     }

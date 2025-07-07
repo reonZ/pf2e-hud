@@ -7,6 +7,10 @@ class BlastCostShortcut extends ToggleShortcut {
         return generateToggleShortcutFields("blastCost");
     }
 
+    get canAltUse(): boolean {
+        return false;
+    }
+
     get title(): string {
         return localize("shortcuts.blast.cost.label");
     }

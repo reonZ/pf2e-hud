@@ -84,6 +84,10 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
         return super.canUse && !!this.toggle;
     }
 
+    get canAltUse(): boolean {
+        return this.canUse && (this.toggle?.suboptions.length ?? 0) > 1;
+    }
+
     get checkbox(): { checked: boolean } | null {
         const toggle = this.toggle;
         return this.item && toggle?.alwaysActive === false ? { checked: toggle.checked } : null;

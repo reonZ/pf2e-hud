@@ -194,7 +194,7 @@
             "skill": "Habilidad",
             "lore": "Saberes",
             "proficiency": "Competencia"
-        }
+        },
         "rightClick": "[Clic derecho]",
         "sidebar": {
             "filter": "Filtro de barra lateral",

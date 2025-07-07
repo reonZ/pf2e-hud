@@ -239,8 +239,9 @@
                     "toggle": "Select SubOption"
                 },
                 "click": {
-                    "control": "[Ctrl-Right-Click] Item Popup",
-                    "middle": "[Middle-Click] Remove Shortcut"
+                    "control": "[Ctrl-Right-Click]",
+                    "middle": "[Middle-Click] Remove Shortcut",
+                    "popup": "Item Popup"
                 },
                 "disabled": "Disabled",
                 "enabled": "Enabled",

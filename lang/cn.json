@@ -293,8 +293,9 @@
             },
             "tooltip": {
                 "click": {
-                    "control": "[Ctrl+右键点击] 物品弹出",
-                    "shift": "[Shift+右键点击] 移除快捷栏选项"
+                    "control": "[Ctrl+右键点击]",
+                    "shift": "[Shift+右键点击] 移除快捷栏选项",
+                    "popup": "物品弹出"
                 },
                 "reason": {
                     "dropped": "未携带该物品",
