@@ -257,7 +257,8 @@
                 "disabled": "Disabled",
                 "enabled": "Enabled",
                 "subtitle": {
-                    "toggle": "Roll Option"
+                    "toggle": "Roll Option",
+                    "extraAction": "Extra Action"
                 },
                 "reason": {
                     "available": "Not Currently Available",

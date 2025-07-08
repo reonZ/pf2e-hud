@@ -1,12 +1,12 @@
-import { ActionStrike } from "hud";
-import { imagePath, StrikeData } from "module-helpers";
+import { ActionsSidebarStrike } from "hud";
+import { imagePath } from "module-helpers";
 
 const DEFAULT_NPC_STRIKE_ICON = "systems/pf2e/icons/default-icons/melee.svg";
 
 /**
  * thanks to https://github.com/shemetz for the compiled list
  */
-const NPC_STRIKE_ICONS: Record<string, string> = {
+const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
     jaws: "icons/creatures/abilities/mouth-teeth-long-red.webp", // Jaws
     claw: "icons/creatures/claws/claw-curved-jagged-gray.webp", // Claw
     fist: "icons/skills/melee/unarmed-punch-fist.webp", // Fist
@@ -240,7 +240,7 @@ const NPC_STRIKE_ICONS: Record<string, string> = {
     shears: "systems/pf2e/icons/equipment/weapons/shears.webp",
 };
 
-function getNpcStrikeImage(strike: StrikeData | ActionStrike) {
+function getNpcStrikeImage(strike: ActionsSidebarStrike): ImageFilePath {
     const isDefaultIcon = strike.item.img === DEFAULT_NPC_STRIKE_ICON;
     if (!isDefaultIcon) return strike.item.img;
 

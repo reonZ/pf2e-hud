@@ -1,5 +1,5 @@
 import { ExtraAction, getExtraAction, getExtraKeys, StatisticType } from "hud";
-import { AbilityItemPF2e } from "module-helpers";
+import { AbilityItemPF2e, localize } from "module-helpers";
 import {
     generateStatisticActionSchema,
     ShortcutSource,
@@ -12,12 +12,16 @@ class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityIt
         return generateStatisticActionSchema("extraAction", getExtraKeys);
     }
 
+    get action(): ExtraAction | undefined {
+        return getExtraAction(this.sourceId);
+    }
+
     get title(): string {
         return this.name;
     }
 
-    get action(): ExtraAction | undefined {
-        return getExtraAction(this.sourceId);
+    get subtitle(): string {
+        return localize("shortcuts.tooltip.subtitle", this.type);
     }
 
     use(event: MouseEvent): void {
