@@ -1,7 +1,9 @@
+{{#if isCharacter}}
 <div class="hide-untrained" data-filter-value="">
     <input type="checkbox" data-action="toggle-hide-untrained" {{checked hideUntrained}}>
     <span>{{@root.i18n 'hideUntrained'}}</span>
 </div>
+{{/if}}
 <div class="item action" data-item-uuid="{{follow.sourceId}}"
     data-filter-value="{{follow.filterValue}}">
     <div class="image" data-action="send-to-chat">
