@@ -15,6 +15,7 @@ import {
     NPCPF2e,
     R,
     render,
+    TokenDocumentPF2e,
     TokenPF2e,
     warning,
 } from "module-helpers";
@@ -39,6 +40,18 @@ class PersistentPF2eHUD
     #effectsPanel = new PersistentEffectsPF2eHUD(this);
     #portraitElement: HTMLElement | null = null;
     #shortcutsPanel = new PersistentShortcutsPF2eHUD(this);
+
+    #deleteActorHook = createHook("deleteActor", (actor: ActorPF2e) => {
+        if (this.isCurrentActor(actor)) {
+            this.render();
+        }
+    });
+
+    #deleteTokenHook = createHook("deleteToken", (token: TokenDocumentPF2e) => {
+        if (!token.isLinked && this.isCurrentActor(token.actor)) {
+            this.render();
+        }
+    });
 
     #controlTokenHook = createHook(
         "controlToken",
@@ -163,10 +176,12 @@ class PersistentPF2eHUD
     protected _configurate(): void {
         const mode = this.settings.mode;
 
-        if (mode !== "disabled") {
-            this.#controlTokenHook.toggle(mode === "select");
-            this.#setActorKeybind.toggle(mode === "manual");
+        this.#deleteActorHook.toggle(mode !== "disabled");
+        this.#deleteTokenHook.toggle(mode !== "disabled");
+        this.#controlTokenHook.toggle(mode === "select");
+        this.#setActorKeybind.toggle(mode === "manual");
 
+        if (mode !== "disabled") {
             this.render(true);
         } else {
             this.close({ force: true });
@@ -176,6 +191,8 @@ class PersistentPF2eHUD
     init() {
         const mode = this.settings.mode;
 
+        this.#deleteActorHook.toggle(mode !== "disabled");
+        this.#deleteTokenHook.toggle(mode !== "disabled");
         this.#controlTokenHook.toggle(mode === "select");
         this.#setActorKeybind.toggle(mode === "manual");
     }
