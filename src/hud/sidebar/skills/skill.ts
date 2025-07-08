@@ -16,7 +16,7 @@ class SkillsSidebarItem extends BaseSidebarItem<
         getSkillAction(this.statistic, this.key)?.roll(actor, event, options);
     }
 
-    toShortcut(event?: DragEvent): SkillActionShortcutData | undefined {
+    toShortcut(event?: DragEvent): SkillActionShortcutData {
         const variant: MaybeFalsy<Partial<MapVariant>> =
             event?.target instanceof HTMLElement &&
             this.variants.get(event.target.dataset.variant ?? "");

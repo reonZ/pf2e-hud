@@ -1,6 +1,5 @@
-import { ShortcutData } from "hud";
+import { ExtraActionShortcutData } from "hud";
 import { AbilityItemPF2e, ActorPF2e } from "module-helpers";
-import { rollRecallKnowledge } from ".";
 import {
     BaseSidebarItem,
     BaseStatisticRollOptions,
@@ -11,29 +10,17 @@ import {
 
 class ExtrasSidebarItem extends BaseSidebarItem<AbilityItemPF2e, ExtractedExtraActionData> {
     async roll(actor: ActorPF2e, event: MouseEvent, options: BaseStatisticRollOptions) {
-        if (this.key === "earnIncome") {
-            return game.pf2e.actions.earnIncome(actor);
-        }
-
-        if (this.key === "recall-knowledge") {
-            return actor.isOfType("creature") && rollRecallKnowledge(actor);
-        }
-
-        const rollOptions: BaseStatisticRollOptions = {
-            dc: this.dc,
-            notes: this.notes,
-            ...options,
-        };
-
-        if (this.key === "aid") {
-            rollOptions.alternates = true;
-        }
-
-        getExtraAction(this.sourceId)?.roll(actor, event, rollOptions);
+        getExtraAction(this.sourceId)?.roll(actor, event, options);
     }
 
-    toShortcut(): ShortcutData | undefined {
-        return;
+    toShortcut(): ExtraActionShortcutData {
+        return {
+            img: this.img,
+            key: this.key,
+            name: this.label,
+            sourceId: this.sourceId,
+            type: "extraAction",
+        };
     }
 }
 

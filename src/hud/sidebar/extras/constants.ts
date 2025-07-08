@@ -1,5 +1,5 @@
 import { AbilityItemPF2e, ActionCost } from "module-helpers";
-import { RawBaseActionData, SingleCheckActionRollNoteData } from "..";
+import { RawBaseActionData } from "..";
 
 const RAW_EXTRAS_ACTIONS = [
     {
@@ -31,12 +31,15 @@ const RAW_EXTRAS_ACTIONS = [
     },
 ] as const satisfies RawExtrasActionData[];
 
+const EXTRAS_KEYS = RAW_EXTRAS_ACTIONS.map(({ key }) => key);
+
+function getExtraKeys(): string[] {
+    return EXTRAS_KEYS.slice();
+}
+
 type RawExtrasActionData = RawBaseActionData & {
     actionCost?: ActionCost["value"] | ActionCost["type"];
-    dc?: number;
-    key: string;
     map?: boolean;
-    notes?: SingleCheckActionRollNoteData[];
     sourceId: CompendiumItemUUID;
 };
 
@@ -46,5 +49,5 @@ type ExtraActionData = RawExtrasActionData & {
 
 type ExtraActionKey = (typeof RAW_EXTRAS_ACTIONS)[number]["key"];
 
-export { RAW_EXTRAS_ACTIONS };
+export { getExtraKeys, RAW_EXTRAS_ACTIONS };
 export type { ExtraActionData, ExtraActionKey, RawExtrasActionData };

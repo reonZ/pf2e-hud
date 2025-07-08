@@ -55,6 +55,10 @@ abstract class BaseStatisticAction<
         return this.#data;
     }
 
+    get dc(): number | undefined {
+        return this.data.dc;
+    }
+
     get key(): string {
         return this.data.key;
     }
@@ -65,6 +69,10 @@ abstract class BaseStatisticAction<
 
     get actionCost(): ActionCost["value"] | ActionCost["type"] {
         return this.data.actionCost ?? null;
+    }
+
+    get notes(): SingleCheckActionRollNoteData[] {
+        return this.data.notes ?? [];
     }
 
     get sourceId(): CompendiumItemUUID {
@@ -110,17 +118,18 @@ abstract class BaseStatisticAction<
             : undefined;
 
         const usedOptions: BaseStatisticRollOptions & { event: Event } = {
-            statistic: this.statistic,
+            ...R.pick(this, ["dc", "notes", "statistic"]),
             ...R.pick((variant ?? {}) as MapVariant, ["agile", "map"]),
-            ...options,
             event,
         };
+
+        addToObjectIfNonNullish(usedOptions, options);
 
         const actionKey = this.key;
         const isMapVariant = R.isNonNullish(usedOptions.map);
         const action = game.pf2e.actions.get(actionKey) ?? game.pf2e.actions[actionKey];
 
-        if (usedOptions.alternates ?? event.button === 2) {
+        if (usedOptions.alternates || event.button === 2) {
             if (
                 !usedOptions.dc &&
                 isInstanceOf<SingleCheckAction>(action, "SingleCheckAction") &&
@@ -289,7 +298,9 @@ function createMapsVariantsCollection(
 
 type RawBaseActionData = {
     actionCost?: ActionCost["value"] | ActionCost["type"];
+    dc?: number;
     key: string;
+    notes?: SingleCheckActionRollNoteData[];
     rollOptions?: string[];
     /** item used for description and send-to-chat */
     sourceId: CompendiumItemUUID;

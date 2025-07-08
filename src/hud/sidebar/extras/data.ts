@@ -1,11 +1,11 @@
 import { FilterValue } from "hud/shared";
-import { AbilityItemPF2e, MODULE } from "module-helpers";
-import { RAW_EXTRAS_ACTIONS, RawExtrasActionData } from ".";
+import { AbilityItemPF2e, ActorPF2e, MODULE } from "module-helpers";
+import { RAW_EXTRAS_ACTIONS, RawExtrasActionData, rollRecallKnowledge } from ".";
 import {
     BaseStatisticAction,
+    BaseStatisticRollOptions,
     createMapsVariantsCollection,
     MapVariant,
-    SingleCheckActionRollNoteData,
 } from "..";
 
 class ExtraAction extends BaseStatisticAction<RawExtrasActionData, AbilityItemPF2e> {
@@ -25,14 +25,6 @@ class ExtraAction extends BaseStatisticAction<RawExtrasActionData, AbilityItemPF
         return true;
     }
 
-    get dc(): number | undefined {
-        return this.data.dc;
-    }
-
-    get notes(): SingleCheckActionRollNoteData[] | undefined {
-        return this.data.notes;
-    }
-
     get hasVariants(): boolean {
         return false;
     }
@@ -47,6 +39,26 @@ class ExtraAction extends BaseStatisticAction<RawExtrasActionData, AbilityItemPF
         }
 
         return (this.#variants = createMapsVariantsCollection(this.label));
+    }
+
+    roll(actor: ActorPF2e, event: MouseEvent, options: BaseStatisticRollOptions) {
+        if (this.key === "earnIncome") {
+            return game.pf2e.actions.earnIncome(actor);
+        }
+
+        if (this.key === "recall-knowledge") {
+            return actor.isOfType("creature") && rollRecallKnowledge(actor);
+        }
+
+        const rollOptions = {
+            ...options,
+        };
+
+        if (this.key === "aid") {
+            rollOptions.alternates = true;
+        }
+
+        super.roll(actor, event, rollOptions);
     }
 }
 
@@ -76,4 +88,4 @@ type ExtractedExtraActionData = Omit<ExtractReadonly<ExtraAction>, "data">;
 MODULE.devExpose({ getExtrasActions });
 
 export { getExtraAction, getExtrasActions, prepareExtrasActions };
-export type { ExtractedExtraActionData };
+export type { ExtractedExtraActionData, ExtraAction };

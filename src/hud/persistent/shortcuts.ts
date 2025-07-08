@@ -18,6 +18,8 @@ import {
     ConsumableShortcutData,
     EquipmentShortcut,
     EquipmentShortcutData,
+    ExtraActionShortcut,
+    ExtraActionShortcutData,
     PersistentPartPF2eHUD,
     PersistentShortcut,
     ShortcutDataset,
@@ -30,6 +32,7 @@ const SHORTCUTS = {
     blastCost: BlastCostShortcut,
     consumable: ConsumableShortcut,
     equipment: EquipmentShortcut,
+    extraAction: ExtraActionShortcut,
     skillAction: SkillActionShortcut,
     toggle: ToggleShortcut,
 } satisfies Record<string, ConstructorOf<PersistentShortcut>>;
@@ -287,6 +290,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 type ShortcutData =
     | ConsumableShortcutData
     | EquipmentShortcutData
+    | ExtraActionShortcutData
     | SkillActionShortcutData
     | ToggleShortcutData;
 

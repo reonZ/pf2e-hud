@@ -1,74 +1,28 @@
 import {
-    BaseStatisticRollOptions,
     getSkillAction,
     getSkillActionGroup,
+    getSkillKeys,
+    getStatisticTypes,
     SkillAction,
-    STATISTIC_KEYS,
     StatisticType,
 } from "hud";
+import { AbilityItemPF2e, FeatPF2e, localize } from "module-helpers";
 import {
-    AbilityItemPF2e,
-    addToObjectIfNonNullish,
-    CreaturePF2e,
-    FeatPF2e,
-    localize,
-    R,
-} from "module-helpers";
-import {
-    BaseShortcutSchema,
-    generateBaseShortcutFields,
-    PersistentShortcut,
-    ShortcutDataset,
+    generateStatisticActionSchema,
     ShortcutSource,
+    StatisticActionShortcut,
+    StatisticActionShortcutSchema,
 } from ".";
 import fields = foundry.data.fields;
 
-class SkillActionShortcut extends PersistentShortcut<
-    SkillActionShortcutSchema,
-    FeatPF2e | AbilityItemPF2e
-> {
-    #action?: SkillAction;
-
+class SkillActionShortcut extends StatisticActionShortcut<SkillAction, FeatPF2e | AbilityItemPF2e> {
     static defineSchema(): SkillActionShortcutSchema {
         return {
-            ...generateBaseShortcutFields("skillAction"),
-            key: new fields.StringField({
-                required: true,
-                nullable: false,
-                choices: () => STATISTIC_KEYS.slice(),
-            }),
-            override: new fields.SchemaField({
-                agile: new fields.BooleanField({
-                    required: false,
-                    nullable: false,
-                    initial: undefined,
-                }),
-                statistic: new fields.StringField({
-                    required: false,
-                    nullable: false,
-                    choices: () => {
-                        return [
-                            ...R.keys(CONFIG.PF2E.skills),
-                            ...["perception", "computers", "piloting"],
-                        ] as const satisfies StatisticType[];
-                    },
-                    initial: undefined,
-                }),
-            }),
-            sourceId: new fields.DocumentUUIDField({
-                required: true,
-                nullable: false,
-                type: "Item",
-            }),
+            ...generateStatisticActionSchema("skillAction", getSkillKeys),
             statistic: new fields.StringField({
                 required: true,
                 nullable: false,
-                choices: () => {
-                    return [
-                        ...R.keys(CONFIG.PF2E.skills),
-                        ...["perception", "computers", "piloting"],
-                    ] as const satisfies StatisticType[];
-                },
+                choices: () => getStatisticTypes(),
             }),
             variant: new fields.StringField({
                 required: false,
@@ -78,35 +32,12 @@ class SkillActionShortcut extends PersistentShortcut<
         };
     }
 
-    static getItem(
-        actor: CreaturePF2e,
-        { sourceId }: SkillActionShortcutData
-    ): Promise<Maybe<FeatPF2e | AbilityItemPF2e>> {
-        return fromUuid<FeatPF2e | AbilityItemPF2e>(sourceId);
-    }
-
     get action(): SkillAction | undefined {
-        return (this.#action ??= getSkillAction(this.statistic, this.key));
-    }
-
-    get dataset(): ShortcutDataset | null {
-        return { itemUuid: this.sourceId };
-    }
-
-    get canAltUse(): boolean {
-        return this.canUse;
-    }
-
-    get usedImage(): ImageFilePath {
-        return this.action?.img ?? this.img;
+        return getSkillAction(this.statistic, this.key);
     }
 
     get title(): string {
         return (this.variant && this.action?.variants.get(this.variant)?.label) || this.name;
-    }
-
-    get altUseLabel(): string {
-        return localize("shortcuts.tooltip.altUse.skillAction");
     }
 
     get subtitle(): string {
@@ -115,31 +46,25 @@ class SkillActionShortcut extends PersistentShortcut<
         return this.variant ? `${label} (${this.name})` : label;
     }
 
-    use(event: MouseEvent): void {
-        const data: BaseStatisticRollOptions = addToObjectIfNonNullish(
-            { variant: this.variant },
-            this.override
-        );
-
-        this.action?.roll(this.actor, event, data);
+    get canAltUse(): boolean {
+        return this.canUse;
     }
 
-    altUse(event: MouseEvent): void {
-        this.use(event);
+    get altUseLabel(): string {
+        return localize("shortcuts.tooltip.altUse", this.type);
+    }
+
+    use(event: MouseEvent): void {
+        this.action?.roll(this.actor, event, {
+            variant: this.variant,
+            ...this.override,
+        });
     }
 }
 
 interface SkillActionShortcut extends ModelPropsFromSchema<SkillActionShortcutSchema> {}
 
-type SkillActionOverrideSchema = {
-    agile: fields.BooleanField<boolean, boolean, false, false, true>;
-    statistic: fields.StringField<StatisticType, StatisticType, false, false, false>;
-};
-
-type SkillActionShortcutSchema = BaseShortcutSchema & {
-    key: fields.StringField<string, string, true, false, false>;
-    override: fields.SchemaField<SkillActionOverrideSchema>;
-    sourceId: fields.DocumentUUIDField<DocumentUUID, true, false, false>;
+type SkillActionShortcutSchema = StatisticActionShortcutSchema & {
     statistic: fields.StringField<StatisticType, StatisticType, true, false, false>;
     variant: fields.StringField<string, string, false, false, false>;
 };

@@ -484,11 +484,28 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
     },
 ];
 
-const STATISTIC_KEYS = RAW_STATISTICS.flatMap(({ actions }) => {
+const SKILLS_KEYS = RAW_STATISTICS.flatMap(({ actions }) => {
     return actions.map((action) => {
         return R.isString(action) ? action : action.key;
     });
 });
+
+const SKILLS_TYPES: StatisticType[] = [];
+
+function getSkillKeys(): string[] {
+    return SKILLS_KEYS.slice();
+}
+
+function getStatisticTypes(): StatisticType[] {
+    if (!SKILLS_TYPES.length) {
+        SKILLS_TYPES.push(
+            ...R.keys(CONFIG.PF2E.skills),
+            ...(["perception", "computers", "piloting"] as const)
+        );
+    }
+
+    return SKILLS_TYPES;
+}
 
 type SkillActionData = RawBaseActionData & {
     img?: ImageFilePath;
@@ -512,9 +529,10 @@ export {
     CHIRURGEON,
     FOLLOW_THE_EXPERT,
     FOLLOW_THE_EXPERT_EFFECT,
+    getSkillKeys,
+    getStatisticTypes,
     RAW_STATISTICS,
     SHARED_ACTIONS,
-    STATISTIC_KEYS,
     UNTRAINED_IMPROVISATION,
 };
 export type { SkillActionData };
