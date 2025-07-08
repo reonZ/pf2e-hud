@@ -31,7 +31,7 @@ class BlastCostShortcut extends ToggleShortcut {
         return this.selected ? (this.selected.value === "2" ? "Ⅱ" : "Ⅰ") : null;
     }
 
-    use(event: Event): void {
+    use(event: MouseEvent): void {
         const actor = this.item?.actor;
         const selected = this.selected;
         if (!selected || !actor) return;
@@ -45,7 +45,7 @@ class BlastCostShortcut extends ToggleShortcut {
         );
     }
 
-    altUse(event: Event): void {
+    altUse(event: MouseEvent): void {
         this.item?.sheet.render(true);
     }
 }

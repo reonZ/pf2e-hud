@@ -1,10 +1,11 @@
-import { FilterValue } from "hud";
+import { createDraggable, FilterValue, SkillActionShortcutData } from "hud";
 import {
     AbilityItemPF2e,
     Action,
     ActionCost,
     ActionVariantUseOptions,
     ActorPF2e,
+    addToObjectIfNonNullish,
     AttributeString,
     createFormData,
     createHTMLElement,
@@ -74,6 +75,14 @@ abstract class BaseStatisticAction<
         return (this.#actionKey ??= game.pf2e.system.sluggify(this.key, { camel: "bactrian" }));
     }
 
+    get rollOptions(): string[] {
+        return this.data.rollOptions ?? [];
+    }
+
+    get statistic(): StatisticType | undefined {
+        return this.data.statistic;
+    }
+
     get img(): ImageFilePath {
         return (this.#img ??=
             ACTION_IMAGES[this.key] ??
@@ -94,8 +103,14 @@ abstract class BaseStatisticAction<
     }
 
     async roll(actor: ActorPF2e, event: MouseEvent, options: BaseStatisticRollOptions) {
-        const variant = options.variant ? this.variants.get(options.variant) : undefined;
-        const usedOptions = {
+        const variant = options.variant
+            ? this.variants.get(options.variant)
+            : R.isPlainObject(this.data.variants)
+            ? { map: 0, agile: this.data.variants.agile, label: "", slug: "" }
+            : undefined;
+
+        const usedOptions: BaseStatisticRollOptions & { event: Event } = {
+            statistic: this.statistic,
             ...R.pick((variant ?? {}) as MapVariant, ["agile", "map"]),
             ...options,
             event,
@@ -125,10 +140,12 @@ abstract class BaseStatisticAction<
                 data: {
                     ...usedOptions,
                     label,
+                    maps: R.times(3, (i) => ({ value: i, label: i })),
                     statistics: getStatistics(),
                 },
                 onRender: (event, dialog) => {
-                    if (!usedOptions.dragData) return;
+                    const statistic = this.statistic;
+                    if (!statistic) return;
 
                     const html = dialog.element;
                     const img = createHTMLElement("img", {
@@ -137,7 +154,30 @@ abstract class BaseStatisticAction<
                     });
 
                     img.draggable = true;
-                    img.src = usedOptions.dragData.img;
+                    img.src = this.img;
+
+                    img.addEventListener("dragstart", (event) => {
+                        const dragData: Required<SkillActionShortcutData> = {
+                            img: this.img,
+                            key: this.key,
+                            name: this.label,
+                            sourceId: this.sourceId,
+                            type: "skillAction",
+                            variant: !isMapVariant ? variant?.slug : undefined,
+                            statistic,
+                            override: {},
+                        };
+
+                        addToObjectIfNonNullish(dragData.override, {
+                            agile: htmlQuery<HTMLInputElement>(html, `[name="agile"]`)?.checked,
+                            statistic: htmlQuery<HTMLSelectElement>(html, `[name="statistic"]`)
+                                ?.value,
+                        });
+
+                        createDraggable(event, this.img, actor, this.item, {
+                            fromSidebar: dragData,
+                        });
+                    });
 
                     htmlQuery(html, ".form-footer")?.append(img);
                 },
@@ -161,7 +201,7 @@ abstract class BaseStatisticAction<
             event: usedOptions.event,
             actors: [actor],
             variant: !isMapVariant ? variant?.slug : undefined,
-            rollOptions: usedOptions.rollOptions?.map((x) => `action:${x}`) ?? [],
+            rollOptions: this.rollOptions?.map((x) => `action:${x}`) ?? [],
             modifiers: [] as ModifierPF2e[],
             difficultyClass: usedOptions.dc ? { value: usedOptions.dc } : undefined,
         } satisfies RollStatisticRollOptions;
@@ -250,18 +290,20 @@ function createMapsVariantsCollection(
 type RawBaseActionData = {
     actionCost?: ActionCost["value"] | ActionCost["type"];
     key: string;
-    /** item use for description and send-to-chat */
+    rollOptions?: string[];
+    /** item used for description and send-to-chat */
     sourceId: CompendiumItemUUID;
+    statistic?: StatisticType;
+    // object refers to map, array refers to actual variants
+    variants?: (string | { slug: string; label: string; cost?: ActionCost })[] | { agile: boolean };
 };
 
 type BaseStatisticRollOptions = {
     agile?: boolean;
     alternates?: boolean;
     dc?: number;
-    dragData?: { img: ImageFilePath };
     map?: ZeroToTwo;
     notes?: SingleCheckActionRollNoteData[];
-    rollOptions?: string[];
     statistic?: StatisticType;
     variant?: string;
 };

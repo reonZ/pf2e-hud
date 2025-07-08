@@ -230,6 +230,7 @@
             },
             "tooltip": {
                 "altUse": {
+                    "skillAction": "Menu wariantów",
                     "toggle": "Wybierz opcję podrzędną"
                 },
                 "click": {

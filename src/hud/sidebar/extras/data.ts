@@ -33,6 +33,10 @@ class ExtraAction extends BaseStatisticAction<RawExtrasActionData, AbilityItemPF
         return this.data.notes;
     }
 
+    get hasVariants(): boolean {
+        return false;
+    }
+
     get variants(): Collection<MapVariant> {
         if (this.#variants !== undefined) {
             return this.#variants;

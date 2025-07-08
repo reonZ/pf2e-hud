@@ -12,6 +12,7 @@ import {
     warning,
 } from "module-helpers";
 import {
+    BaseShortcutSchema,
     BlastCostShortcut,
     ConsumableShortcut,
     ConsumableShortcutData,
@@ -23,11 +24,13 @@ import {
     ToggleShortcut,
     ToggleShortcutData,
 } from ".";
+import { SkillActionShortcut, SkillActionShortcutData } from ".";
 
 const SHORTCUTS = {
     blastCost: BlastCostShortcut,
     consumable: ConsumableShortcut,
     equipment: EquipmentShortcut,
+    skillAction: SkillActionShortcut,
     toggle: ToggleShortcut,
 } satisfies Record<string, ConstructorOf<PersistentShortcut>>;
 
@@ -53,8 +56,8 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         return getFlag(worldActor, "shortcuts", game.userId, this.#tab) ?? [];
     }
 
-    replace(slot: number, data: ShortcutData): boolean {
-        const shortcut = this.#instantiateShortcut(data, slot);
+    async replace(slot: number, data: ShortcutData): Promise<boolean> {
+        const shortcut = await this.#instantiateShortcut(data, slot);
         if (!shortcut) return false;
 
         this.shortcuts.set(slot, shortcut);
@@ -96,11 +99,11 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         const worldActor = this.worldActor;
         if (!worldActor) return;
 
-        const toSave: ShortcutData[] = [];
+        const toSave: SourceFromSchema<BaseShortcutSchema>[] = [];
 
         for (const [slot, shortcut] of this.shortcuts.entries()) {
             if (!shortcut) continue;
-            toSave[slot] = shortcut.toObject() as ShortcutData;
+            toSave[slot] = shortcut.toObject();
         }
 
         const updateKey = `shortcuts.${game.userId}.${this.#tab}`;
@@ -120,7 +123,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 
         for (let slot = 0; slot < this.nbSlots; slot++) {
             const data = shortcutsData[slot];
-            const shortcut = data ? this.#instantiateShortcut(data, slot) : undefined;
+            const shortcut = data ? await this.#instantiateShortcut(data, slot) : undefined;
 
             shortcuts[slot] = shortcut ?? { isEmpty: true };
 
@@ -173,7 +176,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             const slot = Number(target.dataset.slot);
             if (isNaN(slot) || slot < 0 || slot > this.nbSlots) return;
 
-            target.addEventListener("drop", (event) => {
+            target.addEventListener("drop", async (event) => {
                 if (isLocked(event)) return;
 
                 const dragData = getDragEventData<SidebarDragData | ShortcutDragData>(event);
@@ -187,9 +190,12 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                 }
 
                 if ("fromSidebar" in dragData && R.isPlainObject(dragData.fromSidebar)) {
-                    if (!this.replace(slot, dragData.fromSidebar)) {
+                    const replaced = await this.replace(slot, dragData.fromSidebar);
+
+                    if (!replaced) {
                         warning("shortcuts.error.wrongType");
                     }
+
                     return;
                 }
 
@@ -260,13 +266,17 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         }
     }
 
-    #instantiateShortcut(data: ShortcutData, slot: number): PersistentShortcut | undefined {
+    async #instantiateShortcut(
+        data: ShortcutData,
+        slot: number
+    ): Promise<PersistentShortcut | undefined> {
         const actor = this.actor;
         const ShortcutCls = SHORTCUTS[data.type as keyof typeof SHORTCUTS];
         if (!actor || !ShortcutCls) return;
 
         try {
-            const shortcut = new ShortcutCls(actor, data as any, slot);
+            const item = await ShortcutCls.getItem(actor, data as any);
+            const shortcut = new ShortcutCls(actor, data as any, item as any, slot);
             return shortcut.invalid ? undefined : shortcut;
         } catch (error) {
             MODULE.error(`An error occured while instantiating a shortcut in slot ${slot}`, error);
@@ -274,7 +284,11 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     }
 }
 
-type ShortcutData = ConsumableShortcutData | EquipmentShortcutData | ToggleShortcutData;
+type ShortcutData =
+    | ConsumableShortcutData
+    | EquipmentShortcutData
+    | SkillActionShortcutData
+    | ToggleShortcutData;
 
 type PersistentShortcutsContext = {
     dataset: (data: ShortcutDataset | undefined) => string;

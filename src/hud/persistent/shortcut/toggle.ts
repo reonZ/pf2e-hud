@@ -6,7 +6,12 @@ import {
     RollOptionToggle,
     Suboption,
 } from "module-helpers";
-import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut } from ".";
+import {
+    BaseShortcutSchema,
+    generateBaseShortcutFields,
+    PersistentShortcut,
+    ShortcutSource,
+} from ".";
 import fields = foundry.data.fields;
 
 function generateToggleShortcutFields(type: string): ToggleShortcutSchema {
@@ -36,10 +41,11 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
     constructor(
         actor: CreaturePF2e,
         data: DeepPartial<SourceFromSchema<ToggleShortcutSchema>>,
+        item: Maybe<ItemPF2e>,
         slot: number,
         options?: DataModelConstructionOptions<null>
     ) {
-        super(actor, data, slot, options);
+        super(actor, data, item, slot, options);
 
         this.#toggle = this.actor.synthetics.toggles[this.domain]?.[this.option] ?? null;
         this.#selected = this.#toggle?.suboptions.find((suboption) => suboption.selected);
@@ -49,7 +55,10 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
         return generateToggleShortcutFields("toggle");
     }
 
-    static getItem(actor: CreaturePF2e, { itemId }: ToggleShortcutData): Maybe<ItemPF2e> {
+    static async getItem(
+        actor: CreaturePF2e,
+        { itemId }: ToggleShortcutData
+    ): Promise<Maybe<ItemPF2e>> {
         return actor.items.get(itemId);
     }
 
@@ -103,13 +112,13 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
             : super.altUseLabel;
     }
 
-    use(event: Event): void {
+    use(event: MouseEvent): void {
         const toggle = this.toggle;
         if (!toggle || toggle.alwaysActive) return;
         this.actor.toggleRollOption(this.domain, this.option, !toggle.checked);
     }
 
-    altUse(event: Event): void {
+    altUse(event: MouseEvent): void {
         const toggle = this.toggle;
         const selected = this.selected;
 
@@ -137,7 +146,7 @@ type ToggleShortcutSchema = BaseShortcutSchema & {
     option: fields.StringField<string, string, true, false, false>;
 };
 
-type ToggleShortcutData = SourceFromSchema<ToggleShortcutSchema>;
+type ToggleShortcutData = ShortcutSource<ToggleShortcutSchema>;
 
 export { generateToggleShortcutFields, ToggleShortcut };
 export type { ToggleShortcutData, ToggleShortcutSchema };

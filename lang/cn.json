@@ -292,6 +292,9 @@
                 "wrongActor": "你只能为受控角色创建快捷栏选项。"
             },
             "tooltip": {
+                "altUse": {
+                    "skillAction": "菜单变体"
+                },
                 "click": {
                     "control": "[Ctrl+右键点击]",
                     "shift": "[Shift+右键点击] 移除快捷栏选项",

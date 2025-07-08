@@ -215,6 +215,11 @@
             "error": {
                 "wrongActor": "Vous ne pouvez créer des raccourcis qu'à partir du même acteur persistant.",
                 "wrongType": "Vous ne pouvez pas créer de raccourcis de ce type."
+            },
+            "tooltip": {
+                "altUse": {
+                    "skillAction": "Menu des variantes"
+                }
             }
         },
         "sidebar": {

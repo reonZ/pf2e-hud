@@ -10,9 +10,15 @@
     <input type="number" name="dc" value="{{dc}}" min="0" max="99">
 </div>
 {{/if}}
-{{#if (and (ne agile undefined) (ne map 0))}}
+{{#unless (isNullish map)}}
+<div class="form-group">
+    <strong>{{localize 'PF2E.MultipleAttackPenalty'}}</strong>
+    <select name="map" data-dtype="Number">
+        {{selectOptions maps selected=map}}
+    </select>
+</div>
 <div class="form-group">
     <strong>{{localize 'PF2E.TraitAgile'}}</strong>
     <input type="checkbox" name="agile" {{checked agile}}>
 </div>
-{{/if}}
+{{/unless}}

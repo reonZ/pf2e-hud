@@ -60,11 +60,16 @@
         padding: 0;
     }
 
+    select[name="map"] {
+        flex: 0;
+        width: fit-content;
+    }
+
     .form-footer {
         .drag-img {
             height: calc(1.25 * var(--input-height));
-            border-color: var(--color-light-5);
             border-radius: 4px;
+            border: 1px solid var(--color-text-secondary);
             cursor: pointer;
         }
     }

@@ -71,6 +71,10 @@ class SkillAction extends BaseStatisticAction<SkillActionData> {
         ));
     }
 
+    get hasVariants(): boolean {
+        return !!this.data.variants && !R.isPlainObject(this.data.variants);
+    }
+
     get variants(): SkillVariants {
         if (this.#variants !== undefined) {
             return this.#variants;
@@ -224,8 +228,12 @@ function getSkillActionGroups(): SkillActionGroups {
     return _cachedSkillActionGroups!;
 }
 
+function getSkillActionGroup(statistic: string): SkillActionGroup | undefined {
+    return getSkillActionGroups().get(statistic);
+}
+
 function getSkillAction(statistic: string, action: string): SkillAction | undefined {
-    return getSkillActionGroups().get(statistic)?.get(action);
+    return getSkillActionGroup(statistic)?.get(action);
 }
 
 function getLoreProficiency(actor: ActorPF2e, rank: Maybe<ZeroToFour>): SkillProficiency {
@@ -259,11 +267,19 @@ type ExtractedSkillActionData = ExtractReadonly<SkillAction>;
 
 MODULE.devExpose({ getSkillActionGroups, getSkillAction });
 
-export { getSkillAction, getSkillActionGroups, LoreSkill, prepareActionGroups, SkillActionGroups };
+export {
+    getSkillAction,
+    getSkillActionGroup,
+    getSkillActionGroups,
+    LoreSkill,
+    prepareActionGroups,
+    SkillActionGroups,
+};
 export type {
     ExtractedSkillActionData,
     ExtractedSkillActionGroupData,
     ISkill,
+    SkillAction,
     SkillProficiency,
     SkillVariants,
 };

@@ -1,7 +1,7 @@
 <div class="statistic-wrapper item-wrapper">
     <div class="item statistic{{#if isProficient}} proficient{{/if}}" data-item-uuid="{{sourceId}}"
-        data-statistic="{{statistic}}" {{#if (and isProficient (not
-        variants.size))}}draggable="true" {{/if}} data-filter-value="{{filterValue}}">
+        data-statistic="{{statistic}}" {{#if (and isProficient (not hasVariants))}}draggable="true"
+        {{/if}} data-filter-value="{{filterValue}}">
         <div class="name">
             <a data-action="item-description">
                 {{label}} {{{actionGlyph actionCost}}}
@@ -24,7 +24,8 @@
         {{#each variants as |variant|}}
         <div class="variant" data-filter-value="{{variant.filterValue}}"
             data-action="roll-statistic-action" data-statistic="{{../statistic}}"
-            data-key="{{../key}}" data-variant="{{variant.slug}}" draggable="true">
+            data-key="{{../key}}" data-variant="{{variant.slug}}" {{#unless variant.map
+            includeZero=true}} draggable="true" {{/unless}}>
             {{{variant.label}}}
         </div>
         {{/each}}

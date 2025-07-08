@@ -3,7 +3,6 @@ import {
     ActorPF2e,
     createHTMLElement,
     ErrorPF2e,
-    getItemSourceId,
     htmlClosest,
     IdentifyItemPopup,
     InventoryItem,

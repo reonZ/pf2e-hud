@@ -53,16 +53,17 @@ abstract class PersistentShortcut<
     #slot: number;
     #tooltip?: HTMLElement;
 
-    static getItem(
+    static async getItem(
         actor: CreaturePF2e,
-        data: SourceFromSchema<BaseShortcutSchema>
-    ): Maybe<ItemPF2e> {
+        data: ShortcutSource<BaseShortcutSchema>
+    ): Promise<Maybe<ItemPF2e>> {
         return null;
     }
 
     constructor(
         actor: CreaturePF2e,
         data: DeepPartial<SourceFromSchema<TSchema>>,
+        item: Maybe<ItemPF2e>,
         slot: number,
         options?: DataModelConstructionOptions<null>
     ) {
@@ -70,10 +71,7 @@ abstract class PersistentShortcut<
 
         this.#actor = actor;
         this.#slot = slot;
-        this.#item = (this.constructor as typeof PersistentShortcut).getItem(
-            actor,
-            data as SourceFromSchema<TSchema>
-        ) as Maybe<TItem>;
+        this.#item = item as Maybe<TItem>;
     }
 
     get actor(): CreaturePF2e {
@@ -90,6 +88,10 @@ abstract class PersistentShortcut<
 
     get dataset(): ShortcutDataset | null {
         return this.item ? { itemId: this.item.id } : null;
+    }
+
+    get inactive(): boolean {
+        return !this.item;
     }
 
     get canUse(): boolean {
@@ -142,9 +144,9 @@ abstract class PersistentShortcut<
         return (this.#element ??= document.getElementById(this.elementId));
     }
 
-    abstract use(event: Event): void;
+    abstract use(event: MouseEvent): void;
 
-    altUse(event: Event): void {
+    altUse(event: MouseEvent): void {
         this.item?.sheet.render(true);
     }
 
@@ -158,8 +160,8 @@ abstract class PersistentShortcut<
 
         const data: ShortcutTooltipData = {
             altUse: canAltUse ? this.altUseLabel : null,
-            hasItem: !!this.item,
             img: this.custom.img || this.usedImage,
+            inactive: this.inactive,
             reason: reason ? localize("shortcuts.tooltip.reason", reason) : null,
             subtitle: this.subtitle,
             title: this.custom.name || this.title,
@@ -217,8 +219,8 @@ interface PersistentShortcut<TSchema extends BaseShortcutSchema, TItem extends I
 
 type ShortcutTooltipData = {
     altUse: string | null;
-    hasItem: boolean;
     img: ImageFilePath;
+    inactive: boolean;
     reason: string | null;
     subtitle: string;
     title: string;
@@ -236,7 +238,9 @@ type BaseShortcutSchema = {
     type: fields.StringField<string, string, true, false, true>;
 };
 
-type ShortcutDataset = { itemId: string } | { sourceId: DocumentUUID };
+type ShortcutDataset = { itemId: string } | { itemUuid: DocumentUUID };
+
+type ShortcutSource<T extends BaseShortcutSchema> = Omit<SourceFromSchema<T>, "custom">;
 
 export { generateBaseShortcutFields, PersistentShortcut };
-export type { BaseShortcutSchema, ShortcutDataset };
+export type { BaseShortcutSchema, ShortcutDataset, ShortcutSource };

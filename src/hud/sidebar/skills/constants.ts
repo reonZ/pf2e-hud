@@ -1,4 +1,4 @@
-import { ActionCost } from "module-helpers";
+import { R } from "module-helpers";
 import { RawBaseActionData, StatisticType } from "..";
 
 const FOLLOW_THE_EXPERT = "Compendium.pf2e.actionspf2e.Item.tfa4Sh7wcxCEqL29";
@@ -484,17 +484,20 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
     },
 ];
 
+const STATISTIC_KEYS = RAW_STATISTICS.flatMap(({ actions }) => {
+    return actions.map((action) => {
+        return R.isString(action) ? action : action.key;
+    });
+});
+
 type SkillActionData = RawBaseActionData & {
     img?: ImageFilePath;
     label?: string;
     requireTrained?: boolean;
-    rollOptions?: string[];
     /** should this action be exlusive to one system */
     system?: "pf2e" | "sf2e";
     /** the item must be present on the actor to show up */
     useInstance?: boolean;
-    // object refers to map, array refers to actual variants
-    variants?: (string | { slug: string; label: string; cost?: ActionCost })[] | { agile: boolean };
 };
 
 type RawStatisticActionGroup = {
@@ -511,6 +514,7 @@ export {
     FOLLOW_THE_EXPERT_EFFECT,
     RAW_STATISTICS,
     SHARED_ACTIONS,
+    STATISTIC_KEYS,
     UNTRAINED_IMPROVISATION,
 };
 export type { SkillActionData };

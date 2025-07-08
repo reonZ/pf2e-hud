@@ -71,7 +71,7 @@ abstract class ItemShortcut<
         return game.i18n.localize(`TYPES.Item.${this.item?.type ?? this.type}`);
     }
 
-    use(event: Event): void {
+    use(event: MouseEvent): void {
         const item = this.item;
 
         if (item?.isOfType("consumable", "equipment")) {

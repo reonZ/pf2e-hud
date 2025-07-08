@@ -246,6 +246,7 @@
             },
             "tooltip": {
                 "altUse": {
+                    "skillAction": "Variants Menu",
                     "toggle": "Select SubOption"
                 },
                 "click": {

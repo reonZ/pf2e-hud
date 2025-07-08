@@ -507,7 +507,7 @@ abstract class SidebarPF2eHUD<
         if (!sidebarItem) return;
 
         createDraggable<SidebarDragData>(event, sidebarItem.img, this.actor, sidebarItem.item, {
-            fromSidebar: sidebarItem.toShortcut(),
+            fromSidebar: sidebarItem.toShortcut(event),
         });
     }
 

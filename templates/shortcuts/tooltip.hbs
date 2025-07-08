@@ -9,13 +9,13 @@
 </div>
 {{/if}}
 <div class="details right">
-    {{#if hasItem}}
+    {{#unless inactive}}
     {{#if altUse}}
     <div>{{@root.i18n.root 'rightClick'}} {{altUse}}</div>
     <div>{{@root.i18n 'click.control'}} {{@root.i18n 'click.popup'}}</div>
     {{else}}
     <div>{{@root.i18n.root 'rightClick'}} {{@root.i18n 'click.popup'}}</div>
     {{/if}}
-    {{/if}}
+    {{/unless}}
     <div>{{@root.i18n 'click.middle'}}</div>
 </div>
