@@ -180,7 +180,7 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
             "decipher-writing",
             "disable-device",
         ],
-        system: "sf2e",
+        sf2e: true,
     },
     {
         statistic: "crafting",
@@ -392,7 +392,7 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
                 sourceId: "Compendium.starfinder-field-test-for-pf2e.actions.Item.9Msf0P33UR5mNRuz",
             },
         ],
-        system: "sf2e",
+        sf2e: true,
     },
     {
         statistic: "religion",
@@ -511,8 +511,7 @@ type SkillActionData = RawBaseActionData & {
     img?: ImageFilePath;
     label?: string;
     requireTrained?: boolean;
-    /** should this action be exlusive to one system */
-    system?: "pf2e" | "sf2e";
+    sf2e?: boolean;
     /** the item must be present on the actor to show up */
     useInstance?: boolean;
 };
@@ -520,7 +519,7 @@ type SkillActionData = RawBaseActionData & {
 type RawStatisticActionGroup = {
     actions: (SkillActionData | SharedActionKey)[];
     statistic: StatisticType;
-    system?: "pf2e" | "sf2e";
+    sf2e?: boolean;
 };
 
 type SharedActionKey = keyof typeof SHARED_ACTIONS;

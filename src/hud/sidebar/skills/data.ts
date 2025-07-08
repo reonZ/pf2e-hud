@@ -3,6 +3,7 @@ import {
     AbilityItemPF2e,
     ActorPF2e,
     FeatPF2e,
+    getActiveModule,
     gettersToData,
     localizeIfExist,
     LorePF2e,
@@ -43,7 +44,7 @@ class SkillAction extends BaseStatisticAction<SkillActionData> {
     }
 
     get system(): "pf2e" | "sf2e" {
-        return this.data.system ?? "pf2e";
+        return this.data.sf2e ? "sf2e" : "pf2e";
     }
 
     get systemPrefix(): string {
@@ -199,15 +200,20 @@ let _cachedSkillActionGroups: SkillActionGroups | undefined;
 async function prepareActionGroups() {
     if (_cachedSkillActionGroups) return;
 
-    const currentSystem = game.system.id;
+    const isSf2e = !!getActiveModule("starfinder-field-test-for-pf2e");
     const skillActionGroups: SkillActionGroup[] = [];
 
-    for (const { actions, statistic, system } of RAW_STATISTICS) {
-        if (system && system !== currentSystem) continue;
+    for (const { actions, statistic, sf2e } of RAW_STATISTICS) {
+        if (sf2e && !isSf2e) continue;
 
         const actionsPromise = actions.map(async (action) => {
-            const data = R.isString(action) ? { ...SHARED_ACTIONS[action], key: action } : action;
-            if (data.system && data.system !== currentSystem) return;
+            const isShared = R.isString(action);
+            const data = isShared ? { ...SHARED_ACTIONS[action], key: action } : action;
+
+            // we automatically set the sf2e flag
+            if (sf2e && !isShared) {
+                data.sf2e = true;
+            }
 
             const sourceItem = await fromUuid<FeatPF2e | AbilityItemPF2e>(data.sourceId);
             if (!(sourceItem instanceof Item)) return;
