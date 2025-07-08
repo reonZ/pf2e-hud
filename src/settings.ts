@@ -74,8 +74,11 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
         default: false,
         scope: "user",
         config: false,
-        onChange: () => {
-            SidebarPF2eHUD.refresh();
+        onChange: (value) => {
+            if (SidebarPF2eHUD.current === "skills") {
+                SidebarPF2eHUD.refresh();
+                SidebarPF2eHUD.refresh();
+            }
         },
     });
 
