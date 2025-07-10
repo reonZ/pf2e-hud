@@ -31,6 +31,7 @@
     -   fix `SF2e` skill actions not showing when using the `Starfinder 2nd Edition Playtest for PF2e` module
 -   `Spell Shortcuts`:
     -   the module will now attempt to find matching spells for `scroll`, `wand`, `staff` and `animist` spell shortcuts, so everything that is wiped out and re-add during rest will still be usable
+-   `Spell Sidebar`:
     -   fix variable spell action cost not being displayed
 
 # 2.11.0
