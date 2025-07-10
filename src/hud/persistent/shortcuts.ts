@@ -2,6 +2,7 @@ import { createDraggable, FoundryDragData, ShortcutPopup, SidebarDragData } from
 import {
     ApplicationRenderContext,
     ApplicationRenderOptions,
+    CreaturePF2e,
     dataToDatasetString,
     getDragEventData,
     getFlag,
@@ -9,6 +10,7 @@ import {
     OneToTen,
     R,
     render,
+    SpellCollection,
     updateFlag,
     warning,
 } from "module-helpers";
@@ -365,7 +367,8 @@ R.pathOr;
 
 type ShortcutCacheData = {
     canCastStaffRank?: Partial<Record<OneToTen, boolean>>;
-    animistData?: dailies.AnimistVesselsData | null;
+    animistCollection?: SpellCollection<CreaturePF2e> | null;
+    animistVesselsData?: dailies.AnimistVesselsData | null;
     spellcasting?: Record<string, SpellEntryData | null>;
 };
 

@@ -135,7 +135,12 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
             const collection: Maybe<SpellCollection<CreaturePF2e>> =
                 data.category === "focus"
                     ? getAnimistVesselsData(cached, actor)?.entry.spells
-                    : actor.spellcasting.collections.find(({ entry }) => isAnimistEntry(entry));
+                    : cached("animistCollection", () => {
+                          const entry = actor.spellcasting.collections.find(({ entry }) => {
+                              return isAnimistEntry(entry);
+                          });
+                          return entry ?? null;
+                      });
 
             if (!collection) return;
 
@@ -349,7 +354,7 @@ function getAnimistVesselsData(
     cached: ShortcutCache,
     actor: CreaturePF2e
 ): dailies.AnimistVesselsData | null {
-    return cached("animistData", () => {
+    return cached("animistVesselsData", () => {
         if (!actor.isOfType("character") || !game.dailies?.active) return null;
         return game.dailies.api.getAnimistVesselsData(actor) ?? null;
     });
