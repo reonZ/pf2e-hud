@@ -1,3 +1,37 @@
+# 2.12.0
+
+-   this release implements the `Skill Action`, `Spell` and `Elemental Blast Cost` shortcuts
+-   the variants menu for skill actions now contains a MAP select to change it directly (useful for shortcuts)
+-   `Actions Sidebar`:
+    -   fix strikes originating from the same item always pointing to the last one
+-   `Equipment Shortcuts`:
+    -   now display quantity if more than 1
+-   `Item Popup`:
+    -   fix not being able to send-to-chat skill actions
+-   `Persistent HUD`:
+    -   refresh the hud when the associated linked-actor or unlinked-token is deleted
+-   `Persistent Shortcuts`:
+    -   add icons for each shortcut category
+    -   now display uses/quantity in the tooltip
+    -   you can now rearrange shortcuts by dragging them from one slot to another (shortcuts are swapped)
+    -   shortcuts slots are no longer modifiable when the hotbar is locked
+    -   shortcuts that don't have an active `[Right-Click]` usage now default to opening the now renamed `Shortcut Popup` (previously `Item Popup`)
+        -   the `[Ctrl-Right-Click]` will only be displayed if the `[Right-Click]` has an active
+        -   the popup has as `Customize Shortcut` button in its header where you can change the shortcut's name and image
+-   `RollOption Shortcuts`:
+    -   always display the checkbox icon even on always-enabled rolloptions to improve first-glance recognition of toggle shortcuts (the checkbox serves as icon equivalent)
+-   `Skill Action Shortcuts`:
+    -   `[Right-Click]` opens the variants menu
+    -   skill action relying on MAP no longer snapshot the map value, which means that:
+        -   you no longer drag the variant but the root action from the sidebar
+        -   you no longer need to create multiple shortcuts for each MAP variant as the variants menu now contains it
+-   `Skills Sidebar`:
+    -   no longer display the `Hide Untrained` for NPCs
+    -   fix `SF2e` skill actions not showing when using the `Starfinder 2nd Edition Playtest for PF2e` module
+-   `Spell Shortcuts`:
+    -   the module will now attempt to find matching spells for `scroll`, `wand`, `staff` and `animist` spell shortcuts, so everything that is wiped out and re-add during rest will still be usable
+    -   fix variable spell action cost not being displayed
+
 # 2.11.0
 
 -   this release implements the `RollOption` shortcuts
@@ -9,7 +43,7 @@
     -   convert `[Shift-Right-Click]` into `[Middle-Click]` to remove shortcuts
         -   it is actually an `auxiliary` event under the hood and any non-standard mouse click will trigger it
 -   `RollOption Shortcuts`:
-    -   the module no longer snapshots the current suboption when draggin and creating a rolloption shortcut
+    -   the module no longer snapshots the current suboption when dragging and creating a rolloption shortcut
     -   `[Click]` enable/disable the rolloption, does nothing if it is an always-enabled rolloption
     -   if a rolloption has at least 2 suboptions, the shortcut `[Right-Click]` will offer a select menu to pick one
 -   `Spells Sidebar`:
