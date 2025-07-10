@@ -1,7 +1,17 @@
 <div class="header{{#if reason}} greyed{{/if}}">
-    <div class="image" style="background-image: url({{img}});"></div>
-    <div class="title">{{title}}</div>
-    <div class="subtitle">{{subtitle}}</div>
+    <div class="image" style="background-image: url({{img}});">
+        {{!-- uses --}}
+        {{#if uses}}
+        <div class="uses">
+            <span>{{uses.value}}</span>
+            {{#if uses.max}}
+            / <span>{{uses.max}}</span>
+            {{/if}}
+        </div>
+        {{/if}}
+    </div>
+    <div class="title">{{{title}}}</div>
+    <div class="subtitle">{{{subtitle}}}</div>
 </div>
 {{#if reason}}
 <div class="details left">

@@ -5,38 +5,37 @@ class ConsumableShortcut extends ItemShortcut<
     ConsumableShortcutSchema,
     ConsumablePF2e<CreaturePF2e>
 > {
-    #uses?: number | null;
+    #uses?: ValueAndMaybeMax;
 
     static defineSchema(): ConsumableShortcutSchema {
         return generateItemShortcutFields("consumable");
     }
 
     get canUse(): boolean {
-        return super.canUse && this.counter.value > 0;
+        return super.canUse && this.uses.value > 0;
     }
 
     get greyed(): boolean {
-        return this.counter.value < 1;
+        return this.uses.value < 1;
     }
 
-    get uses(): number | null {
-        if (this.#uses !== undefined) {
+    get uses(): ValueAndMaybeMax {
+        if (this.#uses) {
             return this.#uses;
         }
 
         const item = this.item;
-        return (this.#uses =
+
+        const uses =
             item?.uses.max && (item.uses.max > 1 || item.category === "wand")
-                ? item.uses.value
-                : null);
+                ? item.uses
+                : undefined;
+
+        return (this.#uses = uses ?? { value: this.quantity });
     }
 
     get icon(): string {
         return "fa-regular fa-flask-round-potion";
-    }
-
-    get counter(): ValueAndMaybeMax {
-        return { value: this.uses ?? this.quantity };
     }
 
     get unusableReason(): string | undefined {
@@ -48,7 +47,7 @@ class ConsumableShortcut extends ItemShortcut<
             ? this.quantity < 1
                 ? "quantity"
                 : undefined
-            : this.uses < 1
+            : this.uses.value < 1
             ? "uses"
             : undefined;
     }

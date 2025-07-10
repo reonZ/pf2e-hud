@@ -2,13 +2,16 @@ import { CustomSpellcastingEntry, isAnimistEntry, SPELL_CATEGORIES, SpellCategor
 import {
     BaseSpellcastingEntry,
     CharacterPF2e,
+    ConsumablePF2e,
     CreaturePF2e,
     IdField,
+    localize,
     OneToTen,
     R,
     SpellCollection,
     SpellPF2e,
     ValueAndMax,
+    ValueAndMaybeMax,
     ZeroToTen,
 } from "module-helpers";
 import {
@@ -16,7 +19,10 @@ import {
     generateBaseShortcutFields,
     getItemSlug,
     PersistentShortcut,
+    ROMAN_RANKS,
+    RomanRank,
     ShortcutCache,
+    ShortcutCost,
     ShortcutSource,
 } from "..";
 import fields = foundry.data.fields;
@@ -33,8 +39,9 @@ class SpellcastingEntryIdField<
 }
 
 class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<CreaturePF2e>> {
-    #disabled!: [boolean, reason: string | undefined];
-    #entryData!: SpellEntryData | null;
+    #disabled: [boolean, reason: string | undefined] = [false, undefined];
+    #entryData?: SpellEntryData | null;
+    #uses?: ValueAndMaybeMax;
 
     static defineSchema(): SpellShortcutSchema {
         return {
@@ -190,6 +197,11 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
                 ? spell.system.location.uses
                 : groupUses;
 
+        this.#uses =
+            entryData.consumable && entryData.consumable.quantity > 1
+                ? { value: entryData.consumable.quantity }
+                : uses;
+
         if (isCantrip) {
             return returnDisabled(false, "");
         }
@@ -250,6 +262,35 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         return SPELL_CATEGORIES[this.category]?.icon ?? null;
     }
 
+    get cost(): ShortcutCost | null {
+        const value = this.item ? this.item.system.time.value : null;
+        return R.isNonNullish(value) ? { value, combo: isNaN(Number(value)) } : null;
+    }
+
+    get uses(): ValueAndMaybeMax | null {
+        return this.#uses ?? null;
+    }
+
+    get romanRank(): RomanRank {
+        return ROMAN_RANKS[this.castRank];
+    }
+
+    get rank(): { value: string } {
+        return { value: this.romanRank };
+    }
+
+    get title(): string {
+        return `${this.romanRank} - ${this.item?.name ?? this.name}`;
+    }
+
+    get subtitle(): string {
+        const label =
+            this.spellcastinEntry?.name ?? localize("shortcuts.tooltip.subtitle", this.type);
+        const cost = this.item && `<span class="action-glyph">${this.item.actionGlyph}</span>`;
+
+        return cost ? `${cost} ${label}` : label;
+    }
+
     use(event: MouseEvent): void {
         const item = this.item;
         if (!item?.isOfType("spell")) return;
@@ -278,18 +319,14 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         const isFlexible = !!entrySheetData.isFlexible;
         const isStaff = !!entrySheetData.isStaff;
 
-        // const item = entrySheetData.isEphemeral
-        //     ? actor.items.get<ConsumablePF2e<CreaturePF2e>>(entryId.split("-")[0])
-        //     : undefined;
-
-        // const [categoryType, consumable] =
-        //     isConsumable && item
-        //         ? [item.category, item]
-        //         : [isFlexible ? "flexible" : isStaff ? "staff" : entry.category, undefined];
+        const consumable =
+            isConsumable && this.category === "scroll"
+                ? actor.items.get<ConsumablePF2e<CreaturePF2e>>(entryId.split("-")[0])
+                : undefined;
 
         const data: SpellEntryData = {
             collection,
-            // consumable,
+            consumable,
             groups: entrySheetData.groups,
             isCharges: entrySheetData.category === "charges",
             isConsumable,
@@ -322,7 +359,7 @@ interface SpellShortcut extends ModelPropsFromSchema<SpellShortcutSchema> {}
 
 type SpellEntryData = {
     collection: SpellCollection<CreaturePF2e>;
-    // consumable: ConsumablePF2e<CreaturePF2e> | undefined;
+    consumable: ConsumablePF2e<CreaturePF2e> | undefined;
     isCharges: boolean;
     isConsumable: boolean;
     isFlexible: boolean;

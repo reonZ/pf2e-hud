@@ -25,4 +25,5 @@ function getConsumableRank(item: Maybe<ConsumablePF2e>, roman?: boolean) {
 
 type RomanRank = (typeof ROMAN_RANKS)[number];
 
-export { getItemSlug };
+export { getItemSlug, ROMAN_RANKS };
+export type { RomanRank };

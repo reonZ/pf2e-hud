@@ -114,6 +114,10 @@ abstract class PersistentShortcut<
         return this.item?.img ?? this.img;
     }
 
+    get rank(): { value: string } | null {
+        return null;
+    }
+
     get icon(): string | null {
         return null;
     }
@@ -122,7 +126,7 @@ abstract class PersistentShortcut<
         return null;
     }
 
-    get counter(): ValueAndMaybeMax | null {
+    get uses(): ValueAndMaybeMax | null {
         return null;
     }
 
@@ -179,6 +183,7 @@ abstract class PersistentShortcut<
             reason: reason ? localize("shortcuts.tooltip.reason", reason) : null,
             subtitle: this.subtitle,
             title: this.custom.name || this.title,
+            uses: this.uses,
         };
 
         return (this.#tooltip = createHTMLElement("div", {
@@ -238,6 +243,12 @@ type ShortcutTooltipData = {
     reason: string | null;
     subtitle: string;
     title: string;
+    uses: ValueAndMaybeMax | null;
+};
+
+type ShortcutCost = {
+    value: string | number;
+    combo: boolean;
 };
 
 type ShortcutCustomSchema = {
@@ -257,4 +268,4 @@ type ShortcutDataset = { itemId: string } | { itemUuid: DocumentUUID };
 type ShortcutSource<T extends BaseShortcutSchema> = Omit<SourceFromSchema<T>, "custom">;
 
 export { generateBaseShortcutFields, PersistentShortcut };
-export type { BaseShortcutSchema, ShortcutDataset, ShortcutSource };
+export type { BaseShortcutSchema, ShortcutCost, ShortcutDataset, ShortcutSource };
