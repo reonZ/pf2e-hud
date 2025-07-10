@@ -100,6 +100,8 @@
         }
 
         .radial-panel {
+            --padding: 0.2em 0.5em;
+
             z-index: 100;
             pointer-events: all;
             position: absolute;
@@ -110,39 +112,50 @@
             border: var(--outer-border);
             border-radius: var(--outer-border-radius);
             box-shadow: var(--outer-box-shadow);
-            display: flex;
-            flex-direction: column;
-            padding-bottom: 0.3em;
-            gap: 0.1em;
+            padding-bottom: 1px;
+            display: grid;
+            grid-template-columns: repeat(var(--columns), 1fr);
+            cursor: default;
 
             header {
-                border-top: none;
-
-                .name {
-                    padding-inline: 1em;
-                    font-size: 1.2em;
-                }
+                border: 0;
+                border-bottom: var(--header-border);
+                padding: var(--padding);
+                grid-column: 1 / -1;
+                text-align: center;
+                font-size: 1.1em;
+                font-weight: 500;
             }
 
             .options {
-                padding-inline: 1.75em 0.5em;
-                margin: 0;
-                display: grid;
-                column-gap: 2em;
-                grid-template-columns: auto;
+                display: flex;
+                flex-direction: column;
 
-                .radial-option {
-                    &:hover {
-                        span {
-                            color: var(--color-accent);
+                .option {
+                    padding: var(--padding);
+                    text-align: center;
+
+                    &:not(:last-child) {
+                        border-bottom: var(--header-border);
+                    }
+
+                    &:not(.selected) {
+                        cursor: pointer;
+
+                        &:hover {
+                            background: #ffffff12;
+                            color: white;
                         }
                     }
 
                     &.selected {
-                        span {
-                            color: var(--color-active);
-                        }
+                        background: #75000033;
+                        color: #efb3b3;
                     }
+                }
+
+                + .options {
+                    border-left: var(--header-border);
                 }
             }
         }

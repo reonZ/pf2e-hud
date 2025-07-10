@@ -1,9 +1,9 @@
 import {
-    addListenerAll,
     createHTMLElement,
     CreaturePF2e,
     ItemPF2e,
     localize,
+    R,
     render,
     ValueAndMaybeMax,
 } from "module-helpers";
@@ -194,7 +194,7 @@ abstract class PersistentShortcut<
 
     async radialMenu<T extends string>(
         title: string,
-        options: { value: T; label: string; selected: boolean }[],
+        sections: (ShortcutRadialSection | ShortcutRadialOption[])[],
         onSelect: (value: T) => void
     ) {
         const element = this.element;
@@ -209,9 +209,13 @@ abstract class PersistentShortcut<
             classes: ["radial-panel"],
             content: await render("shortcuts/radial", {
                 title: this.custom.name || this.title,
-                options,
+                sections: sections.map((section): ShortcutRadialSection => {
+                    return R.isArray(section) ? { title: undefined, options: section } : section;
+                }),
             }),
         });
+
+        radial.style.setProperty("--columns", String(sections.length));
 
         element.appendChild(radial);
 
@@ -219,12 +223,29 @@ abstract class PersistentShortcut<
             radial.remove();
         };
 
-        addListenerAll(radial, ".radial-option", (el, event) => {
+        radial.addEventListener("click", (event) => {
             event.preventDefault();
             event.stopPropagation();
 
+            const target = event.target;
+
             removeRadial();
-            onSelect(el.dataset.value as T);
+
+            if (
+                target instanceof HTMLElement &&
+                target.classList.contains("option") &&
+                !target.classList.contains("selected")
+            ) {
+                onSelect(target.dataset.value as T);
+            }
+        });
+
+        radial.addEventListener("contextmenu", (event) => {
+            event.stopPropagation();
+        });
+
+        radial.addEventListener("auxclick", (event) => {
+            event.stopPropagation();
         });
 
         radial.addEventListener("mouseleave", removeRadial);
@@ -235,6 +256,17 @@ abstract class PersistentShortcut<
 
 interface PersistentShortcut<TSchema extends BaseShortcutSchema, TItem extends ItemPF2e>
     extends ModelPropsFromSchema<BaseShortcutSchema> {}
+
+type ShortcutRadialSection = {
+    title: string | undefined;
+    options: ShortcutRadialOption[];
+};
+
+type ShortcutRadialOption = {
+    value: string;
+    label: string;
+    selected?: boolean;
+};
 
 type ShortcutTooltipData = {
     altUse: string | null;

@@ -121,7 +121,7 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
             return super.altUse(event);
         }
 
-        this.radialMenu(this.title, toggle.suboptions, (value) => {
+        this.radialMenu(this.title, [toggle.suboptions], (value) => {
             this.actor.toggleRollOption(
                 this.domain,
                 this.option,

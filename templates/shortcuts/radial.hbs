@@ -1,12 +1,15 @@
 <header>
-    <div class="name">
-        {{localize title}}
-    </div>
+    {{localize title}}
 </header>
-<ul class="options">
-    {{#each options as |option|}}
-    <li class="radial-option{{#if option.selected}} selected{{/if}}" data-value="{{option.value}}">
-        <span>{{localize option.label}}</span>
-    </li>
+{{#each sections as |section|}}
+{{#if section.header}}
+<div class="title">{{section.header}}</div>
+{{/if}}
+<div class="options">
+    {{#each section.options as |option|}}
+    <div class="option{{#if option.selected}} selected{{/if}}" data-value="{{option.value}}">
+        {{localize option.label}}
+    </div>
     {{/each}}
-</ul>
+</div>
+{{/each}}
