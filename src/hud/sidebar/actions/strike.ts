@@ -42,12 +42,16 @@ class ActionsSidebarStrike extends BaseSidebarItem<
         return this.item.actor;
     }
 
-    get category() {
+    get category(): StrikeActionCategory | undefined {
         const actor = this.actor;
         return actor.isOfType("character") ? getActionCategory(actor, this.item) : undefined;
     }
 
-    get formula() {
+    get index(): number | undefined {
+        return this.#options.index;
+    }
+
+    get formula(): StrikeFormulas {
         return this.#formula;
     }
 
@@ -132,25 +136,25 @@ async function getSidebarStrikeData(
     this: ActionsSidebarPF2eHUD
 ): Promise<StrikesContext | undefined> {
     const actor = this.actor;
-    const strikeActions = getStrikeActions(actor).filter((strike) => {
-        return !("visible" in strike) || strike.visible !== false;
+
+    const strikesPromise = getStrikeActions(actor).map(async (strike, index) => {
+        if ("visible" in strike && strike.visible === false) return;
+
+        const strikeFormula = await getFormula(strike);
+
+        const altStrikes = await Promise.all(
+            (strike.altUsages ?? [])?.map(async (usage) => {
+                const usageFormula = await getFormula(usage);
+                return new ActionsSidebarStrike(usage, usageFormula, { isAltUsage: true });
+            })
+        );
+
+        const strikeKey = `${strike.item.id}-${index}`;
+        const args: ActionsSidebarStrikeArgs = [strike, strikeFormula, { altStrikes, index }];
+        return this.addSidebarItem(ActionsSidebarStrike, strikeKey, args[0], args[1], args[2]);
     });
 
-    const strikes = await Promise.all(
-        strikeActions.map(async (strike) => {
-            const strikeFormula = await getFormula(strike);
-
-            const altStrikes = await Promise.all(
-                (strike.altUsages ?? [])?.map(async (usage) => {
-                    const usageFormula = await getFormula(usage);
-                    return new ActionsSidebarStrike(usage, usageFormula, { isAltUsage: true });
-                })
-            );
-
-            const args: ActionsSidebarStrikeArgs = [strike, strikeFormula, { altStrikes }];
-            return this.addSidebarItem(ActionsSidebarStrike, "id", args[0], args[1], args[2]);
-        })
-    );
+    const strikes = R.filter(await Promise.all(strikesPromise), R.isTruthy);
 
     const isCharacter = actor.isOfType("character");
     if (!strikes.length && !isCharacter) return;
@@ -334,6 +338,7 @@ type StrikeFormulas = {
 
 type ActionsSidebarStrikeOptions = {
     altStrikes?: ActionsSidebarStrike[];
+    index?: number;
     isAltUsage?: boolean;
 };
 

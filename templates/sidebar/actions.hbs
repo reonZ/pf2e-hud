@@ -80,7 +80,7 @@
 {{/if}}
 {{#each strikes.actions as |strike|}}
 <div class="item attack{{#if strike.ready}} ready{{/if}}" data-item-id="{{strike.id}}"
-    data-filter-value="{{strike.filterValue}}" draggable="true">
+    data-index="{{strike.index}}" data-filter-value="{{strike.filterValue}}" draggable="true">
     {{!-- name --}}
     <div class="name">
         <a data-action="item-description">{{strike.label}}</a>

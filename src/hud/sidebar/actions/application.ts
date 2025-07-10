@@ -42,6 +42,10 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
         this.#onCombatant.bind(this)
     );
 
+    getSidebarItemKey({ itemId, index }: DOMStringMap): string | undefined {
+        return itemId && index ? `${itemId}-${index}` : itemId;
+    }
+
     get name(): "actions" {
         return "actions";
     }
