@@ -35,21 +35,8 @@ function generateToggleShortcutFields(type: string): ToggleShortcutSchema {
 }
 
 class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> {
-    #toggle: RollOptionToggle | null;
-    #selected: Suboption | undefined;
-
-    constructor(
-        actor: CreaturePF2e,
-        data: DeepPartial<SourceFromSchema<ToggleShortcutSchema>>,
-        item: Maybe<ItemPF2e>,
-        slot: number,
-        options?: DataModelConstructionOptions<null>
-    ) {
-        super(actor, data, item, slot, options);
-
-        this.#toggle = this.actor.synthetics.toggles[this.domain]?.[this.option] ?? null;
-        this.#selected = this.#toggle?.suboptions.find((suboption) => suboption.selected);
-    }
+    #toggle?: RollOptionToggle;
+    #selected?: Suboption;
 
     static defineSchema(): ToggleShortcutSchema {
         return generateToggleShortcutFields("toggle");
@@ -62,8 +49,8 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
         return actor.items.get(itemId);
     }
 
-    get toggle(): RollOptionToggle | null {
-        return this.#toggle;
+    get toggle(): RollOptionToggle | undefined {
+        return (this.#toggle ??= this.actor.synthetics.toggles[this.domain]?.[this.option]);
     }
 
     get title(): string {
@@ -71,7 +58,9 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
     }
 
     get selected(): Suboption | undefined {
-        return this.#selected;
+        return (this.#selected ??= this.#toggle?.suboptions.find(
+            (suboption) => suboption.selected
+        ));
     }
 
     get subtitle(): string {
