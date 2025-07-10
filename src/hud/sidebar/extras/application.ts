@@ -78,10 +78,17 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e, ExtrasSidebar
     }
 
     protected async _onClickAction(event: PointerEvent, target: HTMLElement) {
-        if (event.button !== 0) return;
-
         const actor = this.actor;
         const action = target.dataset.action as EventAction;
+
+        if (action === "roll-statistic-action") {
+            const { variant } = target.dataset as Record<string, string>;
+            if (!variant && event.button !== 0) return;
+
+            return this.getSidebarItemFromElement(target)?.roll(actor, event, { variant });
+        }
+
+        if (event.button !== 0) return;
 
         const getMacroUuid = () => {
             return htmlClosest(target, ".macro")?.dataset.uuid ?? "";
@@ -104,9 +111,6 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e, ExtrasSidebar
         } else if (action === "roll-initiative") {
             const statistic = htmlQueryIn(target, ".initiative", "select")?.value;
             rollInitiative(event, actor, statistic);
-        } else if (action === "roll-statistic-action") {
-            const { variant } = target.dataset as Record<string, string>;
-            this.getSidebarItemFromElement(target)?.roll(actor, event, { variant });
         } else if (action === "use-macro") {
             const macro = await getMacro();
             macro?.execute({ actor });

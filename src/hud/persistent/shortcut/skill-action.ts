@@ -1,4 +1,5 @@
 import {
+    BaseStatisticRollOptions,
     getSkillAction,
     getSkillActionGroup,
     getSkillKeys,
@@ -52,18 +53,18 @@ class SkillActionShortcut extends StatisticActionShortcut<SkillAction, FeatPF2e 
     }
 
     get altUseLabel(): string {
-        return localize("shortcuts.tooltip.altUse", this.type);
+        return localize("shortcuts.tooltip.altUse.skillAction");
     }
 
     get icon(): string {
         return SIDEBAR_ICONS.skills;
     }
 
-    use(event: MouseEvent): void {
-        this.action?.roll(this.actor, event, {
+    get useOptions(): BaseStatisticRollOptions {
+        return {
             variant: this.variant,
             ...this.override,
-        });
+        };
     }
 }
 

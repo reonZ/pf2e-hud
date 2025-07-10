@@ -1,5 +1,5 @@
-import { AbilityItemPF2e, ActionCost } from "module-helpers";
-import { RawBaseActionData } from "..";
+import { ActionCost } from "module-helpers";
+import { RawBaseActionData, SingleCheckActionRollNoteData } from "..";
 
 const RAW_EXTRAS_ACTIONS = [
     {
@@ -22,14 +22,14 @@ const RAW_EXTRAS_ACTIONS = [
     {
         key: "escape",
         actionCost: 1,
-        map: true,
         sourceId: "Compendium.pf2e.actionspf2e.Item.SkZAQRkLLkmBQNB9",
+        variants: { agile: false },
     },
     {
         key: "earnIncome",
         sourceId: "Compendium.pf2e.actionspf2e.Item.QyzlsLrqM0EEwd7j",
     },
-] as const satisfies RawExtrasActionData[];
+] as const satisfies ExtrasActionData[];
 
 const EXTRAS_KEYS = RAW_EXTRAS_ACTIONS.map(({ key }) => key);
 
@@ -37,17 +37,13 @@ function getExtraKeys(): string[] {
     return EXTRAS_KEYS.slice();
 }
 
-type RawExtrasActionData = RawBaseActionData & {
+type ExtrasActionData = RawBaseActionData & {
     actionCost?: ActionCost["value"] | ActionCost["type"];
-    map?: boolean;
+    notes?: SingleCheckActionRollNoteData[];
     sourceId: CompendiumItemUUID;
-};
-
-type ExtraActionData = RawExtrasActionData & {
-    item: AbilityItemPF2e;
 };
 
 type ExtraActionKey = (typeof RAW_EXTRAS_ACTIONS)[number]["key"];
 
 export { getExtraKeys, RAW_EXTRAS_ACTIONS };
-export type { ExtraActionData, ExtraActionKey, RawExtrasActionData };
+export type { ExtraActionKey, ExtrasActionData };

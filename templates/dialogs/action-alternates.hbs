@@ -1,9 +1,11 @@
+{{#if statistics.length}}
 <div class="form-group">
     <strong>{{@root.i18n 'statistic'}}</strong>
     <select name="statistic">
         {{selectOptions statistics selected=statistic }}
     </select>
 </div>
+{{/if}}
 {{#if dc}}
 <div class="form-group">
     <strong>{{@root.i18n 'dc'}}</strong>

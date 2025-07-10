@@ -1,17 +1,11 @@
-import { FilterValue } from "hud/shared";
+import { FilterValue } from "hud";
 import { AbilityItemPF2e, ActorPF2e, MODULE } from "module-helpers";
-import { RAW_EXTRAS_ACTIONS, RawExtrasActionData, rollRecallKnowledge } from ".";
-import {
-    BaseStatisticAction,
-    BaseStatisticRollOptions,
-    createMapsVariantsCollection,
-    MapVariant,
-} from "..";
+import { ExtrasActionData, RAW_EXTRAS_ACTIONS, rollRecallKnowledge } from ".";
+import { BaseStatisticAction, BaseStatisticRollOptions } from "..";
 
-class ExtraAction extends BaseStatisticAction<RawExtrasActionData, AbilityItemPF2e> {
+class ExtraAction extends BaseStatisticAction<ExtrasActionData, AbilityItemPF2e> {
     #filterValue?: FilterValue;
     #label?: string;
-    #variants?: Collection<MapVariant>;
 
     get label(): string {
         return (this.#label ??= game.i18n.localize(`PF2E.Actions.${this.actionKey}.Title`));
@@ -23,22 +17,6 @@ class ExtraAction extends BaseStatisticAction<RawExtrasActionData, AbilityItemPF
 
     get isProficient(): boolean {
         return true;
-    }
-
-    get hasVariants(): boolean {
-        return false;
-    }
-
-    get variants(): Collection<MapVariant> {
-        if (this.#variants !== undefined) {
-            return this.#variants;
-        }
-
-        if (!this.data.map) {
-            return new Collection();
-        }
-
-        return (this.#variants = createMapsVariantsCollection(this.label));
     }
 
     roll(actor: ActorPF2e, event: MouseEvent, options: BaseStatisticRollOptions) {
@@ -55,6 +33,7 @@ class ExtraAction extends BaseStatisticAction<RawExtrasActionData, AbilityItemPF
         };
 
         if (this.key === "aid") {
+            rollOptions.statistic = "perception";
             rollOptions.alternates = true;
         }
 
@@ -88,4 +67,4 @@ type ExtractedExtraActionData = Omit<ExtractReadonly<ExtraAction>, "data">;
 MODULE.devExpose({ getExtrasActions });
 
 export { getExtraAction, getExtrasActions, prepareExtrasActions };
-export type { ExtractedExtraActionData, ExtraAction };
+export type { ExtraAction, ExtractedExtraActionData };

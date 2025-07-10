@@ -1,4 +1,11 @@
-import { ExtraAction, getExtraAction, getExtraKeys, SIDEBAR_ICONS, StatisticType } from "hud";
+import {
+    BaseStatisticRollOptions,
+    ExtraAction,
+    getExtraAction,
+    getExtraKeys,
+    SIDEBAR_ICONS,
+    StatisticType,
+} from "hud";
 import { AbilityItemPF2e, localize } from "module-helpers";
 import {
     generateStatisticActionSchema,
@@ -16,6 +23,10 @@ class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityIt
         return getExtraAction(this.sourceId);
     }
 
+    get canAltUse(): boolean {
+        return this.canUse && this.key === "escape";
+    }
+
     get title(): string {
         return this.name;
     }
@@ -24,12 +35,16 @@ class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityIt
         return localize("shortcuts.tooltip.subtitle", this.type);
     }
 
+    get altUseLabel(): string {
+        return localize("shortcuts.tooltip.altUse.skillAction");
+    }
+
     get icon(): string {
         return SIDEBAR_ICONS.extras;
     }
 
-    use(event: MouseEvent): void {
-        this.action?.roll(this.actor, event, this.override);
+    get useOptions(): BaseStatisticRollOptions {
+        return this.override;
     }
 }
 

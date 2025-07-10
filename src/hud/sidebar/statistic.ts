@@ -1,4 +1,12 @@
-import { createDraggable, FilterValue, SkillActionShortcutData } from "hud";
+import {
+    createDraggable,
+    ExtraActionShortcutData,
+    ExtrasActionData,
+    FilterValue,
+    SkillActionData,
+    SkillActionShortcutData,
+    SkillVariants,
+} from "hud";
 import {
     AbilityItemPF2e,
     Action,
@@ -37,10 +45,12 @@ abstract class BaseStatisticAction<
     TData extends RawBaseActionData = RawBaseActionData,
     TItem extends AbilityItemPF2e | FeatPF2e = AbilityItemPF2e | FeatPF2e
 > {
+    #actionKey?: string;
     #data: TData;
     #img?: ImageFilePath;
     #item: TItem;
-    #actionKey?: string;
+    #systemPrefix?: string;
+    #variants?: SkillVariants;
 
     constructor(data: TData, item: TItem) {
         this.#data = data;
@@ -49,7 +59,6 @@ abstract class BaseStatisticAction<
 
     abstract get filterValue(): FilterValue;
     abstract get label(): string;
-    abstract readonly variants: Collection<StatisticVariant | MapVariant>;
 
     get data(): TData {
         return this.#data;
@@ -72,7 +81,7 @@ abstract class BaseStatisticAction<
     }
 
     get notes(): SingleCheckActionRollNoteData[] {
-        return this.data.notes ?? [];
+        return (this.data as BaseActionData).notes ?? [];
     }
 
     get sourceId(): CompendiumItemUUID {
@@ -84,11 +93,11 @@ abstract class BaseStatisticAction<
     }
 
     get rollOptions(): string[] {
-        return this.data.rollOptions ?? [];
+        return (this.data as BaseActionData).rollOptions ?? [];
     }
 
     get statistic(): StatisticType | undefined {
-        return this.data.statistic;
+        return (this.data as BaseActionData).statistic;
     }
 
     get img(): ImageFilePath {
@@ -96,6 +105,64 @@ abstract class BaseStatisticAction<
             ACTION_IMAGES[this.key] ??
             game.pf2e.actions.get(this.key)?.img ??
             getActionIcon(this.actionCost));
+    }
+
+    get system(): "pf2e" | "sf2e" {
+        return this.data.sf2e ? "sf2e" : "pf2e";
+    }
+
+    get systemPrefix(): string {
+        return (this.#systemPrefix ??= this.system.toUpperCase());
+    }
+
+    get hasMap(): boolean {
+        return !!this.data.variants && R.isPlainObject(this.data.variants);
+    }
+
+    get hasVariants(): boolean {
+        return !!this.data.variants && !R.isPlainObject(this.data.variants);
+    }
+
+    get variants(): SkillVariants {
+        if (this.#variants !== undefined) {
+            return this.#variants;
+        }
+
+        if (!this.data.variants) {
+            return new Collection();
+        }
+
+        if (R.isPlainObject(this.data.variants)) {
+            const { agile } = this.data.variants;
+            return (this.#variants = createMapsVariantsCollection(this.label, agile));
+        }
+
+        const variants = this.data.variants.map((variant): StatisticVariant => {
+            if (R.isPlainObject(variant)) {
+                const label = game.i18n.localize(variant.label);
+
+                return {
+                    filterValue: new FilterValue(label),
+                    label,
+                    slug: variant.slug,
+                };
+            }
+
+            const variantKey = game.pf2e.system.sluggify(variant, { camel: "bactrian" });
+            const label = game.i18n.localize(
+                `${this.systemPrefix}.Actions.${this.actionKey}.${variantKey}.Title`
+            );
+
+            return {
+                filterValue: new FilterValue(this.label, label),
+                label,
+                slug: variant,
+            };
+        });
+
+        return (this.#variants = new Collection(
+            variants.map((variant) => [variant.slug, variant])
+        ));
     }
 
     toData(): Omit<ExtractReadonly<this>, "data"> {
@@ -150,12 +217,10 @@ abstract class BaseStatisticAction<
                     ...usedOptions,
                     label,
                     maps: R.times(3, (i) => ({ value: i, label: i })),
-                    statistics: getStatistics(),
+                    statistics: usedOptions.statistic ? getStatistics() : undefined,
                 },
                 onRender: (event, dialog) => {
                     const statistic = this.statistic;
-                    if (!statistic) return;
-
                     const html = dialog.element;
                     const img = createHTMLElement("img", {
                         classes: ["drag-img"],
@@ -166,14 +231,16 @@ abstract class BaseStatisticAction<
                     img.src = this.img;
 
                     img.addEventListener("dragstart", (event) => {
-                        const dragData: Required<SkillActionShortcutData> = {
+                        const dragData: Required<
+                            SkillActionShortcutData | ExtraActionShortcutData
+                        > = {
                             img: this.img,
                             key: this.key,
                             name: this.label,
                             sourceId: this.sourceId,
-                            type: "skillAction",
-                            variant: !isMapVariant ? variant?.slug : undefined,
                             statistic,
+                            type: statistic ? "skillAction" : "extraAction",
+                            variant: statistic && !isMapVariant ? variant?.slug : undefined,
                             override: {},
                         };
 
@@ -300,14 +367,14 @@ type RawBaseActionData = {
     actionCost?: ActionCost["value"] | ActionCost["type"];
     dc?: number;
     key: string;
-    notes?: SingleCheckActionRollNoteData[];
-    rollOptions?: string[];
+    sf2e?: boolean;
     /** item used for description and send-to-chat */
     sourceId: CompendiumItemUUID;
-    statistic?: StatisticType;
     // object refers to map, array refers to actual variants
     variants?: (string | { slug: string; label: string; cost?: ActionCost })[] | { agile: boolean };
 };
+
+type BaseActionData = SkillActionData & ExtrasActionData;
 
 type BaseStatisticRollOptions = {
     agile?: boolean;

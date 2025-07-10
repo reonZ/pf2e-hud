@@ -1,4 +1,9 @@
-import { BaseStatisticAction, getStatisticTypes, StatisticType } from "hud";
+import {
+    BaseStatisticAction,
+    BaseStatisticRollOptions,
+    getStatisticTypes,
+    StatisticType,
+} from "hud";
 import { AbilityItemPF2e, CreaturePF2e, FeatPF2e } from "module-helpers";
 import {
     BaseShortcutSchema,
@@ -54,6 +59,7 @@ abstract class StatisticActionShortcut<
     }
 
     abstract get action(): TAction | undefined;
+    abstract get useOptions(): BaseStatisticRollOptions;
 
     get dataset(): ShortcutDataset | null {
         return { itemUuid: this.sourceId };
@@ -61,6 +67,10 @@ abstract class StatisticActionShortcut<
 
     get usedImage(): ImageFilePath {
         return (this.#usedImage ??= this.action?.img ?? this.img);
+    }
+
+    use(event: MouseEvent): void {
+        this.action?.roll(this.actor, event, this.useOptions);
     }
 
     altUse(event: MouseEvent): void {

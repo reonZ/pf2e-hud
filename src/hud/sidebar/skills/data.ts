@@ -16,7 +16,6 @@ import {
 import { RAW_STATISTICS, SHARED_ACTIONS, SkillActionData } from ".";
 import {
     BaseStatisticAction,
-    createMapsVariantsCollection,
     MapVariant,
     SkillsConfigSf2e,
     StatisticType,
@@ -27,8 +26,6 @@ class SkillAction extends BaseStatisticAction<SkillActionData> {
     #filterValue?: FilterValue;
     #label?: string;
     #statistic: StatisticType;
-    #systemPrefix?: string;
-    #variants?: SkillVariants;
 
     constructor(statistic: StatisticType, data: SkillActionData, item: FeatPF2e | AbilityItemPF2e) {
         super(data, item);
@@ -41,14 +38,6 @@ class SkillAction extends BaseStatisticAction<SkillActionData> {
 
     get rollOptions(): string[] {
         return this.data.rollOptions ?? [];
-    }
-
-    get system(): "pf2e" | "sf2e" {
-        return this.data.sf2e ? "sf2e" : "pf2e";
-    }
-
-    get systemPrefix(): string {
-        return (this.#systemPrefix ??= this.system.toUpperCase());
     }
 
     get requireTrained(): boolean {
@@ -69,52 +58,6 @@ class SkillAction extends BaseStatisticAction<SkillActionData> {
         return (this.#filterValue ??= new FilterValue(
             this.label,
             ...this.variants.map((variant) => variant.filterValue).filter(R.isTruthy)
-        ));
-    }
-
-    get hasVariants(): boolean {
-        return !!this.data.variants && !R.isPlainObject(this.data.variants);
-    }
-
-    get variants(): SkillVariants {
-        if (this.#variants !== undefined) {
-            return this.#variants;
-        }
-
-        if (!this.data.variants) {
-            return new Collection();
-        }
-
-        if (R.isPlainObject(this.data.variants)) {
-            const { agile } = this.data.variants;
-            return (this.#variants = createMapsVariantsCollection(this.label, agile));
-        }
-
-        const variants = this.data.variants.map((variant): StatisticVariant => {
-            if (R.isPlainObject(variant)) {
-                const label = game.i18n.localize(variant.label);
-
-                return {
-                    filterValue: new FilterValue(label),
-                    label,
-                    slug: variant.slug,
-                };
-            }
-
-            const variantKey = game.pf2e.system.sluggify(variant, { camel: "bactrian" });
-            const label = game.i18n.localize(
-                `${this.systemPrefix}.Actions.${this.actionKey}.${variantKey}.Title`
-            );
-
-            return {
-                filterValue: new FilterValue(this.label, label),
-                label,
-                slug: variant,
-            };
-        });
-
-        return (this.#variants = new Collection(
-            variants.map((variant) => [variant.slug, variant])
         ));
     }
 }

@@ -511,7 +511,8 @@ type SkillActionData = RawBaseActionData & {
     img?: ImageFilePath;
     label?: string;
     requireTrained?: boolean;
-    sf2e?: boolean;
+    rollOptions?: string[];
+    statistic?: StatisticType;
     /** the item must be present on the actor to show up */
     useInstance?: boolean;
 };
