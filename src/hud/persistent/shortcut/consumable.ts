@@ -31,6 +31,10 @@ class ConsumableShortcut extends ItemShortcut<
                 : null);
     }
 
+    get icon(): string {
+        return "fa-regular fa-flask-round-potion";
+    }
+
     get counter(): ValueAndMaybeMax {
         return { value: this.uses ?? this.quantity };
     }

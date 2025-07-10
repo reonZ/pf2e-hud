@@ -3,6 +3,7 @@ import {
     getSkillActionGroup,
     getSkillKeys,
     getStatisticTypes,
+    SIDEBAR_ICONS,
     SkillAction,
     StatisticType,
 } from "hud";
@@ -52,6 +53,10 @@ class SkillActionShortcut extends StatisticActionShortcut<SkillAction, FeatPF2e 
 
     get altUseLabel(): string {
         return localize("shortcuts.tooltip.altUse", this.type);
+    }
+
+    get icon(): string {
+        return SIDEBAR_ICONS.skills;
     }
 
     use(event: MouseEvent): void {

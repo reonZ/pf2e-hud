@@ -1,4 +1,4 @@
-import { ExtraAction, getExtraAction, getExtraKeys, StatisticType } from "hud";
+import { ExtraAction, getExtraAction, getExtraKeys, SIDEBAR_ICONS, StatisticType } from "hud";
 import { AbilityItemPF2e, localize } from "module-helpers";
 import {
     generateStatisticActionSchema,
@@ -22,6 +22,10 @@ class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityIt
 
     get subtitle(): string {
         return localize("shortcuts.tooltip.subtitle", this.type);
+    }
+
+    get icon(): string {
+        return SIDEBAR_ICONS.extras;
     }
 
     use(event: MouseEvent): void {

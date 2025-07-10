@@ -16,6 +16,11 @@
         <span>{{counter.value}}</span>
     </div>
     {{/with}}
+    {{#with shortcut.icon as |icon|}}
+    <div class="icon">
+        <i class="{{icon}}"></i>
+    </div>
+    {{/with}}
     {{!-- checkbox --}}
     {{#with shortcut.checkbox as |checkbox|}}
     <div class="checkbox">

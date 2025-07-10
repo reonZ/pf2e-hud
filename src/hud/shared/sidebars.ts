@@ -1,6 +1,6 @@
 import { BaseActorPF2eHUD, IAdvancedPF2eHUD } from "hud/base";
 import { SidebarPF2eHUD } from "hud/sidebar";
-import { ActorPF2e, addListenerAll, CharacterPF2e, localize, NPCPF2e } from "module-helpers";
+import { ActorPF2e, addListenerAll, CharacterPF2e, localize, NPCPF2e, R } from "module-helpers";
 
 const SIDEBARS = [
     {
@@ -41,6 +41,8 @@ const SIDEBARS = [
         },
     },
 ] as const satisfies SidebarDetails[];
+
+const SIDEBAR_ICONS = R.mapToObj(SIDEBARS, ({ type, icon }) => [type, icon]);
 
 function getSidebars(
     actor: ActorPF2e,
@@ -106,5 +108,5 @@ type SidebarMenu = {
 
 type SidebarName = (typeof SIDEBARS)[number]["type"];
 
-export { addSidebarsListeners, getSidebars };
+export { addSidebarsListeners, getSidebars, SIDEBAR_ICONS };
 export type { SidebarMenu, SidebarName };

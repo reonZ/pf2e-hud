@@ -13,6 +13,10 @@ class EquipmentShortcut extends ItemShortcut<EquipmentShortcutSchema, EquipmentP
     get greyed(): boolean {
         return (this.item?.quantity ?? 0) < 1;
     }
+
+    get icon(): string {
+        return "fa-solid fa-wrench";
+    }
 }
 
 interface EquipmentShortcut extends ModelPropsFromSchema<EquipmentShortcutSchema> {
