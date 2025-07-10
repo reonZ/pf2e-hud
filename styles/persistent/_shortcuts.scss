@@ -102,7 +102,8 @@
         .radial-panel {
             --padding: 0.2em 0.5em;
 
-            z-index: 100;
+            z-index: 200;
+            min-width: 7em;
             pointer-events: all;
             position: absolute;
             bottom: -0.5em;

@@ -194,7 +194,7 @@ abstract class PersistentShortcut<
 
     async radialMenu<T extends string>(
         title: string,
-        sections: (ShortcutRadialSection | ShortcutRadialOption[])[],
+        sections: () => (ShortcutRadialSection | ShortcutRadialOption[])[],
         onSelect: (value: T) => void
     ) {
         const element = this.element;
@@ -209,7 +209,7 @@ abstract class PersistentShortcut<
             classes: ["radial-panel"],
             content: await render("shortcuts/radial", {
                 title: this.custom.name || this.title,
-                sections: sections.map((section): ShortcutRadialSection => {
+                sections: sections().map((section): ShortcutRadialSection => {
                     return R.isArray(section) ? { title: undefined, options: section } : section;
                 }),
             }),

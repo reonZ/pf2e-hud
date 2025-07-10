@@ -1,10 +1,11 @@
 import {
     BaseStatisticAction,
     BaseStatisticRollOptions,
+    getMapLabel,
     getStatisticTypes,
     StatisticType,
 } from "hud";
-import { AbilityItemPF2e, CreaturePF2e, FeatPF2e } from "module-helpers";
+import { AbilityItemPF2e, CreaturePF2e, FeatPF2e, R, ZeroToTwo } from "module-helpers";
 import {
     BaseShortcutSchema,
     generateBaseShortcutFields,
@@ -70,12 +71,49 @@ abstract class StatisticActionShortcut<
     }
 
     use(event: MouseEvent): void {
-        this.action?.roll(this.actor, event, this.useOptions);
+        const action = this.action;
+        if (!action) return;
+
+        if (event.button !== 0 || !action.hasMap) {
+            action.roll(this.actor, event, this.useOptions);
+            return;
+        }
+
+        const useOptions = this.useOptions;
+
+        this.radialMenu(
+            this.title,
+            () => {
+                const mapVariants = generateMapRadialOptions(
+                    useOptions.agile ?? (action.data.variants as { agile: boolean }).agile
+                );
+
+                return [mapVariants];
+            },
+            (value) => {
+                const map = Number(value);
+
+                action.roll(this.actor, event, {
+                    ...useOptions,
+                    map: !isNaN(map) && map.between(0, 2) ? (map as ZeroToTwo) : undefined,
+                });
+            }
+        );
     }
 
     altUse(event: MouseEvent): void {
         this.use(event);
     }
+}
+
+const _mapRadialCached: PartialRecord<string, { value: string; label: string }[]> = {};
+function generateMapRadialOptions(agile: boolean): { value: string; label: string }[] {
+    return (_mapRadialCached[String(agile)] ??= R.times(3, (map) => {
+        return {
+            label: getMapLabel(map as ZeroToTwo, agile),
+            value: String(map),
+        };
+    }));
 }
 
 interface StatisticActionShortcut<
