@@ -275,6 +275,9 @@
                     "uses": "No Remaining Uses",
                     "vessel": "Not Primary Vessel"
                 }
+            },
+            "use": {
+                "toggle": "This toggle is always enabled"
             }
         },
         "sidebar": {

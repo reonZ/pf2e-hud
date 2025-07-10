@@ -5,6 +5,7 @@ import {
     localize,
     RollOptionToggle,
     Suboption,
+    warning,
 } from "module-helpers";
 import {
     BaseShortcutSchema,
@@ -103,8 +104,13 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
 
     use(event: MouseEvent): void {
         const toggle = this.toggle;
-        if (!toggle || toggle.alwaysActive) return;
-        this.actor.toggleRollOption(this.domain, this.option, !toggle.checked);
+        if (!toggle) return;
+
+        if (toggle.alwaysActive) {
+            warning("shortcuts.use.toggle");
+        } else {
+            this.actor.toggleRollOption(this.domain, this.option, !toggle.checked);
+        }
     }
 
     altUse(event: MouseEvent): void {
