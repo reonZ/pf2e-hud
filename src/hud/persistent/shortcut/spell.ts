@@ -124,10 +124,12 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         }
 
         // we recover similar animist spell
-        if (data.category === "spontaneous" && data.isAnimist) {
-            const collection = actor.spellcasting.collections.find(({ entry }) => {
-                return isAnimistEntry(entry);
-            });
+        if (data.isAnimist && R.isIncludedIn(data.category, ["focus", "spontaneous"])) {
+            const collection: Maybe<SpellCollection<CreaturePF2e>> =
+                data.category === "focus"
+                    ? getAnimistVesselsData(cached, actor)?.entry.spells
+                    : actor.spellcasting.collections.find(({ entry }) => isAnimistEntry(entry));
+
             if (!collection) return;
 
             const spell = collection.find((spell) => {
@@ -271,11 +273,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
             spells: collection,
         })) as CustomSpellcastingEntry;
 
-        const vessels = this.cached("animistData", () => {
-            if (!actor.isOfType("character") || !game.dailies?.active) return null;
-            return game.dailies.api.getAnimistVesselsData(actor) ?? null;
-        });
-
+        const vessels = getAnimistVesselsData(this.cached, actor);
         const isConsumable = entrySheetData.category === "items";
         const isFlexible = !!entrySheetData.isFlexible;
         const isStaff = !!entrySheetData.isStaff;
@@ -308,6 +306,16 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
 
         return data;
     }
+}
+
+function getAnimistVesselsData(
+    cached: ShortcutCache,
+    actor: CreaturePF2e
+): dailies.AnimistVesselsData | null {
+    return cached("animistData", () => {
+        if (!actor.isOfType("character") || !game.dailies?.active) return null;
+        return game.dailies.api.getAnimistVesselsData(actor) ?? null;
+    });
 }
 
 interface SpellShortcut extends ModelPropsFromSchema<SpellShortcutSchema> {}

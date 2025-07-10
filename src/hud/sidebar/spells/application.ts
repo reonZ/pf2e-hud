@@ -119,7 +119,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
         const entryId = entry.id;
         const entryData = R.omit(entry, ["category", "groups", "id", "statistic", "uses"]);
         const isCharges = entry.category === "charges";
-        const isVessels = entry.id === vesselsData.entry?.id;
+        const isVessel = entry.id === vesselsData.entry?.id;
 
         const item = entry.isEphemeral
             ? actor.items.get<ConsumablePF2e<CreaturePF2e>>(entry.id.split("-")[0])
@@ -200,7 +200,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                 if (!active?.spell || active.uses?.max === 0) continue;
 
                 const spell = active.spell as SpellPF2e<CreaturePF2e>;
-                if (isVessels && !vesselsData.primary.includes(spell.id)) continue;
+                if (isVessel && !vesselsData.primary.includes(spell.id)) continue;
 
                 const isVirtual = entry.isSpontaneous && !isCantrip && active.virtual;
                 const signature =
@@ -220,6 +220,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                     expended: entry.isFocusPool ? focusExpended : active.expended,
                     groupId: group.id,
                     isBroken,
+                    isVessel,
                     isVirtual,
                     parentId: item?.id,
                     signature,

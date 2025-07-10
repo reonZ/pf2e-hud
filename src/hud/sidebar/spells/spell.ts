@@ -60,7 +60,7 @@ class SpellSidebarItem extends BaseSidebarItem<SpellPF2e<CreaturePF2e>, SlotSpel
             entryId: this.entryId,
             groupId: this.groupId === "cantrips" ? 0 : this.groupId,
             img: this.img,
-            isAnimist: !!this.isAnimist,
+            isAnimist: !!this.isAnimist || this.isVessel,
             itemId: this.item.id,
             name: this.label,
             slotId: this.slotId,
@@ -86,6 +86,7 @@ type SlotSpellData = Omit<
     expended: boolean | undefined;
     groupId: SpellSlotGroupId;
     isBroken: boolean;
+    isVessel: boolean;
     isVirtual: boolean | undefined;
     parentId: string | undefined;
     signature: { toggled: boolean | undefined } | undefined;
