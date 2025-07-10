@@ -165,6 +165,11 @@
                 "yes": "Usar punto de resolución"
             }
         },
+        "edit-shortcut": {
+            "image": "Ruta a la imagen",
+            "name": "Nombre del atajo",
+            "yes": "Guardar"
+        },
         "health-status": {
             "title": "Estado de salud",
             "enabled": "Activado",
@@ -198,11 +203,16 @@
                     "always": "Mostrar siempre la UI en el retrato",
                     "hover": "Mostrar la UI únicamente cuando se pasa al ratón por el retrato"
                 },
-                "editAvatar": "Edit Avatar",
+                "editAvatar": "Editar Avatar",
                 "setActor": {
                     "set": "Elegir el token seleccionado como actor persistente",
                     "unset": "Deseleccionar como actor persistente"
                 }
+            }
+        },
+        "popup": {
+            "shortcut": {
+                "config": "Personalizar Atajo"
             }
         },
         "recall-knowledge": {
@@ -224,12 +234,19 @@
         },
         "rightClick": "[Clic derecho]",
         "shortcuts": {
+            "blast": {
+                "cost": {
+                    "label": "Coste de la Explosión Elemental"
+                }
+            },
             "error": {
+                "locked": "Los atajos están bloqueados en la barra de atajos",
                 "wrongActor": "Solo puedes crear atajos desde el mismo actor persistente.",
                 "wrongType": "No puedes crear un atajo de ese tipo."
             },
             "tooltip": {
                 "altUse": {
+                    "skillAction": "Menu de Variantes",
                     "toggle": "Seleccionar Opción Alternativa"
                 },
                 "click": {
@@ -240,14 +257,23 @@
                 "disabled": "Desactivado",
                 "enabled": "Activado",
                 "subtitle": {
+                    "extraAction": "Acción Extra",
+                    "spell": "Lanzamiento de conjuros",
                     "toggle": "Modos de tirar dados"
                 },
                 "reason": {
                     "available": "No disponible en este momento",
+                    "broken": "Conjuro huérfano",
+                    "charges": "No quedan cargas",
                     "dropped": "No llevas el objeto",
+                    "expended": "Conjuro gastado",
+                    "focus": "Reserva de puntos de Foco vacía",
                     "match": "No hay coincidencia",
+                    "prepared": "Conjuro no preparado",
+                    "quantity": "No hay cantidad suficiente",
+                    "rank": "No se puede lanzar ese de rango",
                     "uses": "No quedan usos",
-                    "quantity": "No hay cantidad suficiente"
+                    "vessel": "No es el recipiente principal"
                 }
             }
         },
@@ -286,7 +312,7 @@
                 "proficient": "Competente"
             },
             "spells": {
-                "broken": "Conjuro roto Spell",
+                "broken": "Conjuro roto",
                 "cast": "Lanza el conjuro"
             }
         },
