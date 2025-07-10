@@ -13,6 +13,7 @@
 -   `Persistent Shortcuts`:
     -   add icons for each shortcut category
     -   now display uses/quantity in the tooltip
+    -   now display why a shortcut cannot be used (greyed out) in the tooltip
     -   you can now rearrange shortcuts by dragging them from one slot to another (shortcuts are swapped)
     -   shortcuts slots are no longer modifiable when the hotbar is locked
     -   shortcuts that don't have an active `[Right-Click]` usage now default to opening the now renamed `Shortcut Popup` (previously `Item Popup`)
