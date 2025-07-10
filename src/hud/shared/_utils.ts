@@ -2,6 +2,8 @@ import {
     ActorInitiative,
     ActorPF2e,
     ApplicationV2,
+    BaseSpellcastingEntry,
+    CreaturePF2e,
     EffectPF2e,
     eventToRollParams,
     InitiativeRollResult,
@@ -109,6 +111,12 @@ function makeFadeable(app: ApplicationV2) {
     );
 }
 
+function isAnimistEntry(entry: BaseSpellcastingEntry<CreaturePF2e>) {
+    return (
+        foundry.utils.getProperty(entry, "flags.pf2e-dailies.identifier") === "animist-spontaneous"
+    );
+}
+
 type SliderData = {
     action: string;
     canBack: boolean;
@@ -116,5 +124,5 @@ type SliderData = {
     value: number;
 };
 
-export { createSlider, FilterValue, getCoverEffect, makeFadeable, rollInitiative };
+export { createSlider, FilterValue, getCoverEffect, isAnimistEntry, makeFadeable, rollInitiative };
 export type { SliderData };

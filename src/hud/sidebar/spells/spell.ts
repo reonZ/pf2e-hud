@@ -1,4 +1,4 @@
-import { ShortcutData } from "hud";
+import { getItemSlug, SpellShortcutData } from "hud";
 import {
     CreaturePF2e,
     EquipAnnotationData,
@@ -9,15 +9,25 @@ import {
     SpellSlotGroupId,
     ValueAndMax,
 } from "module-helpers";
-import { BaseSidebarItem, CustomSpellcastingEntry } from "..";
+import { BaseSidebarItem, CustomSpellcastingEntry, SpellCategoryType } from "..";
 
 class SpellSidebarItem extends BaseSidebarItem<SpellPF2e<CreaturePF2e>, SlotSpellData> {
+    #collection?: SpellCollection<CreaturePF2e> | null;
+
     get item(): SpellPF2e<CreaturePF2e> {
         return this.spell;
     }
 
-    get collection(): SpellCollection<CreaturePF2e> | undefined {
-        return this.spell.actor.spellcasting?.collections.get(this.entryId);
+    get actor(): CreaturePF2e {
+        return this.spell.actor;
+    }
+
+    get collection(): SpellCollection<CreaturePF2e> | null {
+        if (this.#collection !== undefined) {
+            return this.#collection;
+        }
+
+        return (this.#collection = this.actor.spellcasting?.collections.get(this.entryId) ?? null);
     }
 
     cast() {
@@ -26,7 +36,7 @@ class SpellSidebarItem extends BaseSidebarItem<SpellPF2e<CreaturePF2e>, SlotSpel
     }
 
     drawItem() {
-        const actor = this.spell.actor;
+        const actor = this.actor;
         const parentItem = actor.inventory.get(this.parentId, { strict: true });
 
         if (actor.isOfType("character") && this.annotation) {
@@ -43,10 +53,23 @@ class SpellSidebarItem extends BaseSidebarItem<SpellPF2e<CreaturePF2e>, SlotSpel
         return this.collection?.setSlotExpendedState(this.groupId, this.slotId, !this.expended);
     }
 
-    toShortcut(): ShortcutData | undefined {
-        return;
+    toShortcut(): SpellShortcutData {
+        return {
+            category: this.categoryType,
+            castRank: this.castRank,
+            entryId: this.entryId,
+            groupId: this.groupId === "cantrips" ? 0 : this.groupId,
+            img: this.img,
+            isAnimist: !!this.isAnimist,
+            itemId: this.item.id,
+            name: this.label,
+            slotId: this.slotId,
+            slug: getItemSlug(this.item),
+            type: "spell",
+        };
     }
 }
+
 interface SpellSidebarItem extends Readonly<SlotSpellData> {}
 
 type SlotSpellData = Omit<
@@ -57,7 +80,7 @@ type SlotSpellData = Omit<
     canTogglePrepared: boolean | undefined;
     castRank: OneToTen;
     category: { icon: string; label: string };
-    categoryType: string;
+    categoryType: SpellCategoryType;
     entryId: string;
     entryTooltip: string;
     expended: boolean | undefined;

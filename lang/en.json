@@ -257,15 +257,23 @@
                 "disabled": "Disabled",
                 "enabled": "Enabled",
                 "subtitle": {
-                    "toggle": "Roll Option",
-                    "extraAction": "Extra Action"
+                    "extraAction": "Extra Action",
+                    "spell": "Spellcasting",
+                    "toggle": "Roll Option"
                 },
                 "reason": {
                     "available": "Not Currently Available",
+                    "broken": "Orphan Spell",
+                    "charges": "No Charges Left",
                     "dropped": "Item Not Carried",
-                    "match": "No Match",
-                    "uses": "No Use Remaining",
-                    "quantity": "No Quantity"
+                    "expended": "Expended Spell",
+                    "focus": "Focus Pool Empty",
+                    "match": "No Matching Item",
+                    "prepared": "Spell Not Prepared",
+                    "quantity": "Quantity Is Zero",
+                    "rank": "Cannot Cast That Rank",
+                    "uses": "No Remaining Uses",
+                    "vessel": "Not Primary Vessel"
                 }
             }
         },

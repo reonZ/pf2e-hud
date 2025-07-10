@@ -27,10 +27,10 @@ abstract class ItemShortcut<
     TSchema extends ItemShortcutSchema,
     TItem extends ItemShortcutItem
 > extends PersistentShortcut<TSchema, TItem> {
-    static getItem(
+    static async getItem(
         actor: CreaturePF2e,
         data: SourceFromSchema<ItemShortcutSchema>
-    ): Maybe<ItemShortcutItem> {
+    ): Promise<Maybe<ItemShortcutItem>> {
         const item =
             actor.items.get(data.itemId) ??
             actor.itemTypes[data.type as ItemType].find((item) => getItemSlug(item) === data.slug);

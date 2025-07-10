@@ -14,7 +14,7 @@
     data-item-type="spell{{#if isVirtual}}-slot-group{{/if}}" data-item-id="{{spell.id}}"
     data-entry-id="{{entryId}}" data-cast-rank="{{castRank}}" data-group-id="{{groupId}}" {{#if
     isPrepared}}data-slot-id="{{slotId}}" {{/if}} {{#if expended}}data-slot-expended{{/if}}
-    draggable="true" data-filter-value="{{filterValue}}">
+    {{#unless isRitual}} draggable="true" {{/unless}} data-filter-value="{{filterValue}}">
     {{!-- image --}}
     {{> (@root.partial 'item-image') spell}}
     {{!-- details --}}

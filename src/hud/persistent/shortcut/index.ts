@@ -6,5 +6,6 @@ export * from "./equipment";
 export * from "./statistic-action";
 export * from "./extra-action";
 export * from "./skill-action";
+export * from "./spell";
 export * from "./toggle";
 export * from "./blast-cost";

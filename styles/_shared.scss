@@ -62,6 +62,10 @@
     i {
         width: var(--icon-width);
         text-align: center;
+
+        &.fa-battery-three-quarters {
+            transform: rotateZ(-90deg);
+        }
     }
 
     input[type="text"],

@@ -7,7 +7,7 @@ import {
     render,
     ValueAndMaybeMax,
 } from "module-helpers";
-import { ShortcutSlotId } from "..";
+import { ShortcutCache, ShortcutSlotId } from "..";
 import fields = foundry.data.fields;
 
 function generateBaseShortcutFields<T extends string>(type: T): BaseShortcutSchema {
@@ -47,6 +47,7 @@ abstract class PersistentShortcut<
     TItem extends ItemPF2e = ItemPF2e
 > extends foundry.abstract.DataModel<null, TSchema> {
     #actor: CreaturePF2e;
+    #cached: ShortcutCache;
     #element: HTMLElement | null = null;
     #item: Maybe<TItem>;
     #radial?: HTMLElement;
@@ -55,7 +56,8 @@ abstract class PersistentShortcut<
 
     static async getItem(
         actor: CreaturePF2e,
-        data: ShortcutSource<BaseShortcutSchema>
+        data: ShortcutSource<BaseShortcutSchema>,
+        cached: ShortcutCache
     ): Promise<Maybe<ItemPF2e>> {
         return null;
     }
@@ -65,17 +67,23 @@ abstract class PersistentShortcut<
         data: DeepPartial<SourceFromSchema<TSchema>>,
         item: Maybe<ItemPF2e>,
         slot: number,
+        cached: ShortcutCache,
         options?: DataModelConstructionOptions<null>
     ) {
         super(data, options);
 
         this.#actor = actor;
+        this.#cached = cached;
         this.#slot = slot;
         this.#item = item as Maybe<TItem>;
     }
 
     get actor(): CreaturePF2e {
         return this.#actor;
+    }
+
+    get cached(): ShortcutCache {
+        return this.#cached;
     }
 
     get slot(): number {
@@ -104,6 +112,10 @@ abstract class PersistentShortcut<
 
     get usedImage(): ImageFilePath {
         return this.item?.img ?? this.img;
+    }
+
+    get icon(): string | null {
+        return null;
     }
 
     get checkbox(): { checked: boolean } | null {
@@ -145,6 +157,8 @@ abstract class PersistentShortcut<
     }
 
     abstract use(event: MouseEvent): void;
+
+    async _initShortcut(): Promise<void> {}
 
     altUse(event: MouseEvent): void {
         this.item?.sheet.render(true);

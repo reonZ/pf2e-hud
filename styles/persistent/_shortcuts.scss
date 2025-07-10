@@ -11,8 +11,6 @@
     justify-self: start;
 
     .shortcut {
-        --offset: -2px;
-
         cursor: pointer;
         position: relative;
         border: var(--outer-border);
@@ -23,6 +21,10 @@
         > * {
             position: absolute;
             pointer-events: none;
+        }
+
+        i {
+            width: min-content;
         }
 
         .image,
@@ -43,20 +45,26 @@
         }
 
         .counter {
-            bottom: var(--offset);
-            right: var(--offset);
+            bottom: -2px;
+            right: -2px;
 
             span {
                 font-size: 0.9em;
             }
         }
 
+        .icon {
+            bottom: -4px;
+            left: -3px;
+            text-shadow: 0 0 3px #000, 0 0 3px #000, 0 0 3px #000;
+            font-size: 0.9em;
+        }
+
         .checkbox {
-            bottom: calc(var(--offset) - 4.5px);
-            right: calc(var(--offset) - 1.5px);
+            bottom: -7px;
+            left: -3px;
 
             i {
-                width: min-content;
                 font-size: 1.4em;
 
                 &:last-child {
@@ -126,7 +134,7 @@
                 span {
                     font-size: 2em;
                     font-weight: bold;
-                    text-shadow: 0 0 2px #ffffff;
+                    text-shadow: 0 0 3px #ffffff, 0 0 3px #ffffff, 0 0 3px #ffffff;
                     color: var(--color-reversed);
                 }
             }
@@ -144,11 +152,7 @@
 
         &:hover {
             .image {
-                filter: brightness(1.2);
-            }
-
-            .overlay {
-                box-shadow: inset 0 0 5px #000000;
+                filter: brightness(1.5);
             }
         }
 
@@ -161,8 +165,8 @@
 
         &.greyed {
             &:hover {
-                .overlay {
-                    box-shadow: inset 0 0 5px #ffffff;
+                .image {
+                    filter: grayscale(1) brightness(1.5);
                 }
             }
         }
@@ -239,7 +243,7 @@
             line-height: 1.2;
             white-space: nowrap;
             top: calc(100% - 0.5em);
-            text-shadow: 0 0 2px #000, 0 0 4px #000;
+            text-shadow: 0 0 3px #000, 0 0 3px #000, 0 0 3px #000;
             color: #ffffff;
 
             &.left {

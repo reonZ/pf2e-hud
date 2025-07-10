@@ -1,4 +1,11 @@
-import { createSlider, FilterValue, processSliderEvent, SidebarPF2eHUD, SliderData } from "hud";
+import {
+    createSlider,
+    FilterValue,
+    isAnimistEntry,
+    processSliderEvent,
+    SidebarPF2eHUD,
+    SliderData,
+} from "hud";
 import {
     ActiveSpell,
     addListenerAll,
@@ -91,8 +98,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
         const entry = spells.entry;
         const data = (await entry.getSheetData({ spells })) as CustomSpellcastingEntry;
 
-        const id = foundry.utils.getProperty(entry, "flags.pf2e-dailies.identifier");
-        data.isAnimist = id === "animist-spontaneous";
+        data.isAnimist = isAnimistEntry(entry);
 
         return data;
     });
@@ -208,7 +214,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                     canTogglePrepared: entry.isPrepared && !isCantrip,
                     castRank: (active.castRank ?? spell.rank) as OneToTen,
                     category,
-                    categoryType,
+                    categoryType: categoryType as SpellCategoryType,
                     entryId,
                     entryTooltip,
                     expended: entry.isFocusPool ? focusExpended : active.expended,

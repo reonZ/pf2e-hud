@@ -6,6 +6,7 @@ import {
     getDragEventData,
     getFlag,
     MODULE,
+    OneToTen,
     R,
     render,
     updateFlag,
@@ -23,10 +24,14 @@ import {
     PersistentPartPF2eHUD,
     PersistentShortcut,
     ShortcutDataset,
+    SkillActionShortcut,
+    SkillActionShortcutData,
+    SpellEntryData,
+    SpellShortcut,
+    SpellShortcutData,
     ToggleShortcut,
     ToggleShortcutData,
 } from ".";
-import { SkillActionShortcut, SkillActionShortcutData } from ".";
 
 const SHORTCUTS = {
     blastCost: BlastCostShortcut,
@@ -34,12 +39,14 @@ const SHORTCUTS = {
     equipment: EquipmentShortcut,
     extraAction: ExtraActionShortcut,
     skillAction: SkillActionShortcut,
+    spell: SpellShortcut,
     toggle: ToggleShortcut,
 } satisfies Record<string, ConstructorOf<PersistentShortcut>>;
 
 class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     #tab: `${number}` = "1";
     #shortcuts: Map<number, PersistentShortcut> = new Map();
+    #shortcutsCache: ShortcutCache = createShortcutCache();
 
     get nbSlots(): number {
         return 18;
@@ -120,20 +127,23 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         options: ApplicationRenderOptions
     ): Promise<PersistentShortcutsContext> {
         this.shortcuts.clear();
+        this.#shortcutsCache = createShortcutCache();
 
         const shortcuts: PersistentShortcutsContext["shortcuts"] = [];
         const shortcutsData = this.shortcutsData;
 
-        for (let slot = 0; slot < this.nbSlots; slot++) {
-            const data = shortcutsData[slot];
-            const shortcut = data ? await this.#instantiateShortcut(data, slot) : undefined;
+        await Promise.all(
+            R.range(0, this.nbSlots).map(async (slot) => {
+                const data = shortcutsData[slot];
+                const shortcut = data ? await this.#instantiateShortcut(data, slot) : undefined;
 
-            shortcuts[slot] = shortcut ?? { isEmpty: true };
+                shortcuts[slot] = shortcut ?? { isEmpty: true };
 
-            if (shortcut) {
-                this.shortcuts.set(slot, shortcut);
-            }
-        }
+                if (shortcut) {
+                    this.shortcuts.set(slot, shortcut);
+                }
+            })
+        );
 
         return {
             dataset: (data: ShortcutDataset | undefined) => {
@@ -278,20 +288,93 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         if (!actor || !ShortcutCls) return;
 
         try {
-            const item = await ShortcutCls.getItem(actor, data as any);
-            const shortcut = new ShortcutCls(actor, data as any, item as any, slot);
-            return shortcut.invalid ? undefined : shortcut;
+            const cached = this.#shortcutsCache;
+            const item = await ShortcutCls.getItem(actor, data as any, cached);
+            const shortcut = new ShortcutCls(actor, data as any, item, slot, cached);
+            if (shortcut.invalid) return;
+
+            await shortcut._initShortcut();
+            return shortcut;
         } catch (error) {
             MODULE.error(`An error occured while instantiating a shortcut in slot ${slot}`, error);
         }
     }
 }
 
+function createShortcutCache(): ShortcutCache {
+    const cached: ShortcutCacheData = {};
+
+    function getShortcutCache(
+        ...args: Readonly<[...path: string[], defaultValue: () => Promise<unknown>]>
+    ): Promise<unknown> | unknown {
+        const defaultValue = args.at(-1) as () => unknown;
+        const key = args.slice(0, -1).join(".");
+        const currentValue = foundry.utils.getProperty(cached, key);
+
+        if (currentValue !== undefined) {
+            return currentValue;
+        }
+
+        const valueResult = defaultValue() as unknown | Promise<unknown>;
+
+        if (R.isPromise(valueResult)) {
+            return new Promise(async (resolve) => {
+                const newValue = await valueResult;
+                foundry.utils.setProperty(cached, key, newValue);
+                resolve(newValue);
+            });
+        } else {
+            foundry.utils.setProperty(cached, key, valueResult);
+            return valueResult;
+        }
+    }
+
+    Object.defineProperty(getShortcutCache, "values", {
+        get() {
+            return cached;
+        },
+        enumerable: false,
+        configurable: false,
+    });
+
+    return getShortcutCache as unknown as ShortcutCache;
+}
+
+type ShortcutCache = { get values(): ShortcutCacheData } & {
+    <
+        A extends keyof Pathable<ShortcutCacheData>,
+        R extends PathValue1<ShortcutCacheData, A> | Promise<PathValue1<ShortcutCacheData, A>>
+    >(
+        path: A,
+        defaultValue: () => R
+    ): R;
+    <
+        A extends keyof Pathable<ShortcutCacheData>,
+        B extends keyof Pathable1<ShortcutCacheData, A>,
+        R extends
+            | Promisable<PathValue2<ShortcutCacheData, A, B>>
+            | PathValue2<ShortcutCacheData, A, B>
+    >(
+        args_0: A,
+        args_1: B,
+        defaultValue: () => R
+    ): R;
+};
+
+R.pathOr;
+
+type ShortcutCacheData = {
+    canCastStaffRank?: Partial<Record<OneToTen, boolean>>;
+    animistData?: dailies.AnimistVesselsData | null;
+    spellcasting?: Record<string, SpellEntryData | null>;
+};
+
 type ShortcutData =
     | ConsumableShortcutData
     | EquipmentShortcutData
     | ExtraActionShortcutData
     | SkillActionShortcutData
+    | SpellShortcutData
     | ToggleShortcutData;
 
 type PersistentShortcutsContext = {
@@ -307,5 +390,25 @@ type ShortcutDragData = FoundryDragData & {
 
 type ShortcutSlotId = `pf2e-hud-shortcut-${number}`;
 
-export { PersistentShortcutsPF2eHUD };
-export type { ShortcutData, ShortcutSlotId };
+type Pathable<T> = {
+    [K in AllKeys<T>]: TypesForKey<T, K>;
+};
+type AllKeys<T> = T extends infer I ? keyof I : never;
+type TypesForKey<T, K extends PropertyKey> = T extends infer I
+    ? K extends keyof I
+        ? I[K]
+        : never
+    : never;
+
+type PathValue1<T, A extends keyof Pathable<T>> = StrictlyRequired<Pathable<T>>[A];
+type Pathable1<T, A extends keyof Pathable<T>> = Pathable<PathValue1<T, A>>;
+type PathValue2<T, A extends keyof Pathable<T>, B extends keyof Pathable1<T, A>> = StrictlyRequired<
+    Pathable1<T, A>
+>[B];
+
+type StrictlyRequired<T> = {
+    [K in keyof T]-?: Exclude<T[K], undefined>;
+};
+
+export { createShortcutCache, PersistentShortcutsPF2eHUD };
+export type { ShortcutCache, ShortcutData, ShortcutSlotId };
