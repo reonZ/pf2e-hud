@@ -1,4 +1,4 @@
-import { CreaturePF2e, EquipmentPF2e } from "module-helpers";
+import { CreaturePF2e, EquipmentPF2e, ValueAndMaybeMax } from "module-helpers";
 import { generateItemShortcutFields, ItemShortcut, ItemShortcutSchema, ShortcutSource } from ".";
 
 class EquipmentShortcut extends ItemShortcut<EquipmentShortcutSchema, EquipmentPF2e<CreaturePF2e>> {
@@ -16,6 +16,10 @@ class EquipmentShortcut extends ItemShortcut<EquipmentShortcutSchema, EquipmentP
 
     get icon(): string {
         return "fa-solid fa-wrench";
+    }
+
+    get uses(): ValueAndMaybeMax | null {
+        return this.item && this.item.quantity > 1 ? { value: this.item.quantity } : null;
     }
 }
 
