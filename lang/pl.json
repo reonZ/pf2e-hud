@@ -165,6 +165,11 @@
                 "yes": "Użyj Determinacji"
             }
         },
+        "edit-shortcut": {
+            "image": "Ścieżka obrazu",
+            "name": "Nazwa skrótu",
+            "yes": "Zapisz"
+        },
         "health-status": {
             "title": "Stan zdrowia",
             "enabled": "Włączone",
@@ -205,6 +210,11 @@
                 }
             }
         },
+        "popup": {
+            "shortcut": {
+                "config": "Dostosuj skrót"
+            }
+        },
         "recall-knowledge": {
             "result": "Wynik",
             "modifier": "Mod.",
@@ -224,26 +234,46 @@
         },
         "rightClick": "[Kliknij prawym]",
         "shortcuts": {
+            "blast": {
+                "cost": {
+                    "label": "Koszt Żywiołowego Podmuchu"
+                }
+            },
             "error": {
+                "locked": "Skróty są zablokowane na pasku skrótów",
                 "wrongActor": "Skróty można tworzyć tylko od tego samego stałego aktora.",
                 "wrongType": "Nie można utworzyć skrótu tego typu."
             },
             "tooltip": {
                 "altUse": {
-                    "skillAction": "Menu wariantów",
+                    "skillAction": "Warianty menu",
                     "toggle": "Wybierz opcję podrzędną"
                 },
                 "click": {
-                    "control": "[Ctrl + Kliknij prawym]",
-                    "shift": "[Shift + Kliknij prawym] Usuń skrót",
-                    "popup": "Wyskakujące okienko przedmiotu"
+                    "control": "[Kliknij prawym + Ctrl]",
+                    "middle": "[Środkowy przycisk myszy] Usuń skrót",
+                    "popup": "Skrót menu podręcznego"
+                },
+                "disabled": "Wyłączone",
+                "enabled": "Włączone",
+                "subtitle": {
+                    "extraAction": "Akcja dodatkowa",
+                    "spell": "Rzucanie zaklęć",
+                    "toggle": "Opcje rzutu"
                 },
                 "reason": {
                     "available": "Aktualnie niedostępne",
+                    "broken": "Osierocone zaklęcie",
+                    "charges": "Nie pozostało żadnych ładunków",
                     "dropped": "Przedmiot nie przeniesiony",
-                    "match": "Brak dopasowania",
-                    "uses": "Nie pozostało żadne użycie",
-                    "quantity": "Brak ilości"
+                    "expended": "Wykorzystane zaklęcie",
+                    "focus": "Pusta Pula Skupienia",
+                    "match": "Brak pasującego przedmiotu",
+                    "prepared": "Nieprzygotowane zaklęcie",
+                    "quantity": "Ilość wynosi zero",
+                    "rank": "Nie można rzucić tej rangi",
+                    "uses": "Brak pozostałych użyć",
+                    "vessel": "Nie jest to naczynie główne"
                 }
             }
         },
