@@ -14,7 +14,7 @@ import {
     ShortcutSource,
     StatisticActionShortcut,
     StatisticActionShortcutSchema,
-} from ".";
+} from "..";
 import fields = foundry.data.fields;
 
 class SkillActionShortcut extends StatisticActionShortcut<SkillAction, FeatPF2e | AbilityItemPF2e> {

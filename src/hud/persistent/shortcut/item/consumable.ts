@@ -1,5 +1,5 @@
 import { ConsumablePF2e, CreaturePF2e, R, ValueAndMaybeMax } from "module-helpers";
-import { generateItemShortcutFields, ItemShortcut, ItemShortcutSchema, ShortcutSource } from ".";
+import { generateItemShortcutFields, ItemShortcut, ItemShortcutSchema, ShortcutSource } from "..";
 
 class ConsumableShortcut extends ItemShortcut<
     ConsumableShortcutSchema,

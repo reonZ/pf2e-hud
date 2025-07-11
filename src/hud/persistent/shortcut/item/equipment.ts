@@ -1,5 +1,5 @@
 import { CreaturePF2e, EquipmentPF2e, ValueAndMaybeMax } from "module-helpers";
-import { generateItemShortcutFields, ItemShortcut, ItemShortcutSchema, ShortcutSource } from ".";
+import { generateItemShortcutFields, ItemShortcut, ItemShortcutSchema, ShortcutSource } from "..";
 
 class EquipmentShortcut extends ItemShortcut<EquipmentShortcutSchema, EquipmentPF2e<CreaturePF2e>> {
     static defineSchema(): EquipmentShortcutSchema {

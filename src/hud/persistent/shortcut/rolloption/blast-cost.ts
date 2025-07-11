@@ -1,6 +1,6 @@
+import { ELEMENTAL_BLAST_IMG } from "hud";
 import { localize } from "module-helpers";
-import { generateToggleShortcutFields, ToggleShortcut, ToggleShortcutSchema } from ".";
-import { ELEMENTAL_BLAST_IMG } from "hud/sidebar";
+import { generateToggleShortcutFields, ToggleShortcut, ToggleShortcutSchema } from "..";
 
 class BlastCostShortcut extends ToggleShortcut {
     static defineSchema(): ToggleShortcutSchema {

@@ -6,7 +6,12 @@ import {
     ItemType,
     usePhysicalItem,
 } from "module-helpers";
-import { BaseShortcutSchema, generateBaseShortcutFields, getItemSlug, PersistentShortcut } from ".";
+import {
+    BaseShortcutSchema,
+    generateBaseShortcutFields,
+    getItemSlug,
+    PersistentShortcut,
+} from "..";
 import fields = foundry.data.fields;
 
 function generateItemShortcutFields(type: string): ItemShortcutSchema {

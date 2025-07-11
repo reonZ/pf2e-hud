@@ -12,7 +12,7 @@ import {
     generateBaseShortcutFields,
     PersistentShortcut,
     ShortcutSource,
-} from ".";
+} from "..";
 import fields = foundry.data.fields;
 
 function generateToggleShortcutFields(type: string): ToggleShortcutSchema {
