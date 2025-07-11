@@ -90,6 +90,10 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
         return this.canUse && (this.toggle?.suboptions.length ?? 0) > 1;
     }
 
+    get icon(): string {
+        return "fa-solid fa-gear";
+    }
+
     get checkbox(): { checked: boolean } {
         return { checked: (this.item && this.toggle?.checked) || false };
     }
