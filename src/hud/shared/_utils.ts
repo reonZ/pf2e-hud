@@ -117,6 +117,10 @@ function isAnimistEntry(entry: BaseSpellcastingEntry<CreaturePF2e>) {
     );
 }
 
+function getUiScale(): number {
+    return game.settings.get<{ uiScale?: number }>("core", "uiConfig")?.uiScale ?? 1;
+}
+
 type SliderData = {
     action: string;
     canBack: boolean;
@@ -124,5 +128,13 @@ type SliderData = {
     value: number;
 };
 
-export { createSlider, FilterValue, getCoverEffect, isAnimistEntry, makeFadeable, rollInitiative };
+export {
+    createSlider,
+    FilterValue,
+    getCoverEffect,
+    getUiScale,
+    isAnimistEntry,
+    makeFadeable,
+    rollInitiative,
+};
 export type { SliderData };

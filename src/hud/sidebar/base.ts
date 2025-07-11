@@ -5,6 +5,7 @@ import {
     FoundryDragData,
     getItemFromElement,
     getSidebars,
+    getUiScale,
     IAdvancedPF2eHUD,
     ItemHudPopup,
     makeFadeable,
@@ -240,7 +241,7 @@ abstract class SidebarPF2eHUD<
     }
 
     get coords(): UpdatedSidebarCoords {
-        const uiScale = game.settings.get<{ uiScale?: number }>("core", "uiConfig")?.uiScale ?? 1;
+        const uiScale = getUiScale();
         const coords = this.parent.sidebarCoords as UpdatedSidebarCoords;
 
         const bounds = this.element.getBoundingClientRect();

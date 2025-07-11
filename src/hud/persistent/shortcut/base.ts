@@ -1,3 +1,4 @@
+import { getUiScale } from "hud";
 import {
     createHTMLElement,
     CreaturePF2e,
@@ -194,30 +195,49 @@ abstract class PersistentShortcut<
 
     async radialMenu<T extends string>(
         title: string,
-        sections: () => (ShortcutRadialSection | ShortcutRadialOption[])[],
+        sectionsFn: () => (ShortcutRadialSection | ShortcutRadialOption[])[],
         onSelect: (value: T) => void
     ) {
         const element = this.element;
         if (!element) return;
 
+        const displayRadial = (radialElement: HTMLElement) => {
+            document.body.appendChild(radialElement);
+
+            const uiScale = getUiScale();
+            const bounds = radialElement.getBoundingClientRect();
+            const sBounds = element.getBoundingClientRect();
+            const offsetHeight = (bounds.height / uiScale - bounds.height) / 2;
+
+            const left = sBounds.left + sBounds.width / 2 - bounds.width / uiScale / 2;
+            const top = sBounds.bottom - offsetHeight - bounds.height;
+
+            radialElement.style.left = `${left}px`;
+            radialElement.style.top = `${top}px`;
+
+            return radialElement;
+        };
+
         if (this.#radial) {
-            element.appendChild(this.#radial);
+            displayRadial(this.#radial);
             return;
         }
 
+        const sections = sectionsFn();
         const radial = createHTMLElement("div", {
-            classes: ["radial-panel"],
+            classes: ["pf2e-hud-element"],
             content: await render("shortcuts/radial", {
                 title: this.custom.name || this.title,
-                sections: sections().map((section): ShortcutRadialSection => {
+                sections: sections.map((section): ShortcutRadialSection => {
                     return R.isArray(section) ? { title: undefined, options: section } : section;
                 }),
             }),
+            id: "pf2e-hud-radial-panel",
         });
 
         radial.style.setProperty("--columns", String(sections.length));
 
-        element.appendChild(radial);
+        this.#radial = displayRadial(radial);
 
         const removeRadial = () => {
             radial.remove();
@@ -249,8 +269,6 @@ abstract class PersistentShortcut<
         });
 
         radial.addEventListener("mouseleave", removeRadial);
-
-        this.#radial = radial;
     }
 }
 
