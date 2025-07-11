@@ -79,6 +79,8 @@ abstract class PersistentShortcut<
         this.#item = item as Maybe<TItem>;
     }
 
+    abstract get icon(): string;
+
     get actor(): CreaturePF2e {
         return this.#actor;
     }
@@ -116,10 +118,6 @@ abstract class PersistentShortcut<
     }
 
     get rank(): { value: string } | null {
-        return null;
-    }
-
-    get icon(): string | null {
         return null;
     }
 

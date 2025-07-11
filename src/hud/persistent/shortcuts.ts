@@ -31,6 +31,8 @@ import {
     SpellEntryData,
     SpellShortcut,
     SpellShortcutData,
+    StanceShortcut,
+    StanceShortcutData,
     ToggleShortcut,
     ToggleShortcutData,
 } from ".";
@@ -42,6 +44,7 @@ const SHORTCUTS = {
     extraAction: ExtraActionShortcut,
     skillAction: SkillActionShortcut,
     spell: SpellShortcut,
+    stance: StanceShortcut,
     toggle: ToggleShortcut,
 } satisfies Record<string, ConstructorOf<PersistentShortcut>>;
 
@@ -378,6 +381,7 @@ type ShortcutData =
     | ExtraActionShortcutData
     | SkillActionShortcutData
     | SpellShortcutData
+    | StanceShortcutData
     | ToggleShortcutData;
 
 type PersistentShortcutsContext = {

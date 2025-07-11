@@ -245,6 +245,7 @@
                 "wrongType": "You cannot create a shortcut of that type."
             },
             "tooltip": {
+                "active": "Active",
                 "altUse": {
                     "skillAction": "Variants Menu",
                     "toggle": "Select SubOption"
@@ -256,6 +257,7 @@
                 },
                 "disabled": "Disabled",
                 "enabled": "Enabled",
+                "inactive": "Inactive",
                 "subtitle": {
                     "extraAction": "Extra Action",
                     "spell": "Spellcasting",

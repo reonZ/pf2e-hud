@@ -1,8 +1,10 @@
-import { FilterValue, ShortcutData } from "hud";
+import { FilterValue, StanceShortcutData } from "hud";
 import {
     AbilityItemPF2e,
     actorItems,
     ActorPF2e,
+    CharacterPF2e,
+    CreaturePF2e,
     EffectPF2e,
     FeatPF2e,
     findItemWithSourceId,
@@ -16,10 +18,9 @@ import {
 import { ActionsSidebarPF2eHUD } from ".";
 import { BaseSidebarItem } from "..";
 
-const REPLACERS = new Map([
+const REPLACERS: Map<DocumentUUID, { replace: DocumentUUID; effect: DocumentUUID }> = new Map([
     [
         "Compendium.pf2e.feats-srd.Item.nRjyyDulHnP5OewA", // gorilla pound
-
         {
             replace: "Compendium.pf2e.feats-srd.Item.DqD7htz8Sd1dh3BT", // gorilla stance
             effect: "Compendium.pf2e.feat-effects.Item.UZKIKLuwpQu47feK",
@@ -27,7 +28,7 @@ const REPLACERS = new Map([
     ],
 ]);
 
-const EXTRAS = new Map([
+const EXTRAS: Map<DocumentUUID, { effect: DocumentUUID }> = new Map([
     [
         "Compendium.pf2e.feats-srd.Item.xQuNswWB3eg1UM28", // cobra envenom
         { effect: "Compendium.pf2e.feat-effects.Item.2Qpt0CHuOMeL48rN" },
@@ -47,14 +48,14 @@ const EXTRAS = new Map([
 ]);
 
 class ActionsStance extends BaseSidebarItem<
-    FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>,
+    FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>,
     StanceData
 > {
     get uuid(): string {
         return this.effectUUID;
     }
 
-    get actor(): ActorPF2e {
+    get actor(): CreaturePF2e {
         return this.item.actor;
     }
 
@@ -62,53 +63,66 @@ class ActionsStance extends BaseSidebarItem<
         return hasItemWithSourceId(this.actor, this.effectUUID, "effect");
     }
 
-    async toggle(force?: boolean) {
-        const actor = this.item.actor;
-        if (!force && !canUseStances(actor)) return;
-
-        const effects = R.pipe(
-            getStances(actor) ?? [],
-            R.map(({ effectUUID }): [effectUUID: string, effectId: string] | undefined => {
-                const effect = findItemWithSourceId(actor, effectUUID, "effect");
-                return effect ? [effectUUID, effect.id] : undefined;
-            }),
-            R.filter(R.isTruthy)
-        );
-
-        const effect = effects.findSplice(([effectUUID]) => {
-            return effectUUID === this.effectUUID;
-        });
-
-        if (effects.length) {
-            await actor.deleteEmbeddedDocuments(
-                "Item",
-                effects.map(([_, id]) => id)
-            );
-        }
-
-        if (!effect) {
-            const source = await getItemSourceFromUuid(this.effectUUID, "EffectPF2e");
-            if (!source) return;
-
-            foundry.utils.setProperty(source, "flags.core.sourceId", this.effectUUID);
-            foundry.utils.setProperty(source, "_stats.compendiumSource", this.effectUUID);
-
-            const [item] = await actor.createEmbeddedDocuments("Item", [source]);
-            item?.toMessage();
-        } else if (!effects.length) {
-            await actor.deleteEmbeddedDocuments("Item", [effect[1]]);
-        }
+    async toggle(force?: boolean): Promise<void> {
+        toggleStance(this.actor, this.effectUUID, force);
     }
 
-    toShortcut(): ShortcutData | undefined {
-        return;
+    toShortcut(): StanceShortcutData {
+        return {
+            effectUUID: this.effectUUID,
+            img: this.img,
+            itemId: this.id,
+            name: this.label,
+            type: "stance",
+        };
     }
 }
 
 interface ActionsStance extends Readonly<StanceData> {}
 
+async function toggleStance(
+    actor: CreaturePF2e,
+    sourceUUID: DocumentUUID,
+    force?: boolean
+): Promise<void> {
+    if (!force && !canUseStances(actor)) return;
+
+    const effects = R.pipe(
+        getStances(actor) ?? [],
+        R.map(({ effectUUID }): [effectUUID: string, effectId: string] | undefined => {
+            const effect = findItemWithSourceId(actor, effectUUID, "effect");
+            return effect ? [effectUUID, effect.id] : undefined;
+        }),
+        R.filter(R.isTruthy)
+    );
+
+    const effect = effects.findSplice(([effectUUID]) => {
+        return effectUUID === sourceUUID;
+    });
+
+    if (effects.length) {
+        await actor.deleteEmbeddedDocuments(
+            "Item",
+            effects.map(([_, id]) => id)
+        );
+    }
+
+    if (!effect) {
+        const source = await getItemSourceFromUuid(sourceUUID, "EffectPF2e");
+        if (!source) return;
+
+        foundry.utils.setProperty(source, "flags.core.sourceId", sourceUUID);
+        foundry.utils.setProperty(source, "_stats.compendiumSource", sourceUUID);
+
+        const [item] = await actor.createEmbeddedDocuments("Item", [source]);
+        item?.toMessage();
+    } else if (!effects.length) {
+        await actor.deleteEmbeddedDocuments("Item", [effect[1]]);
+    }
+}
+
 function getSidebarStancesData(this: ActionsSidebarPF2eHUD): StancesContext | undefined {
-    const actor = this.actor;
+    const actor = this.actor as CharacterPF2e;
     const stances = getStances(actor);
     if (!stances?.length) return;
 
@@ -131,7 +145,7 @@ function isValidStance(stance: ItemPF2e): stance is FeatPF2e | AbilityItemPF2e {
     );
 }
 
-function getStances(actor: ActorPF2e): StanceData[] | undefined {
+function getStances(actor: CreaturePF2e): StanceData[] | undefined {
     const stances: StanceData[] = [];
     const replaced = new Set<string>();
 
@@ -191,12 +205,19 @@ type StancesContext = {
 };
 
 type StanceData = {
-    effectUUID: string;
+    effectUUID: DocumentUUID;
     img: ImageFilePath;
-    item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>;
+    item: FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>;
     label: string;
     sourceUUID: ItemUUID;
 };
 
-export { ActionsStance, canUseStances, getSidebarStancesData, getStances, onStancesClickAction };
+export {
+    ActionsStance,
+    canUseStances,
+    getSidebarStancesData,
+    getStances,
+    onStancesClickAction,
+    toggleStance,
+};
 export type { StancesContext };

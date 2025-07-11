@@ -80,11 +80,13 @@
             left: -2px;
             text-shadow: var(--text-shadow);
             font-size: 0.85em;
+            min-width: 1.8ch;
+            text-align: center;
         }
 
         .checkbox {
             bottom: -7px;
-            left: -3px;
+            right: -3px;
 
             i {
                 font-size: 1.3em;
@@ -96,6 +98,12 @@
                     opacity: 0.6;
                     color: black;
                 }
+            }
+        }
+
+        &[data-type="stance"] {
+            .icon {
+                font-size: 1em;
             }
         }
 

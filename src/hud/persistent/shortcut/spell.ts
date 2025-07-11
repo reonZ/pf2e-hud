@@ -263,8 +263,8 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         return this.#entryData?.collection.entry;
     }
 
-    get icon(): string | null {
-        return SPELL_CATEGORIES[this.category]?.icon ?? null;
+    get icon(): string {
+        return SPELL_CATEGORIES[this.category]?.icon ?? "";
     }
 
     get cost(): ShortcutCost | null {
