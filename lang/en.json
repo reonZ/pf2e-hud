@@ -260,6 +260,7 @@
                 "inactive": "Inactive",
                 "subtitle": {
                     "extraAction": "Extra Action",
+                    "macro": "Self-Executed Macro",
                     "spell": "Spellcasting",
                     "toggle": "Roll Option"
                 },

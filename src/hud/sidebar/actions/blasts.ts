@@ -119,7 +119,6 @@ class ActionsSidebarBlast extends BaseSidebarItem<
         melee: boolean,
         outcome: BlastOutcome
     ): Promise<Rolled<DamageRoll> | null> {
-        console.log(outcome);
         return this.action.damage({
             damageType: this.damageType,
             element: this.element,

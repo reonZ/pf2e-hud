@@ -15,6 +15,8 @@ import {
     warning,
 } from "module-helpers";
 import {
+    ActionShortcut,
+    ActionShortcutData,
     BaseShortcutSchema,
     BlastCostShortcut,
     ConsumableShortcut,
@@ -38,6 +40,7 @@ import {
 } from ".";
 
 const SHORTCUTS = {
+    action: ActionShortcut,
     blastCost: BlastCostShortcut,
     consumable: ConsumableShortcut,
     equipment: EquipmentShortcut,
@@ -372,10 +375,13 @@ type ShortcutCacheData = {
     canCastStaffRank?: Partial<Record<OneToTen, boolean>>;
     animistCollection?: SpellCollection<CreaturePF2e> | null;
     animistVesselsData?: dailies.AnimistVesselsData | null;
+    explorations?: string[];
+    getActionMacro?: toolbelt.ToolbeltApi["actionable"]["getActionMacro"] | null;
     spellcasting?: Record<string, SpellEntryData | null>;
 };
 
 type ShortcutData =
+    | ActionShortcutData
     | ConsumableShortcutData
     | EquipmentShortcutData
     | ExtraActionShortcutData

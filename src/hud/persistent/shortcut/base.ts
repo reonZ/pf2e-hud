@@ -296,7 +296,7 @@ type ShortcutTooltipData = {
 
 type ShortcutCost = {
     value: string | number;
-    combo: boolean;
+    combo?: boolean;
 };
 
 type ShortcutCustomSchema = {

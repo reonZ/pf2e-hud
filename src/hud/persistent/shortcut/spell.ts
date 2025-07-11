@@ -268,7 +268,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
     }
 
     get cost(): ShortcutCost | null {
-        const value = this.item ? this.item.system.time.value : null;
+        const value = this.item?.system.time.value;
         return R.isNonNullish(value) ? { value, combo: isNaN(Number(value)) } : null;
     }
 
@@ -291,9 +291,13 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
     get subtitle(): string {
         const label =
             this.spellcastinEntry?.name ?? localize("shortcuts.tooltip.subtitle", this.type);
-        const cost = this.item && `<span class="action-glyph">${this.item.actionGlyph}</span>`;
 
-        return cost ? `${cost} ${label}` : label;
+        if (!this.item) {
+            return label;
+        }
+
+        const cost = `<span class="action-glyph">${this.item.actionGlyph}</span>`;
+        return `${cost} ${label}`;
     }
 
     use(event: MouseEvent): void {

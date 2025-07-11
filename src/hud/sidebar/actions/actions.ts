@@ -1,4 +1,4 @@
-import { FilterValue, ShortcutData } from "hud";
+import { ActionShortcutData, FilterValue } from "hud";
 import {
     AbilityItemPF2e,
     ActionType,
@@ -47,17 +47,7 @@ class ActionsSidebarAction extends BaseSidebarItem<
     }
 
     toggleExporation() {
-        const actor = this.actor;
-        if (!actor.isOfType("character")) return;
-
-        const actionId = this.id;
-        const explorations = actor.system.exploration.filter((id) => actor.items.has(id));
-
-        if (!explorations.findSplice((id) => id === actionId)) {
-            explorations.push(actionId);
-        }
-
-        return actor.update({ "system.exploration": explorations });
+        return toggleExploration(this.actor, this.id);
     }
 
     toggleTrait(trait: string) {
@@ -75,8 +65,13 @@ class ActionsSidebarAction extends BaseSidebarItem<
         return item?.isOfType("feat", "action") && useAction(event, item);
     }
 
-    toShortcut(): ShortcutData | undefined {
-        return;
+    toShortcut(): ActionShortcutData {
+        return {
+            img: this.img,
+            itemId: this.item.id,
+            name: this.label,
+            type: "action",
+        };
     }
 }
 
@@ -229,7 +224,9 @@ function getActionImg(
     return [actionIcon, defaultIcon, FEAT_ICON].includes(item.img) ? actionIcon : item.img;
 }
 
-function getActionFrequency(item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>) {
+function getActionFrequency(
+    item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>
+): { max: number; value: number; label: string } | undefined {
     const frequency = item.frequency;
     if (!frequency?.max) return;
 
@@ -242,7 +239,9 @@ function getActionFrequency(item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2
     };
 }
 
-function getActionResource(item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>) {
+function getActionResource(
+    item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>
+): { max: number; value: number; slug: string; label: string } | undefined {
     if (item.crafting?.resource) {
         const resource = item.actor.getResource(item.crafting.resource);
         if (!resource?.max) return;
@@ -274,6 +273,18 @@ function onActionClickAction(
     }
 }
 
+function toggleExploration(actor: ActorPF2e, actionId: string) {
+    if (!actor.isOfType("character")) return;
+
+    const explorations = actor.system.exploration.filter((id) => actor.items.has(id));
+
+    if (!explorations.findSplice((id) => id === actionId)) {
+        explorations.push(actionId);
+    }
+
+    return actor.update({ "system.exploration": explorations });
+}
+
 type ActionEventAction = "remove-effect" | "toggle-exploration" | "toggle-trait" | "use-action";
 
 type ActionUsage = {
@@ -302,5 +313,13 @@ type ActionData = {
     usage: Maybe<ActionUsage>;
 };
 
-export { ActionsSidebarAction, getSidebarActionsData, onActionClickAction };
+export {
+    ActionsSidebarAction,
+    getActionFrequency,
+    getActionImg,
+    getActionResource,
+    getSidebarActionsData,
+    onActionClickAction,
+    toggleExploration,
+};
 export type { ActionSection };

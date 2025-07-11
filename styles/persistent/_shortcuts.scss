@@ -80,8 +80,12 @@
             left: -2px;
             text-shadow: var(--text-shadow);
             font-size: 0.85em;
-            min-width: 1.8ch;
+            min-width: 2ch;
             text-align: center;
+
+            .fa-solid.fa-play {
+                font-size: 1.1em;
+            }
         }
 
         .checkbox {
