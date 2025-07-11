@@ -393,7 +393,9 @@ type SpellShortcutSchema = BaseShortcutSchema & {
     slug: fields.StringField<string, string, true, false, false>;
 };
 
-type SpellShortcutData = ShortcutSource<SpellShortcutSchema>;
+type SpellShortcutData = ShortcutSource<SpellShortcutSchema> & {
+    type: "spell";
+};
 
 export { SpellShortcut };
 export type { SpellEntryData, SpellShortcutData };

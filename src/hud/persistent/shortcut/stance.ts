@@ -91,7 +91,9 @@ type StanceShortcutSchema = BaseShortcutSchema & {
     itemId: IdField<true, false, false>;
 };
 
-type StanceShortcutData = ShortcutSource<StanceShortcutSchema>;
+type StanceShortcutData = ShortcutSource<StanceShortcutSchema> & {
+    type: "stance";
+};
 
 export { StanceShortcut };
 export type { StanceShortcutData };

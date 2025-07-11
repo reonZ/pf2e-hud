@@ -154,7 +154,9 @@ type ToggleShortcutSchema = BaseShortcutSchema & {
     option: fields.StringField<string, string, true, false, false>;
 };
 
-type ToggleShortcutData = ShortcutSource<ToggleShortcutSchema>;
+type ToggleShortcutData = ShortcutSource<ToggleShortcutSchema> & {
+    type: "toggle" | "blastCost";
+};
 
 export { generateToggleShortcutFields, ToggleShortcut };
 export type { ToggleShortcutData, ToggleShortcutSchema };

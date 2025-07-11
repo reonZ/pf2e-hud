@@ -40,7 +40,7 @@ abstract class BaseSidebarItem<
         return (this.#filterValue ??= new FilterValue(this.label));
     }
 
-    abstract toShortcut(event?: Event): ShortcutData | undefined;
+    abstract toShortcut(event?: Event): ShortcutData;
 }
 
 export { BaseSidebarItem };

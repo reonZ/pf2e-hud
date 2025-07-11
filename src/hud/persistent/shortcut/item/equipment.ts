@@ -29,7 +29,9 @@ interface EquipmentShortcut extends ModelPropsFromSchema<EquipmentShortcutSchema
 
 type EquipmentShortcutSchema = ItemShortcutSchema;
 
-type EquipmentShortcutData = ShortcutSource<EquipmentShortcutSchema>;
+type EquipmentShortcutData = ShortcutSource<EquipmentShortcutSchema> & {
+    type: "equipment";
+};
 
 export { EquipmentShortcut };
 export type { EquipmentShortcutData };

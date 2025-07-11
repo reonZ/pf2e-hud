@@ -51,6 +51,7 @@ class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityIt
 type ExtraActionShortcutSchema = StatisticActionShortcutSchema;
 
 type ExtraActionShortcutData = Omit<ShortcutSource<ExtraActionShortcutSchema>, "override"> & {
+    type: "extraAction";
     override?: {
         agile?: boolean;
         statistic?: StatisticType;

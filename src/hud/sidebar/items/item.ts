@@ -181,16 +181,15 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
         }
     }
 
-    toShortcut(): ItemShortcutData | undefined {
+    toShortcut(): ItemShortcutData {
         const item = this.item;
-        if (!this.item.isOfType("consumable", "equipment")) return;
 
         return {
             img: this.img,
             itemId: item.id,
             name: this.label,
             slug: getItemSlug(item),
-            type: this.item.type,
+            type: this.item.type as "consumable" | "equipment",
         };
     }
 }

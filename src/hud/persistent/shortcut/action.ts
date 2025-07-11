@@ -171,7 +171,9 @@ type ActionShortcutSchema = BaseShortcutSchema & {
     itemId: IdField<true, false, false>;
 };
 
-type ActionShortcutData = ShortcutSource<ActionShortcutSchema>;
+type ActionShortcutData = ShortcutSource<ActionShortcutSchema> & {
+    type: "action";
+};
 
 export { ActionShortcut };
 export type { ActionShortcutData };

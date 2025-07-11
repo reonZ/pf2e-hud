@@ -76,6 +76,7 @@ type SkillActionShortcutSchema = StatisticActionShortcutSchema & {
 };
 
 type SkillActionShortcutData = Omit<ShortcutSource<SkillActionShortcutSchema>, "override"> & {
+    type: "skillAction";
     override?: {
         agile?: boolean;
         statistic?: StatisticType;

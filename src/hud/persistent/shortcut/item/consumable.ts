@@ -59,7 +59,9 @@ interface ConsumableShortcut extends ModelPropsFromSchema<ConsumableShortcutSche
 
 type ConsumableShortcutSchema = ItemShortcutSchema;
 
-type ConsumableShortcutData = ShortcutSource<ConsumableShortcutSchema>;
+type ConsumableShortcutData = ShortcutSource<ConsumableShortcutSchema> & {
+    type: "consumable";
+};
 
 export { ConsumableShortcut };
 export type { ConsumableShortcutData };
