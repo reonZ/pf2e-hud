@@ -119,6 +119,7 @@ class ActionsSidebarBlast extends BaseSidebarItem<
         melee: boolean,
         outcome: BlastOutcome
     ): Promise<Rolled<DamageRoll> | null> {
+        console.log(outcome);
         return this.action.damage({
             damageType: this.damageType,
             element: this.element,
@@ -256,7 +257,11 @@ function onBlastClickAction(
         sidebarItem.attack(event, melee === "true", Number(mapIncreases));
     } else if (action === "blast-damage") {
         const { melee, outcome } = target.dataset as BlastDamageDataset;
-        sidebarItem.damage(event, melee === "true", outcome);
+        sidebarItem.damage(
+            event,
+            melee === "true",
+            outcome === "success" ? "success" : "criticalSuccess"
+        );
     } else if (action === "blast-set-damage-type") {
         const type = target.dataset.value;
 
