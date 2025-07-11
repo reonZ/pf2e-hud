@@ -156,7 +156,7 @@
         &.inactive {
             cursor: default;
 
-            > *:not(.image) {
+            > *:not(.image):not(.icon) {
                 display: none;
             }
         }
