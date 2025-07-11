@@ -94,8 +94,9 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
         return "fa-solid fa-gear";
     }
 
-    get checkbox(): { checked: boolean } {
-        return { checked: (this.item && this.toggle?.checked) || false };
+    get checkbox(): { checked: boolean } | null {
+        const toggle = this.toggle;
+        return this.item && !!toggle ? { checked: toggle.checked } : null;
     }
 
     get unusableReason(): string | undefined {
