@@ -50,18 +50,21 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
         return actor.items.get(itemId);
     }
 
+    async _initShortcut(): Promise<void> {
+        this.#toggle = this.actor.synthetics.toggles[this.domain]?.[this.option];
+        this.#selected = this.#toggle?.suboptions.find((suboption) => suboption.selected);
+    }
+
     get toggle(): RollOptionToggle | undefined {
-        return (this.#toggle ??= this.actor.synthetics.toggles[this.domain]?.[this.option]);
+        return this.#toggle;
+    }
+
+    get selected(): Suboption | undefined {
+        return this.#selected;
     }
 
     get title(): string {
         return this.toggle?.label ?? this.name;
-    }
-
-    get selected(): Suboption | undefined {
-        return (this.#selected ??= this.#toggle?.suboptions.find(
-            (suboption) => suboption.selected
-        ));
     }
 
     get subtitle(): string {
@@ -87,9 +90,8 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
         return this.canUse && (this.toggle?.suboptions.length ?? 0) > 1;
     }
 
-    get checkbox(): { checked: boolean } | null {
-        const toggle = this.toggle;
-        return this.item && !!toggle ? { checked: toggle.checked } : null;
+    get checkbox(): { checked: boolean } {
+        return { checked: (this.item && this.toggle?.checked) || false };
     }
 
     get unusableReason(): string | undefined {
