@@ -144,7 +144,7 @@ class HealthStatus extends foundry.abstract.DataModel<null, HealthStatusSchema> 
             return this.full;
         }
 
-        const percent = ratio * 100;
+        const percent = Math.max(ratio * 100, 1);
         const entry = R.pipe(
             this.entries,
             R.sortBy([R.prop("marker"), "desc"]),
