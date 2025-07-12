@@ -20,8 +20,8 @@ class StanceShortcut extends PersistentShortcut<
     StanceShortcutSchema,
     FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>
 > {
-    #active?: boolean;
-    #sourceEffect!: EffectPF2e | CompendiumIndexData | null;
+    #active!: boolean;
+    #sourceEffect: Maybe<EffectPF2e | CompendiumIndexData>;
 
     static defineSchema(): StanceShortcutSchema {
         return {
@@ -46,14 +46,15 @@ class StanceShortcut extends PersistentShortcut<
     }
 
     async _initShortcut(): Promise<void> {
+        this.#active = !!this.item && hasItemWithSourceId(this.actor, this.effectUUID);
         this.#sourceEffect = fromUuidSync<EffectPF2e>(this.effectUUID);
     }
 
     get active(): boolean {
-        return (this.#active ??= !!this.item && hasItemWithSourceId(this.actor, this.effectUUID));
+        return this.#active;
     }
 
-    get sourceEffect(): EffectPF2e | CompendiumIndexData | null {
+    get sourceEffect(): Maybe<EffectPF2e | CompendiumIndexData> {
         return this.#sourceEffect;
     }
 

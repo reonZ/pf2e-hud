@@ -5,10 +5,21 @@ class ConsumableShortcut extends ItemShortcut<
     ConsumableShortcutSchema,
     ConsumablePF2e<CreaturePF2e>
 > {
-    #uses?: ValueAndMaybeMax;
+    #uses!: ValueAndMaybeMax;
 
     static defineSchema(): ConsumableShortcutSchema {
         return generateItemShortcutFields("consumable");
+    }
+
+    async _initShortcut(): Promise<void> {
+        const item = this.item;
+
+        const uses =
+            item?.uses.max && (item.uses.max > 1 || item.category === "wand")
+                ? item.uses
+                : undefined;
+
+        this.#uses = uses ?? { value: this.quantity };
     }
 
     get canUse(): boolean {
@@ -20,18 +31,7 @@ class ConsumableShortcut extends ItemShortcut<
     }
 
     get uses(): ValueAndMaybeMax {
-        if (this.#uses) {
-            return this.#uses;
-        }
-
-        const item = this.item;
-
-        const uses =
-            item?.uses.max && (item.uses.max > 1 || item.category === "wand")
-                ? item.uses
-                : undefined;
-
-        return (this.#uses = uses ?? { value: this.quantity });
+        return this.#uses;
     }
 
     get icon(): string {
