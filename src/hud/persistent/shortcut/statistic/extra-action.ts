@@ -32,7 +32,10 @@ class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityIt
     }
 
     get subtitle(): string {
-        return localize("shortcuts.tooltip.subtitle", this.type);
+        const label = localize("shortcuts.tooltip.subtitle", this.type);
+        const cost = this.cost ? Handlebars.helpers.actionGlyph(this.cost.value) : undefined;
+
+        return cost ? `${cost} ${label}` : label;
     }
 
     get altUseLabel(): string {

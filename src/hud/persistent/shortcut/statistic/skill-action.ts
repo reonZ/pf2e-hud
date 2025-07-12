@@ -45,7 +45,10 @@ class SkillActionShortcut extends StatisticActionShortcut<SkillAction, FeatPF2e 
     get subtitle(): string {
         const statistic = this.override.statistic ?? this.statistic;
         const label = getSkillActionGroup(statistic)?.label ?? super.subtitle;
-        return this.variant ? `${label} (${this.name})` : label;
+        const subtitle = this.variant ? `${label} (${this.name})` : label;
+        const cost = this.cost ? Handlebars.helpers.actionGlyph(this.cost.value) : undefined;
+
+        return cost ? `${cost} ${subtitle}` : subtitle;
     }
 
     get canAltUse(): boolean {

@@ -10,6 +10,7 @@ import {
     BaseShortcutSchema,
     generateBaseShortcutFields,
     PersistentShortcut,
+    ShortcutCost,
     ShortcutDataset,
 } from "..";
 import fields = foundry.data.fields;
@@ -68,6 +69,11 @@ abstract class StatisticActionShortcut<
 
     get usedImage(): ImageFilePath {
         return (this.#usedImage ??= this.action?.img ?? this.img);
+    }
+
+    get cost(): ShortcutCost | null {
+        const actionCost = this.action?.actionCost;
+        return actionCost ? { value: actionCost } : null;
     }
 
     use(event: MouseEvent): void {
