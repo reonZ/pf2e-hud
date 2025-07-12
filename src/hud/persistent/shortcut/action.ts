@@ -26,9 +26,9 @@ class ActionShortcut extends PersistentShortcut<
 > {
     #actionCost?: OneToThree | "reaction" | "free" | null;
     #isExploration?: boolean;
-    #selfEffect?: SelfEffectReference | null;
+    #selfEffect: Maybe<SelfEffectReference>;
     #macro: Maybe<MacroPF2e>;
-    #uses!: ValueAndMaybeMax | null;
+    #uses?: ValueAndMaybeMax;
 
     static defineSchema(): ActionShortcutSchema {
         return {
@@ -58,10 +58,16 @@ class ActionShortcut extends PersistentShortcut<
         });
 
         const crafting = ability.crafting;
+        const actionCost = this.item?.actionCost;
         const selfEffect = (this.#selfEffect = !crafting ? ability.system.selfEffect : null);
 
         this.#macro = !crafting && !selfEffect ? await getActionMacro?.(ability) : null;
-        this.#uses = getActionResource(ability) ?? getActionFrequency(ability) ?? null;
+        this.#uses = getActionResource(ability) ?? getActionFrequency(ability) ?? undefined;
+        this.#actionCost = (actionCost?.type !== "action" && actionCost?.type) || actionCost?.value;
+    }
+
+    get canUse(): boolean {
+        return !!this.item && (!this.uses || this.uses.value > 0);
     }
 
     get isExploration(): boolean {
@@ -76,24 +82,8 @@ class ActionShortcut extends PersistentShortcut<
         return this.#macro;
     }
 
-    get actionCost(): OneToThree | "reaction" | "free" | null {
-        if (this.#actionCost !== undefined) {
-            return this.#actionCost;
-        }
-
-        const actionCost = this.item?.actionCost;
-
-        if (!actionCost) {
-            return (this.#actionCost = null);
-        }
-
-        const type = actionCost.type;
-
-        if (type !== "action") {
-            return (this.#actionCost = type);
-        }
-
-        return (this.#actionCost = actionCost.value);
+    get actionCost(): Maybe<OneToThree | "reaction" | "free"> {
+        return this.#actionCost;
     }
 
     get cost(): ShortcutCost | null {
@@ -104,7 +94,7 @@ class ActionShortcut extends PersistentShortcut<
     }
 
     get uses(): ValueAndMaybeMax | null {
-        return this.#uses;
+        return this.#uses ?? null;
     }
 
     get icon(): string {
@@ -152,6 +142,10 @@ class ActionShortcut extends PersistentShortcut<
         const glyph = Handlebars.helpers.actionGlyph(actionCost);
 
         return `${glyph} ${subtitle}`;
+    }
+
+    get unusableReason(): string | undefined {
+        return !this.item ? "match" : this.uses && this.uses.value < 1 ? "uses" : undefined;
     }
 
     use(event: MouseEvent): void {
