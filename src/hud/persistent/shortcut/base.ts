@@ -117,6 +117,10 @@ abstract class PersistentShortcut<
         return this.item?.img ?? this.img;
     }
 
+    get cost(): ShortcutCost | null {
+        return null;
+    }
+
     get rank(): { value: string } | null {
         return null;
     }
@@ -316,4 +320,10 @@ type ShortcutDataset = { itemId: string } | { itemUuid: DocumentUUID };
 type ShortcutSource<T extends BaseShortcutSchema> = Omit<SourceFromSchema<T>, "custom">;
 
 export { generateBaseShortcutFields, PersistentShortcut };
-export type { BaseShortcutSchema, ShortcutCost, ShortcutDataset, ShortcutSource };
+export type {
+    BaseShortcutSchema,
+    ShortcutCost,
+    ShortcutDataset,
+    ShortcutRadialSection,
+    ShortcutSource,
+};

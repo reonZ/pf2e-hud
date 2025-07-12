@@ -181,6 +181,7 @@
     min-width: 30em;
     box-shadow: none;
     overflow: visible;
+    transition: none;
 
     .content {
         position: relative;
@@ -267,13 +268,16 @@
             }
         }
     }
+
+    &.active {
+        transition: opacity 500ms;
+    }
 }
 
 #pf2e-hud-radial-panel {
     --padding: 0.2em 0.5em;
 
-    z-index: 200;
-    min-width: 7em;
+    z-index: calc(var(--z-index-tooltip) + 1);
     pointer-events: all;
     position: absolute;
     transform: translateY(0.5em);
@@ -296,13 +300,27 @@
         font-weight: 500;
     }
 
-    .options {
+    .title {
+        grid-row: 2;
+        text-align: center;
+        border-bottom: var(--header-border);
+        padding: var(--padding);
+        background: var(--header-background);
+    }
+
+    .section {
         display: flex;
         flex-direction: column;
+        min-width: 7em;
 
         .option {
+            min-width: 7em;
             padding: var(--padding);
             text-align: center;
+
+            > * {
+                pointer-events: none;
+            }
 
             &:not(:last-child) {
                 border-bottom: var(--header-border);
@@ -323,7 +341,7 @@
             }
         }
 
-        + .options {
+        + .section {
             border-left: var(--header-border);
         }
     }

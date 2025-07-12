@@ -34,7 +34,7 @@ const RAW_EXTRAS_ACTIONS = [
 const EXTRAS_KEYS = RAW_EXTRAS_ACTIONS.map(({ key }) => key);
 
 function getExtraKeys(): string[] {
-    return EXTRAS_KEYS.slice();
+    return EXTRAS_KEYS;
 }
 
 type ExtrasActionData = RawBaseActionData & {

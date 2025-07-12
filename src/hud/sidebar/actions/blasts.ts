@@ -1,4 +1,4 @@
-import { FilterValue, ShortcutData, ToggleShortcutData } from "hud";
+import { BlastShortcutData, FilterValue, ToggleShortcutData } from "hud";
 import {
     AbilityItemPF2e,
     CharacterPF2e,
@@ -8,7 +8,6 @@ import {
     DamageType,
     EffectTrait,
     ElementalBlast,
-    ElementTrait,
     localize,
     objectHasKey,
     R,
@@ -139,8 +138,14 @@ class ActionsSidebarBlast extends BaseSidebarItem<
         return this.formula[melee ? "melee" : "ranged"][type];
     }
 
-    toShortcut(): ShortcutData | undefined {
-        return;
+    toShortcut(): BlastShortcutData {
+        return {
+            elementTrait: this.element,
+            img: this.img,
+            itemId: this.item.id,
+            name: this.label,
+            type: "blast",
+        };
     }
 }
 
@@ -172,7 +177,7 @@ async function getSidebarBlastsData(
  */
 async function getElementalBlastsData(
     actor: CharacterPF2e,
-    elementTrait: ElementTrait
+    elementTrait: EffectTrait
 ): Promise<ElementalBlastsData | undefined>;
 async function getElementalBlastsData(
     actor: CharacterPF2e,
@@ -180,7 +185,7 @@ async function getElementalBlastsData(
 ): Promise<ElementalBlastsData[] | undefined>;
 async function getElementalBlastsData(
     actor: CharacterPF2e,
-    elementTrait?: ElementTrait
+    elementTrait?: EffectTrait
 ): Promise<ElementalBlastsData[] | ElementalBlastsData | undefined> {
     const action = new game.pf2e.ElementalBlast(actor);
     const item = action.item;
@@ -319,4 +324,4 @@ export {
     getSidebarBlastsData,
     onBlastsClickAction,
 };
-export type { BlastsContext };
+export type { BlastsContext, ElementalBlastsData };

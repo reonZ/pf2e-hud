@@ -247,7 +247,9 @@
             "tooltip": {
                 "active": "Active",
                 "altUse": {
+                    "blast": "Blast Window",
                     "skillAction": "Variants Menu",
+                    "strike": "Strike Window",
                     "toggle": "Select SubOption"
                 },
                 "click": {

@@ -19,6 +19,8 @@ import {
     ActionShortcutData,
     BaseShortcutSchema,
     BlastCostShortcut,
+    BlastShortcut,
+    BlastShortcutData,
     ConsumableShortcut,
     ConsumableShortcutData,
     EquipmentShortcut,
@@ -35,12 +37,15 @@ import {
     SpellShortcutData,
     StanceShortcut,
     StanceShortcutData,
+    StrikeShortcut,
+    StrikeShortcutData,
     ToggleShortcut,
     ToggleShortcutData,
 } from ".";
 
 const SHORTCUTS = {
     action: ActionShortcut,
+    blast: BlastShortcut,
     blastCost: BlastCostShortcut,
     consumable: ConsumableShortcut,
     equipment: EquipmentShortcut,
@@ -48,6 +53,7 @@ const SHORTCUTS = {
     skillAction: SkillActionShortcut,
     spell: SpellShortcut,
     stance: StanceShortcut,
+    strike: StrikeShortcut,
     toggle: ToggleShortcut,
 } satisfies Record<string, ConstructorOf<PersistentShortcut>>;
 
@@ -382,12 +388,14 @@ type ShortcutCacheData = {
 
 type ShortcutData =
     | ActionShortcutData
+    | BlastShortcutData
     | ConsumableShortcutData
     | EquipmentShortcutData
     | ExtraActionShortcutData
     | SkillActionShortcutData
     | SpellShortcutData
     | StanceShortcutData
+    | StrikeShortcutData
     | ToggleShortcutData;
 
 type PersistentShortcutsContext = {

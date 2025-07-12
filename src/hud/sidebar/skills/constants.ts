@@ -493,7 +493,7 @@ const SKILLS_KEYS = RAW_STATISTICS.flatMap(({ actions }) => {
 const SKILLS_TYPES: StatisticType[] = [];
 
 function getSkillKeys(): string[] {
-    return SKILLS_KEYS.slice();
+    return SKILLS_KEYS;
 }
 
 function getStatisticTypes(): StatisticType[] {

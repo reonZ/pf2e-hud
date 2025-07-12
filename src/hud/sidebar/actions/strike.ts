@@ -1,4 +1,4 @@
-import { FilterValue, getNpcStrikeImage, ShortcutData } from "hud";
+import { FilterValue, getNpcStrikeImage, StrikeShortcutData } from "hud";
 import {
     ActorPF2e,
     addListenerAll,
@@ -119,8 +119,13 @@ class ActionsSidebarStrike extends BaseSidebarItem<
         }
     }
 
-    toShortcut(): ShortcutData | undefined {
-        return;
+    toShortcut(): StrikeShortcutData {
+        return {
+            img: this.img,
+            itemId: this.id,
+            name: this.label,
+            type: "strike",
+        };
     }
 }
 interface ActionsSidebarStrike extends Readonly<StrikeData> {}

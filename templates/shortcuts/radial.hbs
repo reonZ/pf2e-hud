@@ -2,13 +2,13 @@
     {{localize title}}
 </header>
 {{#each sections as |section|}}
-{{#if section.header}}
-<div class="title">{{section.header}}</div>
-{{/if}}
-<div class="options">
+<div class="section">
+    {{#if section.title}}
+    <div class="title">{{localize section.title}}</div>
+    {{/if}}
     {{#each section.options as |option|}}
     <div class="option{{#if option.selected}} selected{{/if}}" data-value="{{option.value}}">
-        {{localize option.label}}
+        {{{localize option.label}}}
     </div>
     {{/each}}
 </div>

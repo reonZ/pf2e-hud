@@ -74,7 +74,7 @@ abstract class StatisticActionShortcut<
         const action = this.action;
         if (!action) return;
 
-        if (event.button !== 0 || !action.hasMap) {
+        if (!action.hasMap) {
             action.roll(this.actor, event, this.useOptions);
             return;
         }
@@ -102,7 +102,7 @@ abstract class StatisticActionShortcut<
     }
 
     altUse(event: MouseEvent): void {
-        this.use(event);
+        this.action?.roll(this.actor, event, this.useOptions);
     }
 }
 
