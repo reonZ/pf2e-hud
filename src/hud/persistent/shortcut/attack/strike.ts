@@ -134,7 +134,8 @@ class StrikeShortcut extends AttackShortcut<
             () => {
                 const isCharacter = this.actor.isOfType("character");
                 const strikeLabel = getStrikeLabel();
-                const sections: ShortcutRadialSection[] = [
+
+                return [
                     [0, attackData] as const,
                     ...(attackData.altUsages ?? []).map((data, i) => [i + 1, data] as const),
                 ].map(([index, { item, variants }]): ShortcutRadialSection => {
@@ -155,16 +156,12 @@ class StrikeShortcut extends AttackShortcut<
                         ],
                     };
                 });
-
-                return sections;
             },
             (value) => {
                 const [index, map] = value.split("-").map(Number) as [number, ZeroToTwo];
-
                 const attack = index === 0 ? attackData : attackData.altUsages?.at(index - 1);
-                if (!attack) return;
 
-                attack.variants[map]?.roll({ event });
+                attack?.variants[map]?.roll({ event });
             }
         );
     }
