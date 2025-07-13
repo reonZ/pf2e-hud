@@ -178,18 +178,18 @@ async function getSidebarBlastsData(
 async function getElementalBlastsData(
     actor: CharacterPF2e,
     elementTrait: EffectTrait
-): Promise<ElementalBlastsData | undefined>;
+): Promise<ElementalBlastsData | null>;
 async function getElementalBlastsData(
     actor: CharacterPF2e,
     elementTrait?: never
-): Promise<ElementalBlastsData[] | undefined>;
+): Promise<ElementalBlastsData[] | null>;
 async function getElementalBlastsData(
     actor: CharacterPF2e,
     elementTrait?: EffectTrait
-): Promise<ElementalBlastsData[] | ElementalBlastsData | undefined> {
+): Promise<ElementalBlastsData[] | ElementalBlastsData | null> {
     const action = new game.pf2e.ElementalBlast(actor);
     const item = action.item;
-    if (!item) return;
+    if (!item) return null;
 
     const configs = elementTrait
         ? R.filter([action.configs.find((c) => c.element === elementTrait)], R.isTruthy)

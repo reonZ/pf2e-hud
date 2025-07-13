@@ -66,13 +66,21 @@
             }
         }
 
-        .rank {
-            top: -3px;
+        .label {
             right: -2px;
             text-shadow: var(--text-shadow);
             min-width: 2ch;
             text-align: center;
-            font-size: 0.85em;
+
+            &.rank {
+                top: -3px;
+                font-size: 0.8em;
+            }
+
+            &.attack {
+                top: -4px;
+                font-size: 0.9em;
+            }
         }
 
         .icon {
@@ -232,14 +240,17 @@
                 border: 2px solid #ffd70026;
                 position: relative;
 
-                .uses {
+                > * {
                     position: absolute;
-                    bottom: -2px;
-                    right: -2px;
+                    background: rgb(0 0 0 / 61%);
                     padding-inline: 0.3em;
                     white-space: nowrap;
-                    background: rgb(0 0 0 / 61%);
                     line-height: 1;
+                }
+
+                .uses {
+                    bottom: -2px;
+                    right: -2px;
                 }
             }
 
@@ -289,16 +300,6 @@
     display: grid;
     grid-template-columns: repeat(var(--columns), 1fr);
     cursor: default;
-
-    header {
-        border: 0;
-        border-bottom: var(--header-border);
-        padding: var(--padding);
-        grid-column: 1 / -1;
-        text-align: center;
-        font-size: 1.1em;
-        font-weight: 500;
-    }
 
     .title {
         grid-row: 2;

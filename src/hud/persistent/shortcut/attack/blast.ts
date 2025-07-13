@@ -1,7 +1,7 @@
 import { ElementalBlastsData, getElementalBlastsData } from "hud";
 import { AbilityItemPF2e, CharacterPF2e, EffectTrait, R, ZeroToTwo } from "module-helpers";
 import { AttackShortcut, AttackShortcutSchema, generateAttackShortcutFields } from ".";
-import { ShortcutCost, ShortcutRadialSection, ShortcutSource } from "..";
+import { ShortcutCost, ShortcutLabel, ShortcutRadialSection, ShortcutSource } from "..";
 import fields = foundry.data.fields;
 
 class BlastShortcut extends AttackShortcut<
@@ -21,7 +21,9 @@ class BlastShortcut extends AttackShortcut<
     }
 
     async _getAttackData(): Promise<Maybe<ElementalBlastsData>> {
-        return getElementalBlastsData(this.actor, this.elementTrait);
+        return this.cached("elementalBlastData", () => {
+            return getElementalBlastsData(this.actor, this.elementTrait);
+        });
     }
 
     get usedImage(): ImageFilePath {
@@ -32,12 +34,12 @@ class BlastShortcut extends AttackShortcut<
         return "fa-solid fa-meteor fa-rotate-180";
     }
 
-    get title(): string {
-        return this.attackData ? game.i18n.localize(this.attackData.label) : this.name;
-    }
-
     get cost(): ShortcutCost | null {
         return this.attackData ? { value: this.attackData.actionCost } : null;
+    }
+
+    get label(): ShortcutLabel | null {
+        return this.attackData ? { value: this.attackData.maps.melee.map0, class: "attack" } : null;
     }
 
     get subtitle(): string {
@@ -46,10 +48,9 @@ class BlastShortcut extends AttackShortcut<
             return super.subtitle;
         }
 
-        const cost = getGlyph(attackData.actionCost);
         const label = game.i18n.localize(CONFIG.PF2E.damageTypes[attackData.damageType]);
         const range = attackData.range.label;
-        return `${cost} ${label} (${range})`;
+        return `${label} (${range})`;
     }
 
     use(event: MouseEvent): void {
@@ -57,7 +58,6 @@ class BlastShortcut extends AttackShortcut<
         if (!attackData) return;
 
         this.radialMenu(
-            this.title,
             () => {
                 const shortLabel = getBlastShortLabel();
                 const glyph = getGlyph(attackData.actionCost);
@@ -78,8 +78,6 @@ class BlastShortcut extends AttackShortcut<
             },
             (value) => {
                 const [type, map] = value.split("-") as ["melee" | "ranged", `${ZeroToTwo}`];
-
-                console.log(attackData, type, map);
 
                 attackData.action.attack({
                     damageType: attackData.damageType,

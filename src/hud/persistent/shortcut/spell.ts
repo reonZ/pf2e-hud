@@ -23,6 +23,7 @@ import {
     RomanRank,
     ShortcutCache,
     ShortcutCost,
+    ShortcutLabel,
     ShortcutSource,
 } from "..";
 import fields = foundry.data.fields;
@@ -280,8 +281,8 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         return ROMAN_RANKS[this.castRank];
     }
 
-    get rank(): { value: string } {
-        return { value: this.romanRank };
+    get label(): ShortcutLabel {
+        return { value: this.romanRank, class: "rank" };
     }
 
     get title(): string {
@@ -289,15 +290,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
     }
 
     get subtitle(): string {
-        const label =
-            this.spellcastinEntry?.name ?? localize("shortcuts.tooltip.subtitle", this.type);
-
-        if (!this.item) {
-            return label;
-        }
-
-        const cost = `<span class="action-glyph">${this.item.actionGlyph}</span>`;
-        return `${cost} ${label}`;
+        return this.spellcastinEntry?.name ?? localize("shortcuts.tooltip.subtitle", this.type);
     }
 
     use(event: MouseEvent): void {

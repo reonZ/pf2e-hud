@@ -1,24 +1,172 @@
-import { CreaturePF2e, MeleePF2e, WeaponPF2e } from "module-helpers";
+import { getActionCategory, getStrikeActions } from "hud/sidebar";
+import {
+    ActorPF2e,
+    CharacterStrike,
+    ConsumablePF2e,
+    CreaturePF2e,
+    MeleePF2e,
+    R,
+    StrikeData,
+    ValueAndMaybeMax,
+    WeaponPF2e,
+    ZeroToTwo,
+} from "module-helpers";
 import { AttackShortcut, AttackShortcutSchema, generateAttackShortcutFields } from ".";
-import { ShortcutSource } from "../base";
-import { getItemSlug } from "../_utils";
+import { ShortcutCost, ShortcutLabel, ShortcutRadialSection, ShortcutSource } from "..";
+import fields = foundry.data.fields;
 
 class StrikeShortcut extends AttackShortcut<
     StrikeShortcutSchema,
-    MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>
+    MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>,
+    StrikeData | CharacterStrike
 > {
+    #ammo!: ConsumablePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e> | null;
+    #damageType?: string | null;
+    #uses!: ValueAndMaybeMax | null;
+
     static defineSchema(): StrikeShortcutSchema {
         return {
             ...generateAttackShortcutFields("strike"),
+            slug: new fields.StringField({
+                required: true,
+                nullable: false,
+            }),
         };
+    }
+    async _initShortcut(): Promise<void> {
+        await super._initShortcut();
+
+        const ammo = (this.#ammo = this.item && "ammo" in this.item ? this.item.ammo : null);
+
+        this.#uses =
+            (ammo?.isOfType("consumable") && ammo.uses.max > 1 && ammo.uses) ||
+            (ammo ? { value: ammo.quantity } : null);
+    }
+
+    async _getAttackData(): Promise<Maybe<StrikeData | CharacterStrike>> {
+        return getStrikeActions(this.actor, { id: this.itemId, slug: this.slug })[0];
+    }
+
+    get isEquipped(): boolean {
+        return !!this.item && (!("isEquipped" in this.item) || this.item.isEquipped);
+    }
+
+    get canUse(): boolean {
+        return super.canUse && !!this.attackData?.canStrike && this.isEquipped;
+    }
+
+    get item(): Maybe<MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>> {
+        return this.attackData?.item as Maybe<MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>>;
+    }
+
+    get cost(): ShortcutCost | null {
+        return this.attackData ? { value: 1 } : null;
+    }
+
+    get label(): ShortcutLabel | null {
+        if (!this.attackData) return null;
+
+        const variant0Label = this.actor.isOfType("character")
+            ? this.attackData.variants[0].label
+            : this.attackData.variants[0].label.split(" ")[1];
+
+        return this.attackData ? { value: variant0Label, class: "attack" } : null;
+    }
+
+    get ammo(): ConsumablePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e> | null {
+        return this.#ammo;
+    }
+
+    get uses(): ValueAndMaybeMax | null {
+        return this.#uses;
     }
 
     get icon(): string {
-        return "fa-solid fa-sword";
+        return this.item?.isRanged ? "fa-solid fa-bow-arrow" : "fa-solid fa-sword";
+    }
+
+    get damageType(): string | null {
+        if (this.#damageType !== undefined) {
+            return this.#damageType;
+        }
+
+        const attackData = this.attackData as Maybe<CharacterStrike>;
+        if (!attackData || !this.actor.isOfType("character")) {
+            return (this.#damageType = null);
+        }
+
+        const versatile = attackData?.versatileOptions.find((option) => option.selected);
+
+        if (versatile) {
+            return game.i18n.localize(versatile.label);
+        }
+
+        const auxiliary = attackData.auxiliaryActions.find((auxiliary) => auxiliary.options);
+
+        if (auxiliary?.options) {
+            const label = R.values(auxiliary.options).find((option) => option.selected)?.label;
+            return (this.#damageType = label ?? null);
+        }
+
+        return (this.#damageType = null);
+    }
+
+    get subtitle(): string {
+        const label = this.ammo?.name ?? this.damageType ?? super.subtitle;
+        const range = this.item ? getActionCategory(this.actor, this.item)?.tooltip : null;
+
+        return range ? `${label} (${range})` : label;
+    }
+
+    get unusableReason(): string | undefined {
+        return super.unusableReason ?? !this.attackData?.canStrike
+            ? "available"
+            : !this.isEquipped
+            ? "equip"
+            : undefined;
     }
 
     use(event: MouseEvent): void {
-        throw new Error("Method not implemented.");
+        const attackData = this.attackData;
+        if (!attackData) return;
+
+        this.radialMenu(
+            () => {
+                const isCharacter = this.actor.isOfType("character");
+                const strikeLabel = getStrikeLabel();
+                const sections: ShortcutRadialSection[] = [
+                    [0, attackData] as const,
+                    ...(attackData.altUsages ?? []).map((data, i) => [i + 1, data] as const),
+                ].map(([index, { item, variants }]): ShortcutRadialSection => {
+                    const variant0Label = isCharacter
+                        ? variants[0].label
+                        : variants[0].label.split(" ")[1];
+
+                    return {
+                        title: item.isMelee
+                            ? "PF2E.WeaponRangeMelee"
+                            : item.isThrown
+                            ? "PF2E.TraitThrown"
+                            : "PF2E.NPCAttackRanged",
+                        options: [
+                            { value: `${index}-0`, label: `${strikeLabel} ${variant0Label}` },
+                            { value: `${index}-1`, label: variants[1].label },
+                            { value: `${index}-2`, label: variants[2].label },
+                        ],
+                    };
+                });
+
+                return sections;
+            },
+            (value) => {
+                const [index, map] = value.split("-").map(Number) as [number, ZeroToTwo];
+
+                const attack = index === 0 ? attackData : attackData.altUsages?.at(index - 1);
+                if (!attack) return;
+
+                attack.variants[map]?.roll({ event });
+            }
+        );
     }
 
     altUse(event: MouseEvent): void {
@@ -28,14 +176,29 @@ class StrikeShortcut extends AttackShortcut<
             actorUUID: this.actor.uuid,
             type: "strike",
             itemId: this.item.id,
-            slug: getItemSlug(this.item), // TODO wrong slug, it should be strike.slug
+            slug: this.slug,
         });
     }
 }
 
-interface StrikeShortcut extends ModelPropsFromSchema<StrikeShortcutSchema> {}
+const _cached: { strikeLabel?: string } = {};
 
-type StrikeShortcutSchema = AttackShortcutSchema & {};
+function getStrikeLabel() {
+    return (_cached.strikeLabel ??= (() => {
+        const label = game.i18n.localize("PF2E.WeaponStrikeLabel");
+        const glyph = Handlebars.helpers.actionGlyph(1);
+
+        return `${label} ${glyph} `;
+    })());
+}
+
+interface StrikeShortcut extends ModelPropsFromSchema<StrikeShortcutSchema> {
+    type: "strike";
+}
+
+type StrikeShortcutSchema = AttackShortcutSchema & {
+    slug: fields.StringField<string, string, true, false, false>;
+};
 
 type StrikeShortcutData = ShortcutSource<StrikeShortcutSchema> & {
     type: "strike";

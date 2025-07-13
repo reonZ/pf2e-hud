@@ -88,13 +88,17 @@ abstract class StatisticActionShortcut<
         const useOptions = this.useOptions;
 
         this.radialMenu(
-            this.title,
             () => {
                 const mapVariants = generateMapRadialOptions(
                     useOptions.agile ?? (action.data.variants as { agile: boolean }).agile
                 );
 
-                return [mapVariants];
+                return [
+                    {
+                        title: this.title,
+                        options: mapVariants,
+                    },
+                ];
             },
             (value) => {
                 const map = Number(value);

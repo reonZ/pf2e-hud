@@ -261,9 +261,11 @@
                 "enabled": "Enabled",
                 "inactive": "Inactive",
                 "subtitle": {
+                    "blast": "Elemental Blast",
                     "extraAction": "Extra Action",
                     "macro": "Self-Executed Macro",
                     "spell": "Spellcasting",
+                    "strike": "Strike Attack",
                     "toggle": "Roll Option"
                 },
                 "reason": {
@@ -271,6 +273,7 @@
                     "broken": "Orphan Spell",
                     "charges": "No Charges Left",
                     "dropped": "Item Not Carried",
+                    "equip": "Not Equipped",
                     "expended": "Expended Spell",
                     "focus": "Focus Pool Empty",
                     "match": "No Matching Item",

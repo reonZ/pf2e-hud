@@ -10,8 +10,16 @@
         </div>
         {{/with}}
     </div>
-    <div class="title">{{{ifThen custom.name custom.name title}}}</div>
-    <div class="subtitle">{{{subtitle}}}</div>
+    <div class="title">{{ifThen custom.name custom.name title}}</div>
+    <div class="subtitle">
+        {{!-- action cost --}}
+        {{#with cost as |cost|}}
+        <div class="cost glyph">
+            {{{actionGlyph cost.value}}}
+        </div>
+        {{/with}}
+        {{subtitle}}
+    </div>
 </div>
 {{#unless canUse}}
 <div class="details left">

@@ -19,7 +19,7 @@ function generateAttackShortcutFields(type: string): AttackShortcutSchema {
 abstract class AttackShortcut<
     TSchema extends AttackShortcutSchema,
     TItem extends ItemPF2e,
-    TData extends Record<string, any>
+    TData extends { label: string }
 > extends PersistentShortcut<TSchema, TItem> {
     #attackData: Maybe<TData>;
 
@@ -42,7 +42,7 @@ abstract class AttackShortcut<
     }
 
     get canAltUse(): boolean {
-        return !!this.item && this.actor.isOfType("character");
+        return !!this.item && !!this.attackData && this.actor.isOfType("character");
     }
 
     get altUseLabel(): string {
@@ -52,12 +52,20 @@ abstract class AttackShortcut<
     get unusableReason(): string | undefined {
         return !this.item ? "match" : !this.attackData ? "available" : undefined;
     }
+
+    get title(): string {
+        return this.attackData ? this.attackData.label : this.name;
+    }
+
+    get subtitle(): string {
+        return localize("shortcuts.tooltip.subtitle", this.type);
+    }
 }
 
 interface AttackShortcut<
     TSchema extends AttackShortcutSchema,
     TItem extends ItemPF2e,
-    TData extends Record<string, any>
+    TData extends { label: string }
 > extends ModelPropsFromSchema<AttackShortcutSchema> {
     type: "strike" | "blast";
 }

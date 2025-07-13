@@ -1,4 +1,10 @@
-import { createDraggable, FoundryDragData, ShortcutPopup, SidebarDragData } from "hud";
+import {
+    createDraggable,
+    ElementalBlastsData,
+    FoundryDragData,
+    ShortcutPopup,
+    SidebarDragData,
+} from "hud";
 import {
     ApplicationRenderContext,
     ApplicationRenderOptions,
@@ -381,6 +387,7 @@ type ShortcutCacheData = {
     canCastStaffRank?: Partial<Record<OneToTen, boolean>>;
     animistCollection?: SpellCollection<CreaturePF2e> | null;
     animistVesselsData?: dailies.AnimistVesselsData | null;
+    elementalBlastData?: ElementalBlastsData | null;
     explorations?: string[];
     getActionMacro?: toolbelt.ToolbeltApi["actionable"]["getActionMacro"] | null;
     spellcasting?: Record<string, SpellEntryData | null>;

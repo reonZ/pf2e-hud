@@ -125,7 +125,6 @@ class ActionShortcut extends PersistentShortcut<
         }
 
         const label = game.i18n.localize(CONFIG.PF2E.actionTypes[this.actionType]);
-        const actionCost = this.actionCost;
 
         const suffix = this.macro
             ? localize("shortcuts.tooltip.subtitle.macro")
@@ -133,15 +132,7 @@ class ActionShortcut extends PersistentShortcut<
             ? game.i18n.localize("PF2E.Item.Ability.FIELDS.selfEffect.label")
             : null;
 
-        const subtitle = suffix ? `${label} (${suffix})` : label;
-
-        if (!this.item || !actionCost) {
-            return subtitle;
-        }
-
-        const glyph = Handlebars.helpers.actionGlyph(actionCost);
-
-        return `${glyph} ${subtitle}`;
+        return suffix ? `${label} (${suffix})` : label;
     }
 
     get unusableReason(): string | undefined {

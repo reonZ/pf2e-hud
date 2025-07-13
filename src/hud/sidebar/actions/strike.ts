@@ -2,13 +2,11 @@ import { FilterValue, getNpcStrikeImage, StrikeShortcutData } from "hud";
 import {
     ActorPF2e,
     addListenerAll,
-    CharacterStrike,
     ErrorPF2e,
     getFlag,
     htmlQuery,
     localize,
     MeleePF2e,
-    NPCStrike,
     objectHasKey,
     R,
     StrikeData,
@@ -21,17 +19,13 @@ import { BaseSidebarItem } from "..";
 
 class ActionsSidebarStrike extends BaseSidebarItem<
     MeleePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e>,
-    StrikeData | CharacterStrike | NPCStrike
+    StrikeData
 > {
     #options: ActionsSidebarStrikeOptions;
     #formula: StrikeFormulas;
     #img?: ImageFilePath;
 
-    constructor(
-        data: StrikeData | CharacterStrike | NPCStrike,
-        formula: StrikeFormulas,
-        options: ActionsSidebarStrikeOptions
-    ) {
+    constructor(data: StrikeData, formula: StrikeFormulas, options: ActionsSidebarStrikeOptions) {
         super(data);
 
         this.#options = options;
@@ -123,7 +117,8 @@ class ActionsSidebarStrike extends BaseSidebarItem<
         return {
             img: this.img,
             itemId: this.id,
-            name: this.label,
+            name: this.item._source.name,
+            slug: this.slug,
             type: "strike",
         };
     }
@@ -177,7 +172,10 @@ async function getSidebarStrikeData(
 
 function getStrikeActions(actor: ActorPF2e, options?: StrikeActionOptions): StrikeData[] {
     const actorStrikes = actor.system.actions ?? [];
-    if (!options) return actorStrikes;
+
+    if (!options) {
+        return actorStrikes;
+    }
 
     const exactMatch = actorStrikes.find(
         (strike) => strike.item.id === options.id && strike.slug === options.slug
@@ -256,7 +254,9 @@ function getActionCategory(
         };
     }
 
-    const range = item.range!;
+    const range = item.range;
+    if (!range) return;
+
     const isThrown = item.isThrown;
     const key = isThrown ? "thrown" : range.increment ? "rangedWithIncrement" : "ranged";
 
@@ -365,7 +365,9 @@ type StrikesContext = {
 export {
     ActionsSidebarStrike,
     activateActionsListeners,
+    getActionCategory,
     getSidebarStrikeData,
+    getStrikeActions,
     onStrikeClickAction,
 };
 export type { StrikesContext };
