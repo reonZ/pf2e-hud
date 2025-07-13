@@ -4,7 +4,6 @@ import {
     CreaturePF2e,
     ItemPF2e,
     localize,
-    R,
     render,
     ValueAndMaybeMax,
 } from "module-helpers";
@@ -117,11 +116,11 @@ abstract class PersistentShortcut<
         return this.item?.img ?? this.img;
     }
 
-    get cost(): ShortcutCost | null {
+    get label(): ShortcutLabel | null {
         return null;
     }
 
-    get rank(): { value: string } | null {
+    get cost(): ShortcutCost | null {
         return null;
     }
 
@@ -176,28 +175,14 @@ abstract class PersistentShortcut<
             return this.#tooltip;
         }
 
-        const canAltUse = this.canAltUse;
-        const reason = this.unusableReason;
-
-        const data: ShortcutTooltipData = {
-            altUse: canAltUse ? this.altUseLabel : null,
-            img: this.custom.img || this.usedImage,
-            inactive: this.inactive,
-            reason: reason ? localize("shortcuts.tooltip.reason", reason) : null,
-            subtitle: this.subtitle,
-            title: this.custom.name || this.title,
-            uses: this.uses,
-        };
-
         return (this.#tooltip = createHTMLElement("div", {
             classes: ["content"],
-            content: await render("shortcuts/tooltip", data),
+            content: await render("shortcuts/tooltip", this),
         }));
     }
 
     async radialMenu<T extends string>(
-        title: string,
-        sectionsFn: () => (ShortcutRadialSection | ShortcutRadialOption[])[],
+        sectionsFn: () => ShortcutRadialSection[],
         onSelect: (value: T) => void
     ) {
         const element = this.element;
@@ -228,12 +213,7 @@ abstract class PersistentShortcut<
         const sections = sectionsFn();
         const radial = createHTMLElement("div", {
             classes: ["pf2e-hud-element"],
-            content: await render("shortcuts/radial", {
-                title: this.custom.name || this.title,
-                sections: sections.map((section): ShortcutRadialSection => {
-                    return R.isArray(section) ? { title: undefined, options: section } : section;
-                }),
-            }),
+            content: await render("shortcuts/radial", { sections }),
             id: "pf2e-hud-radial-panel",
         });
 
@@ -288,19 +268,14 @@ type ShortcutRadialOption = {
     selected?: boolean;
 };
 
-type ShortcutTooltipData = {
-    altUse: string | null;
-    img: ImageFilePath;
-    inactive: boolean;
-    reason: string | null;
-    subtitle: string;
-    title: string;
-    uses: ValueAndMaybeMax | null;
-};
-
 type ShortcutCost = {
     value: string | number;
     combo?: boolean;
+};
+
+type ShortcutLabel = {
+    value: string;
+    class: string;
 };
 
 type ShortcutCustomSchema = {
@@ -324,6 +299,7 @@ export type {
     BaseShortcutSchema,
     ShortcutCost,
     ShortcutDataset,
+    ShortcutLabel,
     ShortcutRadialSection,
     ShortcutSource,
 };

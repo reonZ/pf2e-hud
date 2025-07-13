@@ -1,27 +1,27 @@
-<div class="header{{#if reason}} greyed{{/if}}">
-    <div class="image" style="background-image: url({{img}});">
+<div class="header{{#unless canUse}} greyed{{/unless}}">
+    <div class="image" style="background-image: url({{ifThen custom.img custom.img usedImage}});">
         {{!-- uses --}}
-        {{#if uses}}
+        {{#with uses as |uses|}}
         <div class="uses">
             <span>{{uses.value}}</span>
             {{#if uses.max}}
             / <span>{{uses.max}}</span>
             {{/if}}
         </div>
-        {{/if}}
+        {{/with}}
     </div>
-    <div class="title">{{{title}}}</div>
+    <div class="title">{{{ifThen custom.name custom.name title}}}</div>
     <div class="subtitle">{{{subtitle}}}</div>
 </div>
-{{#if reason}}
+{{#unless canUse}}
 <div class="details left">
-    {{reason}}
+    {{@root.i18n 'reason' unusableReason}}
 </div>
-{{/if}}
+{{/unless}}
 <div class="details right">
     {{#unless inactive}}
-    {{#if altUse}}
-    <div>{{@root.i18n.root 'rightClick'}} {{altUse}}</div>
+    {{#if canAltUse}}
+    <div>{{@root.i18n.root 'rightClick'}} {{altUseLabel}}</div>
     <div>{{@root.i18n 'click.control'}} {{@root.i18n 'click.popup'}}</div>
     {{else}}
     <div>{{@root.i18n.root 'rightClick'}} {{@root.i18n 'click.popup'}}</div>
