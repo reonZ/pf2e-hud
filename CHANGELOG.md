@@ -1,16 +1,39 @@
+# 2.13.0
+
+-   this release implements the last missing shortcuts: `Stance`, `Action`, `Strike` and `Elemental Blast`
+-   the `Escape` extra action and its shortcut can now make use of the variants menu
+-   `Actions Sidebar`:
+    -   fix damage message flavor text of `Elemental Blast` critical damage
+-   `Elemental Blast/Strike Shortcut`:
+    -   `[Left-Click]` opens an attack context menu where you can select the MAP for the roll
+    -   `[Right-Click]` opens the system attack window
+-   `Persistent Shortcut`:
+    -   always display the icon even on `disabled` shortcuts
+    -   rework the design of the shortcut context menu
+    -   the shortcut context menu is no longer a child of the shortcut (allowing it to be drawn over other elements in the UI)
+    -   plus a few undocumented small tweaks and improvements to the shortcut and its tooltip
+-   `RollOption Shortcut`:
+    -   no longer use the checkbox as the shortcut icon and instead add a `gear` icon for it
+    -   display a warning for always-enabled rolloptions on use
+-   `Skill/Extra Action Shortcut`:
+    -   `[Left-Click]` on an action that has MAP variants will now automatically open a MAP selection context menu
+    -   add icon to actions that have a cost
+-   `Token Tooltip`:
+    -   fix health status for ratio lower than 1% not picking the first entry and instead the `???` failsafe
+
 # 2.12.0
 
 -   this release implements the `Skill Action`, `Spell` and `Elemental Blast Cost` shortcuts
 -   the variants menu for skill actions now contains a MAP select to change it directly (useful for shortcuts)
 -   `Actions Sidebar`:
     -   fix strikes originating from the same item always pointing to the last one
--   `Equipment Shortcuts`:
+-   `Equipment Shortcut`:
     -   now display quantity if more than 1
 -   `Item Popup`:
     -   fix not being able to send-to-chat skill actions
 -   `Persistent HUD`:
     -   refresh the hud when the associated linked-actor or unlinked-token is deleted
--   `Persistent Shortcuts`:
+-   `Persistent Shortcut`:
     -   add icons for each shortcut category
     -   now display uses/quantity in the tooltip
     -   now display why a shortcut cannot be used (greyed out) in the tooltip
@@ -19,9 +42,9 @@
     -   shortcuts that don't have an active `[Right-Click]` usage now default to opening the now renamed `Shortcut Popup` (previously `Item Popup`)
         -   the `[Ctrl-Right-Click]` will only be displayed if the `[Right-Click]` has an active
         -   the popup has as `Customize Shortcut` button in its header where you can change the shortcut's name and image
--   `RollOption Shortcuts`:
+-   `RollOption Shortcut`:
     -   always display the checkbox icon even on always-enabled rolloptions to improve first-glance recognition of toggle shortcuts (the checkbox serves as icon equivalent)
--   `Skill Action Shortcuts`:
+-   `Skill Action Shortcut`:
     -   `[Right-Click]` opens the variants menu
     -   skill action relying on MAP no longer snapshot the map value, which means that:
         -   you no longer drag the variant but the root action from the sidebar
@@ -29,9 +52,9 @@
 -   `Skills Sidebar`:
     -   no longer display the `Hide Untrained` for NPCs
     -   fix `SF2e` skill actions not showing when using the `Starfinder 2nd Edition Playtest for PF2e` module
--   `Spell Shortcuts`:
+-   `Spell Shortcut`:
     -   the module will now attempt to find matching spells for `scroll`, `wand`, `staff` and `animist` spell shortcuts, so everything that is wiped out and re-add during rest will still be usable
--   `Spell Sidebar`:
+-   `Spells Sidebar`:
     -   fix variable spell action cost not being displayed
 
 # 2.11.0
@@ -41,10 +64,10 @@
     -   add style for disabled use button
 -   `Persistent HUD`:
     -   fix effects panel not working with linked actors
--   `Persistent Shortcuts`:
+-   `Persistent Shortcut`:
     -   convert `[Shift-Right-Click]` into `[Middle-Click]` to remove shortcuts
         -   it is actually an `auxiliary` event under the hood and any non-standard mouse click will trigger it
--   `RollOption Shortcuts`:
+-   `RollOption Shortcut`:
     -   the module no longer snapshots the current suboption when dragging and creating a rolloption shortcut
     -   `[Click]` enable/disable the rolloption, does nothing if it is an always-enabled rolloption
     -   if a rolloption has at least 2 suboptions, the shortcut `[Right-Click]` will offer a select menu to pick one
@@ -62,13 +85,13 @@
 -   `Persistent HUD`:
     -   implement drop item on portrait
     -   fix empty hud showing the resources panel behind the shortcuts'
--   `Persistent Shortcuts`:
+-   `Persistent Shortcut`:
     -   shortcuts are no longer removed when the original item isn't found (they are simply disabled)
         -   the module will try to find matching items whenever the original one can't be found
     -   shortcuts now always have a `[Click]` and `[Right-Click]` usage
     -   you can also `[Ctrl-Right-Click]` to open the description popup for the associated item
     -   shortcuts now have a proper tooltip when hovered over displaying more info
--   `Items Shortcuts`:
+-   `Items Shortcut`:
     -   you can now create `equipment` shortcuts
     -   `[Right-Click]` opens the item sheet
 -   `Sidebar`:
@@ -85,7 +108,7 @@
 
 # 2.8.0
 
--   this release implements all the remaining `Persistent HUD` features with the exception of `Persistent Shortcuts`
+-   this release implements all the remaining `Persistent HUD` features with the exception of `Persistent Shortcut`
 -   `Actions Sidebar`:
     -   fix actions present in the `Extras` sidebar not being excluded from the list of actions
 -   `Spells Sidebar`:
@@ -255,7 +278,7 @@
 
 # 1.34.0
 
--   `Persistent Shortcuts`:
+-   `Persistent Shortcut`:
     -   remove the shortcuts lock button
         -   the user must now use `[Shift + Right-Click]` to remove a shortcut
     -   using `[Right-Click]` on a shortcut will now open the description popup to its associated item (if any)
@@ -272,7 +295,7 @@
 
 # 1.33.0
 
--   `Persistent Shortcuts`:
+-   `Persistent Shortcut`:
     -   now look for any strike with the same weapon slug if no id matches
         -   this mean that if the original weapon associated to the strike (when creating a shortcut) doesn't exist on the actor anymore, the module will look for another strike associated to a weapon similar instead
         -   this can be useful if you like to trade/drop your weapons often, because new item IDs are generated every time in those cases
@@ -361,7 +384,7 @@
 
 # 1.26.3
 
--   `Persistent Shortcuts`:
+-   `Persistent Shortcut`:
     -   fix NPC empty spell slots breaking the persistent HUD during auto-fill
 
 # 1.26.2
@@ -383,7 +406,7 @@
     -   fix drag & drop not working now that the system methods are private
     -   fix health status tooltip not always showing
     -   fix initiative sometimes having decimals
--   `Persistent Shortcuts`:
+-   `Persistent Shortcut`:
     -   add counter to shortcut actions with a resource
     -   strike related to `Temporary` `Alchemical` `Bomb` items are now "smart"
         -   if the item bound to the shortcut isn't found or its quantity is `0`, the module will look for another alchemical bomb of the same type and use in its place if any exist
@@ -413,7 +436,7 @@
     -   using `+x%` or `-x%` will add/subtract `x` percent of the max value to the current value
     -   NOTE that any decimal number will be rounded down
     -   NOTE that `Temporary Hit Points` doesn't have a max value and therefore will be update by a percentage of its current value instead
--   `Persistent Shortcuts`:
+-   `Persistent Shortcut`:
     -   disable non-primary vessel spell shortcuts
     -   you can now create any kind of roll option toggle shortcut
         -   the current suboption (if any) will be recorded on shortcut creation
@@ -459,7 +482,7 @@
         -   this means that inline rolls will be evaluated when the chat message is added
         -   will however keep the `/r` if it is already present in the inline brackets
     -   fix parsing of dice number with more than one digit
--   `Persistent Shortcuts`:
+-   `Persistent Shortcut`:
     -   now display the map modifier (if any) on the skill action shortcuts
 -   `Skills Sidebar`:
     -   add support for `Chirurgeon`
@@ -578,10 +601,10 @@
         -   you can setup automation for sets (except the first set)
             -   whenever an effect is present on the actor
             -   whenever a macro returns true
-        -   the `Reset Shortcuts` only affects the current set
-        -   the `Copy Owner Shortcuts` copies all sets from the owner and their automation
+        -   the `Reset Shortcut` only affects the current set
+        -   the `Copy Owner Shortcut` copies all sets from the owner and their automation
         -   auto-fill will fill up every set the same way
--   add a new `Persistent Shortcuts` section in the settings
+-   add a new `Persistent Shortcut` section in the settings
     -   it is placed right after the `Persistent HUD` section
     -   all the settings are still part of the `Persistent HUD`, nothing is reset
     -   add new `Must Draw Consumable` setting (disabled by default)
@@ -793,7 +816,7 @@
 -   `Persistent HUD`:
     -   the `Enabled` setting now requires a reload when changed
     -   `Auto-Fill` settings are now available to players
-    -   added the `Auto-Fill Shortcuts` and `Reset Shortcuts` buttons to the players HUD
+    -   added the `Auto-Fill Shortcut` and `Reset Shortcut` buttons to the players HUD
     -   added a new alternate shortcut for attacks
         -   you need to hold `Ctrl` when creating the shortcut
         -   the shortcut will display the variant of the strike/blast by default
@@ -815,7 +838,7 @@
 -   the module no longer requires having `PF2e Toolbelt` installed/activated nor its `Stances` setting enabled to display and toggle the stances section in the `Actions` sidebar
 -   `Persistent HUD`:
     -   fixed generic recall knowledge (from the `extras` sidebar) shortcut not doing anything
-    -   fixed `Copy Owner Shortcuts` action not cleaning the current shortcuts first
+    -   fixed `Copy Owner Shortcut` action not cleaning the current shortcuts first
     -   fixed the HUD not showing on load in the unlikely scenario where a user no longer has ownership of their assigned actor
 -   `Token Tooltip`:
     -   now displays the level of the token actor
@@ -1087,7 +1110,7 @@
     -   added a new `Auto-Fill Preference` gm-only setting
         -   select menu that was originally in `Auto-Fill NPCs`
         -   is also used when using the auto-fill shortcut menu (see below)
-    -   added a new `Use Owner Shortcuts` gm-only setting
+    -   added a new `Use Owner Shortcut` gm-only setting
         -   it will find the "main" owner of the Character actor and use its shortcuts if you never made any change in yours
     -   added shortcuts menus for GM above the shortcut slots
         -   you will find a way to delete, auto-fill or copy owner shortcuts
