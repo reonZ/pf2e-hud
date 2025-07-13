@@ -245,8 +245,11 @@
                 "wrongType": "Nie można utworzyć skrótu tego typu."
             },
             "tooltip": {
+                "active": "Aktywny",
                 "altUse": {
+                    "blast": "Okno Podmuchu",
                     "skillAction": "Warianty menu",
+                    "strike": "Okno Ataku",
                     "toggle": "Wybierz opcję podrzędną"
                 },
                 "click": {
@@ -256,9 +259,13 @@
                 },
                 "disabled": "Wyłączone",
                 "enabled": "Włączone",
+                "inactive": "Nieaktywny",
                 "subtitle": {
+                    "blast": "Żywiołowy Podmuch",
                     "extraAction": "Akcja dodatkowa",
+                    "macro": "Makro wykonywane samoczynnie",
                     "spell": "Rzucanie zaklęć",
+                    "strike": "Atak",
                     "toggle": "Opcje rzutu"
                 },
                 "reason": {
@@ -266,6 +273,7 @@
                     "broken": "Osierocone zaklęcie",
                     "charges": "Nie pozostało żadnych ładunków",
                     "dropped": "Przedmiot nie przeniesiony",
+                    "equip": "Niewyposażono",
                     "expended": "Wykorzystane zaklęcie",
                     "focus": "Pusta Pula Skupienia",
                     "match": "Brak pasującego przedmiotu",
@@ -275,6 +283,9 @@
                     "uses": "Brak pozostałych użyć",
                     "vessel": "Nie jest to naczynie główne"
                 }
+            },
+            "use": {
+                "toggle": "Ten przełącznik jest zawsze włączony"
             }
         },
         "sidebar": {
