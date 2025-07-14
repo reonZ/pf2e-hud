@@ -17,13 +17,11 @@ import {
     R,
     render,
     SpellCollection,
-    updateFlag,
     warning,
 } from "module-helpers";
 import {
     ActionShortcut,
     ActionShortcutData,
-    BaseShortcutSchema,
     BlastCostShortcut,
     BlastShortcut,
     BlastShortcutData,
@@ -86,7 +84,10 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     get shortcutsData(): ShortcutData[] {
         const worldActor = this.worldActor;
         if (!worldActor) return [];
-        return getFlag(worldActor, "shortcuts", game.userId, String(this.tab)) ?? [];
+
+        return (
+            getFlag<ShortcutData[]>(worldActor, "shortcuts", game.userId, String(this.tab)) ?? []
+        );
     }
 
     async replace(slot: number, data: ShortcutData): Promise<boolean> {
@@ -132,18 +133,14 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         const worldActor = this.worldActor;
         if (!worldActor) return;
 
-        const toSave: SourceFromSchema<BaseShortcutSchema>[] = [];
+        const toSave: ShortcutData[] = [];
 
         for (const [slot, shortcut] of this.shortcuts.entries()) {
             if (!shortcut) continue;
-            toSave[slot] = shortcut.toObject();
+            toSave[slot] = shortcut.toObject() as any;
         }
 
-        const updateKey = `shortcuts.${game.userId}.${this.tab}`;
-        // we don't want to re-render the entire persistent HUD
-        await updateFlag(worldActor, { [updateKey]: toSave }, { render: false });
-
-        this.render();
+        this.parent.updateShortcuts(game.userId, this.tab, toSave);
     }
 
     protected async _prepareContext(

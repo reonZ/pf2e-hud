@@ -50,6 +50,11 @@
             "effects": {
                 "shift": "Shift",
                 "toggle": "开关效果显示"
+            },
+            "shortcuts": {
+                "fill": {
+                    "title": "自动填充快捷栏"
+                }
             }
         },
         "rightClick": "[右键点击]",

@@ -211,13 +211,21 @@
             },
             "shortcuts": {
                 "clear": {
-                    "label": "Clear Shortcuts"
+                    "title": "Clear Shortcuts",
+                    "all": "All Shortcuts Sets",
+                    "hint": "Are you sure you want to delete the following shortcuts?",
+                    "set": "Current Set Only",
+                    "yes": "Delete"
                 },
                 "copy": {
-                    "label": "Copy User Shortcuts"
+                    "title": "Copy User Shortcuts",
+                    "hint": "Select a user to copy the shortcuts from.",
+                    "label": "User Owner",
+                    "none": "This actor doesn't have any other owner.",
+                    "yes": "Copy"
                 },
                 "fill": {
-                    "label": "Auto-Fill Shortcuts"
+                    "title": "Auto-Fill Shortcuts"
                 },
                 "tab": "Change Shortcuts Set"
             }

@@ -191,6 +191,11 @@
                     "set": "Choisir le jeton sélectionné comme acteur persistant",
                     "unset": "Déselectionner l'acteur persistant"
                 }
+            },
+            "shortcuts": {
+                "fill": {
+                    "title": "Remplissage automatique des raccourcis"
+                }
             }
         },
         "recall-knowledge": {

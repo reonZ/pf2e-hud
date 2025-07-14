@@ -208,6 +208,11 @@
                     "set": "Ustawienie wybranego tokena jako stałego aktora",
                     "unset": "Usuń ustawionego stałego aktora"
                 }
+            },
+            "shortcuts": {
+                "fill": {
+                    "title": "Autouzupełnianie skrótów"
+                }
             }
         },
         "popup": {

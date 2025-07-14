@@ -68,15 +68,15 @@
         {{> (@root.partial 'slider') shortcutsTab}}
     </div>
     {{#if isCharacter}}
-    <a data-action="copy-shortcuts" {{{@root.i18n.tooltip 'shortcuts.copy.label' }}}>
+    <a data-action="copy-shortcuts" {{{@root.i18n.tooltip 'shortcuts.copy.title' }}}>
         <i class="fa-solid fa-user-pen"></i>
     </a>
     {{else}}
-    <a data-action="fill-shortcuts" {{{@root.i18n.tooltip 'shortcuts.fill.label' }}}>
+    <a data-action="fill-shortcuts" {{{@root.i18n.tooltip 'shortcuts.fill.title' }}}>
         <i class="fa-solid fa-fill-drip"></i>
     </a>
     {{/if}}
-    <a data-action="fill-shortcuts" {{{@root.i18n.tooltip 'shortcuts.clear.label' }}}>
+    <a data-action="clear-shortcuts" {{{@root.i18n.tooltip 'shortcuts.clear.title' }}}>
         <i class="fa-solid fa-circle-xmark"></i>
     </a>
     {{/if}}

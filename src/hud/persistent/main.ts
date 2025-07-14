@@ -10,6 +10,7 @@ import {
     createHook,
     createToggleKeybind,
     getDataFlag,
+    getFlag,
     htmlQuery,
     localize,
     NPCPF2e,
@@ -17,9 +18,11 @@ import {
     render,
     TokenDocumentPF2e,
     TokenPF2e,
+    updateFlag,
+    waitDialog,
     warning,
 } from "module-helpers";
-import { PersistentEffectsPF2eHUD, PersistentShortcutsPF2eHUD } from ".";
+import { PersistentEffectsPF2eHUD, PersistentShortcutsPF2eHUD, ShortcutData } from ".";
 import {
     BaseActorPF2eHUD,
     createSlider,
@@ -344,6 +347,45 @@ class PersistentPF2eHUD
         });
     }
 
+    setShortcutTab(value: number, skipRender?: boolean) {
+        const { value: previous, min, max } = this.shortcutsTab;
+        const newValue = (this.shortcutsTab.value = Math.clamp(value, min, max));
+        const slider = htmlQuery(this.element, `[data-slider-action="shortcuts-tab"]`);
+        const sliderValue = htmlQuery(slider, ".value");
+
+        htmlQuery(slider, ".previous")?.classList.toggle("disabled", newValue <= 1);
+        htmlQuery(slider, ".next")?.classList.toggle("disabled", newValue >= max);
+
+        if (sliderValue) {
+            sliderValue.innerHTML = String(newValue);
+        }
+
+        if (!skipRender && newValue !== previous) {
+            this.shortcutsPanel.render();
+        }
+    }
+
+    async updateShortcuts(
+        ...args: [...string[], null | Record<string, ShortcutData[]>]
+    ): Promise<void>;
+    async updateShortcuts(...args: [string, number, null | ShortcutData[]]): Promise<void>;
+    async updateShortcuts(...args: any[]) {
+        const worldActor = this.worldActor;
+        if (!worldActor) return;
+
+        const value = args.at(-1) as null | ShortcutData[];
+        const updateKey = ["shortcuts", ...(args.slice(0, -1) as string[])].join(".");
+
+        // we don't want to re-render the entire persistent HUD
+        await updateFlag(worldActor, { [updateKey]: value }, { render: false });
+        this.shortcutsPanel.render();
+    }
+
+    async deleteShortcuts(all: boolean) {
+        const updateKey = all ? `-=${game.userId}` : `${game.userId}.-=${this.shortcutsTab.value}`;
+        return this.updateShortcuts(updateKey, null);
+    }
+
     async _prepareContext(
         options: ApplicationRenderOptions
     ): Promise<PersistentContext | PersistentContextBase> {
@@ -435,12 +477,18 @@ class PersistentPF2eHUD
 
         if (action === "clear-hotbar") {
             clearHotbar();
+        } else if (action === "clear-shortcuts") {
+            this.#clearShortcuts();
+        } else if (action === "copy-shortcuts") {
+            this.#copyShortcuts();
         } else if (action === "edit-avatar") {
             const worldActor = this.worldActor;
 
             if (worldActor) {
                 new AvatarEditor(worldActor).render(true);
             }
+        } else if (action === "fill-shortcuts") {
+            this.#fillShortcuts();
         } else if (action === "mute-sound") {
             toggleFoundryBtn("hotbar-controls-left", "mute");
             this.element.classList.toggle("muted", game.audio.globalMute);
@@ -458,23 +506,84 @@ class PersistentPF2eHUD
 
     _onSlider(action: "shortcuts-tab", direction: 1 | -1): void {
         if (action === "shortcuts-tab") {
-            const { value: previous, min, max } = this.shortcutsTab;
-            const value = (this.shortcutsTab.value = Math.clamp(previous + direction, min, max));
-            const slider = htmlQuery(this.element, `[data-slider-action="shortcuts-tab"]`);
-            const sliderValue = htmlQuery(slider, ".value");
-
-            htmlQuery(slider, ".previous")?.classList.toggle("disabled", value <= 1);
-            htmlQuery(slider, ".next")?.classList.toggle("disabled", value >= max);
-
-            if (sliderValue) {
-                sliderValue.innerHTML = String(value);
-            }
-
-            if (value !== previous) {
-                this.shortcutsPanel.render();
-            }
+            this.setShortcutTab(this.shortcutsTab.value + direction);
         }
     }
+
+    async #clearShortcuts() {
+        const worldActor = this.worldActor;
+        if (!worldActor) return;
+
+        const hint = localize("persistent.shortcuts.clear.hint");
+        const inputs = ["set", "all"].map((type, i) => {
+            const checked = i === 0 ? " checked" : "";
+            const label = localize("persistent.shortcuts.clear", type);
+
+            return `<label class="flexrow" style="gap: .3em;">
+                <input class="flex0" type="radio" name="type" value="${type}"${checked}>
+                <span>${label}</span>
+            </label>`;
+        });
+
+        const result = await waitDialog<{ type: "set" | "all" }>({
+            content: `<div class="hint">${hint}</div>${inputs.join("")}`,
+            i18n: "persistent.shortcuts.clear",
+        });
+
+        if (result) {
+            this.deleteShortcuts(result.type === "all");
+        }
+    }
+
+    async #copyShortcuts() {
+        const worldActor = this.worldActor;
+        if (!worldActor) return;
+
+        const currentUser = game.user;
+        const options: FormSelectOption[] = game.users
+            .filter((user) => user !== currentUser && worldActor.testUserPermission(user, "OWNER"))
+            .map((user) => {
+                return { value: user.id, label: user.name };
+            });
+
+        if (options.length === 0) {
+            warning("persistent.shortcuts.copy.none");
+            return;
+        }
+
+        const hint = localize("persistent.shortcuts.copy.hint");
+
+        const group = foundry.applications.fields.createFormGroup({
+            label: localize("persistent.shortcuts.copy.label"),
+            input: foundry.applications.fields.createSelectInput({
+                name: "user",
+                options,
+            }),
+        });
+
+        const result = await waitDialog<{ user: string }>({
+            content: `<div class="hint">${hint}</div>${group.outerHTML}`,
+            i18n: "persistent.shortcuts.copy",
+        });
+
+        if (!result) return;
+
+        const shortcuts = getFlag<Record<string, ShortcutData[]>>(
+            worldActor,
+            "shortcuts",
+            result.user
+        );
+
+        if (!shortcuts) {
+            await this.deleteShortcuts(true);
+        } else {
+            await this.updateShortcuts(`==${game.userId}`, shortcuts);
+        }
+
+        this.setShortcutTab(1, true);
+    }
+
+    async #fillShortcuts() {}
 
     #setSelectedToken() {
         const token = R.only(canvas.tokens.controlled);
@@ -559,7 +668,10 @@ function getSetActorData(hud: PersistentPF2eHUD): PersistentContextBase["setActo
 
 type EventAction =
     | "clear-hotbar"
+    | "clear-shortcuts"
+    | "copy-shortcuts"
     | "edit-avatar"
+    | "fill-shortcuts"
     | "mute-sound"
     | "open-sheet"
     | "set-actor"
