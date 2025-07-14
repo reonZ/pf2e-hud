@@ -1,4 +1,4 @@
-import { getActionCategory, getStrikeActions } from "hud/sidebar";
+import { getActionCategory, getNpcStrikeImage, getStrikeActions } from "hud";
 import {
     ActorPF2e,
     CharacterStrike,
@@ -57,6 +57,19 @@ class StrikeShortcut extends AttackShortcut<
 
     get item(): Maybe<MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>> {
         return this.attackData?.item as Maybe<MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>>;
+    }
+
+    get usedImage(): ImageFilePath {
+        const item = this.item;
+
+        if (!item) {
+            return this.img;
+        }
+
+        return (
+            (this.actor.isOfType("npc") && getNpcStrikeImage({ item, slug: this.slug })) ||
+            this.item.img
+        );
     }
 
     get cost(): ShortcutCost | null {

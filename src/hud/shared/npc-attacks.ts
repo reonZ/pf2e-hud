@@ -1,5 +1,4 @@
-import { ActionsSidebarStrike } from "hud";
-import { imagePath } from "module-helpers";
+import { imagePath, MeleePF2e, WeaponPF2e } from "module-helpers";
 
 const DEFAULT_NPC_STRIKE_ICON = "systems/pf2e/icons/default-icons/melee.svg";
 
@@ -240,14 +239,15 @@ const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
     shears: "systems/pf2e/icons/equipment/weapons/shears.webp",
 };
 
-function getNpcStrikeImage(strike: ActionsSidebarStrike): ImageFilePath {
-    const isDefaultIcon = strike.item.img === DEFAULT_NPC_STRIKE_ICON;
-    if (!isDefaultIcon) return strike.item.img;
+function getNpcStrikeImage(strike: { item: WeaponPF2e | MeleePF2e; slug: string }): ImageFilePath {
+    if (strike.item.img !== DEFAULT_NPC_STRIKE_ICON) {
+        return strike.item.img;
+    }
 
-    const customIcon = NPC_STRIKE_ICONS[strike.slug];
-    if (customIcon) return customIcon;
-
-    return strike.item.range ? imagePath("npc-range", "svg") : strike.item.img;
+    return (
+        NPC_STRIKE_ICONS[strike.slug] ??
+        (strike.item.range ? imagePath("npc-range", "svg") : strike.item.img)
+    );
 }
 
 export { getNpcStrikeImage };
