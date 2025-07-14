@@ -7,6 +7,7 @@ import {
     ApplicationConfiguration,
     ApplicationRenderOptions,
     CharacterPF2e,
+    confirmDialog,
     createHook,
     createToggleKeybind,
     getDataFlag,
@@ -97,6 +98,15 @@ class PersistentPF2eHUD
                 onChange: () => {
                     this.configurate();
                     hud.token.configurate();
+                },
+            },
+            {
+                key: "autoFill",
+                type: Boolean,
+                default: true,
+                scope: "user",
+                onChange: () => {
+                    this.shortcutsPanel.render();
                 },
             },
             {
@@ -386,6 +396,10 @@ class PersistentPF2eHUD
         return this.updateShortcuts(updateKey, null);
     }
 
+    async overrideShortcuts(shortcuts: Record<string, ShortcutData[]>) {
+        return this.updateShortcuts(`==${game.userId}`, shortcuts);
+    }
+
     async _prepareContext(
         options: ApplicationRenderOptions
     ): Promise<PersistentContext | PersistentContextBase> {
@@ -464,7 +478,7 @@ class PersistentPF2eHUD
         return (this.actor?.token?.baseActor ?? this.actor) as PersistentHudActor | null;
     }
 
-    protected _onClickAction(event: PointerEvent, target: HTMLElement): void {
+    protected async _onClickAction(event: PointerEvent, target: HTMLElement) {
         super._onClickAction(event, target);
 
         const action = target.dataset.action as EventAction;
@@ -488,7 +502,10 @@ class PersistentPF2eHUD
                 new AvatarEditor(worldActor).render(true);
             }
         } else if (action === "fill-shortcuts") {
-            this.#fillShortcuts();
+            if (await confirmDialog("persistent.shortcuts.fill")) {
+                const shortcutsData = this.shortcutsPanel.generateFillShortcuts();
+                this.overrideShortcuts({ "1": shortcutsData });
+            }
         } else if (action === "mute-sound") {
             toggleFoundryBtn("hotbar-controls-left", "mute");
             this.element.classList.toggle("muted", game.audio.globalMute);
@@ -577,13 +594,11 @@ class PersistentPF2eHUD
         if (!shortcuts) {
             await this.deleteShortcuts(true);
         } else {
-            await this.updateShortcuts(`==${game.userId}`, shortcuts);
+            await this.overrideShortcuts(shortcuts);
         }
 
         this.setShortcutTab(1, true);
     }
-
-    async #fillShortcuts() {}
 
     #setSelectedToken() {
         const token = R.only(canvas.tokens.controlled);
@@ -684,6 +699,7 @@ type SetActorOptions = { token?: TokenPF2e };
 type PersistentHudActor = CharacterPF2e | NPCPF2e;
 
 type PersistentSettings = {
+    autoFill: boolean;
     cleanPortrait: boolean;
     mode: (typeof SELECTION_MODES)[number];
     savedActor: string;

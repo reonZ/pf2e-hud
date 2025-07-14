@@ -2,6 +2,7 @@ import {
     createDraggable,
     ElementalBlastsData,
     FoundryDragData,
+    getNpcStrikeImage,
     ShortcutPopup,
     SidebarDragData,
 } from "hud";
@@ -143,14 +144,49 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         this.parent.updateShortcuts(game.userId, this.tab, toSave);
     }
 
+    generateFillShortcuts(): ShortcutData[] {
+        const actor = this.actor;
+        if (!actor?.isOfType("npc")) return [];
+
+        let _slot = 0;
+        const data: ShortcutData[] = [];
+
+        for (const strike of actor.system.actions) {
+            const strikeData: StrikeShortcutData = {
+                img: getNpcStrikeImage(strike),
+                itemId: strike.item.id,
+                name: strike.item._source.name,
+                slug: strike.slug,
+                type: "strike",
+            };
+
+            data[_slot++] = strikeData;
+
+            if (_slot > this.nbSlots) {
+                return data;
+            }
+        }
+
+        return data;
+    }
+
     protected async _prepareContext(
         options: ApplicationRenderOptions
     ): Promise<PersistentShortcutsContext> {
         this.shortcuts.clear();
         this.#shortcutsCache = createShortcutCache();
 
+        let shortcutsData = this.shortcutsData;
+
         const shortcuts: PersistentShortcutsContext["shortcuts"] = [];
-        const shortcutsData = this.shortcutsData;
+        const autoFill =
+            this.actor?.isOfType("npc") &&
+            shortcutsData.length === 0 &&
+            this.parent.settings.autoFill;
+
+        if (autoFill) {
+            shortcutsData = this.generateFillShortcuts();
+        }
 
         await Promise.all(
             R.range(0, this.nbSlots).map(async (slot) => {
@@ -408,8 +444,10 @@ type ShortcutData =
 
 type PersistentShortcutsContext = {
     dataset: (data: ShortcutDataset | undefined) => string;
-    shortcuts: (PersistentShortcut | { isEmpty: true })[];
+    shortcuts: ShortcutsList;
 };
+
+type ShortcutsList = (PersistentShortcut | { isEmpty: true })[];
 
 type ShortcutDragData = FoundryDragData & {
     fromShortcut: {
@@ -440,4 +478,4 @@ type StrictlyRequired<T> = {
 };
 
 export { createShortcutCache, PersistentShortcutsPF2eHUD };
-export type { ShortcutCache, ShortcutData, ShortcutSlotId };
+export type { ShortcutCache, ShortcutData, ShortcutsList, ShortcutSlotId };

@@ -80,6 +80,10 @@ abstract class PersistentShortcut<
 
     abstract get icon(): string;
 
+    get isEmpty(): boolean {
+        return false;
+    }
+
     get actor(): CreaturePF2e {
         return this.#actor;
     }
