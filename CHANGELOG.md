@@ -1,3 +1,21 @@
+# 2.14.0
+
+-   this release finish implementing the `Persistent HUD` adding the shortcuts panel functionalities
+-   `Persistent HUD`:
+    -   `Auto-Fill NPCs` is now available to players
+    -   `Clear Shortcuts` now let's you choose if you want to remove all shortcuts or only the ones from the current set
+    -   `Copy User Shortcuts` now let's you copy from any user that also owns this actor, which means that players can copy from a GM
+    -   increase the size of effect slots
+    -   all the missing settings that were not mentionned until now will not make a comeback in the v13
+    -   the auto swap shortcuts set (via effect or macro) has not be reintroduced, it will remain so for now (or forever)
+    -   fix locked effect icon style
+-   `Persistent Shortcuts`:
+    -   NPCs have +2 slots compared to characters as they have one less panel
+    -   fix `[Shift]` and `[Ctrl]` modifiers not working when using a shortcut context menu (e.g. `Strike Shortcut` map select)
+        -   note that the modifier must be held when clicking on the context menu in those cases, not when clicking on the shortcut to open it
+-   `Strike Shortcut`:
+    -   fix NPC strike custom images (those mapped in the module by [Shemetz](https://github.com/shemetz)) not being used in shortcuts
+
 # 2.13.0
 
 -   this release implements the last missing shortcuts: `Stance`, `Action`, `Strike` and `Elemental Blast`
