@@ -234,26 +234,34 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             direction: 1 | -1
         ) {
             const actor = this.actor;
-            if (!actor?.isOfType("character")) return;
+            if (!actor) return;
 
-            if (["hero", "mythic"].includes(action)) {
-                const resource = getMythicOrHeroPoints(actor);
-                const newValue = Math.clamp(resource.value + direction, 0, resource.max);
+            if (actor.isOfType("character")) {
+                if (["hero", "mythic"].includes(action)) {
+                    const resource = getMythicOrHeroPoints(actor);
+                    const newValue = Math.clamp(resource.value + direction, 0, resource.max);
 
-                if (newValue !== resource.value) {
-                    actor.update({ [`system.resources.${resource.name}.value`]: newValue });
+                    if (newValue !== resource.value) {
+                        actor.update({ [`system.resources.${resource.name}.value`]: newValue });
+                    }
+
+                    return;
                 }
-            } else if (action === "dying" || action === "wounded") {
-                const max = actor.system.attributes[action].max;
 
-                if (direction === 1) {
-                    actor.increaseCondition(action, { max });
-                } else {
-                    actor.decreaseCondition(action);
+                if (action === "dying" || action === "wounded") {
+                    const max = actor.system.attributes[action].max;
+
+                    if (direction === 1) {
+                        actor.increaseCondition(action, { max });
+                    } else {
+                        actor.decreaseCondition(action);
+                    }
+
+                    return;
                 }
-            } else {
-                this._onSlider?.(action, direction);
             }
+
+            this._onSlider?.(action, direction);
         }
 
         #rollStatistic(this: ThisAdvancedHUD, event: PointerEvent, target: HTMLElement) {
