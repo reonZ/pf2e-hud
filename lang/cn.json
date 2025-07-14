@@ -110,6 +110,10 @@
             },
             "persistent": {
                 "title": "受控HUD",
+                "autoFill": {
+                    "name": "NPC自动填充",
+                    "hint": "如果您没有进行任何手动更改，NPC快捷栏将自动填充。"
+                },
                 "mode": {
                     "hint": "受控角色的选择模式。",
                     "name": "选择模式",

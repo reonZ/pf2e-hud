@@ -44,6 +44,10 @@
             },
             "persistent": {
                 "title": "Persistent HUD",
+                "autoFill": {
+                    "name": "Auto-Fill NPCs",
+                    "hint": "If you haven't made any manual changes, the shortcut slots will automatically be filled."
+                },
                 "mode": {
                     "name": "Selection Mode",
                     "hint": "Mode of selection for the persistent actor.",
@@ -225,7 +229,9 @@
                     "yes": "Copy"
                 },
                 "fill": {
-                    "title": "Auto-Fill Shortcuts"
+                    "title": "Auto-Fill Shortcuts",
+                    "content": "Are you sure you want to auto-fill the shortcuts?",
+                    "yes": "Auto-Fill"
                 },
                 "tab": "Change Shortcuts Set"
             }

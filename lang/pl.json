@@ -44,6 +44,10 @@
             },
             "persistent": {
                 "title": "Stały HUD",
+                "autoFill": {
+                    "name": "Automatyczne wypełnianie NPC",
+                    "hint": "Jeśli nie wprowadzono żadnych ręcznych zmian, miejsca na skróty zostaną automatycznie wypełnione."
+                },
                 "mode": {
                     "name": "Tryb wyboru",
                     "hint": "Tryb wyboru stałego aktora.",

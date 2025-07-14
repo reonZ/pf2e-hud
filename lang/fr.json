@@ -44,6 +44,10 @@
             },
             "persistent": {
                 "title": "HUD Persistant",
+                "autoFill": {
+                    "name": "Remplissage automatique des PNJ",
+                    "hint": "Si vous n'avez pas fait de changements manuels, les emplacements de raccourcis seront automatiquement remplis."
+                },
                 "mode": {
                     "choices": {
                         "disabled": "Désactivé",

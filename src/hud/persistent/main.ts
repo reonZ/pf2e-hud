@@ -503,7 +503,7 @@ class PersistentPF2eHUD
             }
         } else if (action === "fill-shortcuts") {
             if (await confirmDialog("persistent.shortcuts.fill")) {
-                const shortcutsData = this.shortcutsPanel.generateFillShortcuts();
+                const shortcutsData = await this.shortcutsPanel.generateFillShortcuts();
                 this.overrideShortcuts({ "1": shortcutsData });
             }
         } else if (action === "mute-sound") {

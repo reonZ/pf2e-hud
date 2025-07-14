@@ -5,19 +5,27 @@ import {
     getNpcStrikeImage,
     ShortcutPopup,
     SidebarDragData,
+    SpellCategoryType,
 } from "hud";
 import {
+    ActiveSpell,
     ApplicationRenderContext,
     ApplicationRenderOptions,
+    ConsumablePF2e,
     CreaturePF2e,
     dataToDatasetString,
     getDragEventData,
     getFlag,
+    isCastConsumable,
+    isInstanceOf,
     MODULE,
+    NPCPF2e,
     OneToTen,
     R,
     render,
     SpellCollection,
+    SpellPF2e,
+    ValueAndMax,
     warning,
 } from "module-helpers";
 import {
@@ -32,6 +40,7 @@ import {
     EquipmentShortcutData,
     ExtraActionShortcut,
     ExtraActionShortcutData,
+    getItemSlug,
     PersistentPartPF2eHUD,
     PersistentShortcut,
     ShortcutDataset,
@@ -67,7 +76,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     #shortcutsCache: ShortcutCache = createShortcutCache();
 
     get nbSlots(): number {
-        return 18;
+        return this.actor?.isOfType("character") ? 18 : 20;
     }
 
     get tab(): number {
@@ -144,12 +153,19 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         this.parent.updateShortcuts(game.userId, this.tab, toSave);
     }
 
-    generateFillShortcuts(): ShortcutData[] {
+    async generateFillShortcuts(): Promise<ShortcutData[]> {
         const actor = this.actor;
         if (!actor?.isOfType("npc")) return [];
 
         let _slot = 0;
-        const data: ShortcutData[] = [];
+
+        const nbSlots = this.nbSlots;
+        const shortcuts: ShortcutData[] = [];
+
+        const addSlot = (data: ShortcutData): boolean => {
+            shortcuts[_slot++] = data;
+            return _slot < nbSlots;
+        };
 
         for (const strike of actor.system.actions) {
             const strikeData: StrikeShortcutData = {
@@ -160,14 +176,89 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                 type: "strike",
             };
 
-            data[_slot++] = strikeData;
+            if (!addSlot(strikeData)) return shortcuts;
+        }
 
-            if (_slot > this.nbSlots) {
-                return data;
+        for (const action of actor.itemTypes.action) {
+            if (!action.actionCost) continue;
+
+            const actionData: ActionShortcutData = {
+                img: action.img,
+                itemId: action.id,
+                name: action.name,
+                type: "action",
+            };
+
+            if (!addSlot(actionData)) return shortcuts;
+        }
+
+        for (const item of actor.itemTypes.consumable) {
+            if (isCastConsumable(item)) continue;
+
+            const itemData: ConsumableShortcutData = {
+                img: item.img,
+                itemId: item.id,
+                name: item.name,
+                slug: getItemSlug(item),
+                type: "consumable",
+            };
+
+            if (!addSlot(itemData)) return shortcuts;
+        }
+
+        const entries = actor.spellcasting.contents;
+        for (const entry of entries) {
+            if (
+                entry.category === "ritual" ||
+                (entry.category === "items" && !isInstanceOf(entry, "ItemSpellcasting"))
+            )
+                continue;
+
+            const entryData = await entry.getSheetData();
+            if (!entryData.groups.length) continue;
+
+            const item = entry.isEphemeral
+                ? actor.items.get<ConsumablePF2e<NPCPF2e>>(entry.id.split("-")[0])
+                : undefined;
+
+            const category =
+                entry.category === "items" && item
+                    ? (item.category as SpellCategoryType)
+                    : entry.isFlexible
+                    ? "flexible"
+                    : (entry.category as SpellCategoryType);
+
+            const entryId = entry.id;
+
+            for (const group of entryData.groups) {
+                if (!group.active.length || group.uses?.max === 0) continue;
+
+                for (let slotId = 0; slotId < group.active.length; slotId++) {
+                    const active = group.active[slotId] as ActiveSpell & { uses?: ValueAndMax };
+                    if (!active?.spell || active.uses?.max === 0) continue;
+
+                    const spell = active.spell as SpellPF2e<CreaturePF2e>;
+
+                    const spellData: SpellShortcutData = {
+                        category,
+                        castRank: (active?.castRank ?? spell.rank) as OneToTen,
+                        entryId,
+                        groupId: group.id === "cantrips" ? 0 : group.id,
+                        img: spell.img,
+                        isAnimist: false,
+                        itemId: spell.id,
+                        name: spell.name,
+                        slotId,
+                        slug: getItemSlug(spell),
+                        type: "spell",
+                    };
+
+                    if (!addSlot(spellData)) return shortcuts;
+                }
             }
         }
 
-        return data;
+        return shortcuts;
     }
 
     protected async _prepareContext(
@@ -178,26 +269,25 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 
         let shortcutsData = this.shortcutsData;
 
-        const shortcuts: PersistentShortcutsContext["shortcuts"] = [];
-        const autoFill =
+        if (
+            this.tab === 1 &&
             this.actor?.isOfType("npc") &&
             shortcutsData.length === 0 &&
-            this.parent.settings.autoFill;
-
-        if (autoFill) {
-            shortcutsData = this.generateFillShortcuts();
+            this.parent.settings.autoFill
+        ) {
+            shortcutsData = await this.generateFillShortcuts();
         }
 
-        await Promise.all(
+        const shortcuts: PersistentShortcutsContext["shortcuts"] = await Promise.all(
             R.range(0, this.nbSlots).map(async (slot) => {
                 const data = shortcutsData[slot];
                 const shortcut = data ? await this.#instantiateShortcut(data, slot) : undefined;
 
-                shortcuts[slot] = shortcut ?? { isEmpty: true };
-
                 if (shortcut) {
                     this.shortcuts.set(slot, shortcut);
                 }
+
+                return shortcut ?? { isEmpty: true };
             })
         );
 
