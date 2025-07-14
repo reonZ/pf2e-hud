@@ -137,7 +137,7 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
                     },
                 ];
             },
-            (value) => {
+            (event, value) => {
                 this.actor.toggleRollOption(
                     this.domain,
                     this.option,

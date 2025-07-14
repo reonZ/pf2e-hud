@@ -76,7 +76,7 @@ class BlastShortcut extends AttackShortcut<
                     }
                 );
             },
-            (value) => {
+            (event, value) => {
                 const [type, map] = value.split("-") as ["melee" | "ranged", `${ZeroToTwo}`];
 
                 attackData.action.attack({

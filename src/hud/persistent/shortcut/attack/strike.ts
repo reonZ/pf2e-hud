@@ -170,7 +170,7 @@ class StrikeShortcut extends AttackShortcut<
                     };
                 });
             },
-            (value) => {
+            (event, value) => {
                 const [index, map] = value.split("-").map(Number) as [number, ZeroToTwo];
                 const attack = index === 0 ? attackData : attackData.altUsages?.at(index - 1);
 

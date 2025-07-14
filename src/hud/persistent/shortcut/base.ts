@@ -187,7 +187,7 @@ abstract class PersistentShortcut<
 
     async radialMenu<T extends string>(
         sectionsFn: () => ShortcutRadialSection[],
-        onSelect: (value: T) => void
+        onSelect: (event: MouseEvent, value: T) => void
     ) {
         const element = this.element;
         if (!element) return;
@@ -242,7 +242,7 @@ abstract class PersistentShortcut<
                 target.classList.contains("option") &&
                 !target.classList.contains("selected")
             ) {
-                onSelect(target.dataset.value as T);
+                onSelect(event, target.dataset.value as T);
             }
         });
 

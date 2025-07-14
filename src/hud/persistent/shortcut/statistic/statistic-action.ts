@@ -100,7 +100,7 @@ abstract class StatisticActionShortcut<
                     },
                 ];
             },
-            (value) => {
+            (event, value) => {
                 const map = Number(value);
 
                 action.roll(this.actor, event, {
