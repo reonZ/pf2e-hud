@@ -1,6 +1,6 @@
 // https://github.com/foundryvtt/pf2e/blob/7baadf276f3d3f13fd77adf411387312ab287042/src/styles/system/_effects-panel.scss
 #pf2e-hud-persistent [data-panel="effects"] {
-    --icon-height: 32px;
+    --icon-height: 36px;
 
     background: none;
     border: none;
@@ -82,11 +82,11 @@
                 .linked {
                     position: absolute;
                     display: inline-block;
-                    bottom: 0;
+                    bottom: -1px;
                     right: 0;
-                    padding: 0px 2px;
-                    color: var(--text-light);
-                    background-color: rgba(0, 0, 0, 0.75);
+                    border-radius: 6px 0 2px 0;
+                    font-size: 0.7em;
+                    background-color: rgba(0, 0, 0, 0.85);
                 }
 
                 .value-wrapper {
