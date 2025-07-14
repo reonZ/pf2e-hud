@@ -60,3 +60,24 @@
     {{/if}}
     <div class="flash"></div>
 </div>
+
+<div data-panel="shortcuts-menu">
+    {{#if hasActor}}
+    <div class="tabs" {{{@root.i18n.tooltip 'shortcuts.tab' }}}>
+        <i class="fa-solid fa-grid-2"></i>
+        {{> (@root.partial 'slider') shortcutsTab}}
+    </div>
+    {{#if isCharacter}}
+    <a data-action="copy-shortcuts" {{{@root.i18n.tooltip 'shortcuts.copy.label' }}}>
+        <i class="fa-solid fa-user-pen"></i>
+    </a>
+    {{else}}
+    <a data-action="fill-shortcuts" {{{@root.i18n.tooltip 'shortcuts.fill.label' }}}>
+        <i class="fa-solid fa-fill-drip"></i>
+    </a>
+    {{/if}}
+    <a data-action="fill-shortcuts" {{{@root.i18n.tooltip 'shortcuts.clear.label' }}}>
+        <i class="fa-solid fa-circle-xmark"></i>
+    </a>
+    {{/if}}
+</div>

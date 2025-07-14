@@ -251,6 +251,8 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
                 } else {
                     actor.decreaseCondition(action);
                 }
+            } else {
+                this._onSlider?.(action, direction);
             }
         }
 
@@ -509,6 +511,7 @@ interface IAdvancedPF2eHUD {
 }
 
 interface AdvancedPF2eHUD {
+    _onSlider(action: string, direction: 1 | -1): void;
     _prepareContext(options: ApplicationRenderOptions): Promise<AdvancedHudContext | {}>;
     _replaceHTML(result: unknown, content: HTMLElement, options: ApplicationRenderOptions): void;
 }

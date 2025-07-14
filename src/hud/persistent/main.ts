@@ -21,13 +21,14 @@ import {
 } from "module-helpers";
 import { PersistentEffectsPF2eHUD, PersistentShortcutsPF2eHUD } from ".";
 import {
-    AdvancedHudContext,
     BaseActorPF2eHUD,
+    createSlider,
     HUDSettingsList,
     IAdvancedPF2eHUD,
     makeAdvancedHUD,
     ReturnedAdvancedHudContext,
     SidebarCoords,
+    SliderData,
 } from "..";
 
 const SELECTION_MODES = ["disabled", "manual", "select", "combat"] as const;
@@ -36,10 +37,16 @@ class PersistentPF2eHUD
     extends makeAdvancedHUD(BaseActorPF2eHUD<PersistentSettings, PersistentHudActor>)
     implements IAdvancedPF2eHUD
 {
+    #previousActor: ActorPF2e | null = null;
     #actor: ActorPF2e | null = null;
     #effectsPanel = new PersistentEffectsPF2eHUD(this);
     #portraitElement: HTMLElement | null = null;
     #shortcutsPanel = new PersistentShortcutsPF2eHUD(this);
+    #shortcutsTab: ValueAndMinMax = {
+        value: 1,
+        min: 1,
+        max: 3,
+    };
 
     #deleteActorHook = createHook("deleteActor", (actor: ActorPF2e) => {
         if (this.isCurrentActor(actor)) {
@@ -135,6 +142,7 @@ class PersistentPF2eHUD
     get savedActor(): PersistentHudActor | null {
         const uuid = this.settings.savedActor;
         const actor = fromUuidSync<PersistentHudActor>(uuid);
+
         return actor instanceof Actor && this.isValidActor(actor) ? actor : null;
     }
 
@@ -171,6 +179,10 @@ class PersistentPF2eHUD
 
     get shortcutsPanel(): PersistentShortcutsPF2eHUD {
         return this.#shortcutsPanel;
+    }
+
+    get shortcutsTab(): ValueAndMinMax {
+        return this.#shortcutsTab;
     }
 
     protected _configurate(): void {
@@ -251,7 +263,13 @@ class PersistentPF2eHUD
             // if (this.#actor.token) {
             //     this.#actor.token.baseActor.apps[this.id] = this;
             // }
+
+            if (this.#actor !== this.#previousActor) {
+                this.#shortcutsTab.value = 1;
+            }
         }
+
+        this.#previousActor = this.#actor;
 
         return super.render(options, _options);
     }
@@ -334,21 +352,22 @@ class PersistentPF2eHUD
         const setActor = getSetActorData(this);
         const noEffects = !this.settings.showEffects;
 
-        if (!context.hasActor) {
-            return {
-                ...context,
-                noEffects,
-                setActor,
-            };
-        }
-
-        return {
+        const data: PersistentContextBase = {
             ...context,
-            ac: actor.attributes.ac.value,
-            avatar: actor.img,
             noEffects,
             setActor,
+            shortcutsTab: createSlider("shortcuts-tab", this.shortcutsTab),
         };
+
+        if (context.hasActor) {
+            return {
+                ...data,
+                ac: actor.attributes.ac.value,
+                avatar: actor.img,
+            } satisfies PersistentContext;
+        }
+
+        return data;
     }
 
     protected async _renderHTML(
@@ -434,6 +453,26 @@ class PersistentPF2eHUD
         } else if (action === "toggle-hotbar-lock") {
             toggleFoundryBtn("hotbar-controls-right", "lock");
             this.element.classList.toggle("locked", ui.hotbar.locked);
+        }
+    }
+
+    _onSlider(action: "shortcuts-tab", direction: 1 | -1): void {
+        if (action === "shortcuts-tab") {
+            const { value: previous, min, max } = this.shortcutsTab;
+            const value = (this.shortcutsTab.value = Math.clamp(previous + direction, min, max));
+            const slider = htmlQuery(this.element, `[data-slider-action="shortcuts-tab"]`);
+            const sliderValue = htmlQuery(slider, ".value");
+
+            htmlQuery(slider, ".previous")?.classList.toggle("disabled", value <= 1);
+            htmlQuery(slider, ".next")?.classList.toggle("disabled", value >= max);
+
+            if (sliderValue) {
+                sliderValue.innerHTML = String(value);
+            }
+
+            if (value !== previous) {
+                this.shortcutsPanel.render();
+            }
         }
     }
 
@@ -539,16 +578,15 @@ type PersistentSettings = {
     showEffects: boolean;
 };
 
-type PersistentContext = AdvancedHudContext &
-    PersistentContextBase & {
-        ac: number;
-        avatar: ImageFilePath;
-        cleaned: boolean;
-    };
+type PersistentContext = PersistentContextBase & {
+    ac: number;
+    avatar: ImageFilePath;
+};
 
-type PersistentContextBase = {
+type PersistentContextBase = ReturnedAdvancedHudContext & {
     noEffects: boolean;
     setActor: { tooltip: string; disabled: boolean } | undefined;
+    shortcutsTab: SliderData;
 };
 
 type PersistentCloseOptions = ApplicationClosingOptions & {

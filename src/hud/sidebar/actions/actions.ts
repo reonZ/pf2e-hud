@@ -10,12 +10,12 @@ import {
     getActionIcon,
     includesAny,
     isSupressedFeat,
+    LabeledValueAndMax,
     localize,
     MacroPF2e,
     R,
     TraitToggleViewData,
     useAction,
-    ValueAndMax,
 } from "module-helpers";
 import { ActionsSidebarPF2eHUD } from ".";
 import { BaseSidebarItem, getExtrasActions, getSkillActionGroups } from "..";
@@ -304,11 +304,11 @@ type ActionSection = {
 
 type ActionData = {
     exploration: MaybeFalsy<{ active: boolean }>;
-    frequency: Maybe<ValueAndMax & { label: string }>;
+    frequency: Maybe<LabeledValueAndMax>;
     id: string;
     img: ImageFilePath;
     item: AbilityItemPF2e<ActorPF2e> | FeatPF2e<ActorPF2e>;
-    resource: Maybe<ValueAndMax & { label: string; slug: string }>;
+    resource: Maybe<LabeledValueAndMax & { slug: string }>;
     toggles: TraitToggleViewData[];
     usage: Maybe<ActionUsage>;
 };

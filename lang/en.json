@@ -208,6 +208,18 @@
                     "set": "Set selected token as persistent actor",
                     "unset": "Unset persistent actor"
                 }
+            },
+            "shortcuts": {
+                "clear": {
+                    "label": "Clear Shortcuts"
+                },
+                "copy": {
+                    "label": "Copy User Shortcuts"
+                },
+                "fill": {
+                    "label": "Auto-Fill Shortcuts"
+                },
+                "tab": "Change Shortcuts Set"
             }
         },
         "popup": {

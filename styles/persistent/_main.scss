@@ -200,6 +200,21 @@
         }
     }
 
+    [data-panel="shortcuts-menu"] {
+        grid-column: stretch;
+        grid-row: top;
+        grid-template-columns: 2.3fr 1fr 1fr;
+        min-width: 7.154em;
+        width: fit-content;
+        align-items: center;
+
+        .tabs {
+            display: flex;
+            align-items: center;
+            gap: 0.1em;
+        }
+    }
+
     &.cleaned {
         [data-action="toggle-clean"]:not(.cleaned) {
             display: none;

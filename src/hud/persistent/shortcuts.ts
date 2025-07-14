@@ -64,12 +64,15 @@ const SHORTCUTS = {
 } satisfies Record<string, ConstructorOf<PersistentShortcut>>;
 
 class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
-    #tab: `${number}` = "1";
     #shortcuts: Map<number, PersistentShortcut> = new Map();
     #shortcutsCache: ShortcutCache = createShortcutCache();
 
     get nbSlots(): number {
         return 18;
+    }
+
+    get tab(): number {
+        return this.parent.shortcutsTab.value;
     }
 
     get name(): "shortcuts" {
@@ -83,7 +86,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     get shortcutsData(): ShortcutData[] {
         const worldActor = this.worldActor;
         if (!worldActor) return [];
-        return getFlag(worldActor, "shortcuts", game.userId, this.#tab) ?? [];
+        return getFlag(worldActor, "shortcuts", game.userId, String(this.tab)) ?? [];
     }
 
     async replace(slot: number, data: ShortcutData): Promise<boolean> {
@@ -136,7 +139,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             toSave[slot] = shortcut.toObject();
         }
 
-        const updateKey = `shortcuts.${game.userId}.${this.#tab}`;
+        const updateKey = `shortcuts.${game.userId}.${this.tab}`;
         // we don't want to re-render the entire persistent HUD
         await updateFlag(worldActor, { [updateKey]: toSave }, { render: false });
 
@@ -186,6 +189,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         options: ApplicationRenderOptions
     ): void {
         super._replaceHTML(result, content, options);
+
         content.classList.toggle("character", !!this.actor?.isOfType("character"));
     }
 
