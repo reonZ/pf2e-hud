@@ -78,7 +78,7 @@
         <span>{{ac}}</span>
     </div>
     {{!-- shield --}}
-    {{#if isCharacter}}
+    {{#if isCombatant}}
     <div class="double" data-section="shield">
         <a {{#if (eq shield.itemId null)}}class="disabled" {{/if}} data-action="raise-shield"
             data-tooltip="PF2E.Actions.RaiseAShield.SingleActionTitle">
@@ -100,18 +100,6 @@
         {{else}}
         <span class="nan">——&nbsp;&nbsp;</span>
         {{/if}}
-    </div>
-    {{!-- knowledge & notes --}}
-    {{else if isNPC}}
-    <div class="double" data-section="npc-extra">
-        <div data-section="recall-knowledge" data-tooltip="{{knowledge.tooltip}}">
-            <i class="fa-solid fa-book"></i>
-            <span>{{knowledge.dc}}</span>
-        </div>
-        <a data-section="npc-notes" data-action="show-notes" data-tooltip="PF2E.NPC.NotesTab">
-            <i class="fa-duotone fa-clipboard"></i>
-            <span>...</span>
-        </a>
     </div>
     {{else}}
     {{!-- extra data for non-character --}}
@@ -146,6 +134,8 @@
     class="{{#if isCharacter}} resources{{/if}}{{#if alliance}} alliance{{/if}}">
     {{#if isCharacter}}
     {{> 'resources'}}
+    {{else if isNPC}}
+    {{> 'npc-extras'}}
     {{/if}}
     {{> 'level'}}
     {{> 'speed'}}
@@ -162,6 +152,10 @@
 {{#if isCharacter}}
 <div data-panel="resources">
     {{> 'resources'}}
+</div>
+{{else}}
+<div data-panel="npc-extras">
+    {{> 'npc-extras'}}
 </div>
 {{/if}}
 {{/if}}
@@ -240,6 +234,22 @@
     <span><i class="fa-solid fa-arrow-rotate-right"></i></span>
 </a>
 {{/if}}
+{{/inline}}
+
+{{#*inline 'npc-extras'}}
+{{!-- knowledge, traits & notes --}}
+<div data-section="recall-knowledge" data-tooltip="{{knowledge.tooltip}}">
+    <i class="fa-solid fa-book"></i>
+    <span>{{knowledge.dc}}</span>
+</div>
+<div data-section="npc-tags" data-tooltip="{{npcTags}}">
+    <i class="fa-solid fa-tag"></i>
+    <span>??</span>
+</div>
+<a data-section="npc-notes" data-action="show-notes" data-tooltip="PF2E.NPC.NotesTab">
+    <i class="fa-duotone fa-clipboard"></i>
+    <span>...</span>
+</a>
 {{/inline}}
 
 {{#*inline 'resources'}}

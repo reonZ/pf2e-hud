@@ -168,10 +168,11 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
                 knowledge: isNPC ? getKnowledge(actor) : undefined,
                 level: actor.level,
                 name: actor.name,
+                npcTags: isNPC ? getNpcTags(actor) : undefined,
                 partial: (key: string) => templatePath("partials", key),
                 resolve: isCharacter ? actor.system.resources.resolve : undefined,
                 resources: isCharacter ? getResources(actor) : undefined,
-                shield: isCharacter ? actor.attributes.shield : undefined,
+                shield: isCombatant ? actor.attributes.shield : undefined,
                 sidebars,
                 speed: getSpeed(actor),
                 statistics: getStatistics(actor),
@@ -426,6 +427,17 @@ function getKnowledge(actor: NPCPF2e): AdvancedHudContext["knowledge"] {
     };
 }
 
+function getNpcTags(actor: NPCPF2e): string | undefined {
+    const traits = [...actor.traits].map((trait) => {
+        const label = game.i18n.localize(CONFIG.PF2E.creatureTraits[trait]);
+        return `<li>${label}</li>`;
+    });
+
+    if (traits.length) {
+        return `<h4>${game.i18n.localize("PF2E.Traits")}</h4><ul>${traits.join("")}</ul>`;
+    }
+}
+
 function getSpeed(actor: ActorPF2e): AdvancedHudContext["speed"] {
     if (!actor.isOfType("creature")) return;
 
@@ -571,6 +583,7 @@ type AdvancedHudContext = {
     knowledge: { tooltip: string; dc: number } | undefined;
     level: number;
     name: string;
+    npcTags: string | undefined;
     partial: (key: string) => string;
     resolve: ValueAndMax | undefined;
     resources: HudResources | undefined;

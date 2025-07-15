@@ -436,7 +436,7 @@ class PersistentPF2eHUD
         const actorHud = actor
             ? await render("actor-hud", { ...context, i18n: "actor-hud" })
             : R.pipe(
-                  ["alliance", "details", "info", "sidebars", "statistics"],
+                  ["alliance", "details", "info", "npc-extras", "sidebars", "statistics"],
                   R.map((x) => `<div data-panel="${x}"></div>`),
                   R.join("")
               );
@@ -465,8 +465,9 @@ class PersistentPF2eHUD
         this.#activateListeners(content);
     }
 
-    protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
-        document.getElementById("ui-bottom")?.appendChild(this.element);
+    protected _insertElement(element: HTMLElement): HTMLElement {
+        document.getElementById("ui-bottom")?.appendChild(element);
+        return element;
     }
 
     protected _cleanupActor(): void {

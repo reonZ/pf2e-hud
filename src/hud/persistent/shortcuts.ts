@@ -74,7 +74,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     #shortcutsCache: ShortcutCache = createShortcutCache();
 
     get nbSlots(): number {
-        return this.actor?.isOfType("character") ? 18 : 20;
+        return 18;
     }
 
     get tab(): number {

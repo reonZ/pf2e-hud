@@ -142,6 +142,7 @@
         justify-content: center;
     }
 
+    [data-panel="npc-extras"],
     [data-panel="resources"] {
         grid-column: resources;
         grid-row: middle;
@@ -166,12 +167,8 @@
     }
 
     [data-panel="shortcuts"] {
-        grid-column: resources / full;
+        grid-column: sidebars / full;
         grid-row: middle;
-
-        &.character {
-            grid-column: sidebars / full;
-        }
     }
 
     [data-panel="sidebars"] {
