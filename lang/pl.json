@@ -48,7 +48,7 @@
             "persistent": {
                 "title": "Stały HUD",
                 "autoFill": {
-                    "name": "Automatyczne wypełnianie NPC",
+                    "name": "Autouzupełnianie Postaci Niezależnych",
                     "hint": "Jeśli nie wprowadzono żadnych ręcznych zmian, miejsca na skróty zostaną automatycznie wypełnione."
                 },
                 "mode": {
@@ -223,9 +223,26 @@
                 }
             },
             "shortcuts": {
+                "clear": {
+                    "title": "Wyczyść skróty",
+                    "all": "Wszystkie zestawy skrótów",
+                    "hint": "Czy na pewno chcesz usunąć następujące skróty?",
+                    "set": "Tylko bieżący zestaw",
+                    "yes": "Usuń"
+                },
+                "copy": {
+                    "title": "Kopiuj skróty użytkownika",
+                    "hint": "Wybierz użytkownika, od którego chcesz skopiować skróty.",
+                    "label": "Własność użytkownika",
+                    "none": "Ten aktor nie ma innego właściciela.",
+                    "yes": "Kopiuj"
+                },
                 "fill": {
-                    "title": "Autouzupełnianie skrótów"
-                }
+                    "title": "Autouzupełnianie skrótów",
+                    "content": "Czy na pewno chcesz automatycznie wypełniać skróty?",
+                    "yes": "Autouzupełnianie"
+                },
+                "tab": "Zmień zestaw skrótów"
             }
         },
         "popup": {
