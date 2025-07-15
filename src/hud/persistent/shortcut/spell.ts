@@ -167,7 +167,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         const actor = this.actor;
         const entryId = this.entryId;
 
-        const entryData = await this.cached("spellcasting", entryId, () => {
+        const entryData = await this.cached("shortcutSpellData", entryId, () => {
             return this.#getEntryData.call(this);
         });
 
@@ -311,10 +311,11 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         if (!collection) return null;
 
         const entry = collection.entry;
-
-        const entrySheetData = (await entry.getSheetData({
-            spells: collection,
-        })) as CustomSpellcastingEntry;
+        const entrySheetData = await this.cached("spellcastingEntry", entryId, () => {
+            return entry.getSheetData({
+                spells: collection,
+            }) as Promise<CustomSpellcastingEntry>;
+        });
 
         const vessels = getAnimistVesselsData(this.cached, actor);
         const isConsumable = entrySheetData.category === "items";

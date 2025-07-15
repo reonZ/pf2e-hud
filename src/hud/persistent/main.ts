@@ -388,7 +388,7 @@ class PersistentPF2eHUD
 
         // we don't want to re-render the entire persistent HUD
         await updateFlag(worldActor, { [updateKey]: value }, { render: false });
-        this.shortcutsPanel.render();
+        this.shortcutsPanel.render({ keepCache: true });
     }
 
     async deleteShortcuts(all: boolean) {

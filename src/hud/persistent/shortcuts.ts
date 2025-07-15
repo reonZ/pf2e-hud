@@ -1,5 +1,6 @@
 import {
     createDraggable,
+    CustomSpellcastingEntry,
     ElementalBlastsData,
     FoundryDragData,
     getNpcStrikeImage,
@@ -8,7 +9,6 @@ import {
     SpellCategoryType,
 } from "hud";
 import {
-    ActiveSpell,
     ApplicationRenderContext,
     ApplicationRenderOptions,
     ConsumablePF2e,
@@ -24,8 +24,6 @@ import {
     R,
     render,
     SpellCollection,
-    SpellPF2e,
-    ValueAndMax,
     warning,
 } from "module-helpers";
 import {
@@ -206,16 +204,23 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             if (!addSlot(itemData)) return shortcuts;
         }
 
-        const entries = actor.spellcasting.contents;
-        for (const entry of entries) {
+        for (const collection of actor.spellcasting.collections) {
+            const entry = collection.entry;
+
             if (
                 entry.category === "ritual" ||
                 (entry.category === "items" && !isInstanceOf(entry, "ItemSpellcasting"))
             )
                 continue;
 
-            const entryData = await entry.getSheetData();
-            if (!entryData.groups.length) continue;
+            const entryId = entry.id;
+
+            const entrySheetData = await this.#shortcutsCache("spellcastingEntry", entryId, () => {
+                return entry.getSheetData({
+                    spells: collection,
+                }) as Promise<CustomSpellcastingEntry>;
+            });
+            if (!entrySheetData.groups.length) continue;
 
             const item = entry.isEphemeral
                 ? actor.items.get<ConsumablePF2e<NPCPF2e>>(entry.id.split("-")[0])
@@ -228,16 +233,14 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                     ? "flexible"
                     : (entry.category as SpellCategoryType);
 
-            const entryId = entry.id;
-
-            for (const group of entryData.groups) {
+            for (const group of entrySheetData.groups) {
                 if (!group.active.length || group.uses?.max === 0) continue;
 
                 for (let slotId = 0; slotId < group.active.length; slotId++) {
-                    const active = group.active[slotId] as ActiveSpell & { uses?: ValueAndMax };
+                    const active = group.active[slotId];
                     if (!active?.spell || active.uses?.max === 0) continue;
 
-                    const spell = active.spell as SpellPF2e<CreaturePF2e>;
+                    const spell = active.spell;
 
                     const spellData: SpellShortcutData = {
                         category,
@@ -261,12 +264,24 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         return shortcuts;
     }
 
+    render(
+        options?: boolean | ShortcutsRenderOptions,
+        _options?: ShortcutsRenderOptions
+    ): Promise<this> {
+        const keepCache = R.isPlainObject(options) ? options.keepCache : _options?.keepCache;
+
+        this.shortcuts.clear();
+
+        if (!keepCache) {
+            this.#shortcutsCache = createShortcutCache();
+        }
+
+        return super.render(options, _options);
+    }
+
     protected async _prepareContext(
         options: ApplicationRenderOptions
     ): Promise<PersistentShortcutsContext> {
-        this.shortcuts.clear();
-        this.#shortcutsCache = createShortcutCache();
-
         let shortcutsData = this.shortcutsData;
 
         if (
@@ -278,18 +293,18 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             shortcutsData = await this.generateFillShortcuts();
         }
 
-        const shortcuts: PersistentShortcutsContext["shortcuts"] = await Promise.all(
-            R.range(0, this.nbSlots).map(async (slot) => {
-                const data = shortcutsData[slot];
-                const shortcut = data ? await this.#instantiateShortcut(data, slot) : undefined;
+        const shortcuts: PersistentShortcutsContext["shortcuts"] = [];
 
-                if (shortcut) {
-                    this.shortcuts.set(slot, shortcut);
-                }
+        for (const slot of R.range(0, this.nbSlots)) {
+            const data = shortcutsData[slot];
+            const shortcut = data ? await this.#instantiateShortcut(data, slot) : undefined;
 
-                return shortcut ?? { isEmpty: true };
-            })
-        );
+            if (shortcut) {
+                this.shortcuts.set(slot, shortcut);
+            }
+
+            shortcuts[slot] = shortcut ?? { isEmpty: true };
+        }
 
         return {
             dataset: (data: ShortcutDataset | undefined) => {
@@ -312,7 +327,6 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         options: ApplicationRenderOptions
     ): void {
         super._replaceHTML(result, content, options);
-
         content.classList.toggle("character", !!this.actor?.isOfType("character"));
     }
 
@@ -517,7 +531,8 @@ type ShortcutCacheData = {
     elementalBlastData?: ElementalBlastsData | null;
     explorations?: string[];
     getActionMacro?: toolbelt.ToolbeltApi["actionable"]["getActionMacro"] | null;
-    spellcasting?: Record<string, SpellEntryData | null>;
+    shortcutSpellData?: Record<string, SpellEntryData | null>;
+    spellcastingEntry?: Record<string, CustomSpellcastingEntry | null>;
 };
 
 type ShortcutData =
@@ -535,6 +550,10 @@ type ShortcutData =
 type PersistentShortcutsContext = {
     dataset: (data: ShortcutDataset | undefined) => string;
     shortcuts: ShortcutsList;
+};
+
+type ShortcutsRenderOptions = DeepPartial<ApplicationRenderOptions> & {
+    keepCache?: boolean;
 };
 
 type ShortcutsList = (PersistentShortcut | { isEmpty: true })[];
