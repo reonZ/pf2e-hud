@@ -62,6 +62,12 @@
             "sidebar": {
                 "title": "Sous-menus"
             },
+            "time": {
+                "title": "Compteur de temps",
+                "enabled": {
+                    "hint": "Active cet élément du HUD sur votre client. Ceci est annulé lorsque le paramètre 'Accès des joueurs' de l'horloge du monde du système est désactivé."
+                }
+            },
             "token": {
                 "title": "Token HUD",
                 "mode": {

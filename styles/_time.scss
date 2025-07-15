@@ -1,0 +1,81 @@
+#pf2e-hud-time {
+    --icon-width: 1.2rem;
+    --margin: 4px;
+    --slider-track-color: #ffffff3b;
+
+    flex: 0;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.1rem;
+    pointer-events: all;
+    max-width: calc(var(--sidebar-width) - var(--margin) * 2);
+    width: 100%;
+    margin: var(--margin);
+    margin-bottom: 0;
+    background: var(--outer-background);
+    border: var(--outer-border);
+    border-radius: var(--outer-border-radius);
+    padding: 0.2rem;
+
+    .header,
+    .details {
+        width: 100%;
+    }
+
+    .header {
+        text-align: center;
+
+        .time-slider {
+            display: flex;
+            height: 100%;
+            align-items: center;
+
+            input {
+                --range-track-color: var(--slider-track-color);
+
+                height: min-content;
+            }
+        }
+    }
+
+    .details {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .controls {
+            &.left {
+                direction: rtl;
+
+                i {
+                    transform: rotateY(180deg);
+                }
+            }
+        }
+
+        .time {
+            padding-inline: 0.5rem;
+        }
+    }
+
+    .header {
+        &.is-gm {
+            height: 1.25rem;
+
+            &:not(:hover) {
+                .time-slider {
+                    display: none;
+                }
+            }
+
+            &:hover {
+                .date {
+                    display: none;
+                }
+            }
+        }
+    }
+}

@@ -6,6 +6,7 @@
 @import "./persistent/main";
 @import "./popup";
 @import "./sidebar/sidebar";
+@import "./time";
 @import "./token";
 @import "./tooltip";
 
@@ -18,6 +19,12 @@
             .chat-form {
                 gap: 4px;
             }
+        }
+    }
+
+    &.pf2e-hud-time {
+        #chat {
+            padding-top: 0;
         }
     }
 }

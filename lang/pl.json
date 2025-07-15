@@ -65,6 +65,12 @@
             "sidebar": {
                 "title": "Pasek boczny"
             },
+            "time": {
+                "title": "Śledzenie czasu",
+                "enabled": {
+                    "hint": "Włącza ten element HUD na kliencie. Jest to nadpisywane, gdy ustawienie systemowego zegara światowego „Dostęp gracza” jest wyłączone."
+                }
+            },
             "token": {
                 "title": "HUD tokena",
                 "mode": {

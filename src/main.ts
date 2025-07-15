@@ -9,6 +9,7 @@ import {
     TooltipPF2eHUD,
     TrackerPF2eHUD,
 } from "hud";
+import { TimePF2eHUD } from "hud/time";
 import { registerKeybinds } from "keybinds";
 import { createHTMLElement, MODULE, R, templatePath, userIsGM } from "module-helpers";
 import { getGlobalSetting, registerSettings } from "settings";
@@ -19,6 +20,7 @@ MODULE.register("pf2e-hud");
 const HUDS = {
     dice: new DicePF2eHUD(),
     persistent: new PersistentPF2eHUD(),
+    time: new TimePF2eHUD(),
     token: new TokenPF2eHUD(),
     tooltip: new TooltipPF2eHUD(),
     tracker: new TrackerPF2eHUD(),

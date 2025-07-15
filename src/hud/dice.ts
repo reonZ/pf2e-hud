@@ -5,7 +5,6 @@ import {
     ApplicationRenderOptions,
     getDamageRollClass,
     R,
-    render,
     settingPath,
 } from "module-helpers";
 import { FoundrySidebarPF2eHUD, HUDSettingsList } from ".";
@@ -27,10 +26,6 @@ class DicePF2eHUD extends FoundrySidebarPF2eHUD<DiceSettings> {
         id: "pf2e-hud-dice",
     };
 
-    get key(): "dice" {
-        return "dice";
-    }
-
     get settingsSchema(): HUDSettingsList<DiceSettings> {
         return [
             {
@@ -40,11 +35,19 @@ class DicePF2eHUD extends FoundrySidebarPF2eHUD<DiceSettings> {
                 scope: "user",
                 hint: settingPath("enabled.hint"),
                 name: settingPath("enabled.name"),
-                onChange: (value) => {
+                onChange: (value: boolean) => {
                     this.configurate();
                 },
             },
         ];
+    }
+
+    get key(): "dice" {
+        return "dice";
+    }
+
+    get beforeElement(): string {
+        return "chat-message";
     }
 
     protected _configurate(): void {
@@ -71,28 +74,7 @@ class DicePF2eHUD extends FoundrySidebarPF2eHUD<DiceSettings> {
         };
     }
 
-    protected _renderHTML(
-        context: DiceContext,
-        options: ApplicationRenderOptions
-    ): Promise<string> {
-        return render("dice", context);
-    }
-
-    protected _replaceHTML(
-        result: string,
-        content: HTMLElement,
-        options: ApplicationRenderOptions
-    ): void {
-        content.innerHTML = result;
-        this.#activateListeners(content);
-    }
-
-    protected _insertElement(element: HTMLElement): HTMLElement {
-        document.getElementById("chat-message")?.before(element);
-        return super._insertElement(element);
-    }
-
-    #activateListeners(html: HTMLElement) {
+    _activateListeners(html: HTMLElement) {
         addListenerAll(html, "[data-action]", (el, event) => {
             const action = el.dataset.action as "roll-die" | "roll-flat";
 
