@@ -26,6 +26,16 @@
         #chat {
             padding-top: 0;
         }
+
+        #combat {
+            margin-top: 4px;
+        }
+    }
+
+    &:not(.active-chat):not(.active-combat) {
+        #pf2e-hud-time {
+            display: none;
+        }
     }
 }
 
