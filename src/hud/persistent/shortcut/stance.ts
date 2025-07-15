@@ -14,14 +14,15 @@ import {
     ShortcutSource,
 } from ".";
 import fields = foundry.data.fields;
-import { toggleStance } from "hud/sidebar";
+import { canUseStances, toggleStance } from "hud/sidebar";
 
 class StanceShortcut extends PersistentShortcut<
     StanceShortcutSchema,
     FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>
 > {
-    #active!: boolean;
+    #active: boolean = false;
     #sourceEffect: Maybe<EffectPF2e | CompendiumIndexData>;
+    #canUseStances: boolean = false;
 
     static defineSchema(): StanceShortcutSchema {
         return {
@@ -46,8 +47,23 @@ class StanceShortcut extends PersistentShortcut<
     }
 
     async _initShortcut(): Promise<void> {
-        this.#active = !!this.item && hasItemWithSourceId(this.actor, this.effectUUID);
+        if (!this.item) return;
+
+        this.#active = this.cached("hasItemWithSourceId", this.effectUUID, () => {
+            return hasItemWithSourceId(this.actor, this.effectUUID);
+        });
+        this.#canUseStances = this.cached("canUseStances", () => {
+            return canUseStances(this.actor);
+        });
         this.#sourceEffect = fromUuidSync<EffectPF2e>(this.effectUUID);
+    }
+
+    get canUseStances(): boolean {
+        return this.#canUseStances;
+    }
+
+    get greyedOut(): boolean {
+        return super.greyedOut || !this.canUseStances;
     }
 
     get active(): boolean {
@@ -78,6 +94,10 @@ class StanceShortcut extends PersistentShortcut<
 
         const active = localize("shortcuts.tooltip", this.active ? "active" : "inactive");
         return `${label} (${active})`;
+    }
+
+    get unusableReason(): string | undefined {
+        return super.unusableReason ?? !this.canUseStances ? "combat" : undefined;
     }
 
     use(event: MouseEvent): void {

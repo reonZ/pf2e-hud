@@ -116,6 +116,10 @@ abstract class PersistentShortcut<
         return false;
     }
 
+    get greyedOut(): boolean {
+        return !this.canUse;
+    }
+
     get usedImage(): ImageFilePath {
         return this.item?.img ?? this.img;
     }

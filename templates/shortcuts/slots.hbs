@@ -3,7 +3,7 @@
 <div class="shortcut empty" data-slot="{{slot}}"></div>
 {{else}}
 <div id="{{shortcut.elementId}}" data-type="{{shortcut.type}}"
-    class="item shortcut{{#if shortcut.inactive}} inactive {{else if (not shortcut.canUse)}} greyed{{/if}}"
+    class="item shortcut{{#if shortcut.inactive}} inactive {{else if shortcut.greyedOut}} greyed{{/if}}"
     data-slot="{{slot}}" data-action="shortcut-slot" {{{@root.dataset shortcut.dataset}}}
     draggable="true">
     {{!-- image --}}

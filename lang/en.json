@@ -298,6 +298,7 @@
                     "available": "Not Currently Available",
                     "broken": "Orphan Spell",
                     "charges": "No Charges Left",
+                    "combat": "Not In Combat",
                     "dropped": "Item Not Carried",
                     "equip": "Not Equipped",
                     "expended": "Expended Spell",

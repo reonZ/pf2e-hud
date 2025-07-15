@@ -525,12 +525,14 @@ type ShortcutCache = { get values(): ShortcutCacheData } & {
 R.pathOr;
 
 type ShortcutCacheData = {
-    canCastStaffRank?: Partial<Record<OneToTen, boolean>>;
     animistCollection?: SpellCollection<CreaturePF2e> | null;
     animistVesselsData?: dailies.AnimistVesselsData | null;
+    canCastStaffRank?: Partial<Record<OneToTen, boolean>>;
+    canUseStances?: boolean | null;
     elementalBlastData?: ElementalBlastsData | null;
     explorations?: string[];
     getActionMacro?: toolbelt.ToolbeltApi["actionable"]["getActionMacro"] | null;
+    hasItemWithSourceId?: Record<DocumentUUID, boolean>;
     shortcutSpellData?: Record<string, SpellEntryData | null>;
     spellcastingEntry?: Record<string, CustomSpellcastingEntry | null>;
 };

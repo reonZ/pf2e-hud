@@ -1,4 +1,4 @@
-<div class="header{{#unless canUse}} greyed{{/unless}}">
+<div class="header{{#if greyedOut}} greyed{{/if}}">
     <div class="image" style="background-image: url({{ifThen custom.img custom.img usedImage}});">
         {{!-- uses --}}
         {{#with uses as |uses|}}
@@ -21,11 +21,11 @@
         {{subtitle}}
     </div>
 </div>
-{{#unless canUse}}
+{{#with unusableReason as |reason|}}
 <div class="details left">
-    {{@root.i18n 'reason' unusableReason}}
+    {{@root.i18n 'reason' reason}}
 </div>
-{{/unless}}
+{{/with}}
 <div class="details right">
     {{#unless inactive}}
     {{#if canAltUse}}
