@@ -1,15 +1,18 @@
-#
+# 2.15.0
 
--   this release implements the `Dice Panel` and adds a new `Foundry Sidebar` section
+-   this release implements the `Dice Panel`, `Time Tracker` and adds a new `Foundry Sidebar` section
 -   NPCs now have the same layout as characters, with the shield section and the extra panel
     -   the `Notes` and `Recall Knowledge` sections have been moved to the new panel
-    -   a new `Traits` section has been added to it
+    -   a new `Traits` section has been added to it (until i can think of something better :/)
 -   `Foundry Sidebar`:
     -   add `Auto Expand on Load` user setting (enabled) to force the foundry sidebar to expand on page load
 -   `Persistent Shortcuts`:
     -   NPCs no longer have +2 shortcut slots now that they have the same amount of panels as characters
 -   `Stance Shortcut`:
     -   "disable" the shortcut when the actor isn't in combat
+-   `Time Tracker`:
+    -   remove the `Short Date & Time` setting, it is now only available by clicking on the time of the HUD
+    -   the HUD will only show up when either the `Chat Messages` or the `Ecounters` tab is active
 
 # 2.14.0
 
