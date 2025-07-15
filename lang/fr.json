@@ -26,6 +26,9 @@
                 "name": "Activé",
                 "hint": "Active cet élément du HUD sur votre client."
             },
+            "dice": {
+                "title": "Panneau de dés"
+            },
             "global": {
                 "highestSpeed": {
                     "name": "Montrer la plus grande vitesse",

@@ -1,3 +1,16 @@
+#
+
+-   this release implements the `Dice Panel` and adds a new `Foundry Sidebar` section
+-   NPCs now have the same layout as characters, with the shield section and the extra panel
+    -   the `Notes` and `Recall Knowledge` sections have been moved to the new panel
+    -   a new `Traits` section has been added to it
+-   `Foundry Sidebar`:
+    -   add `Auto Expand on Load` user setting (enabled) to force the foundry sidebar to expand on page load
+-   `Persistent Shortcuts`:
+    -   NPCs no longer have +2 shortcut slots now that they have the same amount of panels as characters
+-   `Stance Shortcut`:
+    -   "disable" the shortcut when the actor isn't in combat
+
 # 2.14.0
 
 -   this release finish implementing the `Persistent HUD` adding the shortcuts panel functionalities
@@ -6,7 +19,7 @@
     -   `Clear Shortcuts` now let's you choose if you want to remove all shortcuts or only the ones from the current set
     -   `Copy User Shortcuts` now let's you copy from any user that also owns this actor, which means that players can copy from a GM
     -   increase the size of effect slots
-    -   all the missing settings that were not mentionned until now will not make a comeback in the v13
+    -   all the missing settings that were not mentioned until now will not make a comeback in the v13
     -   the auto swap shortcuts set (via effect or macro) has not be reintroduced, it will remain so for now (or forever)
     -   fix locked effect icon style
 -   `Persistent Shortcuts`:

@@ -26,6 +26,9 @@
                 "name": "Włączone",
                 "hint": "Włącza ten element HUD na kliencie."
             },
+            "dice": {
+                "title": "Panel kości"
+            },
             "global": {
                 "highestSpeed": {
                     "name": "Pokaż najwyższą szybkość",

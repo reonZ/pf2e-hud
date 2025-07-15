@@ -9,6 +9,19 @@
 @import "./token";
 @import "./tooltip";
 
+#sidebar-content {
+    &.pf2e-hud-dice,
+    &.pf2e-hud-time {
+        --chat-input-height: 65px;
+
+        #chat {
+            .chat-form {
+                gap: 4px;
+            }
+        }
+    }
+}
+
 .pf2e-hud-draggable {
     width: 32px;
     height: 32px;

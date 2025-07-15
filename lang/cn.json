@@ -129,6 +129,9 @@
                 "name": "启用",
                 "hint": "在客户端启用HUD元素。"
             },
+            "dice": {
+                "title": "骰子面板"
+            },
             "global": {
                 "highestSpeed": {
                     "name": "显示最高速度",

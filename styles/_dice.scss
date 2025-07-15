@@ -1,0 +1,119 @@
+#pf2e-hud-dice {
+    --die-fill: white;
+    --die-grey-fill: #aaaaaa;
+    --die-grey-highlight-fill: #774949;
+    --die-highlight-fill: #dd6767;
+
+    --flat-color: var(--text-dark);
+    --flat-highlight-color: var(--primary);
+
+    --groove-dark-color: black;
+    --groove-light-color: #595454;
+
+    display: grid;
+    grid-template-columns: repeat(7, 1fr) auto repeat(2, 1fr);
+    background: #0b0a13bf;
+    border-radius: 4px;
+    scale: revert;
+
+    .spacer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-inline: 0.1em;
+
+        .separator {
+            border-left: 1px solid var(--groove-dark-color);
+            border-right: 1px solid var(--groove-light-color);
+            height: calc(100% - 2px);
+        }
+    }
+
+    .flat,
+    .die {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        aspect-ratio: 1/1;
+
+        &:hover {
+            --die-fill: var(--die-highlight-fill);
+            --die-grey-fill: var(--die-grey-highlight-fill);
+        }
+    }
+
+    .flat {
+        fill: var(--die-grey-fill);
+
+        svg {
+            height: 92%;
+        }
+
+        span {
+            position: absolute;
+            color: var(--flat-color);
+            font-family: Eczar, Georgia, serif;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 1px #fff;
+            margin-left: -1px;
+        }
+
+        &:hover {
+            span {
+                color: var(--flat-highlight-color);
+            }
+        }
+    }
+
+    .die {
+        fill: var(--die-fill);
+
+        &[data-face="4"] {
+            margin-top: -1px;
+
+            svg {
+                height: 90%;
+            }
+        }
+
+        &[data-face="6"] {
+            svg {
+                height: 80%;
+            }
+        }
+
+        &[data-face="10"] {
+            svg {
+                height: 96%;
+            }
+        }
+
+        &[data-face="20"] {
+            svg {
+                height: 92%;
+            }
+        }
+
+        &[data-face="100"] {
+            svg {
+                height: 80%;
+                position: absolute;
+
+                &:first-child {
+                    left: 0;
+                    top: calc(50% - 0.1rem);
+                    transform: translateY(-50%);
+                    fill: var(--die-grey-fill);
+                }
+
+                &:last-child {
+                    right: 0;
+                    bottom: calc(50% - 0.1rem);
+                    transform: translateY(50%);
+                }
+            }
+        }
+    }
+}

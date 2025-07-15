@@ -1,6 +1,7 @@
 import { AvatarModel } from "avatar-editor";
 import { HealthStatus } from "health-status";
 import {
+    DicePF2eHUD,
     PersistentPF2eHUD,
     prepareActionGroups,
     prepareExtrasActions,
@@ -16,6 +17,7 @@ MODULE.register("pf2e-hud");
 // MODULE.enableDebugMode();
 
 const HUDS = {
+    dice: new DicePF2eHUD(),
     persistent: new PersistentPF2eHUD(),
     token: new TokenPF2eHUD(),
     tooltip: new TooltipPF2eHUD(),
