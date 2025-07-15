@@ -10,7 +10,7 @@ import {
 } from "hud";
 import { registerKeybinds } from "keybinds";
 import { createHTMLElement, MODULE, R, templatePath, userIsGM } from "module-helpers";
-import { registerSettings } from "settings";
+import { getGlobalSetting, registerSettings } from "settings";
 
 MODULE.register("pf2e-hud");
 // MODULE.enableDebugMode();
@@ -22,7 +22,7 @@ const HUDS = {
     tracker: new TrackerPF2eHUD(),
 };
 
-Hooks.on("init", () => {
+Hooks.once("init", () => {
     const isGM = userIsGM();
 
     const templates = [
@@ -65,8 +65,12 @@ Hooks.on("init", () => {
     }, 1000);
 });
 
-Hooks.on("ready", async () => {
+Hooks.once("ready", async () => {
     const isGM = game.user.isGM;
+
+    if (getGlobalSetting("foundrySidebar.expand")) {
+        ui.sidebar.toggleExpanded(true);
+    }
 
     await prepareActionGroups();
     await prepareExtrasActions();

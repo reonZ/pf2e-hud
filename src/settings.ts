@@ -102,18 +102,31 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
         },
     });
 
-    registerModuleSettings(
-        R.pipe(
-            R.values(huds),
-            R.map((hud) => [hud.key, hud._getHudSettings()] as const),
-            R.mapToObj(([key, entries]) => [key, entries])
-        )
+    const moduleSettings = R.pipe(
+        R.values(huds),
+        R.map((hud) => [hud.key, hud._getHudSettings()] as const)
     );
+
+    // not a HUD so we cheat a little
+    moduleSettings.unshift([
+        "foundrySidebar",
+        [
+            {
+                key: "expand",
+                type: Boolean,
+                default: true,
+                scope: "user",
+            },
+        ],
+    ]);
+
+    registerModuleSettings(R.mapToObj(moduleSettings, ([key, entries]) => [key, entries]));
 
     MODULE.debugExpose({ getHealthStatusData });
 }
 
 type GlobalSetting = {
+    "foundrySidebar.expand": boolean;
     healthStatusData: HealthStatus;
     hideUntrained: boolean;
     highestSpeed: boolean;
