@@ -26,6 +26,16 @@
                 "name": "Activo",
                 "hint": "Activa este elemento en el HUD de tu cliente."
             },
+            "dice": {
+                "title": "Panel de Dados Panel"
+            },
+            "foundrySidebar": {
+                "title": "Barra lateral de Foundry",
+                "expand": {
+                    "name": "Auto Expandir al Cargar",
+                    "hint": "Forzar a Foundry a expandir la barra lateral al cargar la página."
+                }
+            },
             "global": {
                 "highestSpeed": {
                     "name": "Mostrar la mayor velocidad",
@@ -44,6 +54,10 @@
             },
             "persistent": {
                 "title": "HUD persistente",
+                "autoFill": {
+                    "name": "Autorellenar NPCs",
+                    "hint": "Si no has realizado ningún ajuste manual, los atajos se rellenaran automágicamente."
+                },
                 "mode": {
                     "name": "Selección de modo",
                     "hint": "Selección de modo para el actor persistente.",
@@ -56,7 +70,13 @@
                 }
             },
             "sidebar": {
-                "title": "Sidebar"
+                "title": "Barra lateral"
+            },
+            "time": {
+                "title": "Registro de Tiempo",
+                "enabled": {
+                    "hint": "Activa este elemento en el HUD para tu cliente. Esto se sobreescribe cuando el ajuste para que los jugadores tengan acceso al reloj del mundo está desactivado."
+                }
             },
             "token": {
                 "title": "HUD de token",
@@ -208,6 +228,28 @@
                     "set": "Elegir el token seleccionado como actor persistente",
                     "unset": "Deseleccionar como actor persistente"
                 }
+            },
+            "shortcuts": {
+                "clear": {
+                    "title": "Limpiar Atajos",
+                    "all": "Todos los Conjuntos de Atajos",
+                    "hint": "¿Seguro que deseas eliminar los siguientes atajos?",
+                    "set": "Solo el Conjunto Actual",
+                    "yes": "Eliminar"
+                },
+                "copy": {
+                    "title": "Copiar los Atajos de Usuario",
+                    "hint": "Elije un usuario para copiar sus atajos.",
+                    "label": "Usuario Propietario",
+                    "none": "Este actor no tiene ningún otro propietario.",
+                    "yes": "Copiar"
+                },
+                "fill": {
+                    "title": "Autorellenar Atajos",
+                    "content": "¿Estás seguro de que quieres autorellenar los atajos?",
+                    "yes": "Autorellenar"
+                },
+                "tab": "Cambiar el Conjunto de Atajos"
             }
         },
         "popup": {
@@ -245,8 +287,11 @@
                 "wrongType": "No puedes crear un atajo de ese tipo."
             },
             "tooltip": {
+                "active": "Active",
                 "altUse": {
+                    "blast": "Radio de Explosión",
                     "skillAction": "Menu de Variantes",
+                    "strike": "Radio de Golpe",
                     "toggle": "Seleccionar Opción Alternativa"
                 },
                 "click": {
@@ -256,16 +301,22 @@
                 },
                 "disabled": "Desactivado",
                 "enabled": "Activado",
+                "inactive": "Inactive",
                 "subtitle": {
+                    "blast": "Explosión Elemental",
                     "extraAction": "Acción Extra",
+                    "macro": "Macro Autoejecutada",
                     "spell": "Lanzamiento de conjuros",
+                    "strike": "Golpear",
                     "toggle": "Modos de tirar dados"
                 },
                 "reason": {
                     "available": "No disponible en este momento",
                     "broken": "Conjuro huérfano",
                     "charges": "No quedan cargas",
+                    "combat": "Fuera de combate",
                     "dropped": "No llevas el objeto",
+                    "equip": "Sin Equipar",
                     "expended": "Conjuro gastado",
                     "focus": "Reserva de puntos de Foco vacía",
                     "match": "No hay coincidencia",
@@ -275,6 +326,9 @@
                     "uses": "No quedan usos",
                     "vessel": "No es el recipiente principal"
                 }
+            },
+            "use": {
+                "toggle": "Esta opción está siempre activa"
             }
         },
         "sidebar": {

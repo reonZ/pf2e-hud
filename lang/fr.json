@@ -3,23 +3,23 @@
         "keybindings": {
             "persistent": {
                 "setActor": {
-                    "name": "Spécifier l'acteur persistant",
-                    "hint": "Spécifier l'acteur de token sélectionné comme persistant."
+                    "name": "Déterminer l'acteur persistant",
+                    "hint": "Détermine l'acteur du jeton sélectionné comme persistant."
                 }
             },
             "sidebar": {
                 "filter": {
-                    "name": "Utiliser le filtre du sous-menu",
-                    "hint": "Permet le filtrage du contenu du sous-menu actuel."
+                    "name": "Utiliser le filtre de la barre latérale",
+                    "hint": "Permet de filtrer le contenu de la barre latérale actuelle."
                 }
             }
         },
         "settings": {
             "menus": {
                 "healthStatusMenu": {
-                    "name": "Statut de santé",
-                    "label": "Config statut de santé",
-                    "hint": "Fixer les divisions de statut de santé pour les afficher dans le HUD."
+                    "name": "État de santé",
+                    "label": "Config. l'état de santé",
+                    "hint": "Détermine les divisions de l'état de santé affiché dans les HUD."
                 }
             },
             "enabled": {
@@ -27,57 +27,67 @@
                 "hint": "Active cet élément du HUD sur votre client."
             },
             "dice": {
-                "title": "Panneau de dés"
+                "title": "Panneau des dés"
+            },
+            "foundrySidebar": {
+                "title": "Barre latérale Foundry",
+                "expand": {
+                    "name": "Extension auto au chargement",
+                    "hint": "Oblige la barre latérale foundry à s'étendre au chargement de la page."
+                }
             },
             "global": {
                 "highestSpeed": {
-                    "name": "Montrer la plus grande vitesse",
-                    "hint": "Si aucune vitesse n'a été manuellement sélectionnée, la plus élevée sera toujours montrée par défaut même si la vitesse de déplacement au sol n'est pas 0."
+                    "name": "Montrer la Vitesse max",
+                    "hint": "Si aucune vitesse n'est sélectionnée manuellement, la plus élevé sera toujours affichée par défaut même si la Vitesse au sol n'est pas de 0."
                 },
                 "useModifiers": {
                     "name": "Utiliser les modificateurs",
-                    "hint": "Afficher les modificateurs plutôt que les valeurs de difficulté dans les divers éléments du HUD."
+                    "hint": "Affiche les modificateurs au lieu de la Valeur de difficulté dans les différents éléments du HUD."
                 }
             },
             "advanced": {
                 "alliance": {
-                    "name": "Bouton alliance",
-                    "hint": "Montre le bouton alliance/disposition sur le HUD."
+                    "name": "Bouton d'alliance",
+                    "hint": "Montre le bouton d'alliance/disposition dans le HUD."
                 }
             },
             "persistent": {
-                "title": "HUD Persistant",
+                "title": "HUD persistant",
                 "autoFill": {
-                    "name": "Remplissage automatique des PNJ",
-                    "hint": "Si vous n'avez pas fait de changements manuels, les emplacements de raccourcis seront automatiquement remplis."
+                    "name": "Remplissage auto des PNJ",
+                    "hint": "Si vous n'avez pas effectué de changements manuels, les emplacements des raccourcis seront automatiquement remplis."
                 },
                 "mode": {
+                    "name": "Mode de sélection",
+                    "hint": "Mode de séléction pour l'acteur persistant.",
                     "choices": {
                         "disabled": "Désactivé",
-                        "select": "Sur sélection de jeton",
+                        "manual": "Sélection manuelle",
+                        "select": "Sélection sur le jeton",
                         "combat": "Combattant actuel"
                     }
                 }
             },
             "sidebar": {
-                "title": "Sous-menus"
+                "title": "Barre latérale"
             },
             "time": {
-                "title": "Compteur de temps",
+                "title": "Suivi du temps",
                 "enabled": {
-                    "hint": "Active cet élément du HUD sur votre client. Ceci est annulé lorsque le paramètre 'Accès des joueurs' de l'horloge du monde du système est désactivé."
+                    "hint": "Active cet élément du HUD sur votre client. Ceci est annulé lorsque le paramètre horloge du monde du système 'Accès des joueurs' est désactivé."
                 }
             },
             "token": {
-                "title": "Token HUD",
+                "title": "HUD du jeton",
                 "mode": {
                     "name": "Mode d'affichage",
-                    "hint": "Choisissez le mode d'affichage du token HUD.",
+                    "hint": "Sélectionne le mode d'affichage du HUD jeton.",
                     "choices": {
                         "disabled": "Désactivé",
                         "exploded": "Explosé",
-                        "left": "Groupé (Gauche)",
-                        "right": "Groupé (Droite)"
+                        "left": "Groupé (gauche)",
+                        "right": "Groupé (droite)"
                     }
                 }
             },
@@ -85,11 +95,11 @@
                 "title": "Infobulle du jeton",
                 "delay": {
                     "name": "Délai de l'infobulle",
-                    "hint": "Délai en millisecondes avant l'affichage de l'infobulle à l'écran."
+                    "hint": "Délai en millisecondes avant que l'infobulle s'affiche à l'écran."
                 },
                 "distance": {
-                    "name": "Afficher la Distance",
-                    "hint": "Est-ce que la distance sera affichée pour le jeton que vous survolez.",
+                    "name": "Distance affichée",
+                    "hint": "Affiche la distance entre le jeton survolé et le jeton de base automatiquement.",
                     "choices": {
                         "never": "Jamais",
                         "idiot": "En pieds",
@@ -98,34 +108,21 @@
                     }
                 },
                 "draw": {
-                    "name": "Dessiner la Distance",
-                    "hint": "Affiche une ligne de cette épaisseur entre le jeton que vous survolez et la 'distance' cible."
+                    "name": "Dessine la distance",
+                    "hint": "Dessine une ligne de cette épaisseur entre le jeton survolé et le jeton de base."
                 },
                 "status": {
-                    "name": "Afficher la santé"
-                }
-            },
-            "tracker": {
-                "title": "compteur de rencontre",
-                "partyAsObserved": {
-                    "name": "Groupe allié observé"
-                },
-                "started": {
-                    "name": "Uniquement quand il commence",
-                    "hint": "Le suivi ne s'affichera pour les joueurs que si le combat a vraiment débuté (outre le fait d'y participer effectivement)."
-                },
-                "textureScaling": {
-                    "name": "Ajustement de texture",
-                    "hint": "Inverse l'ajustement de l'image du combattant basé sur l'ajustement de la texture du jeton."
+                    "name": "Affiche l'état de santé",
+                    "hint": "Indique si l'état de santé devrait être montré sur l'infobulle si il est activé dans votre monde."
                 }
             }
         },
         "actions": {
             "borrowArcaneSpell": "Emprunter un sort arcanique",
             "drive": {
-                "drive1": "Conduire <span class=\"action-glyph\">1</span>",
-                "drive2": "Conduire <span class=\"action-glyph\">2</span>",
-                "drive3": "Conduire <span class=\"action-glyph\">3</span>"
+                "drive1": "Piloter <span class=\"action-glyph\">1</span>",
+                "drive2": "Piloter <span class=\"action-glyph\">2</span>",
+                "drive3": "Piloter <span class=\"action-glyph\">3</span>"
             },
             "recall-knowledge": {
                 "result": "Résultat",
@@ -140,89 +137,124 @@
                 "dc": "DD",
                 "unspecific": "Non spécifique",
                 "specific": "Spécifique",
-                "skill": "Compétence",
-                "lore": "Connaissance",
+                "skill": "Compatence",
+                "lore": "Compétence de connaissance",
                 "proficiency": "Maîtrise"
             }
         },
-
         "actor-hud": {
             "alliance": "Alliance : {value}",
             "temp": "Points de vie temporaires",
-            "resolve": "Utiliser les Points de Résolution"
+            "resolve": "Utiliser les Points de résolution"
         },
         "avatar-editor": {
             "title": "Éditer l'Avatar - {name}",
-            "cancel": "Annuler",
+            "cancel": "Effacer",
+            "color": {
+                "background": "Couleur d'arrière plan'",
+                "enabled": "Activer la couleur d'arrière plan"
+            },
             "contain": "Contient",
-            "reset": "Réinitialiser",
-            "save": "Sauvegarder",
+            "reset": "Remet à zéro",
+            "save": "Enregistre",
             "src": {
                 "actor": "Utiliser l'image de l'acteur",
-                "token": "Utiliser l'image du token"
+                "token": "Utiliserr l'image du jeton",
+                "none": "N'a pas pu trouver une image source valide",
+                "video": "Les vidéos ne sont pas supporté par cette option"
             }
         },
         "dialogs": {
             "alternates": {
-                "title": "Variantes d'action - {label}",
+                "dc": "Degré de Difficulté",
+                "drag": "Glisse pour créer un raccourci",
                 "statistic": "Statistique",
-                "dc": "Degré de difficulté",
-                "drag": "Glisser pour créer un raccourci"
+                "title": "Variantes d'action - {label}",
+                "yes": "Utiliser les variantes"
             },
             "resolve": {
-                "title": "Utiliser les Points de Résolution",
-                "full": "L'endurance de {name} est au complet. Le repos n'est pas nécessaire.",
+                "title": "Utiliser un Point de résolution",
+                "full": "{name} est plein d'ndurance et n'a pas besoin de se reposer.",
                 "breather": {
                     "label": "Reprendre son souffle",
-                    "hint": "Se reposer pendant 10 minutes, dépenser un point de résolution et récupérer toute votre Endurance."
+                    "hint": "Repos pendant 10 minutes, dépensez un point de résolution et regagnez toute votre endurance."
                 },
                 "steel": {
-                    "hint": "Effectue une action, dépenser un point de résolution et récupérer la moitié de votre Endurance."
-                }
+                    "hint": "Utilise une action, dépensez un point de résolution et regagnez la moitié de votre endurance."
+                },
+                "yes": "Utiliser la Résolution"
             }
+        },
+        "edit-shortcut": {
+            "image": "Chemin de l'image",
+            "name": "Nom du raccourci",
+            "yes": "Enregistrer"
         },
         "health-status": {
             "title": "État de santé",
             "enabled": "Activé",
-            "add": "Ajouter le marqueur",
-            "delete": "Effacer le marqueur",
-            "save": "Sauvegarder",
+            "add": "Ajouter un marqueur",
+            "delete": "Effacer un marqueur",
+            "save": "Enregistrer",
             "cancel": "Annuler",
             "import": {
                 "title": "Importer l'état de santé",
                 "yes": "Importer",
                 "no": "Annuler",
-                "error": "Les données fournies sont invalides."
+                "error": "La donnée fournie est invalide."
             },
             "export": {
                 "title": "Exporter l'état de santé",
-                "confirm": "L'état de santé a été copié dans le presse-papier."
+                "confirm": "L'état de santé a été copié dans le presse papier."
             },
-            "default": "Mort, Au seuil de la mort, Ne se sent pas bien, A connu des jours meilleurs, Légèrement blessé, En pleine santé"
+            "default": "Mort, Aux portes de la mort, Ne se sent pas bien, A vu des jours meilleurs, Légèrement touché, En pleine forme"
         },
         "leftClick": "[Clic gauche]",
         "persistent": {
             "effects": {
-                "shift": "Majuscule",
-                "toggle": "Afficher/masquer les effets"
+                "shift": "Shift",
+                "toggle": "Toggle Effects"
             },
             "error": {
-                "selectOne": "Sélectionnez un seul jeton de PNJ ou PJ pour être votre acteur persistant."
+                "selectOne": "Choisir un unique jeton de PNJ/Perso pour déterminer votre acteur persistant."
             },
             "menu": {
                 "clean": {
-                    "always": "Toujours montrer les icônes sur le portrait",
-                    "hover": "Ne montrer les icônes qu'au survol du portrait"
+                    "always": "Afficher l'IU sur le portrait",
+                    "hover": "Afficher l'IU lorsque vous survolez le portrait"
                 },
+                "editAvatar": "Éditer l'avatar",
                 "setActor": {
-                    "set": "Choisir le jeton sélectionné comme acteur persistant",
-                    "unset": "Déselectionner l'acteur persistant"
+                    "set": "Déterminer le jeon sélectionné en tant qu'acteur persistant",
+                    "unset": "Retirer l'acteur persistant"
                 }
             },
             "shortcuts": {
+                "clear": {
+                    "title": "Effacer les raccourcis",
+                    "all": "Tous les raccourcis fixés",
+                    "hint": "Êtes vous cerain de vouloir effacer les raccourcis suivants ?",
+                    "set": "Seulement le raccourci actuel",
+                    "yes": "effacer"
+                },
+                "copy": {
+                    "title": "Copier les raccourcis de l'utilisateur",
+                    "hint": "Sélectionnez un utilisateur dont vous souhaitez copier les raccourcis.",
+                    "label": "Utilisateur propriétaire",
+                    "none": "Cet acteur n'a pas d'autre propriétaire.",
+                    "yes": "Copier"
+                },
                 "fill": {
-                    "title": "Remplissage automatique des raccourcis"
-                }
+                    "title": "Remplissage auto des raccourcis",
+                    "content": "Êtes-vous certain de vouloir remplir automatiquement les raccourcis ?",
+                    "yes": "Remplissage auto"
+                },
+                "tab": "Changer les raccourcis choisis"
+            }
+        },
+        "popup": {
+            "shortcut": {
+                "config": "Personnaliser le raccourci"
             }
         },
         "recall-knowledge": {
@@ -239,48 +271,102 @@
             "unspecific": "Non spécifique",
             "specific": "Spécifique",
             "skill": "Compétence",
-            "lore": "Connaissance",
+            "lore": "Compétence de connaissance",
             "proficiency": "Maîtrise"
         },
         "rightClick": "[Clic droit]",
         "shortcuts": {
+            "blast": {
+                "cost": {
+                    "label": "Coût de Déflagration élémentaire"
+                }
+            },
             "error": {
-                "wrongActor": "Vous ne pouvez créer des raccourcis qu'à partir du même acteur persistant.",
-                "wrongType": "Vous ne pouvez pas créer de raccourcis de ce type."
+                "locked": "Les raccourcis sont verrouillés avec la Barre d'outils",
+                "wrongActor": "Vous ne pouvez que créer des raccourcis shortcuts provenant du même acteur persistant.",
+                "wrongType": "Vous ne pouvez créer un raccourci de ce type."
             },
             "tooltip": {
+                "active": "Actif",
                 "altUse": {
-                    "skillAction": "Menu des variantes"
+                    "blast": "Fenêtre de déflagration",
+                    "skillAction": "Menu des variantes",
+                    "strike": "Fenêtre des frappes",
+                    "toggle": "Sélectionner une sous-options"
+                },
+                "click": {
+                    "control": "[Ctrl-Clic droit]",
+                    "middle": "[Clic central] Retirer le raccourci",
+                    "popup": "Fenêtre contextuelle de raccourci"
+                },
+                "disabled": "Désactivé",
+                "enabled": "Activé",
+                "inactive": "Inactif",
+                "subtitle": {
+                    "blast": "Déflagration élémentaire",
+                    "extraAction": "Action supplémentaire",
+                    "macro": "Macro auto-exécutée",
+                    "spell": "Inctantation",
+                    "strike": "Attaque de frappe",
+                    "toggle": "Option de lancer"
+                },
+                "reason": {
+                    "available": "Pas disponible actuellement",
+                    "broken": "Sort orphelin",
+                    "charges": "Plus de charges",
+                    "combat": "Pas en combat",
+                    "dropped": "Objet non transporté",
+                    "equip": "PAs équipé",
+                    "expended": "Sort dépensé",
+                    "focus": "Réserve de focalisation vide",
+                    "match": "Pas d'objet correspondant",
+                    "prepared": "Sort non préparé",
+                    "quantity": "Quantité de zéro",
+                    "rank": "Ne peut Lancer à ce rang",
+                    "uses": "Pas d'utilisation restante",
+                    "vessel": "Pas le réceptacle primaire"
                 }
+            },
+            "use": {
+                "toggle": "Cette option est toujours activée"
             }
         },
         "sidebar": {
-            "filter": "Filtre de sous-menu",
+            "filter": "Filtre de barre latérale",
             "actions": {
-                "blasts": "Explosions élementaires",
-                "ranged": "Portée {max} ft.",
-                "rangedWithIncrement": "Portée {increment}/{max} ft.",
-                "reach": "Allonge {reach} ft.",
-                "reset": "Réinitialiser les utilisations",
+                "blasts": "Déflagration élémentaire",
+                "ranged": "Portée {max} pieds.",
+                "rangedWithIncrement": "Portée {increment}/{max} pieds.",
+                "reach": "Allonge {reach} pieds.",
+                "reset": "Réinitialise les utilisations",
+                "shields": {
+                    "shown": "Les boucliers sont affichés",
+                    "hidden": "Les boucliers sont cachés"
+                },
                 "stances": "Postures",
-                "thrown": "Lancer {increment}/{max} ft."
+                "stowedWeapons": {
+                    "shown": "Les objets rangés sont affichés",
+                    "hidden": "Les objets rangés sont cachés"
+                },
+                "thrown": "Jet {increment}/{max} pieds."
             },
             "extras": {
                 "delete": {
-                    "title": "Effacer la Macro",
-                    "content": "Souhaitez-vous effacer cette macro ?"
+                    "title": "Effacer la macro",
+                    "content": "Êtes-vous certain de vouloir effacer cette macro ?"
                 },
-                "edit": "Modifier la Macro",
-                "noMacro": "Glissez vos macros ici",
-                "use": "Utiliser la Macro"
+                "edit": "Éditer la macro",
+                "noMacro": "Déposer la macro ici",
+                "use": "Activez la macro"
             },
+            "removeEffect": "Retirer l'effet",
             "skills": {
                 "alternate": "[Clic droit] Menu des variantes",
-                "hideUntrained": "Cacher Inexpérimenté",
-                "proficient": "Expérimenté"
+                "hideUntrained": "Cacher inexpérimenté",
+                "proficient": "Maîtrise"
             },
             "spells": {
-                "broken": "Sort défectueux",
+                "broken": "Sort brisé",
                 "cast": "Lancer le sort"
             }
         },
@@ -299,24 +385,13 @@
             "distance": {
                 "feet": "ft.",
                 "meter": "m",
-                "square": "sq."
+                "square": "ca."
             }
         },
-        "tracker": {
-            "expanded": "Agrandi, cliquez pour réduire",
-            "collapsed": "Réduit, cliquez pour agrandir",
-            "fake": {
-                "nothing": "La rencontre n'a pas débuté",
-                "secret": "Quelque chose de secret se produit"
-            },
-            "unknown": "Inconnu",
-            "delay": "Retarder le tour",
-            "join": "Rejoindre le tour"
-        },
         "use-resolve": {
-            "full": "L'endurance de {name} est pleine qui n'a pas besoin de se reposer.",
+            "full": "{name} est plein d'endurance et n'a pas besoin de se reposer.",
             "breather": {
-                "used": "{name} a {ratio} Points d'Endurance et dépense un Point de Résolution, il prend 10 minutes pour souffler. Endurance rafraîchie."
+                "used": "{name} possède {ratio} PE et dépense un point de résolution, reprenant son souffle 10 minutes. Endurance rafraichie."
             }
         }
     }

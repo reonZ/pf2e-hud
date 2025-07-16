@@ -29,6 +29,13 @@
             "dice": {
                 "title": "Panel kości"
             },
+            "foundrySidebar": {
+                "title": "Pasek boczny Foundry",
+                "expand": {
+                    "name": "Automatyczne rozszerzanie po załadowaniu",
+                    "hint": "Wymusza rozwijanie paska bocznego Foundry przy ładowaniu strony."
+                }
+            },
             "global": {
                 "highestSpeed": {
                     "name": "Pokaż najwyższą szybkość",
@@ -321,6 +328,7 @@
                     "available": "Aktualnie niedostępne",
                     "broken": "Osierocone zaklęcie",
                     "charges": "Nie pozostało żadnych ładunków",
+                    "combat": "Nie w walce",
                     "dropped": "Przedmiot nie przeniesiony",
                     "equip": "Niewyposażono",
                     "expended": "Wykorzystane zaklęcie",
