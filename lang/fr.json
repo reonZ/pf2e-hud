@@ -115,6 +115,20 @@
                     "name": "Affiche l'état de santé",
                     "hint": "Indique si l'état de santé devrait être montré sur l'infobulle si il est activé dans votre monde."
                 }
+            },
+            "tracker": {
+                "title": "compteur de rencontre",
+                "partyAsObserved": {
+                    "name": "Groupe allié observé"
+                },
+                "started": {
+                    "name": "Uniquement quand il commence",
+                    "hint": "Le suivi ne s'affichera pour les joueurs que si le combat a vraiment débuté (outre le fait d'y participer effectivement)."
+                },
+                "textureScaling": {
+                    "name": "Ajustement de texture",
+                    "hint": "Inverse l'ajustement de l'image du combattant basé sur l'ajustement de la texture du jeton."
+                }
             }
         },
         "actions": {
@@ -387,6 +401,17 @@
                 "meter": "m",
                 "square": "ca."
             }
+        },
+        "tracker": {
+            "expanded": "Agrandi, cliquez pour réduire",
+            "collapsed": "Réduit, cliquez pour agrandir",
+            "fake": {
+                "nothing": "La rencontre n'a pas débuté",
+                "secret": "Quelque chose de secret se produit"
+            },
+            "unknown": "Inconnu",
+            "delay": "Retarder le tour",
+            "join": "Rejoindre le tour"
         },
         "use-resolve": {
             "full": "{name} est plein d'endurance et n'a pas besoin de se reposer.",
