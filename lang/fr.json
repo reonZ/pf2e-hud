@@ -1,298 +1,398 @@
 {
-    "pf2e-hud": {
-        "keybindings": {
-            "persistent": {
-                "setActor": {
-                    "name": "Spécifier l'acteur persistant",
-                    "hint": "Spécifier l'acteur de token sélectionné comme persistant."
-                }
-            },
-            "sidebar": {
-                "filter": {
-                    "name": "Utiliser le filtre du sous-menu",
-                    "hint": "Permet le filtrage du contenu du sous-menu actuel."
-                }
-            }
-        },
-        "settings": {
-            "menus": {
-                "healthStatusMenu": {
-                    "name": "Statut de santé",
-                    "label": "Config statut de santé",
-                    "hint": "Fixer les divisions de statut de santé pour les afficher dans le HUD."
-                }
-            },
-            "enabled": {
-                "name": "Activé",
-                "hint": "Active cet élément du HUD sur votre client."
-            },
-            "dice": {
-                "title": "Panneau de dés"
-            },
-            "global": {
-                "highestSpeed": {
-                    "name": "Montrer la plus grande vitesse",
-                    "hint": "Si aucune vitesse n'a été manuellement sélectionnée, la plus élevée sera toujours montrée par défaut même si la vitesse de déplacement au sol n'est pas 0."
-                },
-                "useModifiers": {
-                    "name": "Utiliser les modificateurs",
-                    "hint": "Afficher les modificateurs plutôt que les valeurs de difficulté dans les divers éléments du HUD."
-                }
-            },
-            "advanced": {
-                "alliance": {
-                    "name": "Bouton alliance",
-                    "hint": "Montre le bouton alliance/disposition sur le HUD."
-                }
-            },
-            "persistent": {
-                "title": "HUD Persistant",
-                "autoFill": {
-                    "name": "Remplissage automatique des PNJ",
-                    "hint": "Si vous n'avez pas fait de changements manuels, les emplacements de raccourcis seront automatiquement remplis."
-                },
-                "mode": {
-                    "choices": {
-                        "disabled": "Désactivé",
-                        "select": "Sur sélection de jeton",
-                        "combat": "Combattant actuel"
-                    }
-                }
-            },
-            "sidebar": {
-                "title": "Sous-menus"
-            },
-            "time": {
-                "title": "Compteur de temps",
-                "enabled": {
-                    "hint": "Active cet élément du HUD sur votre client. Ceci est annulé lorsque le paramètre 'Accès des joueurs' de l'horloge du monde du système est désactivé."
-                }
-            },
-            "token": {
-                "title": "Token HUD",
-                "mode": {
-                    "name": "Mode d'affichage",
-                    "hint": "Choisissez le mode d'affichage du token HUD.",
-                    "choices": {
-                        "disabled": "Désactivé",
-                        "exploded": "Explosé",
-                        "left": "Groupé (Gauche)",
-                        "right": "Groupé (Droite)"
-                    }
-                }
-            },
-            "tooltip": {
-                "title": "Infobulle du jeton",
-                "delay": {
-                    "name": "Délai de l'infobulle",
-                    "hint": "Délai en millisecondes avant l'affichage de l'infobulle à l'écran."
-                },
-                "distance": {
-                    "name": "Afficher la Distance",
-                    "hint": "Est-ce que la distance sera affichée pour le jeton que vous survolez.",
-                    "choices": {
-                        "never": "Jamais",
-                        "idiot": "En pieds",
-                        "smart": "En mètres",
-                        "weird": "En cases"
-                    }
-                },
-                "draw": {
-                    "name": "Dessiner la Distance",
-                    "hint": "Affiche une ligne de cette épaisseur entre le jeton que vous survolez et la 'distance' cible."
-                },
-                "status": {
-                    "name": "Afficher la santé"
-                }
-            }
-        },
-        "actions": {
-            "borrowArcaneSpell": "Emprunter un sort arcanique",
-            "drive": {
-                "drive1": "Conduire <span class=\"action-glyph\">1</span>",
-                "drive2": "Conduire <span class=\"action-glyph\">2</span>",
-                "drive3": "Conduire <span class=\"action-glyph\">3</span>"
-            },
-            "recall-knowledge": {
-                "result": "Résultat",
-                "modifier": "Mod.",
-                "target": "Cible",
-                "first": "1er",
-                "second": "2e",
-                "third": "3e",
-                "fourth": "4e",
-                "fifth": "5e",
-                "sixth": "6e",
-                "dc": "DD",
-                "unspecific": "Non spécifique",
-                "specific": "Spécifique",
-                "skill": "Compétence",
-                "lore": "Connaissance",
-                "proficiency": "Maîtrise"
-            }
-        },
-
-        "actor-hud": {
-            "alliance": "Alliance : {value}",
-            "temp": "Points de vie temporaires",
-            "resolve": "Utiliser les Points de Résolution"
-        },
-        "avatar-editor": {
-            "title": "Éditer l'Avatar - {name}",
-            "cancel": "Annuler",
-            "contain": "Contient",
-            "reset": "Réinitialiser",
-            "save": "Sauvegarder",
-            "src": {
-                "actor": "Utiliser l'image de l'acteur",
-                "token": "Utiliser l'image du token"
-            }
-        },
-        "dialogs": {
-            "alternates": {
-                "title": "Variantes d'action - {label}",
-                "statistic": "Statistique",
-                "dc": "Degré de difficulté",
-                "drag": "Glisser pour créer un raccourci"
-            },
-            "resolve": {
-                "title": "Utiliser les Points de Résolution",
-                "full": "L'endurance de {name} est au complet. Le repos n'est pas nécessaire.",
-                "breather": {
-                    "label": "Reprendre son souffle",
-                    "hint": "Se reposer pendant 10 minutes, dépenser un point de résolution et récupérer toute votre Endurance."
-                },
-                "steel": {
-                    "hint": "Effectue une action, dépenser un point de résolution et récupérer la moitié de votre Endurance."
-                }
-            }
-        },
-        "health-status": {
-            "title": "État de santé",
-            "enabled": "Activé",
-            "add": "Ajouter le marqueur",
-            "delete": "Effacer le marqueur",
-            "save": "Sauvegarder",
-            "cancel": "Annuler",
-            "import": {
-                "title": "Importer l'état de santé",
-                "yes": "Importer",
-                "no": "Annuler",
-                "error": "Les données fournies sont invalides."
-            },
-            "export": {
-                "title": "Exporter l'état de santé",
-                "confirm": "L'état de santé a été copié dans le presse-papier."
-            },
-            "default": "Mort, Au seuil de la mort, Ne se sent pas bien, A connu des jours meilleurs, Légèrement blessé, En pleine santé"
-        },
-        "leftClick": "[Clic gauche]",
-        "persistent": {
-            "effects": {
-                "shift": "Majuscule",
-                "toggle": "Afficher/masquer les effets"
-            },
-            "error": {
-                "selectOne": "Sélectionnez un seul jeton de PNJ ou PJ pour être votre acteur persistant."
-            },
-            "menu": {
-                "clean": {
-                    "always": "Toujours montrer les icônes sur le portrait",
-                    "hover": "Ne montrer les icônes qu'au survol du portrait"
-                },
-                "setActor": {
-                    "set": "Choisir le jeton sélectionné comme acteur persistant",
-                    "unset": "Déselectionner l'acteur persistant"
-                }
-            },
-            "shortcuts": {
-                "fill": {
-                    "title": "Remplissage automatique des raccourcis"
-                }
-            }
-        },
-        "recall-knowledge": {
-            "result": "Résultat",
-            "modifier": "Mod.",
-            "target": "Cible",
-            "first": "1er",
-            "second": "2e",
-            "third": "3e",
-            "fourth": "4e",
-            "fifth": "5e",
-            "sixth": "6e",
-            "dc": "DD",
-            "unspecific": "Non spécifique",
-            "specific": "Spécifique",
-            "skill": "Compétence",
-            "lore": "Connaissance",
-            "proficiency": "Maîtrise"
-        },
-        "rightClick": "[Clic droit]",
-        "shortcuts": {
-            "error": {
-                "wrongActor": "Vous ne pouvez créer des raccourcis qu'à partir du même acteur persistant.",
-                "wrongType": "Vous ne pouvez pas créer de raccourcis de ce type."
-            },
-            "tooltip": {
-                "altUse": {
-                    "skillAction": "Menu des variantes"
-                }
-            }
-        },
-        "sidebar": {
-            "filter": "Filtre de sous-menu",
-            "actions": {
-                "blasts": "Explosions élementaires",
-                "ranged": "Portée {max} ft.",
-                "rangedWithIncrement": "Portée {increment}/{max} ft.",
-                "reach": "Allonge {reach} ft.",
-                "reset": "Réinitialiser les utilisations",
-                "stances": "Postures",
-                "thrown": "Lancer {increment}/{max} ft."
-            },
-            "extras": {
-                "delete": {
-                    "title": "Effacer la Macro",
-                    "content": "Souhaitez-vous effacer cette macro ?"
-                },
-                "edit": "Modifier la Macro",
-                "noMacro": "Glissez vos macros ici",
-                "use": "Utiliser la Macro"
-            },
-            "skills": {
-                "alternate": "[Clic droit] Menu des variantes",
-                "hideUntrained": "Cacher Inexpérimenté",
-                "proficient": "Expérimenté"
-            },
-            "spells": {
-                "broken": "Sort défectueux",
-                "cast": "Lancer le sort"
-            }
-        },
-        "sidebars": {
-            "actions": "Actions",
-            "items": "Inventaire",
-            "spells": "Incantation",
-            "skills": "Compétences",
-            "extras": "Extras"
-        },
-        "spellcasting": {
-            "charges": "Charges",
-            "staff": "Bâton"
-        },
-        "tooltip": {
-            "distance": {
-                "feet": "ft.",
-                "meter": "m",
-                "square": "sq."
-            }
-        },
-        "use-resolve": {
-            "full": "L'endurance de {name} est pleine qui n'a pas besoin de se reposer.",
-            "breather": {
-                "used": "{name} a {ratio} Points d'Endurance et dépense un Point de Résolution, il prend 10 minutes pour souffler. Endurance rafraîchie."
-            }
-        }
-    }
+"pf2e-hud": {
+"keybindings": {
+"persistent": {
+"setActor": {
+"name": "Déterminer l'acteur persistant",
+"hint": "Détermine l'acteur du jeton sélectionné comme persistant."
+}
+},
+"sidebar": {
+"filter": {
+"name": "Utiliser le filtre de la barre latérale",
+"hint": "Permet de filtrer le contenu de la barre latérale actuelle."
+}
+}
+},
+"settings": {
+"menus": {
+"healthStatusMenu": {
+"name": "État de santé",
+"label": "Config. l'état de santé",
+"hint": "Détermine les divisions de l'état de santé affiché dans les HUD."
+}
+},
+"enabled": {
+"name": "Activé",
+"hint": "Active cet élément du HUD sur votre client."
+},
+"dice": {
+"title": "Panneau des dés"
+},
+"foundrySidebar": {
+"title": "Barre latérale Foundry",
+"expand": {
+"name": "Extension auto au chargement",
+"hint": "Oblige la barre latérale foundry à s'étendre au chargement de la page."
+}
+},
+"global": {
+"highestSpeed": {
+"name": "Montrer la Vitesse max",
+"hint": "Si aucune vitesse n'est sélectionnée manuellement, la plus élevé sera toujours affichée par défaut même si la Vitesse au sol n'est pas de 0."
+},
+"useModifiers": {
+"name": "Utiliser les modificateurs",
+"hint": "Affiche les modificateurs au lieu de la Valeur de difficulté dans les différents éléments du HUD."
+}
+},
+"advanced": {
+"alliance": {
+"name": "Bouton d'alliance",
+"hint": "Montre le bouton d'alliance/disposition dans le HUD."
+}
+},
+"persistent": {
+"title": "HUD persistant",
+"autoFill": {
+"name": "Remplissage auto des PNJ",
+"hint": "Si vous n'avez pas effectué de changements manuels, les emplacements des raccourcis seront automatiquement remplis."
+},
+"mode": {
+"name": "Mode de sélection",
+"hint": "Mode de séléction pour l'acteur persistant.",
+"choices": {
+"disabled": "Désactivé",
+"manual": "Sélection manuelle",
+"select": "Sélection sur le jeton",
+"combat": "Combattant actuel"
+}
+}
+},
+"sidebar": {
+"title": "Barre latérale"
+},
+"time": {
+"title": "Suivi du temps",
+"enabled": {
+"hint": "Active cet élément du HUD sur votre client. Ceci est annulé lorsque le paramètre horloge du monde du système 'Accès des joueurs' est désactivé."
+}
+},
+"token": {
+"title": "HUD du jeton",
+"mode": {
+"name": "Mode d'affichage",
+"hint": "Sélectionne le mode d'affichage du HUD jeton.",
+"choices": {
+"disabled": "Désactivé",
+"exploded": "Explosé",
+"left": "Groupé (gauche)",
+"right": "Groupé (droite)"
+}
+}
+},
+"tooltip": {
+"title": "Infobulle du jeton",
+"delay": {
+"name": "Délai de l'infobulle",
+"hint": "Délai en millisecondes avant que l'infobulle s'affiche à l'écran."
+},
+"distance": {
+"name": "Distance affichée",
+"hint": "Affiche la distance entre le jeton survolé et le jeton de base automatiquement.",
+"choices": {
+"never": "Jamais",
+"idiot": "En pieds",
+"smart": "En mètres",
+"weird": "En cases"
+}
+},
+"draw": {
+"name": "Dessine la distance",
+"hint": "Dessine une ligne de cette épaisseur entre le jeton survolé et le jeton de base."
+},
+"status": {
+"name": "Affiche l'état de santé",
+"hint": "Indique si l'état de santé devrait être montré sur l'infobulle si il est activé dans votre monde."
+}
+}
+},
+"actions": {
+"borrowArcaneSpell": "Emprunter un sort arcanique",
+"drive": {
+"drive1": "Piloter <span class=\"action-glyph\">1</span>",
+"drive2": "Piloter <span class=\"action-glyph\">2</span>",
+"drive3": "Piloter <span class=\"action-glyph\">3</span>"
+},
+"recall-knowledge": {
+"result": "Résultat",
+"modifier": "Mod.",
+"target": "Cible",
+"first": "1er",
+"second": "2e",
+"third": "3e",
+"fourth": "4e",
+"fifth": "5e",
+"sixth": "6e",
+"dc": "DD",
+"unspecific": "Non spécifique",
+"specific": "Spécifique",
+"skill": "Compatence",
+"lore": "Compétence de connaissance",
+"proficiency": "Maîtrise"
+}
+},
+"actor-hud": {
+"alliance": "Alliance : {value}",
+"temp": "Points de vie temporaires",
+"resolve": "Utiliser les Points de résolution"
+},
+"avatar-editor": {
+"title": "Éditer l'Avatar - {name}",
+"cancel": "Effacer",
+"color": {
+"background": "Couleur d'arrière plan'",
+"enabled": "Activer la couleur d'arrière plan"
+},
+"contain": "Contient",
+"reset": "Remet à zéro",
+"save": "Enregistre",
+"src": {
+"actor": "Utiliser l'image de l'acteur",
+"token": "Utiliserr l'image du jeton",
+"none": "N'a pas pu trouver une image source valide",
+"video": "Les vidéos ne sont pas supporté par cette option"
+}
+},
+"dialogs": {
+"alternates": {
+"dc": "Degré de Difficulté",
+"drag": "Glisse pour créer un raccourci",
+"statistic": "Statistique",
+"title": "Variantes d'action - {label}",
+"yes": "Utiliser les variantes"
+},
+"resolve": {
+"title": "Utiliser un Point de résolution",
+"full": "{name} est plein d'ndurance et n'a pas besoin de se reposer.",
+"breather": {
+"label": "Reprendre son souffle",
+"hint": "Repos pendant 10 minutes, dépensez un point de résolution et regagnez toute votre endurance."
+},
+"steel": {
+"hint": "Utilise une action, dépensez un point de résolution et regagnez la moitié de votre endurance."
+},
+"yes": "Utiliser la Résolution"
+}
+},
+"edit-shortcut": {
+"image": "Chemin de l'image",
+"name": "Nom du raccourci",
+"yes": "Enregistrer"
+},
+"health-status": {
+"title": "État de santé",
+"enabled": "Activé",
+"add": "Ajouter un marqueur",
+"delete": "Effacer un marqueur",
+"save": "Enregistrer",
+"cancel": "Annuler",
+"import": {
+"title": "Importer l'état de santé",
+"yes": "Importer",
+"no": "Annuler",
+"error": "La donnée fournie est invalide."
+},
+"export": {
+"title": "Exporter l'état de santé",
+"confirm": "L'état de santé a été copié dans le presse papier."
+},
+"default": "Mort, Aux portes de la mort, Ne se sent pas bien, A vu des jours meilleurs, Légèrement touché, En pleine forme"
+},
+"leftClick": "[Clic gauche]",
+"persistent": {
+"effects": {
+"shift": "Shift",
+"toggle": "Toggle Effects"
+},
+"error": {
+"selectOne": "Choisir un unique jeton de PNJ/Perso pour déterminer votre acteur persistant."
+},
+"menu": {
+"clean": {
+"always": "Afficher l'IU sur le portrait",
+"hover": "Afficher l'IU lorsque vous survolez le portrait"
+},
+"editAvatar": "Éditer l'avatar",
+"setActor": {
+"set": "Déterminer le jeon sélectionné en tant qu'acteur persistant",
+"unset": "Retirer l'acteur persistant"
+}
+},
+"shortcuts": {
+"clear": {
+"title": "Effacer les raccourcis",
+"all": "Tous les raccourcis fixés",
+"hint": "Êtes vous cerain de vouloir effacer les raccourcis suivants ?",
+"set": "Seulement le raccourci actuel",
+"yes": "effacer"
+},
+"copy": {
+"title": "Copier les raccourcis de l'utilisateur",
+"hint": "Sélectionnez un utilisateur dont vous souhaitez copier les raccourcis.",
+"label": "Utilisateur propriétaire",
+"none": "Cet acteur n'a pas d'autre propriétaire.",
+"yes": "Copier"
+},
+"fill": {
+"title": "Remplissage auto des raccourcis",
+"content": "Êtes-vous certain de vouloir remplir automatiquement les raccourcis ?",
+"yes": "Remplissage auto"
+},
+"tab": "Changer les raccourcis choisis"
+}
+},
+"popup": {
+"shortcut": {
+"config": "Personnaliser le raccourci"
+}
+},
+"recall-knowledge": {
+"result": "Résultat",
+"modifier": "Mod.",
+"target": "Cible",
+"first": "1er",
+"second": "2e",
+"third": "3e",
+"fourth": "4e",
+"fifth": "5e",
+"sixth": "6e",
+"dc": "DD",
+"unspecific": "Non spécifique",
+"specific": "Spécifique",
+"skill": "Compétence",
+"lore": "Compétence de connaissance",
+"proficiency": "Maîtrise"
+},
+"rightClick": "[Clic droit]",
+"shortcuts": {
+"blast": {
+"cost": {
+"label": "Coût de Déflagration élémentaire"
+}
+},
+"error": {
+"locked": "Les raccourcis sont verrouillés avec la Barre d'outils",
+"wrongActor": "Vous ne pouvez que créer des raccourcis shortcuts provenant du même acteur persistant.",
+"wrongType": "Vous ne pouvez créer un raccourci de ce type."
+},
+"tooltip": {
+"active": "Actif",
+"altUse": {
+"blast": "Fenêtre de déflagration",
+"skillAction": "Menu des variantes",
+"strike": "Fenêtre des frappes",
+"toggle": "Sélectionner une sous-options"
+},
+"click": {
+"control": "[Ctrl-Clic droit]",
+"middle": "[Clic central] Retirer le raccourci",
+"popup": "Fenêtre contextuelle de raccourci"
+},
+"disabled": "Désactivé",
+"enabled": "Activé",
+"inactive": "Inactif",
+"subtitle": {
+"blast": "Déflagration élémentaire",
+"extraAction": "Action supplémentaire",
+"macro": "Macro auto-exécutée",
+"spell": "Inctantation",
+"strike": "Attaque de frappe",
+"toggle": "Option de lancer"
+},
+"reason": {
+"available": "Pas disponible actuellement",
+"broken": "Sort orphelin",
+"charges": "Plus de charges",
+"combat": "Pas en combat",
+"dropped": "Objet non transporté",
+"equip": "PAs équipé",
+"expended": "Sort dépensé",
+"focus": "Réserve de focalisation vide",
+"match": "Pas d'objet correspondant",
+"prepared": "Sort non préparé",
+"quantity": "Quantité de zéro",
+"rank": "Ne peut Lancer à ce rang",
+"uses": "Pas d'utilisation restante",
+"vessel": "Pas le réceptacle primaire"
+}
+},
+"use": {
+"toggle": "Cette option est toujours activée"
+}
+},
+"sidebar": {
+"filter": "Filtre de barre latérale",
+"actions": {
+"blasts": "Déflagration élémentaire",
+"ranged": "Portée {max} pieds.",
+"rangedWithIncrement": "Portée {increment}/{max} pieds.",
+"reach": "Allonge {reach} pieds.",
+"reset": "Réinitialise les utilisations",
+"shields": {
+"shown": "Les boucliers sont affichés",
+"hidden": "Les boucliers sont cachés"
+},
+"stances": "Postures",
+"stowedWeapons": {
+"shown": "Les objets rangés sont affichés",
+"hidden": "Les objets rangés sont cachés"
+},
+"thrown": "Jet {increment}/{max} pieds."
+},
+"extras": {
+"delete": {
+"title": "Effacer la macro",
+"content": "Êtes-vous certain de vouloir effacer cette macro ?"
+},
+"edit": "Éditer la macro",
+"noMacro": "Déposer la macro ici",
+"use": "Activez la macro"
+},
+"removeEffect": "Retirer l'effet",
+"skills": {
+"alternate": "[Clic droit] Menu des variantes",
+"hideUntrained": "Cacher inexpérimenté",
+"proficient": "Maîtrise"
+},
+"spells": {
+"broken": "Sort brisé",
+"cast": "Lancer le sort"
+}
+},
+"sidebars": {
+"actions": "Actions",
+"items": "Inventaire",
+"spells": "Incantation",
+"skills": "Compétences",
+"extras": "Extras"
+},
+"spellcasting": {
+"charges": "Charges",
+"staff": "Bâton"
+},
+"tooltip": {
+"distance": {
+"feet": "ft.",
+"meter": "m",
+"square": "ca."
+}
+},
+"use-resolve": {
+"full": "{name} est plein d'endurance et n'a pas besoin de se reposer.",
+"breather": {
+"used": "{name} possède {ratio} PE et dépense un point de résolution, reprenant son souffle 10 minutes. Endurance rafraichie."
+}
+}
+}
 }
