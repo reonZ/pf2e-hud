@@ -72,15 +72,15 @@ Hooks.once("init", () => {
 Hooks.once("ready", async () => {
     const isGM = game.user.isGM;
 
-    if (getGlobalSetting("foundrySidebar.expand")) {
-        ui.sidebar.toggleExpanded(true);
-    }
-
     await prepareActionGroups();
     await prepareExtrasActions();
 
     for (const hud of R.values(HUDS)) {
         hud.ready(isGM);
+    }
+
+    if (getGlobalSetting("foundrySidebar.expand")) {
+        ui.sidebar.toggleExpanded(true);
     }
 });
 

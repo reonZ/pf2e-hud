@@ -46,8 +46,8 @@ class DicePF2eHUD extends FoundrySidebarPF2eHUD<DiceSettings> {
         return "dice";
     }
 
-    get beforeElement(): string {
-        return "chat-message";
+    get beforeElement(): HTMLElement | null {
+        return this.chatMessageElement;
     }
 
     protected _configurate(): void {
@@ -83,7 +83,7 @@ class DicePF2eHUD extends FoundrySidebarPF2eHUD<DiceSettings> {
                     const face = Number(el.dataset.face);
 
                     if (event.shiftKey) {
-                        addDieToChat(face);
+                        this.#addDieToChat(face);
                     } else {
                         rollDie(face, event.ctrlKey);
                     }
@@ -109,38 +109,38 @@ class DicePF2eHUD extends FoundrySidebarPF2eHUD<DiceSettings> {
             }
         });
     }
-}
 
-function addDieToChat(face: number) {
-    const chat = document.getElementById("chat-message");
-    if (!(chat instanceof HTMLTextAreaElement)) return;
+    #addDieToChat(face: number) {
+        const chat = this.chatMessageElement;
+        if (!(chat instanceof HTMLTextAreaElement)) return;
 
-    const str = chat.value.trim();
+        const str = chat.value.trim();
 
-    const updateChat = (str: string) => {
-        chat.value = str;
-        chat.focus();
-    };
+        const updateChat = (str: string) => {
+            chat.value = str;
+            chat.focus();
+        };
 
-    if (!str) {
-        return updateChat(`/r 1d${face}`);
-    }
+        if (!str) {
+            return updateChat(`/r 1d${face}`);
+        }
 
-    if (ROLL_REGEX.test(str)) {
-        const dice = processChatRoll(face, str);
-        return updateChat(dice);
-    }
+        if (ROLL_REGEX.test(str)) {
+            const dice = processChatRoll(face, str);
+            return updateChat(dice);
+        }
 
-    const match = str.match(INLINE_REGEX);
+        const match = str.match(INLINE_REGEX);
 
-    if (R.isNumber(match?.index)) {
-        const index = match.index;
-        const sub = str.substring(index + 2, str.length - 2).trim();
+        if (R.isNumber(match?.index)) {
+            const index = match.index;
+            const sub = str.substring(index + 2, str.length - 2).trim();
 
-        const dice = processChatRoll(face, sub);
-        updateChat(`${str.substring(0, index)}[[${dice}]]`);
-    } else {
-        updateChat(`${str} [[1d${face}]]`);
+            const dice = processChatRoll(face, sub);
+            updateChat(`${str.substring(0, index)}[[${dice}]]`);
+        } else {
+            updateChat(`${str} [[1d${face}]]`);
+        }
     }
 }
 

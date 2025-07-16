@@ -8,7 +8,7 @@ import {
     htmlQuery,
     settingPath,
 } from "module-helpers";
-import { FoundrySidebarPF2eHUD, HUDSettingsList, SidebarSettings } from "./base";
+import { FoundrySidebarPF2eHUD, HUDSettingsList } from "./base";
 
 class TimePF2eHUD extends FoundrySidebarPF2eHUD<TimeSettings> {
     #worldTimeHook = createHook("updateWorldTime", () => {
@@ -48,8 +48,8 @@ class TimePF2eHUD extends FoundrySidebarPF2eHUD<TimeSettings> {
         return "time";
     }
 
-    get beforeElement(): string {
-        return "chat";
+    get beforeElement(): HTMLElement | null {
+        return this.chatElement;
     }
 
     get enabledForPlayers(): boolean {
@@ -193,7 +193,8 @@ type TimeContext = {
     short: { date: string; time: string } | undefined;
 };
 
-type TimeSettings = SidebarSettings & {
+type TimeSettings = {
+    enabled: boolean;
     short: boolean;
 };
 
