@@ -1,0 +1,27 @@
+#pf2e-hud-tracker {
+    width: 17em;
+    height: 100px;
+    pointer-events: all;
+    background: var(--outer-background);
+    border: var(--outer-border);
+    box-shadow: var(--outer-box-shadow);
+    border-radius: var(--outer-border-radius);
+    margin-block: auto 0;
+}
+
+#interface.pf2e-hud-tracker {
+    #ui-bottom {
+        > #hotbar {
+            align-self: start;
+            margin-left: -50px;
+        }
+    }
+
+    #chat-notifications {
+        display: none;
+    }
+
+    #ui-right-column-1 {
+        padding: 5px 0;
+    }
+}

@@ -18,12 +18,12 @@ MODULE.register("pf2e-hud");
 // MODULE.enableDebugMode();
 
 const HUDS = {
+    tracker: new TrackerPF2eHUD(),
     dice: new DicePF2eHUD(),
     persistent: new PersistentPF2eHUD(),
     time: new TimePF2eHUD(),
     token: new TokenPF2eHUD(),
     tooltip: new TooltipPF2eHUD(),
-    tracker: new TrackerPF2eHUD(),
 };
 
 Hooks.once("init", () => {

@@ -115,6 +115,21 @@
                     "name": "Display Health Status",
                     "hint": "Should health state be displayed on the tooltip if enabled in you world."
                 }
+            },
+            "tracker": {
+                "title": "Combat Tracker",
+                "partyAsObserved": {
+                    "name": "Party Alliance as Observed",
+                    "hint": "Consider actors in the 'Party' alliance to be observed by players for the sake of showing health details. Not to be confused with the 'Party' actor."
+                },
+                "started": {
+                    "name": "Only When Started",
+                    "hint": "The tracker will only show up for players if the combat has actually started (on top of needing a combatant participating)."
+                },
+                "textureScaling": {
+                    "name": "Texture Scaling",
+                    "hint": "Invert scales the combatant's image based on the token texture scaling."
+                }
             }
         },
         "actions": {
@@ -387,6 +402,17 @@
                 "meter": "m",
                 "square": "sq."
             }
+        },
+        "tracker": {
+            "expanded": "Expanded, click to collapse",
+            "collapsed": "Collapsed, click to expand",
+            "fake": {
+                "nothing": "Encounter Not Started",
+                "secret": "Something Secret is Happening"
+            },
+            "unknown": "Unknown",
+            "delay": "Delay Turn",
+            "join": "Join Turn"
         },
         "use-resolve": {
             "full": "{name} is full of stamina and doesn't need to rest.",

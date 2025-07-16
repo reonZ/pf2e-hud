@@ -39,21 +39,21 @@ function calculateRatio(value: number, max: number) {
 }
 
 type HealthSection = {
-    ratio: number;
     hue: number;
-    value: number;
     max: number;
+    ratio: number;
+    value: number;
 };
 
 type HealthData = {
-    temp: number;
+    hue: number;
+    max: number;
+    ratio: number;
     sp: HealthSection | undefined;
+    temp: number;
     total: HealthSection;
     totalTemp: Omit<HealthSection, "max">;
-    ratio: number;
-    hue: number;
     value: number;
-    max: number;
 };
 
 MODULE.devExpose({ calculateActorHealth });

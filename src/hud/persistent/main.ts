@@ -272,7 +272,7 @@ class PersistentPF2eHUD
         if (this.#actor) {
             this.#actor.apps[this.id] = this;
 
-            //  TODO is this stil needed?
+            //  TODO is this still needed?
             // if (this.#actor.token) {
             //     this.#actor.token.baseActor.apps[this.id] = this;
             // }

@@ -108,6 +108,20 @@
                     "name": "Wyświetl stan zdrowia",
                     "hint": "Jeśli opcja jest włączona w Twoim świecie, stan zdrowia powinien być wyświetlany w podpowiedzi."
                 }
+            },
+            "tracker": {
+                "title": "Śledzenie walki",
+                "partyAsObserved": {
+                    "name": "Drużyna sojuszników jako Obserwowani"
+                },
+                "started": {
+                    "name": "Tylko po rozpoczęciu",
+                    "hint": "Śledzenie będzie widoczne dla graczy tylko wtedy, gdy walka faktycznie się rozpoczęła (oprócz konieczności udziału walczącego)."
+                },
+                "textureScaling": {
+                    "name": "Skalowanie tekstur",
+                    "hint": "Odwraca skalowanie obrazu walczącego w oparciu o skalowanie tekstury tokena."
+                }
             }
         },
         "actions": {
@@ -379,6 +393,17 @@
                 "meter": "m",
                 "square": "kwadrat"
             }
+        },
+        "tracker": {
+            "expanded": "Rozwinięte, kliknij, aby zwinąć",
+            "collapsed": "Zwinięte, kliknij, aby rozwinąć",
+            "fake": {
+                "nothing": "Potyczka nie została rozpoczęta",
+                "secret": "Dzieje się coś tajemniczego"
+            },
+            "unknown": "Nieznany",
+            "delay": "Opóźnienie tury",
+            "join": "Dołącz do tury"
         },
         "use-resolve": {
             "full": "{name} ma pełną staminę i nie potrzebuje odpoczynku.",
