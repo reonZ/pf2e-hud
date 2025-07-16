@@ -90,6 +90,7 @@ class TimePF2eHUD extends FoundrySidebarPF2eHUD<TimeSettings> {
 
     protected _onClose(options: ApplicationClosingOptions): void {
         this.#worldTimeHook.disable();
+        super._onClose(options);
     }
 
     _activateListeners(html: HTMLElement): void {

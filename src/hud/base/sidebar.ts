@@ -1,4 +1,5 @@
 import {
+    ApplicationClosingOptions,
     ApplicationConfiguration,
     ApplicationRenderContext,
     ApplicationRenderOptions,
@@ -49,6 +50,10 @@ abstract class FoundrySidebarPF2eHUD<
     ): void {
         content.innerHTML = result;
         this._activateListeners(content);
+    }
+
+    protected _onClose(options: ApplicationClosingOptions): void {
+        document.getElementById("sidebar-content")?.classList.remove(this.id);
     }
 
     protected _insertElement(element: HTMLElement): HTMLElement {
