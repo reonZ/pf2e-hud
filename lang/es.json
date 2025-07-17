@@ -123,23 +123,6 @@
                 "drive1": "Drive <span class=\"action-glyph\">1</span>",
                 "drive2": "Drive <span class=\"action-glyph\">2</span>",
                 "drive3": "Drive <span class=\"action-glyph\">3</span>"
-            },
-            "recall-knowledge": {
-                "result": "Resultado",
-                "modifier": "Mod.",
-                "target": "Objetivo",
-                "first": "1er",
-                "second": "2do",
-                "third": "3er",
-                "fourth": "4to",
-                "fifth": "5to",
-                "sixth": "6to",
-                "dc": "CD",
-                "unspecific": "Sin especificar",
-                "specific": "Específico",
-                "skill": "Habilidad",
-                "lore": "Saberes",
-                "proficiency": "Competencia"
             }
         },
         "actor-hud": {

@@ -1,23 +1,6 @@
 {
     "pf2e-hud": {
         "actions": {
-            "recall-knowledge": {
-                "lore": "学识技能",
-                "proficiency": "熟练度",
-                "result": "结果",
-                "target": "目标",
-                "dc": "DC",
-                "skill": "技能",
-                "modifier": "调整值",
-                "first": "1st",
-                "second": "2nd",
-                "third": "3rd",
-                "fourth": "4th",
-                "fifth": "5th",
-                "sixth": "6th",
-                "specific": "特殊",
-                "unspecific": "非特殊"
-            },
             "borrowArcaneSpell": "借阅奥术",
             "drive": {
                 "drive2": "驱动 <span class=\"action-glyph\">2</span>",

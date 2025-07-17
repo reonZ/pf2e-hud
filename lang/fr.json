@@ -137,23 +137,6 @@
                 "drive1": "Piloter <span class=\"action-glyph\">1</span>",
                 "drive2": "Piloter <span class=\"action-glyph\">2</span>",
                 "drive3": "Piloter <span class=\"action-glyph\">3</span>"
-            },
-            "recall-knowledge": {
-                "result": "Résultat",
-                "modifier": "Mod.",
-                "target": "Cible",
-                "first": "1er",
-                "second": "2e",
-                "third": "3e",
-                "fourth": "4e",
-                "fifth": "5e",
-                "sixth": "6e",
-                "dc": "DD",
-                "unspecific": "Non spécifique",
-                "specific": "Spécifique",
-                "skill": "Compatence",
-                "lore": "Compétence de connaissance",
-                "proficiency": "Maîtrise"
             }
         },
         "actor-hud": {
