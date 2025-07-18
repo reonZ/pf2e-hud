@@ -49,6 +49,9 @@ abstract class FoundrySidebarPF2eHUD<
         options: ApplicationRenderOptions
     ): void {
         content.innerHTML = result;
+        content.dataset.tooltipClass = "pf2e-hud-element";
+        content.dataset.tooltipDirection = "DOWN";
+
         this._activateListeners(content);
     }
 
