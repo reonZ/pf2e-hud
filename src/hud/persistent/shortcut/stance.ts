@@ -50,7 +50,7 @@ class StanceShortcut extends PersistentShortcut<
         if (!this.item) return;
 
         this.#active = this.cached("hasItemWithSourceId", this.effectUUID, () => {
-            return hasItemWithSourceId(this.actor, this.effectUUID);
+            return hasItemWithSourceId(this.actor, this.effectUUID, "effect");
         });
         this.#canUseStances = this.cached("canUseStances", () => {
             return canUseStances(this.actor);
