@@ -212,8 +212,8 @@
     "leftClick": "[Clic gauche]",
     "persistent": {
       "effects": {
-        "shift": "Shift",
-        "toggle": "Toggle Effects"
+        "shift": "Maj",
+        "toggle": "Activer/Désactiver les effets"
       },
       "error": {
         "selectOne": "Choisir un unique jeton de PNJ/Perso pour déterminer votre acteur persistant."
