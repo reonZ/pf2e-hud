@@ -12,6 +12,12 @@
                     "name": "Utiliser le filtre de la barre latérale",
                     "hint": "Permet de filtrer le contenu de la barre latérale actuelle."
                 }
+            },
+            "tracker": {
+                "alternate": {
+                    "name": "Activer le compteur de rencontre",
+                    "hint": "Activer le compteur de rencontre pour disposer d'options supplémentaires."
+                }
             }
         },
         "settings": {
@@ -39,7 +45,7 @@
             "global": {
                 "highestSpeed": {
                     "name": "Montrer la Vitesse max",
-                    "hint": "Si aucune vitesse n'est sélectionnée manuellement, la plus élevé sera toujours affichée par défaut même si la Vitesse au sol n'est pas de 0."
+                    "hint": "Si aucune vitesse n'est sélectionnée manuellement, la plus élevée sera toujours affichée par défaut même si la Vitesse au sol n'est pas de 0."
                 },
                 "useModifiers": {
                     "name": "Utiliser les modificateurs",
@@ -142,7 +148,7 @@
         "actor-hud": {
             "alliance": "Alliance : {value}",
             "temp": "Points de vie temporaires",
-            "resolve": "Utiliser les Points de résolution"
+            "resolve": "Utiliser les Points de Résolution"
         },
         "avatar-editor": {
             "title": "Éditer l'Avatar - {name}",
@@ -156,9 +162,9 @@
             "save": "Enregistre",
             "src": {
                 "actor": "Utiliser l'image de l'acteur",
-                "token": "Utiliserr l'image du jeton",
+                "token": "Utiliser l'image du jeton",
                 "none": "N'a pas pu trouver une image source valide",
-                "video": "Les vidéos ne sont pas supporté par cette option"
+                "video": "Les vidéos ne sont pas supportées par cette option"
             }
         },
         "dialogs": {
@@ -170,8 +176,8 @@
                 "yes": "Utiliser les variantes"
             },
             "resolve": {
-                "title": "Utiliser un Point de résolution",
-                "full": "{name} est plein d'ndurance et n'a pas besoin de se reposer.",
+                "title": "Utiliser un Point de Résolution",
+                "full": "{name} est plein d'Endurance et n'a pas besoin de se reposer.",
                 "breather": {
                     "label": "Reprendre son souffle",
                     "hint": "Repos pendant 10 minutes, dépensez un point de résolution et regagnez toute votre endurance."
@@ -222,7 +228,7 @@
                 },
                 "editAvatar": "Éditer l'avatar",
                 "setActor": {
-                    "set": "Déterminer le jeon sélectionné en tant qu'acteur persistant",
+                    "set": "Déterminer le jeton sélectionné en tant qu'acteur persistant",
                     "unset": "Retirer l'acteur persistant"
                 }
             },
@@ -230,7 +236,7 @@
                 "clear": {
                     "title": "Effacer les raccourcis",
                     "all": "Tous les raccourcis fixés",
-                    "hint": "Êtes vous cerain de vouloir effacer les raccourcis suivants ?",
+                    "hint": "Êtes vous certain de vouloir effacer les raccourcis suivants ?",
                     "set": "Seulement le raccourci actuel",
                     "yes": "effacer"
                 },
@@ -280,7 +286,7 @@
             },
             "error": {
                 "locked": "Les raccourcis sont verrouillés avec la Barre d'outils",
-                "wrongActor": "Vous ne pouvez que créer des raccourcis shortcuts provenant du même acteur persistant.",
+                "wrongActor": "Vous ne pouvez que créer des raccourcis provenant du même acteur persistant.",
                 "wrongType": "Vous ne pouvez créer un raccourci de ce type."
             },
             "tooltip": {
@@ -289,7 +295,7 @@
                     "blast": "Fenêtre de déflagration",
                     "skillAction": "Menu des variantes",
                     "strike": "Fenêtre des frappes",
-                    "toggle": "Sélectionner une sous-options"
+                    "toggle": "Sélectionner une sous-option"
                 },
                 "click": {
                     "control": "[Ctrl-Clic droit]",
@@ -303,7 +309,7 @@
                     "blast": "Déflagration élémentaire",
                     "extraAction": "Action supplémentaire",
                     "macro": "Macro auto-exécutée",
-                    "spell": "Inctantation",
+                    "spell": "Incantation",
                     "strike": "Attaque de frappe",
                     "toggle": "Option de lancer"
                 },
@@ -313,7 +319,7 @@
                     "charges": "Plus de charges",
                     "combat": "Pas en combat",
                     "dropped": "Objet non transporté",
-                    "equip": "PAs équipé",
+                    "equip": "Pas équipé",
                     "expended": "Sort dépensé",
                     "focus": "Réserve de focalisation vide",
                     "match": "Pas d'objet correspondant",
