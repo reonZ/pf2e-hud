@@ -251,10 +251,12 @@ abstract class PersistentShortcut<
         });
 
         radial.addEventListener("contextmenu", (event) => {
+            event.preventDefault();
             event.stopPropagation();
         });
 
         radial.addEventListener("auxclick", (event) => {
+            event.preventDefault();
             event.stopPropagation();
         });
 
