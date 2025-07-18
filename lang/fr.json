@@ -12,12 +12,6 @@
                     "name": "Utiliser le filtre de la barre latérale",
                     "hint": "Permet de filtrer le contenu de la barre latérale actuelle."
                 }
-            },
-            "tracker": {
-                "alternate": {
-                    "name": "Activer le compteur de rencontre",
-                    "hint": "Activer le compteur de rencontre pour disposer d'options supplémentaires."
-                }
             }
         },
         "settings": {
@@ -215,8 +209,8 @@
         "leftClick": "[Clic gauche]",
         "persistent": {
             "effects": {
-                "shift": "Shift",
-                "toggle": "Toggle Effects"
+                "shift": "Maj",
+                "toggle": "Activer/Désactiver les effets"
             },
             "error": {
                 "selectOne": "Choisir un unique jeton de PNJ/Perso pour déterminer votre acteur persistant."
