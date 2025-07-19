@@ -1,3 +1,22 @@
+# 2.16.0
+
+-   this release implements the `Combat Tracker` HUD and concludes the rewritting of the module for v13
+-   the module forces some very minor style changes in the UI (moslty reducing paddings in the outer part of the screen)
+-   `Combat Tracker`:
+    -   rename `Toggle Combat Tracker` keybind into `Alternate Controls`
+    -   make it clear that clicking on a combatant image while holding the `Alternate Controls` key will force the initiative to be the combatant's
+-   `Dice Panel`:
+    -   fix panel being rendered outside of the sidebar if the `Auto Expand on Load` setting is disabled
+-   `Item Popup`:
+    -   now display `identified` name and description to the GM for `unidentified` physical items
+-   `Persistent HUD`:
+    -   the `Selection Mode` setting has been reset and is no longer used to enable/disable the HUD
+    -   add `Display Position` setting
+        -   this is the setting that is now used to enable/disable the HUD
+        -   allows you to move the HUD either in the left or middle part of the UI
+-   `Persistent Shortcuts`:
+    -   fix browser contextmenu showing up when using a `[Right-Click]` shortcut contextmenu after cancel the first one (by moving the mouse out of bounds)
+
 # 2.15.0
 
 -   this release implements the `Dice Panel`, `Time Tracker` and adds a new `Foundry Sidebar` section
@@ -12,7 +31,7 @@
     -   "disable" the shortcut when the actor isn't in combat
 -   `Time Tracker`:
     -   remove the `Short Date & Time` setting, it is now only available by clicking on the time of the HUD
-    -   the HUD will only show up when either the `Chat Messages` or the `Ecounters` tab is active
+    -   the HUD will only show up when either the `Chat Messages` or the `Encounters` tab is active
 
 # 2.14.0
 
