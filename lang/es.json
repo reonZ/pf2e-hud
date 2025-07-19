@@ -1,385 +1,405 @@
 {
-    "pf2e-hud": {
-        "keybindings": {
-            "persistent": {
-                "setActor": {
-                    "name": "Elegir como actor persistente",
-                    "hint": "Elegir el token seleccionado como actor persistente."
-                }
-            },
-            "sidebar": {
-                "filter": {
-                    "name": "Usar el filtro lateral",
-                    "hint": "Permitir el filtrado del contenido actual de la barra lateral."
-                }
-            }
-        },
-        "settings": {
-            "menus": {
-                "healthStatusMenu": {
-                    "name": "Estado de salud",
-                    "label": "Configurar Estado de salud",
-                    "hint": "Configurar las divisiones del estado de salud para que se muestren en los HUDs."
-                }
-            },
-            "enabled": {
-                "name": "Activo",
-                "hint": "Activa este elemento en el HUD de tu cliente."
-            },
-            "dice": {
-                "title": "Panel de Dados Panel"
-            },
-            "foundrySidebar": {
-                "title": "Barra lateral de Foundry",
-                "expand": {
-                    "name": "Auto Expandir al Cargar",
-                    "hint": "Forzar a Foundry a expandir la barra lateral al cargar la página."
-                }
-            },
-            "global": {
-                "highestSpeed": {
-                    "name": "Mostrar la mayor velocidad",
-                    "hint": "Si no se especifica una velocidad, la más alta se mostrará incluso si la velocidad en tierra no es 0."
-                },
-                "useModifiers": {
-                    "name": "Usar modificadores",
-                    "hint": "Mostrar modificadores en vez de la dificultad en los diferentes elementos del HUD."
-                }
-            },
-            "advanced": {
-                "alliance": {
-                    "name": "Botón de alianzas",
-                    "hint": "Mostrar el botón de alianza/disposición en el HUD."
-                }
-            },
-            "persistent": {
-                "title": "HUD persistente",
-                "autoFill": {
-                    "name": "Autorellenar NPCs",
-                    "hint": "Si no has realizado ningún ajuste manual, los atajos se rellenaran automágicamente."
-                },
-                "display": {
-                    "choices": {
-                        "disabled": "Desactivado"
-                    }
-                },
-                "selection": {
-                    "name": "Selección de modo",
-                    "hint": "Selección de modo para el actor persistente.",
-                    "choices": {
-                        "manual": "Selección manual",
-                        "select": "Selección según el token",
-                        "combat": "Combatiente actual"
-                    }
-                }
-            },
-            "sidebar": {
-                "title": "Barra lateral"
-            },
-            "time": {
-                "title": "Registro de Tiempo",
-                "enabled": {
-                    "hint": "Activa este elemento en el HUD para tu cliente. Esto se sobreescribe cuando el ajuste para que los jugadores tengan acceso al reloj del mundo está desactivado."
-                }
-            },
-            "token": {
-                "title": "HUD de token",
-                "mode": {
-                    "name": "Modo de visualización",
-                    "hint": "Elegir el modo de visualización del HUD del token.",
-                    "choices": {
-                        "disabled": "Desactivado",
-                        "exploded": "Expandido",
-                        "left": "Agrupado (izquierda)",
-                        "right": "Agrupado (derecha)"
-                    }
-                }
-            },
-            "tooltip": {
-                "title": "Información del token (tooltip)",
-                "delay": {
-                    "name": "Retraso del tooltip",
-                    "hint": "Retraso en milisegundos antes de que se muestre el tooltip."
-                },
-                "distance": {
-                    "name": "Mostrar distancia",
-                    "hint": "Mostrará la distancia entre el token sobre el que se pasa el ratón y el que se deduce automáticamente.",
-                    "choices": {
-                        "never": "Nunca",
-                        "idiot": "En pies",
-                        "smart": "En metros",
-                        "weird": "En cuadrados"
-                    }
-                },
-                "draw": {
-                    "name": "Dibujar distancia",
-                    "hint": "Dibujar una linea con este ancho entre el token sobre el que se pasa el ratón y el objetivo."
-                },
-                "status": {
-                    "name": "Mostrar estado de salud",
-                    "hint": "Debería mostrarse el estado en el tootlip."
-                }
-            }
-        },
-        "actions": {
-            "borrowArcaneSpell": "Tomar presado un Conjuro Arcano",
-            "drive": {
-                "drive1": "Drive <span class=\"action-glyph\">1</span>",
-                "drive2": "Drive <span class=\"action-glyph\">2</span>",
-                "drive3": "Drive <span class=\"action-glyph\">3</span>"
-            }
-        },
-        "actor-hud": {
-            "alliance": "Alianza: {value}",
-            "temp": "Puntos de golpe temporales",
-            "resolve": "Usar punto de resolución"
-        },
-        "avatar-editor": {
-            "title": "Editar Avatar - {name}",
-            "cancel": "Cancelar",
-            "color": {
-                "background": "Color de fondo",
-                "enabled": "Activar color de fondo"
-            },
-            "contain": "Contener",
-            "reset": "Reiniciar",
-            "save": "Guardar",
-            "src": {
-                "actor": "Usar la Imágen de Actor",
-                "token": "Usar la Imágen del Token",
-                "none": "No se pudo encontrar una imágen válida",
-                "video": "Los vídeos no están soportados"
-            }
-        },
-        "dialogs": {
-            "alternates": {
-                "dc": "Clase de dificultad",
-                "drag": "Arrastra para crear un atajo",
-                "statistic": "Estadística",
-                "title": "Acciones Variantes - {label}",
-                "yes": "Usar Variantes"
-            },
-            "resolve": {
-                "title": "Usar puntos de resolución",
-                "full": "{name} está rebosante de energía y no necesita descansar.",
-                "breather": {
-                    "label": "Tomarse un respiro",
-                    "hint": "Descansar durante 10 minutos, gastar un punto de héroe y recuperar todo tu aguante."
-                },
-                "steel": {
-                    "hint": "Usa una acción, gasta un punto resolución y recupera la mitad de tu aguante."
-                },
-                "yes": "Usar punto de resolución"
-            }
-        },
-        "edit-shortcut": {
-            "image": "Ruta a la imagen",
-            "name": "Nombre del atajo",
-            "yes": "Guardar"
-        },
-        "health-status": {
-            "title": "Estado de salud",
-            "enabled": "Activado",
-            "add": "Agregar marcador",
-            "delete": "Borrar marcador",
-            "save": "Guardar",
-            "cancel": "Cancelar",
-            "import": {
-                "title": "Importar estados de salud",
-                "yes": "Importar",
-                "no": "Cancelar",
-                "error": "Los datos suministrados no son válidos."
-            },
-            "export": {
-                "title": "Exportar estados de salud",
-                "confirm": "Los estados de salud han sido exportados al portapapeles."
-            },
-            "default": "Muerto, Moribundo, Herido, Magullado, Rasguñado, Perfecto"
-        },
-        "leftClick": "[Clic izquierdo]",
-        "persistent": {
-            "effects": {
-                "shift": "Mayus",
-                "toggle": "Conmutar Efectos"
-            },
-            "error": {
-                "selectOne": "Elije un token de PNJ/PJ para establecerlo como tu actor persistente."
-            },
-            "menu": {
-                "clean": {
-                    "always": "Mostrar siempre la UI en el retrato",
-                    "hover": "Mostrar la UI únicamente cuando se pasa al ratón por el retrato"
-                },
-                "editAvatar": "Editar Avatar",
-                "setActor": {
-                    "set": "Elegir el token seleccionado como actor persistente",
-                    "unset": "Deseleccionar como actor persistente"
-                }
-            },
-            "shortcuts": {
-                "clear": {
-                    "title": "Limpiar Atajos",
-                    "all": "Todos los Conjuntos de Atajos",
-                    "hint": "¿Seguro que deseas eliminar los siguientes atajos?",
-                    "set": "Solo el Conjunto Actual",
-                    "yes": "Eliminar"
-                },
-                "copy": {
-                    "title": "Copiar los Atajos de Usuario",
-                    "hint": "Elije un usuario para copiar sus atajos.",
-                    "label": "Usuario Propietario",
-                    "none": "Este actor no tiene ningún otro propietario.",
-                    "yes": "Copiar"
-                },
-                "fill": {
-                    "title": "Autorellenar Atajos",
-                    "content": "¿Estás seguro de que quieres autorellenar los atajos?",
-                    "yes": "Autorellenar"
-                },
-                "tab": "Cambiar el Conjunto de Atajos"
-            }
-        },
-        "popup": {
-            "shortcut": {
-                "config": "Personalizar Atajo"
-            }
-        },
-        "recall-knowledge": {
-            "result": "Resultado",
-            "modifier": "Mod.",
-            "target": "OBjetivo",
-            "first": "1ro",
-            "second": "2do",
-            "third": "3ro",
-            "fourth": "4to",
-            "fifth": "5to",
-            "sixth": "6to",
-            "dc": "CD",
-            "unspecific": "Sin especificar",
-            "specific": "Específico",
-            "skill": "Habilidad",
-            "lore": "Saberes",
-            "proficiency": "Competencia"
-        },
-        "rightClick": "[Clic derecho]",
-        "shortcuts": {
-            "blast": {
-                "cost": {
-                    "label": "Coste de la Explosión Elemental"
-                }
-            },
-            "error": {
-                "locked": "Los atajos están bloqueados en la barra de atajos",
-                "wrongActor": "Solo puedes crear atajos desde el mismo actor persistente.",
-                "wrongType": "No puedes crear un atajo de ese tipo."
-            },
-            "tooltip": {
-                "active": "Active",
-                "altUse": {
-                    "blast": "Radio de Explosión",
-                    "skillAction": "Menu de Variantes",
-                    "strike": "Radio de Golpe",
-                    "toggle": "Seleccionar Opción Alternativa"
-                },
-                "click": {
-                    "control": "[Ctrl-Clic-Derecho]",
-                    "middle": "[Clic-Central] Quitar Atajo",
-                    "popup": "Popup del item"
-                },
-                "disabled": "Desactivado",
-                "enabled": "Activado",
-                "inactive": "Inactive",
-                "subtitle": {
-                    "blast": "Explosión Elemental",
-                    "extraAction": "Acción Extra",
-                    "macro": "Macro Autoejecutada",
-                    "spell": "Lanzamiento de conjuros",
-                    "strike": "Golpear",
-                    "toggle": "Modos de tirar dados"
-                },
-                "reason": {
-                    "available": "No disponible en este momento",
-                    "broken": "Conjuro huérfano",
-                    "charges": "No quedan cargas",
-                    "combat": "Fuera de combate",
-                    "dropped": "No llevas el objeto",
-                    "equip": "Sin Equipar",
-                    "expended": "Conjuro gastado",
-                    "focus": "Reserva de puntos de Foco vacía",
-                    "match": "No hay coincidencia",
-                    "prepared": "Conjuro no preparado",
-                    "quantity": "No hay cantidad suficiente",
-                    "rank": "No se puede lanzar ese de rango",
-                    "uses": "No quedan usos",
-                    "vessel": "No es el recipiente principal"
-                }
-            },
-            "use": {
-                "toggle": "Esta opción está siempre activa"
-            }
-        },
-        "sidebar": {
-            "filter": "Filtro de barra lateral",
-            "actions": {
-                "blasts": "Explosiones elementales",
-                "ranged": "Rango {max} ft.",
-                "rangedWithIncrement": "Rango {increment}/{max} ft.",
-                "reach": "Alcance {reach} ft.",
-                "reset": "Reiniciar Usos",
-                "shields": {
-                    "shown": "Los escudos se muestran",
-                    "hidden": "Los escudos se ocultan"
-                },
-                "stances": "Formas",
-                "stowedWeapons": {
-                    "shown": "Los objetos guardados se muestran",
-                    "hidden": "Los objetos guardados no se muestran"
-                },
-                "thrown": "Lanzado {increment}/{max} ft."
-            },
-            "extras": {
-                "delete": {
-                    "title": "Borrar Macro",
-                    "content": "¿Seguro que quieres borrar esta macro?"
-                },
-                "edit": "Editar Macro",
-                "noMacro": "Suelta la Macro aquí",
-                "use": "Ejecutar Macro"
-            },
-            "removeEffect": "Quitar efecto",
-            "skills": {
-                "alternate": "[Clic derecho] menú de variantes",
-                "hideUntrained": "Ocultar sin entrenar",
-                "proficient": "Competente"
-            },
-            "spells": {
-                "broken": "Conjuro roto",
-                "cast": "Lanza el conjuro"
-            }
-        },
-        "sidebars": {
-            "actions": "Acciones",
-            "items": "Inventario",
-            "spells": "Conjuros",
-            "skills": "Habilidades",
-            "extras": "Extras"
-        },
-        "spellcasting": {
-            "charges": "Cargas",
-            "staff": "Bastón"
-        },
-        "tooltip": {
-            "distance": {
-                "feet": "ft.",
-                "meter": "m",
-                "square": "sq."
-            }
-        },
-        "use-resolve": {
-            "full": "{name} tiene su aguante completo y no necesita descansar.",
-            "breather": {
-                "used": "{name} tiene {ratio} SP y gasta un punto de resolución, tomando un descanso de 10 minutos. Aguante recuperado."
-            }
+  "pf2e-hud": {
+    "keybindings": {
+      "persistent": {
+        "setActor": {
+          "name": "Elegir como Actor Persistente",
+          "hint": "Establecer el actor del token seleccionado como actor persistente."
         }
+      },
+      "sidebar": {
+        "filter": {
+          "name": "Usar el Filtro la Barra Lateral",
+          "hint": "Permitir el filtrado del contenido actual de la barra lateral."
+        }
+      },
+      "tracker": {
+        "alternate": {
+          "name": "Controles Alternativos",
+          "hint": "Activa o desactiva los controles del rastreador de combate para mostrar opciones adicionales."
+        }
+      }
+    },
+    "settings": {
+      "menus": {
+        "healthStatusMenu": {
+          "name": "Estado de salud",
+          "label": "Configurar Estado de salud",
+          "hint": "Configurar las divisiones del estado de salud para que se muestren en los HUDs."
+        }
+      },
+      "enabled": {
+        "name": "Activo",
+        "hint": "Activa este elemento en el HUD de tu cliente."
+      },
+      "dice": {
+        "title": "Panel de Dados"
+      },
+      "foundrySidebar": {
+        "title": "Barra Lateral de Foundry",
+        "expand": {
+          "name": "Auto Expandir al Cargar",
+          "hint": "Forzar a Foundry a expandir la barra lateral al cargar la página."
+        }
+      },
+      "global": {
+        "highestSpeed": {
+          "name": "Mostrar la mayor velocidad",
+          "hint": "Si no se especifica una velocidad, la más alta se mostrará incluso si la velocidad en tierra no es 0."
+        },
+        "useModifiers": {
+          "name": "Usar Modificadores",
+          "hint": "Mostrar modificadores en vez de la dificultad en los diferentes elementos del HUD."
+        }
+      },
+      "advanced": {
+        "alliance": {
+          "name": "Botón de Alianzas",
+          "hint": "Mostrar el botón de alianza/disposición en el HUD."
+        }
+      },
+      "persistent": {
+        "title": "HUD Persistente",
+        "autoFill": {
+          "name": "Autorellenar NPCs",
+          "hint": "Si no has realizado ningún ajuste manual, los atajos se rellenaran automágicamente."
+        },
+        "display": {
+          "name": "Posición de la Pantalla",
+          "choices": {
+            "disabled": "Desactivado"
+          }
+        },
+        "selection": {
+          "name": "Selección de modo",
+          "hint": "Selección de modo para el actor persistente.",
+          "choices": {
+            "manual": "Selección manual",
+            "select": "Selección según el token",
+            "combat": "Combatiente actual"
+          }
+        }
+      },
+      "sidebar": {
+        "title": "Barra lateral"
+      },
+      "time": {
+        "title": "Registro de Tiempo",
+        "enabled": {
+          "hint": "Activa este elemento en el HUD para tu cliente. Esto se sobreescribe cuando el ajuste para que los jugadores tengan acceso al reloj del mundo está desactivado."
+        }
+      },
+      "token": {
+        "title": "HUD de token",
+        "mode": {
+          "name": "Modo de visualización",
+          "hint": "Elegir el modo de visualización del HUD del token.",
+          "choices": {
+            "disabled": "Desactivado",
+            "exploded": "Expandido",
+            "left": "Agrupado (izquierda)",
+            "right": "Agrupado (derecha)"
+          }
+        }
+      },
+      "tooltip": {
+        "title": "Información del token (tooltip)",
+        "delay": {
+          "name": "Retraso del tooltip",
+          "hint": "Retraso en milisegundos antes de que se muestre el tooltip."
+        },
+        "distance": {
+          "name": "Mostrar distancia",
+          "hint": "Mostrará la distancia entre el token sobre el que se pasa el ratón y el que se deduce automáticamente.",
+          "choices": {
+            "never": "Nunca",
+            "idiot": "En pies",
+            "smart": "En metros",
+            "weird": "En cuadrados"
+          }
+        },
+        "draw": {
+          "name": "Dibujar distancia",
+          "hint": "Dibujar una linea con este ancho entre el token sobre el que se pasa el ratón y el objetivo."
+        },
+        "status": {
+          "name": "Mostrar estado de salud",
+          "hint": "Debería mostrarse el estado en el tootlip."
+        }
+      },
+      "tracker": {
+        "partyAsObserved": {
+        },
+        "started": {
+        },
+        "textureScaling": {
+        }
+      }
+    },
+    "actions": {
+      "borrowArcaneSpell": "Tomar presado un Conjuro Arcano",
+      "drive": {
+        "drive1": "Drive <span class=\"action-glyph\">1</span>",
+        "drive2": "Drive <span class=\"action-glyph\">2</span>",
+        "drive3": "Drive <span class=\"action-glyph\">3</span>"
+      }
+    },
+    "actor-hud": {
+      "alliance": "Alianza: {value}",
+      "temp": "Puntos de golpe temporales",
+      "resolve": "Usar punto de resolución"
+    },
+    "avatar-editor": {
+      "title": "Editar Avatar - {name}",
+      "cancel": "Cancelar",
+      "color": {
+        "background": "Color de fondo",
+        "enabled": "Activar color de fondo"
+      },
+      "contain": "Contener",
+      "reset": "Reiniciar",
+      "save": "Guardar",
+      "src": {
+        "actor": "Usar la Imágen de Actor",
+        "token": "Usar la Imágen del Token",
+        "none": "No se pudo encontrar una imágen válida",
+        "video": "Los vídeos no están soportados"
+      }
+    },
+    "dialogs": {
+      "alternates": {
+        "dc": "Clase de dificultad",
+        "drag": "Arrastra para crear un atajo",
+        "statistic": "Estadística",
+        "title": "Acciones Variantes - {label}",
+        "yes": "Usar Variantes"
+      },
+      "resolve": {
+        "title": "Usar puntos de resolución",
+        "full": "{name} está rebosante de energía y no necesita descansar.",
+        "breather": {
+          "label": "Tomarse un respiro",
+          "hint": "Descansar durante 10 minutos, gastar un punto de héroe y recuperar todo tu aguante."
+        },
+        "steel": {
+          "hint": "Usa una acción, gasta un punto resolución y recupera la mitad de tu aguante."
+        },
+        "yes": "Usar punto de resolución"
+      }
+    },
+    "edit-shortcut": {
+      "image": "Ruta a la imagen",
+      "name": "Nombre del atajo",
+      "yes": "Guardar"
+    },
+    "health-status": {
+      "title": "Estado de salud",
+      "enabled": "Activado",
+      "add": "Agregar marcador",
+      "delete": "Borrar marcador",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "import": {
+        "title": "Importar estados de salud",
+        "yes": "Importar",
+        "no": "Cancelar",
+        "error": "Los datos suministrados no son válidos."
+      },
+      "export": {
+        "title": "Exportar estados de salud",
+        "confirm": "Los estados de salud han sido exportados al portapapeles."
+      },
+      "default": "Muerto, Moribundo, Herido, Magullado, Rasguñado, Perfecto"
+    },
+    "leftClick": "[Clic izquierdo]",
+    "persistent": {
+      "effects": {
+        "shift": "Mayús",
+        "toggle": "Conmutar Efectos"
+      },
+      "error": {
+        "selectOne": "Elije un token de PNJ/PJ para establecerlo como tu actor persistente."
+      },
+      "menu": {
+        "clean": {
+          "always": "Mostrar siempre la UI en el retrato",
+          "hover": "Mostrar la UI únicamente cuando se pasa al ratón por el retrato"
+        },
+        "editAvatar": "Editar Avatar",
+        "setActor": {
+          "set": "Elegir el token seleccionado como actor persistente",
+          "unset": "Deseleccionar como actor persistente"
+        }
+      },
+      "shortcuts": {
+        "clear": {
+          "title": "Limpiar Atajos",
+          "all": "Todos los Conjuntos de Atajos",
+          "hint": "¿Seguro que deseas eliminar los siguientes atajos?",
+          "set": "Solo el Conjunto Actual",
+          "yes": "Eliminar"
+        },
+        "copy": {
+          "title": "Copiar los Atajos de Usuario",
+          "hint": "Elije un usuario para copiar sus atajos.",
+          "label": "Usuario Propietario",
+          "none": "Este actor no tiene ningún otro propietario.",
+          "yes": "Copiar"
+        },
+        "fill": {
+          "title": "Autorellenar Atajos",
+          "content": "¿Estás seguro de que quieres autorellenar los atajos?",
+          "yes": "Autorellenar"
+        },
+        "tab": "Cambiar el Conjunto de Atajos"
+      }
+    },
+    "popup": {
+      "shortcut": {
+        "config": "Personalizar Atajo"
+      }
+    },
+    "recall-knowledge": {
+      "result": "Resultado",
+      "modifier": "Mod.",
+      "target": "OBjetivo",
+      "first": "1ro",
+      "second": "2do",
+      "third": "3ro",
+      "fourth": "4to",
+      "fifth": "5to",
+      "sixth": "6to",
+      "dc": "CD",
+      "unspecific": "Sin especificar",
+      "specific": "Específico",
+      "skill": "Habilidad",
+      "lore": "Saberes",
+      "proficiency": "Competencia"
+    },
+    "rightClick": "[Clic derecho]",
+    "shortcuts": {
+      "blast": {
+        "cost": {
+          "label": "Coste de la Explosión Elemental"
+        }
+      },
+      "error": {
+        "locked": "Los atajos están bloqueados en la barra de atajos",
+        "wrongActor": "Solo puedes crear atajos desde el mismo actor persistente.",
+        "wrongType": "No puedes crear un atajo de ese tipo."
+      },
+      "tooltip": {
+        "active": "Active",
+        "altUse": {
+          "blast": "Radio de Explosión",
+          "skillAction": "Menu de Variantes",
+          "strike": "Radio de Golpe",
+          "toggle": "Seleccionar Opción Alternativa"
+        },
+        "click": {
+          "control": "[Ctrl-Clic-Derecho]",
+          "middle": "[Clic-Central] Quitar Atajo",
+          "popup": "Popup del item"
+        },
+        "disabled": "Desactivado",
+        "enabled": "Activado",
+        "inactive": "Inactivo",
+        "subtitle": {
+          "blast": "Explosión Elemental",
+          "extraAction": "Acción Extra",
+          "macro": "Macro Autoejecutada",
+          "spell": "Lanzamiento de conjuros",
+          "strike": "Golpear",
+          "toggle": "Modos de tirar dados"
+        },
+        "reason": {
+          "available": "No disponible en este momento",
+          "broken": "Conjuro huérfano",
+          "charges": "No quedan cargas",
+          "combat": "Fuera de combate",
+          "dropped": "No llevas el objeto",
+          "equip": "Sin Equipar",
+          "expended": "Conjuro gastado",
+          "focus": "Reserva de puntos de Foco vacía",
+          "match": "No hay coincidencia",
+          "prepared": "Conjuro no preparado",
+          "quantity": "No hay cantidad suficiente",
+          "rank": "No se puede lanzar ese de rango",
+          "uses": "No quedan usos",
+          "vessel": "No es el recipiente principal"
+        }
+      },
+      "use": {
+        "toggle": "Esta opción está siempre activa"
+      }
+    },
+    "sidebar": {
+      "filter": "Filtro de barra lateral",
+      "actions": {
+        "blasts": "Explosiones elementales",
+        "ranged": "Rango {max} ft.",
+        "rangedWithIncrement": "Rango {increment}/{max} ft.",
+        "reach": "Alcance {reach} ft.",
+        "reset": "Reiniciar Usos",
+        "shields": {
+          "shown": "Los escudos se muestran",
+          "hidden": "Los escudos se ocultan"
+        },
+        "stances": "Formas",
+        "stowedWeapons": {
+          "shown": "Los objetos guardados se muestran",
+          "hidden": "Los objetos guardados no se muestran"
+        },
+        "thrown": "Lanzado {increment}/{max} pies."
+      },
+      "extras": {
+        "delete": {
+          "title": "Borrar Macro",
+          "content": "¿Seguro que quieres borrar esta macro?"
+        },
+        "edit": "Editar Macro",
+        "noMacro": "Suelta la Macro aquí",
+        "use": "Ejecutar Macro"
+      },
+      "removeEffect": "Quitar efecto",
+      "skills": {
+        "alternate": "[Clic derecho] menú de variantes",
+        "hideUntrained": "Ocultar sin entrenar",
+        "proficient": "Competente"
+      },
+      "spells": {
+        "broken": "Conjuro roto",
+        "cast": "Lanza el conjuro"
+      }
+    },
+    "sidebars": {
+      "actions": "Acciones",
+      "items": "Inventario",
+      "spells": "Conjuros",
+      "skills": "Habilidades",
+      "extras": "Extras"
+    },
+    "spellcasting": {
+      "charges": "Cargas",
+      "staff": "Bastón"
+    },
+    "tooltip": {
+      "distance": {
+        "feet": "ft.",
+        "meter": "m",
+        "square": "sq."
+      }
+    },
+    "tracker": {
+      "fake": {
+      },
+      "join": "Unirse al Turno"
+    },
+    "use-resolve": {
+      "full": "{name} tiene su aguante completo y no necesita descansar.",
+      "breather": {
+        "used": "{name} tiene {ratio} SP y gasta un punto de resolución, tomando un descanso de 10 minutos. Aguante recuperado."
+      }
     }
+  }
 }
