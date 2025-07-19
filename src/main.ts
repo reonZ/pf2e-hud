@@ -1,7 +1,10 @@
 import { AvatarModel } from "avatar-editor";
 import { HealthStatus } from "health-status";
 import {
+    addStance,
+    canUseStances,
     DicePF2eHUD,
+    getStances,
     PersistentPF2eHUD,
     prepareActionGroups,
     prepareExtrasActions,
@@ -84,6 +87,11 @@ Hooks.once("ready", async () => {
     }
 });
 
+MODULE.apiExpose({
+    addStance,
+    canUseStances,
+    getStances,
+});
 MODULE.devExpose({ huds: HUDS });
 MODULE.debugExpose({ AvatarModel, HealthStatus });
 

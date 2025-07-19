@@ -12,7 +12,6 @@ import {
     hasItemWithSourceId,
     hasTokenThatMatches,
     isSupressedFeat,
-    ItemPF2e,
     R,
 } from "module-helpers";
 import { ActionsSidebarPF2eHUD } from ".";
@@ -80,6 +79,20 @@ class ActionsStance extends BaseSidebarItem<
 
 interface ActionsStance extends Readonly<StanceData> {}
 
+async function addStance(actor: CreaturePF2e, sourceUUID: DocumentUUID, createMessage?: boolean) {
+    const source = await getItemSourceFromUuid(sourceUUID, "EffectPF2e");
+    if (!source) return;
+
+    foundry.utils.setProperty(source, "flags.core.sourceId", sourceUUID);
+    foundry.utils.setProperty(source, "_stats.compendiumSource", sourceUUID);
+
+    const [item] = await actor.createEmbeddedDocuments("Item", [source]);
+
+    if (item && createMessage) {
+        item.toMessage();
+    }
+}
+
 async function toggleStance(
     actor: CreaturePF2e,
     sourceUUID: DocumentUUID,
@@ -108,14 +121,7 @@ async function toggleStance(
     }
 
     if (!effect) {
-        const source = await getItemSourceFromUuid(sourceUUID, "EffectPF2e");
-        if (!source) return;
-
-        foundry.utils.setProperty(source, "flags.core.sourceId", sourceUUID);
-        foundry.utils.setProperty(source, "_stats.compendiumSource", sourceUUID);
-
-        const [item] = await actor.createEmbeddedDocuments("Item", [source]);
-        item?.toMessage();
+        await addStance(actor, sourceUUID);
     } else if (!effects.length) {
         await actor.deleteEmbeddedDocuments("Item", [effect[1]]);
     }
@@ -137,14 +143,6 @@ function getSidebarStancesData(this: ActionsSidebarPF2eHUD): StancesContext | un
     };
 }
 
-function isValidStance(stance: ItemPF2e): stance is FeatPF2e | AbilityItemPF2e {
-    return (
-        stance.isOfType("feat", "action") &&
-        stance.system.traits.value.includes("stance") &&
-        !!stance.system.selfEffect?.uuid
-    );
-}
-
 function getStances(actor: CreaturePF2e): StanceData[] | undefined {
     const stances: StanceData[] = [];
     const replaced = new Set<string>();
@@ -157,7 +155,13 @@ function getStances(actor: CreaturePF2e): StanceData[] | undefined {
 
         const replacer = REPLACERS.get(sourceUUID);
         const extra = EXTRAS.get(sourceUUID);
-        if (!replacer && !extra && !isValidStance(item)) continue;
+
+        if (
+            !replacer &&
+            !extra &&
+            (!item.system.traits.value.includes("stance") || !item.system.selfEffect?.uuid)
+        )
+            continue;
 
         const effectUUID = replacer?.effect ?? extra?.effect ?? item.system.selfEffect!.uuid;
         const effect = fromUuidSync<EffectPF2e>(effectUUID);
@@ -214,6 +218,7 @@ type StanceData = {
 
 export {
     ActionsStance,
+    addStance,
     canUseStances,
     getSidebarStancesData,
     getStances,
