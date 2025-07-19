@@ -8,7 +8,6 @@ import {
     findItemWithSourceId,
     getActionGlyph,
     getActionIcon,
-    includesAny,
     isSupressedFeat,
     LabeledValueAndMax,
     localize,
@@ -122,7 +121,8 @@ async function getSidebarActionsData(
 
     const abilitiesPromises = abilities.map(async (ability) => {
         const traits = ability.system.traits.value;
-        if (includesAny(traits, "downtime", "stance")) return;
+        if (traits.includes("downtime")) return;
+        if (traits.includes("stance") && ability.system.selfEffect?.uuid) return;
 
         if (
             isSupressedFeat(ability) ||
