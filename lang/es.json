@@ -58,11 +58,15 @@
                     "name": "Autorellenar NPCs",
                     "hint": "Si no has realizado ningún ajuste manual, los atajos se rellenaran automágicamente."
                 },
-                "mode": {
+                "display": {
+                    "choices": {
+                        "disabled": "Desactivado"
+                    }
+                },
+                "selection": {
                     "name": "Selección de modo",
                     "hint": "Selección de modo para el actor persistente.",
                     "choices": {
-                        "disabled": "Desactivado",
                         "manual": "Selección manual",
                         "select": "Selección según el token",
                         "combat": "Combatiente actual"

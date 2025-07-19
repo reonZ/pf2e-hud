@@ -97,14 +97,18 @@
                     "name": "NPC自动填充",
                     "hint": "如果您没有进行任何手动更改，NPC快捷栏将自动填充。"
                 },
-                "mode": {
+                "display": {
+                    "choices": {
+                        "disabled": "禁用"
+                    }
+                },
+                "selection": {
                     "hint": "受控角色的选择模式。",
                     "name": "选择模式",
                     "choices": {
                         "manual": "手动选择",
                         "select": "所选择的指示物",
-                        "combat": "当前回合的参战者",
-                        "disabled": "禁用"
+                        "combat": "当前回合的参战者"
                     }
                 }
             },

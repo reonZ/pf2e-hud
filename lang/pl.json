@@ -58,11 +58,15 @@
                     "name": "Autouzupełnianie Postaci Niezależnych",
                     "hint": "Jeśli nie wprowadzono żadnych ręcznych zmian, miejsca na skróty zostaną automatycznie wypełnione."
                 },
-                "mode": {
+                "display": {
+                    "choices": {
+                        "disabled": "Wyłączone"
+                    }
+                },
+                "selection": {
                     "name": "Tryb wyboru",
                     "hint": "Tryb wyboru stałego aktora.",
                     "choices": {
-                        "disabled": "Wyłączone",
                         "manual": "Ręczny wybór",
                         "select": "Zaznaczony token",
                         "combat": "Bieżący uczestnik walki"

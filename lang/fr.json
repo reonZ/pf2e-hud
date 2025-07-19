@@ -58,11 +58,15 @@
                     "name": "Remplissage auto des PNJ",
                     "hint": "Si vous n'avez pas effectué de changements manuels, les emplacements des raccourcis seront automatiquement remplis."
                 },
-                "mode": {
+                "display": {
+                    "choices": {
+                        "disabled": "Désactivé"
+                    }
+                },
+                "selection": {
                     "name": "Mode de sélection",
                     "hint": "Mode de séléction pour l'acteur persistant.",
                     "choices": {
-                        "disabled": "Désactivé",
                         "manual": "Sélection manuelle",
                         "select": "Sélection sur le jeton",
                         "combat": "Combattant actuel"

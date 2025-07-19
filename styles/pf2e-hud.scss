@@ -11,6 +11,22 @@
 @import "./tooltip";
 @import "./tracker";
 
+:root {
+    --pf2e-hud-panel-margin: 5px;
+}
+
+#ui-right-column-1 {
+    padding: var(--pf2e-hud-panel-margin) 0;
+}
+
+#ui-left {
+    padding: var(--pf2e-hud-panel-margin);
+}
+
+#hotbar {
+    margin-bottom: var(--pf2e-hud-panel-margin);
+}
+
 #sidebar-content {
     &.pf2e-hud-dice,
     &.pf2e-hud-time {

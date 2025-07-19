@@ -35,7 +35,8 @@ import {
     SliderData,
 } from "..";
 
-const SELECTION_MODES = ["disabled", "manual", "select", "combat"] as const;
+const ENABLED_MODES = ["disabled", "left", "middle"] as const;
+const SELECTION_MODES = ["manual", "select", "combat"] as const;
 
 class PersistentPF2eHUD
     extends makeAdvancedHUD(BaseActorPF2eHUD<PersistentSettings, PersistentHudActor>)
@@ -90,7 +91,18 @@ class PersistentPF2eHUD
     get settingsSchema(): HUDSettingsList<PersistentSettings> {
         return [
             {
-                key: "mode",
+                key: "display",
+                type: String,
+                default: "left",
+                scope: "user",
+                choices: ENABLED_MODES,
+                onChange: () => {
+                    this.configurate();
+                    hud.token.configurate();
+                },
+            },
+            {
+                key: "selection",
                 type: String,
                 default: "manual",
                 scope: "user",
@@ -190,6 +202,12 @@ class PersistentPF2eHUD
         return this.#effectsPanel;
     }
 
+    get parentElement(): HTMLElement | null {
+        return document.getElementById(
+            this.settings.display === "left" ? "ui-left-column-1" : "ui-bottom"
+        );
+    }
+
     get shortcutsPanel(): PersistentShortcutsPF2eHUD {
         return this.#shortcutsPanel;
     }
@@ -199,31 +217,29 @@ class PersistentPF2eHUD
     }
 
     protected _configurate(): void {
-        const mode = this.settings.mode;
+        const enabled = this.settings.display !== "disabled";
+        const selection = this.settings.selection;
 
-        this.#deleteActorHook.toggle(mode !== "disabled");
-        this.#deleteTokenHook.toggle(mode !== "disabled");
-        this.#controlTokenHook.toggle(mode === "select");
-        this.#setActorKeybind.toggle(mode === "manual");
+        this.#deleteActorHook.toggle(enabled);
+        this.#deleteTokenHook.toggle(enabled);
+        this.#controlTokenHook.toggle(enabled && selection === "select");
+        this.#setActorKeybind.toggle(enabled && selection === "manual");
 
-        if (mode !== "disabled") {
-            this.render(true);
-        } else {
-            this.close({ force: true });
+        if (game.ready) {
+            if (enabled) {
+                this.render(true);
+            } else {
+                this.close({ force: true });
+            }
         }
     }
 
     init() {
-        const mode = this.settings.mode;
-
-        this.#deleteActorHook.toggle(mode !== "disabled");
-        this.#deleteTokenHook.toggle(mode !== "disabled");
-        this.#controlTokenHook.toggle(mode === "select");
-        this.#setActorKeybind.toggle(mode === "manual");
+        this._configurate();
     }
 
     ready() {
-        if (this.settings.mode !== "disabled") {
+        if (this.settings.display !== "disabled") {
             this.render(true);
         } else {
             this.close({ force: true });
@@ -248,7 +264,7 @@ class PersistentPF2eHUD
         options?: boolean | DeepPartial<ApplicationRenderOptions>,
         _options?: DeepPartial<ApplicationRenderOptions>
     ): Promise<this> {
-        const mode = this.settings.mode;
+        const mode = this.settings.selection;
         const usedOptions = typeof options === "object" ? options : _options;
 
         if (usedOptions?.renderContext === "updateCombat" && mode !== "combat") {
@@ -305,7 +321,7 @@ class PersistentPF2eHUD
     }
 
     setActor(actor: ActorPF2e | null, { token }: SetActorOptions = {}) {
-        if (this.settings.mode !== "manual") return;
+        if (this.settings.selection !== "manual") return;
 
         if (!this.isValidActor(actor)) {
             actor = null;
@@ -457,17 +473,13 @@ class PersistentPF2eHUD
         }
 
         super._replaceHTML(result, content, options);
+        this.parentElement?.appendChild(content);
 
         this.#setupAvatar(content);
         this.effectsPanel.refresh();
         this.shortcutsPanel.render(true);
 
         this.#activateListeners(content);
-    }
-
-    protected _insertElement(element: HTMLElement): HTMLElement {
-        document.getElementById("ui-bottom")?.appendChild(element);
-        return element;
     }
 
     protected _cleanupActor(): void {
@@ -666,7 +678,7 @@ function toggleFoundryBtn(id: string, action: string) {
 }
 
 function getSetActorData(hud: PersistentPF2eHUD): PersistentContextBase["setActor"] {
-    if (hud.settings.mode !== "manual") return;
+    if (hud.settings.selection !== "manual") return;
 
     const hasSavedActor = !!hud.savedActor;
     const setTxt = localize("persistent.menu.setActor.set");
@@ -702,7 +714,8 @@ type PersistentHudActor = CharacterPF2e | NPCPF2e;
 type PersistentSettings = {
     autoFill: boolean;
     cleanPortrait: boolean;
-    mode: (typeof SELECTION_MODES)[number];
+    display: (typeof ENABLED_MODES)[number];
+    selection: (typeof SELECTION_MODES)[number];
     savedActor: string;
     showEffects: boolean;
 };

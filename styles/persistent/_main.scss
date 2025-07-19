@@ -19,10 +19,8 @@
     --sidebar-arrow-color: #2c2c2c;
 
     align-self: start;
-    margin-bottom: var(--panel-gap);
     display: grid;
     gap: var(--panel-gap);
-    margin-left: -50px;
 
     grid-template-columns:
         [full-start menu-start] var(--columns-icon)
@@ -298,6 +296,12 @@
                 color: var(--color);
             }
         }
+    }
+}
+
+#ui-bottom {
+    #pf2e-hud-persistent {
+        margin-bottom: var(--panel-gap);
     }
 }
 

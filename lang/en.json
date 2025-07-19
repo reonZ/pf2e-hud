@@ -64,11 +64,19 @@
                     "name": "Auto-Fill NPCs",
                     "hint": "If you haven't made any manual changes, the shortcut slots will automatically be filled."
                 },
-                "mode": {
+                "display": {
+                    "name": "Display Position",
+                    "hint": "Where should the hud be displayed in the  UI.",
+                    "choices": {
+                        "disabled": "Disabled",
+                        "left": "Left Part",
+                        "middle": "Middle Part"
+                    }
+                },
+                "selection": {
                     "name": "Selection Mode",
                     "hint": "Mode of selection for the persistent actor.",
                     "choices": {
-                        "disabled": "Disabled",
                         "manual": "Manual Selection",
                         "select": "On Token Selection",
                         "combat": "Current Combatant"
