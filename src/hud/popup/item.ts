@@ -30,7 +30,9 @@ class ItemHudPopup extends BaseHudPopup {
     }
 
     get item(): ItemPF2e {
-        return this.#item;
+        return game.user.isGM && this.#item.isOfType("physical") && !this.#item.isIdentified
+            ? this.#item.clone({ "system.identification.status": "identified" })
+            : this.#item;
     }
 
     get castRank(): ZeroToTen | undefined {
@@ -39,7 +41,9 @@ class ItemHudPopup extends BaseHudPopup {
     }
 
     get title(): string {
-        let title = `${this.actor.name} - ${this.item.name}`;
+        const item = this.item;
+
+        let title = `${this.actor.name} - ${item.name}`;
 
         const castRank = this.castRank;
         if (typeof castRank === "number") {
@@ -68,7 +72,7 @@ class ItemHudPopup extends BaseHudPopup {
 
         return {
             actor,
-            data: await this.item.getChatData({ secrets: actor.isOwner }, dataset),
+            data: await item.getChatData({ secrets: actor.isOwner }, dataset),
             dataset,
             item,
             itemUuid: item.uuid,
