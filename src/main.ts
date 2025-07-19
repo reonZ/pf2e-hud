@@ -5,11 +5,11 @@ import {
     PersistentPF2eHUD,
     prepareActionGroups,
     prepareExtrasActions,
+    TimePF2eHUD,
     TokenPF2eHUD,
     TooltipPF2eHUD,
     TrackerPF2eHUD,
 } from "hud";
-import { TimePF2eHUD } from "hud/time";
 import { registerKeybinds } from "keybinds";
 import { createHTMLElement, MODULE, R, templatePath, userIsGM } from "module-helpers";
 import { getGlobalSetting, registerSettings } from "settings";

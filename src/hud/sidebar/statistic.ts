@@ -1,10 +1,8 @@
 import {
     createDraggable,
-    ExtraActionShortcutData,
     ExtrasActionData,
     FilterValue,
     SkillActionData,
-    SkillActionShortcutData,
     SkillVariants,
 } from "hud";
 import {
@@ -231,9 +229,7 @@ abstract class BaseStatisticAction<
                     img.src = this.img;
 
                     img.addEventListener("dragstart", (event) => {
-                        const dragData: Required<
-                            SkillActionShortcutData | ExtraActionShortcutData
-                        > = {
+                        const dragData = {
                             img: this.img,
                             key: this.key,
                             name: this.label,

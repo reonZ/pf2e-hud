@@ -1,12 +1,394 @@
+:root {
+    --pf2e-hud-threat-trivial: aqua;
+    --pf2e-hud-threat-low: lime;
+    --pf2e-hud-threat-moderate: yellow;
+    --pf2e-hud-threat-severe: orange;
+    --pf2e-hud-threat-extreme: red;
+}
+
 #pf2e-hud-tracker {
+    --combatant-height: 3.2em;
+
+    --target-border: #d8c384;
+
+    --border-top: 1px solid rgba(255, 255, 255, 0.06);
+    --border-bottom: 1px solid rgb(0 0 0 / 30%);
+
     width: 17em;
-    height: 100px;
+    max-height: 51%;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
     pointer-events: all;
     background: var(--outer-background);
     border: var(--outer-border);
     box-shadow: var(--outer-box-shadow);
     border-radius: var(--outer-border-radius);
     margin-block: auto 0;
+    text-shadow: 1px 1px 4px var(--color-shadow-dark);
+
+    a.disabled {
+        color: var(--color-disabled);
+    }
+
+    header,
+    footer {
+        position: relative;
+        display: grid;
+        align-items: center;
+        justify-items: center;
+        gap: 0.3em;
+        padding: 0.3em;
+        background: revert;
+        border: revert;
+    }
+
+    header {
+        border-bottom: 2px groove black;
+        grid-template-columns: repeat(2, auto) 1fr repeat(2, auto);
+
+        @supports (-moz-appearance: none) {
+            border-bottom: 1px solid black;
+        }
+
+        .title {
+            grid-column: 3;
+        }
+    }
+
+    .combatants {
+        overflow: hidden auto;
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        min-height: calc(var(--combatant-height) * 2);
+
+        .combatant,
+        .fake {
+            display: flex;
+            align-items: center;
+            gap: 0.2em;
+            height: var(--combatant-height);
+            padding-inline: 3px;
+            margin: 0;
+        }
+
+        .fake {
+            justify-content: center;
+
+            &:first-of-type {
+                border-bottom: var(--border-bottom);
+            }
+
+            &:last-of-type {
+                border-top: var(--border-top);
+            }
+        }
+
+        .combatant {
+            border-top: var(--border-top);
+            border-bottom: var(--border-bottom);
+
+            .avatar {
+                position: relative;
+                height: calc(100% - 0.1em);
+                aspect-ratio: 1 / 1;
+                display: flex;
+                overflow: hidden;
+
+                > * {
+                    position: absolute;
+                    display: flex;
+                }
+
+                img {
+                    inset: 0;
+                    border: none;
+                    pointer-events: none;
+
+                    &.token-img {
+                        z-index: 0;
+                        transform: scale(var(--scaleX), var(--scaleY));
+                        mask-image: var(--mask);
+                    }
+
+                    &.defeated-img {
+                        z-index: 1;
+
+                        &:not(.custom) {
+                            filter: invert(19%) sepia(93%) saturate(6259%) hue-rotate(357deg)
+                                brightness(70%) contrast(130%) drop-shadow(0px 0px 2px black);
+                        }
+                    }
+                }
+
+                .alt {
+                    inset: 0;
+                    z-index: 2;
+                    font-size: 1.8em;
+                    align-items: center;
+                    cursor: pointer;
+                }
+
+                .targets {
+                    z-index: 3;
+                    justify-content: center;
+                    gap: 1px;
+
+                    .target {
+                        height: 0.58em;
+                        aspect-ratio: 1 / 1;
+                        border-radius: 50%;
+                        border: 1px solid var(--target-border);
+                        background-color: var(--user-color);
+                    }
+                }
+            }
+
+            .details {
+                z-index: 1;
+                flex: 1;
+                display: grid;
+                grid-template-rows: repeat(2, 1fr);
+                align-items: end;
+
+                .name {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    // we do that for the text-shadow below
+                    margin-left: -0.2em;
+                    padding-left: 0.2em;
+
+                    &.gm-only {
+                        filter: invert(1);
+                        text-shadow: 0 0 3px black;
+                    }
+                }
+
+                .controls {
+                    .combatant-control,
+                    .combatant-control-alt {
+                        float: left;
+                        width: var(--icon-width);
+                        text-align: center;
+                        font-size: 0.9em;
+
+                        &:not(.active) {
+                            color: var(--color-disabled);
+                        }
+                    }
+                }
+            }
+
+            .extras {
+                width: 3em;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                z-index: 1;
+
+                .group {
+                    display: flex;
+                    gap: 0.5em;
+
+                    .entry {
+                        display: flex;
+                        gap: 0.1em;
+                        align-items: center;
+
+                        span {
+                            text-align: end;
+                            color: hsl(var(--hue) 75% 40%);
+                        }
+                    }
+
+                    .initiative {
+                        a {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                    }
+                }
+
+                .roll {
+                    display: block;
+                    background-size: 32px;
+                    width: 100%;
+                    aspect-ratio: 1 / 1;
+                    margin-right: -0.2em;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-image: url("../../../icons/svg/d20.svg");
+                }
+
+                a.roll {
+                    &:hover {
+                        background-image: url("../../../icons/svg/d20-highlight.svg");
+                    }
+                }
+
+                span.roll {
+                    opacity: 0.2;
+                }
+            }
+
+            &.drag-gap {
+                visibility: hidden;
+            }
+
+            &.not-visible {
+                display: none;
+            }
+
+            &.hide {
+                .avatar img,
+                .details .name,
+                .extras {
+                    opacity: 0.3;
+                }
+            }
+
+            &.defeated {
+                .details .name {
+                    color: #d91b12;
+
+                    &.gm-only {
+                        color: #9afaff;
+                    }
+                }
+            }
+
+            &.active {
+                background: rgba(var(--disposition-color), 0.1);
+                border-color: rgb(var(--disposition-color));
+            }
+
+            &.hovered:not(:hover),
+            &.drag-preview {
+                background: rgba(var(--disposition-color), 0.2);
+            }
+        }
+    }
+
+    footer {
+        color: var(--color-darker);
+        border-top: 2px groove black;
+        grid-template-columns: repeat(3, min-content) 1fr repeat(3, min-content);
+
+        @supports (-moz-appearance: none) {
+            border-top: 1px solid black;
+        }
+
+        .title {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-alt);
+        }
+
+        .metrics,
+        .linked {
+            grid-column: -3;
+        }
+
+        .metrics {
+            font-size: 0.9em;
+
+            .threat {
+                text-shadow: 1px 1px 4px var(--color-shadow-dark);
+
+                &.trivial {
+                    color: var(--pf2e-hud-threat-trivial);
+                }
+
+                &.low {
+                    color: var(--pf2e-hud-threat-low);
+                }
+
+                &.moderate {
+                    color: var(--pf2e-hud-threat-moderate);
+                }
+
+                &.severe {
+                    color: var(--pf2e-hud-threat-severe);
+                }
+
+                &.extreme {
+                    color: var(--pf2e-hud-threat-extreme);
+                }
+            }
+        }
+
+        .settings,
+        .end-turn {
+            grid-column: -2;
+        }
+
+        .expand {
+            grid-column: -1;
+        }
+    }
+
+    &:not(:has(header)) {
+        padding-top: 2px;
+
+        .combatants {
+            border-top: none;
+        }
+    }
+
+    &.collapsed {
+        .combatants {
+            height: calc(var(--combatant-height) * 2);
+        }
+
+        .combatant:not(.active):not(.can-roll):not(.next) {
+            display: none;
+        }
+
+        &:has(.combatant.can-roll) {
+            .fake {
+                display: none;
+            }
+        }
+    }
+
+    &:not(.alternate-controls) {
+        .combatant {
+            .avatar .alt,
+            .details .controls.alt {
+                display: none;
+            }
+        }
+
+        .linked {
+            display: none;
+        }
+    }
+
+    &.alternate-controls {
+        .combatant {
+            .controls:not(.alt),
+            .extras {
+                display: none;
+            }
+
+            .avatar img {
+                opacity: 0.4;
+            }
+        }
+
+        .metrics {
+            display: none;
+        }
+    }
 }
 
 #interface.pf2e-hud-tracker {
@@ -23,5 +405,67 @@
 
     #ui-right-column-1 {
         padding: 5px 0;
+    }
+
+    &.pf2e-hud-tracker-tall {
+        #effects-panel {
+            --cell-width: 36px;
+
+            gap: 4px;
+
+            hr {
+                width: var(--cell-width);
+            }
+
+            .effect-item {
+                .icon {
+                    height: var(--cell-width);
+                    width: var(--cell-width);
+
+                    .linked {
+                        font-size: 0.8em;
+                    }
+                }
+            }
+        }
+    }
+}
+
+#tooltip,
+aside.locked-tooltip {
+    &.pf2e-hud-metrics {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        gap: 0.2em;
+
+        .threat {
+            &.trivial {
+                color: var(--pf2e-hud-threat-trivial);
+            }
+
+            &.low {
+                color: var(--pf2e-hud-threat-low);
+            }
+
+            &.moderate {
+                color: var(--pf2e-hud-threat-moderate);
+            }
+
+            &.severe {
+                color: var(--pf2e-hud-threat-severe);
+            }
+
+            &.extreme {
+                color: var(--pf2e-hud-threat-extreme);
+            }
+        }
+
+        .small {
+            align-self: end;
+            font-size: 0.9em;
+            font-style: italic;
+        }
     }
 }

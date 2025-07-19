@@ -1,36 +1,79 @@
 import {
     ActorPF2e,
+    addListener,
     ApplicationClosingOptions,
     ApplicationConfiguration,
     ApplicationRenderContext,
     ApplicationRenderOptions,
     canObserveActor,
     createHook,
+    createToggleKeybind,
+    EffectsPanel,
     EncounterPF2e,
     EncounterTrackerPF2e,
+    ErrorPF2e,
     getDispositionColor,
     getFlag,
+    hasRolledInitiative,
+    htmlClosest,
     htmlQuery,
+    htmlQueryAll,
     localize,
     R,
     render,
+    RolledCombatant,
+    setFlag,
     settingPath,
     toggleHooksAndWrappers,
+    TokenPF2e,
+    unsetFlag,
+    waitDialog,
 } from "module-helpers";
 import { getHealthStatusData } from "settings";
-import { BasePF2eHUD, calculateActorHealth, HUDSettingsList } from ".";
+import Sortable, { SortableEvent } from "sortablejs";
+import {
+    BasePF2eHUD,
+    calculateActorHealth,
+    getStatistics,
+    HUDSettingsList,
+    rollInitiative,
+    StatisticType,
+} from ".";
 
 class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
-    #combatantsElement: Maybe<HTMLElement>;
-    #combatantElement: Maybe<HTMLElement>;
-    #contextMenus: EntryContextOption[] = [];
+    #alternate: boolean = false;
+    #cancelScroll: boolean = false;
+    #combatantsWrapper: Maybe<HTMLElement>;
+    #activeCombatant: Maybe<HTMLElement>;
+    #contextMenus: ContextMenuEntry[] = [];
+    #sortable: Sortable | null = null;
     #trackerHeight = {
         offsetHeight: 0,
         clientHeight: 0,
         scrollHeight: 0,
     };
 
-    #activeHooks = [];
+    #altKeybind = createToggleKeybind({
+        name: "alternate",
+        restricted: true,
+        editable: [{ key: "ControlLeft", modifiers: [] }],
+        onDown: () => {
+            this.alternateControls(true);
+        },
+        onUp: () => {
+            this.alternateControls(false);
+        },
+    });
+
+    #activeHooks = [
+        createHook("hoverToken", this.#onHoverToken.bind(this)),
+        createHook("renderEffectsPanel", (panel: EffectsPanel, html: HTMLElement) => {
+            this.#updateEffectsPanel(html);
+        }),
+        createHook("targetToken", (user, token) => {
+            this.#refreshTargetDisplay(token);
+        }),
+    ];
     #combatHook = createHook("renderCombatTracker", this.#onRenderCombatTracker.bind(this));
 
     #combatTrackerHeightObserver = new ResizeObserver((entries) => {
@@ -39,8 +82,8 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
 
         this.#trackerHeight = {
             offsetHeight: trackerEvent.contentRect.height,
-            clientHeight: this.combatantsElement?.clientHeight ?? 0,
-            scrollHeight: this.combatantsElement?.scrollHeight ?? 0,
+            clientHeight: this.combatantsWrapper?.clientHeight ?? 0,
+            scrollHeight: this.combatantsWrapper?.scrollHeight ?? 0,
         };
 
         this.interfaceElement?.classList.toggle(
@@ -48,8 +91,8 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             this.#trackerHeight.offsetHeight > window.innerHeight / 2
         );
 
-        // this.#updateEffectsPanel();
-        // this.#scrollToCurrent();
+        this.#updateEffectsPanel();
+        this.#scrollToCurrent();
     });
 
     static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
@@ -58,6 +101,10 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             positioned: false,
         },
     };
+
+    get keybindsSchema(): KeybindingActionConfig[] {
+        return [this.#altKeybind.configs];
+    }
 
     get settingsSchema(): HUDSettingsList<TrackerSettings> {
         return [
@@ -111,23 +158,35 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         return ui.combat;
     }
 
-    get combat(): Maybe<EncounterPF2e> {
+    get viewed(): Maybe<EncounterPF2e> {
         return this.tracker?.viewed;
     }
 
-    get combatantsElement(): Maybe<HTMLElement> {
-        return this.#combatantsElement;
+    get combatantsWrapper(): Maybe<HTMLElement> {
+        return this.#combatantsWrapper;
+    }
+
+    get combatantsElements(): NodeListOf<HTMLElement> | HTMLElement[] {
+        return this.combatantsWrapper?.querySelectorAll<HTMLElement>(".combatant") ?? [];
+    }
+
+    get activeCombatant(): Maybe<HTMLElement> {
+        return this.#activeCombatant;
     }
 
     get interfaceElement(): Maybe<HTMLElement> {
         return document.getElementById("interface");
     }
 
+    get effectsPanel(): HTMLElement | null {
+        return document.getElementById("effects-panel");
+    }
+
     get parentElement(): Maybe<HTMLElement> {
         return document.getElementById("ui-right-column-1");
     }
 
-    get contextMenus() {
+    get contextMenus(): ContextMenuEntry[] {
         if (this.#contextMenus.length) {
             return this.#contextMenus;
         }
@@ -155,6 +214,35 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         this._configurate();
     }
 
+    alternateControls(alternate: boolean) {
+        if (alternate && this.combatantsWrapper) {
+            const menus = this.contextMenus;
+
+            for (const target of this.combatantsElements) {
+                const controls = target.querySelectorAll<HTMLElement>(".combatant-control-alt");
+
+                for (const control of controls) {
+                    const index = Number(control.dataset.index);
+                    const menu = menus.at(index);
+                    const display = R.isFunction(menu?.condition) ? menu.condition(target) : !!menu;
+
+                    control.classList.toggle("hidden", !display);
+                }
+            }
+        }
+
+        this.#alternate = alternate;
+        this.element?.classList.toggle("alternate-controls", alternate);
+    }
+
+    shouldDisplay(combat: Maybe<EncounterPF2e> = this.viewed): boolean {
+        return (
+            !!combat &&
+            (game.user.isGM || combat.started || !this.settings.started) &&
+            combat.turns.some((combatant) => combatant.isOwner)
+        );
+    }
+
     _configureRenderOptions(options: TrackerRenderOptions) {
         super._configureRenderOptions(options);
 
@@ -165,7 +253,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
 
     async _prepareContext(options: TrackerRenderOptions): Promise<TrackerContext> {
         const isGM = game.user.isGM;
-        const combat = this.combat!;
+        const combat = this.viewed!;
         const combatant = combat.combatant;
         const tracker = this.tracker!;
         const combatScene = combat.scene;
@@ -222,7 +310,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
                 };
 
             const cssList = [
-                hidden && "hidden",
+                hidden && "hide",
                 isCurrent && "active",
                 defeated && "defeated",
                 !combatant.visible && "not-visible",
@@ -232,7 +320,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             const color: string = R.pipe(
                 getDispositionColor(actor).rgb,
                 R.map((x) => x * 255),
-                R.join(" ")
+                R.join(", ")
             );
 
             const health: TrackerHealth | undefined = (() => {
@@ -289,6 +377,30 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             tooltip: combatScene !== null ? "COMBAT.Linked" : "COMBAT.Unlinked",
         };
 
+        const nextCombatant = (() => {
+            if (!options.collapsed || (!isGM && canRoll) || turns.length < 2) return;
+
+            const combatantId = combatant?.id;
+            const list = isGM
+                ? turns
+                : turns.filter(({ hidden, id }) => !hidden || id === combatantId);
+            if (list.length < 2) return;
+
+            const combatantIndex = list.findIndex(({ id }) => id === combatantId);
+            if (combatantIndex === -1) return;
+
+            let nextIndex = combatantIndex + 1;
+            if (nextIndex >= list.length) nextIndex = 0;
+
+            const nextCombatant = list[nextIndex];
+            return foundry.utils.deepClone(turns[nextCombatant.index]);
+        })();
+
+        if (nextCombatant) {
+            nextCombatant.css += " next";
+            turns.push(nextCombatant);
+        }
+
         return {
             canRoll,
             canRollNPCs,
@@ -300,6 +412,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             isGM,
             isOwner: !!combatant?.isOwner,
             linked,
+            metrics: buildMetrics(combat.metrics),
             round: combat.round,
             turns,
         };
@@ -307,7 +420,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
 
     protected _renderHTML(
         context: ApplicationRenderContext,
-        options: ApplicationRenderOptions
+        options: TrackerRenderOptions
     ): Promise<string> {
         return render("tracker", context);
     }
@@ -315,12 +428,18 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
     protected _replaceHTML(
         result: string,
         content: HTMLElement,
-        options: ApplicationRenderOptions
+        options: TrackerRenderOptions
     ): void {
         content.innerHTML = result;
+        content.dataset.tooltipClass = "pf2e-hud-element";
+        content.dataset.tooltipDirection = "UP";
+        content.classList.toggle("collapsed", options.collapsed);
 
-        this.#combatantsElement = htmlQuery(content, ".combatants");
-        this.#combatantElement = htmlQuery(content, ".combatant.active");
+        this.#combatantsWrapper = htmlQuery(content, ".combatants");
+        this.#activeCombatant = htmlQuery(content, ".combatant.active");
+
+        this.#refreshTargetDisplay();
+        this.#activateListeners(content, options);
     }
 
     protected _insertElement(element: HTMLElement): HTMLElement {
@@ -333,21 +452,191 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
     }
 
     protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
+        this.#altKeybind.activate();
         toggleHooksAndWrappers(this.#activeHooks, true);
     }
 
-    protected _onClose(options: ApplicationClosingOptions): void {
-        toggleHooksAndWrappers(this.#activeHooks, false);
-        this.#combatTrackerHeightObserver.disconnect();
-        this.interfaceElement?.classList.remove(this.id);
+    protected _onRender(context: object, options: ApplicationRenderOptions): void {
+        this.#updateEffectsPanel();
+        this.#scrollToCurrent();
+
+        if (this.#alternate) {
+            this.alternateControls(true);
+        }
     }
 
-    shouldDisplay(combat: Maybe<EncounterPF2e> = this.combat): boolean {
-        return (
-            !!combat &&
-            (game.user.isGM || combat.started || !this.settings.started) &&
-            combat.turns.some((combatant) => combatant.isOwner)
+    protected _onClose(options: ApplicationClosingOptions): void {
+        this.#cancelScroll = false;
+        this.#activeCombatant = null;
+        this.#combatantsWrapper = null;
+
+        this.#altKeybind.disable();
+        toggleHooksAndWrappers(this.#activeHooks, false);
+
+        this.effectsPanel?.style.removeProperty("max-height");
+        this.interfaceElement?.classList.remove("pf2e-hud-tracker-tall");
+
+        this.#combatTrackerHeightObserver.disconnect();
+        this.interfaceElement?.classList.remove(this.id);
+
+        this.#clearSortable();
+    }
+
+    protected _onClickAction(event: PointerEvent, target: HTMLElement) {
+        type EventAction =
+            | "delay-turn"
+            | "rollInitiative"
+            | "toggle-expand"
+            | "toggleNameVisibility"
+            | "toggleTarget"
+            | "trackerSettings";
+
+        const action = target.dataset.action as EventAction;
+
+        if (event.button === 2 && action === "rollInitiative") {
+            return this.#onVariantInitiative(target, event);
+        }
+
+        if (event.button !== 0) return;
+
+        if (action === "delay-turn") {
+            return this.#delayAction(event, target);
+        }
+
+        if (action === "toggle-expand") {
+            return (this.settings.collapsed = !this.settings.collapsed);
+        }
+
+        if (action === "toggleNameVisibility") {
+            return;
+        }
+
+        if (action === "toggleTarget") {
+            return this.#onClickToggleTarget(event, target);
+        }
+
+        if (action === "trackerSettings") {
+            event.preventDefault();
+            return new foundry.applications.apps.CombatTrackerConfig().render(true);
+        }
+
+        if (target.classList.contains("combatant-control")) {
+            event.preventDefault();
+            return this.tracker?.["_onCombatantControl"](event, target);
+        }
+
+        if (target.classList.contains("combatant-control-alt")) {
+            return this.#onCombatantAltControl(target, event);
+        }
+
+        if (target.classList.contains("combat-control")) {
+            event.preventDefault();
+            return this.tracker?.["_onClickAction"](event, target);
+        }
+    }
+
+    #scrollToCurrent() {
+        if (this.settings.collapsed || this.#cancelScroll) {
+            this.#cancelScroll = false;
+            return;
+        }
+
+        const clientHeight = this.#trackerHeight.clientHeight;
+        const scrollHeight = this.#trackerHeight.scrollHeight;
+        if (clientHeight === scrollHeight) return;
+
+        const combatantsList = this.combatantsWrapper;
+        const activeCombatant = this.activeCombatant;
+        if (!combatantsList || !activeCombatant) return;
+
+        combatantsList.scrollTop = activeCombatant.offsetTop - clientHeight / 2;
+    }
+
+    #updateEffectsPanel(effectsPanel = this.effectsPanel) {
+        if (!effectsPanel) return;
+
+        const offsetHeight = this.#trackerHeight.offsetHeight;
+        effectsPanel.style.setProperty("max-height", `calc(100% - ${offsetHeight}px - 30px)`);
+    }
+
+    async #delayAction(event: MouseEvent, target: HTMLElement) {
+        const combat = this.viewed;
+        const combatantId = htmlClosest(target, "[data-combatant-id]")?.dataset.combatantId ?? "";
+        const combatant = combat?.combatants.get(combatantId);
+        if (!combat || !combatant || !hasRolledInitiative(combatant)) return;
+
+        const isDelayed = getFlag<boolean>(combatant, "delayed");
+
+        if (!isDelayed) {
+            return setFlag(combatant, "delayed", true);
+        }
+
+        await unsetFlag(combatant, "delayed");
+
+        const currentCombatant = combat.combatant;
+
+        if (!currentCombatant || currentCombatant === combatant) return;
+
+        const newOrder = combat.turns.filter((c) => c !== combatant);
+        const currentIndex = newOrder.indexOf(currentCombatant);
+
+        newOrder.splice(currentIndex + 1, 0, combatant);
+
+        return this.#newInitiativeOrder(
+            newOrder.filter((c): c is RolledCombatant<EncounterPF2e> => hasRolledInitiative(c)),
+            combatant,
+            true
         );
+    }
+
+    #onHoverToken(token: TokenPF2e, hovered: boolean) {
+        const combatantId = token.combatant?.id;
+        if (!combatantId) return;
+
+        for (const el of this.combatantsElements) {
+            el.classList.toggle("hovered", hovered && el.dataset.combatantId === combatantId);
+        }
+    }
+
+    #refreshTargetDisplay(token?: TokenPF2e) {
+        const combat = this.viewed;
+        const combatantsWrapper = this.combatantsWrapper;
+        const tokenCombatant = token?.combatant;
+
+        if (
+            !combatantsWrapper ||
+            !combat ||
+            !canvas.ready ||
+            (tokenCombatant && tokenCombatant.encounter !== combat)
+        )
+            return;
+
+        const user = game.user;
+        const targetsIds = user.targets.ids;
+        const combatants = tokenCombatant ? [tokenCombatant] : combat.turns;
+
+        for (const combatant of combatants) {
+            const token = combatant.token;
+            if (!token) continue;
+
+            const combatantElement = combatantsWrapper.querySelector(
+                `[data-combatant-id="${combatant.id}"]`
+            );
+            if (!combatantElement) continue;
+
+            const selfTargetIcon = htmlQuery(combatantElement, `[data-action="toggleTarget"]`);
+            selfTargetIcon?.classList.toggle("active", targetsIds.includes(token.id));
+
+            const targetsElement = htmlQuery(combatantElement, ".avatar .targets");
+            if (!targetsElement) continue;
+
+            targetsElement.innerHTML = R.pipe(
+                token.object?.targeted.toObject() ?? [],
+                R.filter((u) => u !== user),
+                R.map((u) => `<div class="target" style="--user-color: ${u.color};"></div>`),
+                R.join("")
+            );
+        }
     }
 
     #onRenderCombatTracker(
@@ -359,11 +648,351 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             this.close();
         }
     }
+
+    #clearSortable() {
+        this.#sortable?.destroy();
+        this.#sortable = null;
+    }
+
+    #selectCombatant(target: HTMLElement, event: MouseEvent) {
+        event.preventDefault();
+
+        const combatantId = htmlClosest(target, "[data-combatant-id]")?.dataset.combatantId ?? "";
+        const combatant = this.viewed?.combatants.get(combatantId);
+        if (!combatant) return;
+
+        if (event.type === "dblclick") {
+            combatant.actor?.sheet.render(true);
+        } else {
+            const token = combatant.token?.object;
+            const controlled = token?.control({ releaseOthers: true });
+
+            if (token && controlled) {
+                canvas.animatePan(token.center);
+            }
+        }
+    }
+
+    #forceCombatantTurn(target: HTMLElement, event: MouseEvent) {
+        event.preventDefault();
+
+        const combat = this.viewed;
+        if (!this.#alternate || !combat?.started) return;
+
+        const combatantId = htmlClosest(target, "[data-combatant-id]")?.dataset.combatantId ?? "";
+        const combatant = combat.combatants.get(combatantId);
+        if (!combatant) return;
+
+        const currentTurn = combat.turn ?? 0;
+        const turn = combat.turns.findIndex((combatant) => combatant.id === combatantId);
+        if (currentTurn === turn) return;
+
+        const direction = turn < currentTurn ? -1 : 1;
+        Hooks.callAll("combatTurn", combat, { turn }, { direction });
+        combat.update({ turn }, { direction });
+    }
+
+    #onCombatantAltControl(el: HTMLElement, event: MouseEvent) {
+        event.preventDefault();
+
+        const index = Number(el.dataset.index);
+        const menu = this.contextMenus.at(index);
+        const target = htmlClosest(el, "[data-combatant-id]");
+
+        if (target) {
+            menu?.callback(target);
+        }
+    }
+
+    /**
+     * https://github.com/foundryvtt/pf2e/blob/a3856b6ae9c0427267b410bb81ff8d4cfefbeab4/src/module/apps/sidebar/encounter-tracker.ts#L267C18-L284C6
+     */
+    async #onClickToggleTarget(event: MouseEvent, target: HTMLElement): Promise<void> {
+        event.preventDefault();
+
+        const combatantId = target.closest("li")?.dataset.combatantId;
+        const combatant = this.viewed?.combatants.get(combatantId, { strict: true });
+        const tokenDoc = combatant?.token;
+        if (!tokenDoc) return;
+
+        const isTargeted = game.user.targets.values().some((t) => t.document === tokenDoc);
+        if (!tokenDoc.object?.visible) {
+            ui.notifications.warn("COMBAT.PingInvisibleToken", { localize: true });
+            return;
+        }
+
+        tokenDoc.object.setTarget(!isTargeted, { releaseOthers: !event?.shiftKey });
+    }
+
+    async #onVariantInitiative(el: HTMLElement, event: Event) {
+        const combatantId = htmlClosest(el, "[data-combatant-id]")?.dataset.combatantId;
+        const actor = this.viewed?.combatants.get(combatantId ?? "")?.actor;
+        if (!actor) return;
+
+        const result = await waitDialog<{ statistic: StatisticType }>({
+            classes: ["skills"],
+            content: "dialogs/action-alternates",
+            i18n: "dialogs.alternates",
+            data: {
+                statistics: getStatistics(),
+            },
+        });
+
+        if (!result) return;
+
+        rollInitiative(event, actor, result.statistic);
+    }
+
+    #activateListeners(html: HTMLElement, options: TrackerRenderOptions) {
+        const isGM = game.user.isGM;
+
+        for (const combatantElement of this.combatantsElements) {
+            combatantElement.addEventListener("mouseenter", (event) => {
+                this.tracker?.["_onCombatantHoverIn"](event);
+            });
+
+            combatantElement.addEventListener("mouseleave", (event) => {
+                this.tracker?.["_onCombatantHoverOut"](event);
+            });
+
+            if (!isGM) continue;
+
+            addListener(combatantElement, ".name", this.#selectCombatant.bind(this));
+            addListener(combatantElement, ".name", "dblclick", this.#selectCombatant.bind(this));
+            addListener(combatantElement, ".avatar", this.#forceCombatantTurn.bind(this));
+        }
+
+        /**
+         * GM only from here on
+         */
+
+        if (!isGM) return;
+
+        this.#clearSortable();
+
+        if (this.combatantsWrapper && !options.collapsed) {
+            /**
+             * updated version of
+             * https://github.com/foundryvtt/pf2e/blob/a3856b6ae9c0427267b410bb81ff8d4cfefbeab4/src/module/apps/sidebar/encounter-tracker.ts#L301
+             */
+            this.#sortable = Sortable.create(this.combatantsWrapper, {
+                animation: 200,
+                dataIdAttr: "data-combatant-id",
+                direction: "vertical",
+                draggable: ".combatant",
+                dragClass: "drag-preview",
+                dragoverBubble: true,
+                easing: "cubic-bezier(1, 0, 0, 1)",
+                ghostClass: "drag-gap",
+                onEnd: this.#adjustFinalOrder.bind(this),
+                onUpdate: this.#onDropCombatant.bind(this),
+                revertOnSpill: true,
+            });
+        }
+    }
+
+    /**
+     * https://github.com/foundryvtt/pf2e/blob/a3856b6ae9c0427267b410bb81ff8d4cfefbeab4/src/module/apps/sidebar/encounter-tracker.ts#L408C1-L415C6
+     */
+    #validateDrop(event: SortableEvent): void {
+        const encounter = this.viewed;
+        if (!encounter) throw ErrorPF2e("Unexpected error retrieving combat");
+        const { oldIndex, newIndex } = event;
+        if (!(typeof oldIndex === "number" && typeof newIndex === "number")) {
+            throw ErrorPF2e("Unexpected error retrieving new index");
+        }
+    }
+
+    /**
+     * converted version of
+     * https://github.com/foundryvtt/pf2e/blob/a3856b6ae9c0427267b410bb81ff8d4cfefbeab4/src/module/apps/sidebar/encounter-tracker.ts#L315
+     */
+    async #onDropCombatant(event: Sortable.SortableEvent): Promise<void> {
+        this.#validateDrop(event);
+
+        const encounter = this.viewed;
+        if (!encounter) return;
+
+        const droppedId = event.item.getAttribute("data-combatant-id") ?? "";
+        const dropped = encounter.combatants.get(droppedId, { strict: true });
+        if (!hasRolledInitiative(dropped)) {
+            ui.notifications.error("PF2E.Encounter.HasNoInitiativeScore", {
+                format: { actor: dropped.name },
+            });
+            return;
+        }
+
+        const newOrder = R.pipe(
+            htmlQueryAll(event.target, "li.combatant"),
+            R.map((row) => row.getAttribute("data-combatant-id") ?? ""),
+            R.map((id) => encounter.combatants.get(id, { strict: true })),
+            R.filter((combatant): combatant is RolledCombatant<EncounterPF2e> =>
+                hasRolledInitiative(combatant)
+            )
+        );
+
+        this.#newInitiativeOrder(newOrder, dropped);
+    }
+
+    /**
+     * updated version of remaining code from split at
+     * https://github.com/foundryvtt/pf2e/blob/a3856b6ae9c0427267b410bb81ff8d4cfefbeab4/src/module/apps/sidebar/encounter-tracker.ts#L330
+     */
+    async #newInitiativeOrder(
+        newOrder: RolledCombatant<EncounterPF2e>[],
+        dropped: RolledCombatant<EncounterPF2e>,
+        nextTurn?: boolean
+    ) {
+        const encounter = this.viewed;
+        if (!encounter) return;
+
+        const oldOrder = encounter.turns.filter((c) => c.initiative !== null);
+        // Exit early if the order wasn't changed
+        if (newOrder.every((c) => newOrder.indexOf(c) === oldOrder.indexOf(c))) return;
+
+        this.#cancelScroll = true;
+
+        this.#setInitiativeFromDrop(newOrder, dropped);
+        await this.#saveNewOrder(newOrder);
+
+        if (nextTurn) {
+            await encounter.nextTurn();
+        }
+    }
+
+    /**
+     * https://github.com/foundryvtt/pf2e/blob/a3856b6ae9c0427267b410bb81ff8d4cfefbeab4/src/module/apps/sidebar/encounter-tracker.ts#L376
+     */
+    async #saveNewOrder(newOrder: RolledCombatant<EncounterPF2e>[]): Promise<void> {
+        await this.viewed?.setMultipleInitiatives(
+            newOrder.map((c) => ({
+                id: c.id,
+                value: c.initiative,
+                overridePriority: c.overridePriority(c.initiative),
+            }))
+        );
+    }
+
+    /**
+     * https://github.com/foundryvtt/pf2e/blob/a3856b6ae9c0427267b410bb81ff8d4cfefbeab4/src/module/apps/sidebar/encounter-tracker.ts#L341
+     */
+    #setInitiativeFromDrop(
+        newOrder: RolledCombatant<EncounterPF2e>[],
+        dropped: RolledCombatant<EncounterPF2e>
+    ): void {
+        const aboveDropped = newOrder.find(
+            (c) => newOrder.indexOf(c) === newOrder.indexOf(dropped) - 1
+        );
+        const belowDropped = newOrder.find(
+            (c) => newOrder.indexOf(c) === newOrder.indexOf(dropped) + 1
+        );
+
+        const hasAboveAndBelow = !!aboveDropped && !!belowDropped;
+        const hasAboveAndNoBelow = !!aboveDropped && !belowDropped;
+        const hasBelowAndNoAbove = !aboveDropped && !!belowDropped;
+        const aboveIsHigherThanBelow =
+            hasAboveAndBelow && belowDropped.initiative < aboveDropped.initiative;
+        const belowIsHigherThanAbove =
+            hasAboveAndBelow && belowDropped.initiative < aboveDropped.initiative;
+        const wasDraggedUp =
+            !!belowDropped &&
+            this.viewed?.getCombatantWithHigherInit(dropped, belowDropped) === belowDropped;
+        const wasDraggedDown = !!aboveDropped && !wasDraggedUp;
+
+        // Set a new initiative intuitively, according to allegedly commonplace intuitions
+        dropped.initiative =
+            hasBelowAndNoAbove || (aboveIsHigherThanBelow && wasDraggedUp)
+                ? belowDropped.initiative + 1
+                : hasAboveAndNoBelow || (belowIsHigherThanAbove && wasDraggedDown)
+                ? aboveDropped.initiative - 1
+                : hasAboveAndBelow
+                ? belowDropped.initiative
+                : dropped.initiative;
+
+        const withSameInitiative = newOrder.filter((c) => c.initiative === dropped.initiative);
+        if (withSameInitiative.length > 1) {
+            for (let priority = 0; priority < withSameInitiative.length; priority++) {
+                withSameInitiative[priority].flags.pf2e.overridePriority[dropped.initiative] =
+                    priority;
+            }
+        }
+    }
+
+    /**
+     * updated version of
+     * https://github.com/foundryvtt/pf2e/blob/a3856b6ae9c0427267b410bb81ff8d4cfefbeab4/src/module/apps/sidebar/encounter-tracker.ts#L387
+     */
+    #adjustFinalOrder(event: SortableEvent): void {
+        const tracker = this.combatantsWrapper;
+        if (!tracker) return;
+
+        const row = event.item;
+        const rows = htmlQueryAll(tracker, ".combatant");
+        const [oldIndex, newIndex] = [event.oldIndex ?? 0, event.newIndex ?? 0];
+        const firstRowWithNoRoll = rows.find((r) => !r.dataset.initiative);
+
+        if (!row.dataset.initiative) {
+            // Undo drag/drop of unrolled combatant
+            if (newIndex > oldIndex) {
+                tracker.insertBefore(row, rows[oldIndex]);
+            } else {
+                tracker.insertBefore(row, rows[oldIndex + 1]);
+            }
+        } else if (firstRowWithNoRoll && Array.from(rows).indexOf(firstRowWithNoRoll) < newIndex) {
+            // Always place a rolled combatant before all other unrolled combatants
+            tracker.insertBefore(row, firstRowWithNoRoll);
+        }
+    }
 }
 
-let _cachedLabels: { hideName: string; revealName: string; unknown: string } | undefined;
+const _cached: {
+    metricsTemplate?: HandlebarsTemplateDelegate;
+    defaultLabels?: { hideName: string; revealName: string; unknown: string };
+} = {};
+
+function buildMetrics(metrics: EncounterPF2e["metrics"] | null): TrackerContext["metrics"] {
+    if (!metrics) return;
+
+    const metricsTemplate = (_cached.metricsTemplate ??= (() => {
+        const template = `<div>
+            {{localize 'PF2E.Encounter.Budget.Threat'}}:
+            <span class="threat {{threat}}">{{localize (concat 'PF2E.Encounter.Budget.Threats.'
+                threat)}}</span>
+        </div>
+        <div>
+            ${localize("tracker.award", metrics.award)} *
+        </div>
+        <div>
+            {{localize 'PF2E.Encounter.Metrics.Budget' spent=budget.spent max=budget.max
+            partyLevel=budget.partyLevel}}
+        </div>
+        <div class="small">
+            *{{#if (eq award.recipients.length 1)}}
+            {{localize 'PF2E.Encounter.Metrics.Award.Tooltip.Singular'}}
+            {{else if (eq award.recipients.length 4)}}
+            {{localize 'PF2E.Encounter.Metrics.Award.Tooltip.Four'}}
+            {{else}}
+            {{localize 'PF2E.Encounter.Metrics.Award.Tooltip.Plural' xpPerFour=budget.spent
+            recipients=award.recipients.length}}
+            {{/if}}
+        </div>`;
+
+        return Handlebars.compile(template);
+    })());
+
+    const tooltip = metricsTemplate(metrics, {
+        allowProtoMethodsByDefault: true,
+        allowProtoPropertiesByDefault: true,
+    });
+
+    return {
+        threat: metrics.threat,
+        tooltip,
+    };
+}
+
 function getDefaultLabels() {
-    return (_cachedLabels ??= {
+    return (_cached.defaultLabels ??= {
         hideName: game.i18n.localize("PF2E.Encounter.HideName"),
         revealName: game.i18n.localize("PF2E.Encounter.RevealName"),
         unknown: localize("tracker.unknown"),
@@ -406,7 +1035,7 @@ type TrackerTurn = {
 type TrackerContext = {
     canRoll: boolean;
     canRollNPCs: boolean;
-    contextMenus: EntryContextOption[];
+    contextMenus: ContextMenuEntry[];
     deathImg: string | undefined;
     expand: { tooltip: string; collapsed: boolean; icon: string };
     hasActive: boolean;
@@ -414,6 +1043,7 @@ type TrackerContext = {
     isGM: boolean;
     isOwner: boolean;
     linked: { icon: string; tooltip: string };
+    metrics: Maybe<{ tooltip: string; threat: string }>;
     round: number;
     turns: TrackerTurn[];
 };

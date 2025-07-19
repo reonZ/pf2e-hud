@@ -12,6 +12,12 @@
                     "name": "Use Sidebar Filter",
                     "hint": "Allow filtering the current sidebar content."
                 }
+            },
+            "tracker": {
+                "alternate": {
+                    "name": "Alternate Controls",
+                    "hint": "Toggle the combat tracker controls to show additional options."
+                }
             }
         },
         "settings": {
@@ -387,15 +393,17 @@
             }
         },
         "tracker": {
-            "expanded": "Expanded, click to collapse",
+            "award": "Award: {xp} XP",
             "collapsed": "Collapsed, click to expand",
+            "delay": "Delay Turn",
+            "expanded": "Expanded, click to collapse",
             "fake": {
                 "nothing": "Encounter Not Started",
                 "secret": "Something Secret is Happening"
             },
-            "unknown": "Unknown",
-            "delay": "Delay Turn",
-            "join": "Join Turn"
+            "force-turn": "Force Combat Turn",
+            "join": "Join Turn",
+            "unknown": "Unknown"
         },
         "use-resolve": {
             "full": "{name} is full of stamina and doesn't need to rest.",

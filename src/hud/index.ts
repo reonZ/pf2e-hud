@@ -4,6 +4,7 @@ export * from "./sidebar";
 export * from "./base";
 export * from "./dice";
 export * from "./persistent";
+export * from "./time";
 export * from "./tooltip";
 export * from "./token";
 export * from "./tracker";
