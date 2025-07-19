@@ -1,7 +1,7 @@
 # 2.16.0
 
--   this release implements the `Combat Tracker` HUD and concludes the rewritting of the module for v13
--   the module forces some very minor style changes in the UI (moslty reducing paddings in the outer part of the screen)
+-   this release implements the `Combat Tracker` HUD and concludes the rewriting of the module for v13
+-   the module forces some very minor style changes in the UI (mostly reducing paddings in the outer part of the screen)
 -   `Combat Tracker`:
     -   rename `Toggle Combat Tracker` keybind into `Alternate Controls`
     -   make it clear that clicking on a combatant image while holding the `Alternate Controls` key will force the initiative to be the combatant's
