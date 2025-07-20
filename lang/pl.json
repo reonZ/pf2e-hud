@@ -12,6 +12,12 @@
                     "name": "Użyj filtra paska bocznego",
                     "hint": "Umożliwia filtrowanie bieżącej zawartości paska bocznego."
                 }
+            },
+            "tracker": {
+                "alternate": {
+                    "name": "Sterowanie alternatywne",
+                    "hint": "Przełącz sterowanie śledzenia walki, aby wyświetlić dodatkowe opcje."
+                }
             }
         },
         "settings": {
@@ -59,8 +65,12 @@
                     "hint": "Jeśli nie wprowadzono żadnych ręcznych zmian, miejsca na skróty zostaną automatycznie wypełnione."
                 },
                 "display": {
+                    "name": "Pozycja wyświetlania",
+                    "hint": "Gdzie powinien być wyświetlany interfejs użytkownika.",
                     "choices": {
-                        "disabled": "Wyłączone"
+                        "disabled": "Wyłączone",
+                        "left": "Lewa część",
+                        "middle": "Środkowa część"
                     }
                 },
                 "selection": {
@@ -123,7 +133,8 @@
             "tracker": {
                 "title": "Śledzenie walki",
                 "partyAsObserved": {
-                    "name": "Drużyna sojuszników jako Obserwowani"
+                    "name": "Drużyna sojuszników jako Obserwowani",
+                    "hint": "Aktorzy we wspólnej „Drużynie” powinni mieć uprawnienia obserwowany przez graczy w celu pokazania szczegółów dotyczących zdrowia. Nie mylić z aktorem „Drużyna”."
                 },
                 "started": {
                     "name": "Tylko po rozpoczęciu",
@@ -390,15 +401,17 @@
             }
         },
         "tracker": {
-            "expanded": "Rozwinięte, kliknij, aby zwinąć",
+            "award": "Nagroda: {xp} PD",
             "collapsed": "Zwinięte, kliknij, aby rozwinąć",
+            "delay": "Opóźnienie tury",
+            "expanded": "Rozwinięte, kliknij, aby zwinąć",
             "fake": {
-                "nothing": "Potyczka nie została rozpoczęta",
+                "nothing": "Spotkanie nie zostało rozpoczęte",
                 "secret": "Dzieje się coś tajemniczego"
             },
-            "unknown": "Nieznany",
-            "delay": "Opóźnienie tury",
-            "join": "Dołącz do tury"
+            "force-turn": "Wymuś turę walki",
+            "join": "Dołącz do tury",
+            "unknown": "Nieznany"
         },
         "use-resolve": {
             "full": "{name} ma pełną staminę i nie potrzebuje odpoczynku.",
