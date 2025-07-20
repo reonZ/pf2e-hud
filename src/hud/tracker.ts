@@ -483,6 +483,9 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
     }
 
     protected _onClickAction(event: PointerEvent, target: HTMLElement) {
+        event.preventDefault();
+        event.stopPropagation();
+
         type EventAction =
             | "delay-turn"
             | "rollInitiative"
@@ -500,7 +503,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         if (event.button !== 0) return;
 
         if (action === "delay-turn") {
-            return this.#delayAction(event, target);
+            return this.#delayAction(target);
         }
 
         if (action === "toggle-expand") {
@@ -508,7 +511,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         }
 
         if (action === "toggleNameVisibility") {
-            return;
+            return this.#toggleNameVisibility(target);
         }
 
         if (action === "toggleTarget") {
@@ -516,12 +519,10 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         }
 
         if (action === "trackerSettings") {
-            event.preventDefault();
             return new foundry.applications.apps.CombatTrackerConfig().render(true);
         }
 
         if (target.classList.contains("combatant-control")) {
-            event.preventDefault();
             return this.tracker?.["_onCombatantControl"](event, target);
         }
 
@@ -530,9 +531,14 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         }
 
         if (target.classList.contains("combat-control")) {
-            event.preventDefault();
             return this.tracker?.["_onClickAction"](event, target);
         }
+    }
+
+    #toggleNameVisibility(target: HTMLElement) {
+        const combatantId = target?.closest("li")?.dataset.combatantId;
+        const combatant = this.viewed?.combatants.get(combatantId, { strict: true });
+        combatant?.toggleNameVisibility();
     }
 
     #scrollToCurrent() {
@@ -559,7 +565,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         effectsPanel.style.setProperty("max-height", `calc(100% - ${offsetHeight}px - 30px)`);
     }
 
-    async #delayAction(event: MouseEvent, target: HTMLElement) {
+    async #delayAction(target: HTMLElement) {
         const combat = this.viewed;
         const combatantId = htmlClosest(target, "[data-combatant-id]")?.dataset.combatantId ?? "";
         const combatant = combat?.combatants.get(combatantId);
@@ -693,8 +699,6 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
     }
 
     #onCombatantAltControl(el: HTMLElement, event: MouseEvent) {
-        event.preventDefault();
-
         const index = Number(el.dataset.index);
         const menu = this.contextMenus.at(index);
         const target = htmlClosest(el, "[data-combatant-id]");
@@ -708,8 +712,6 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
      * https://github.com/foundryvtt/pf2e/blob/a3856b6ae9c0427267b410bb81ff8d4cfefbeab4/src/module/apps/sidebar/encounter-tracker.ts#L267C18-L284C6
      */
     async #onClickToggleTarget(event: MouseEvent, target: HTMLElement): Promise<void> {
-        event.preventDefault();
-
         const combatantId = target.closest("li")?.dataset.combatantId;
         const combatant = this.viewed?.combatants.get(combatantId, { strict: true });
         const tokenDoc = combatant?.token;
