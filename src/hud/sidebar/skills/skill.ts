@@ -1,4 +1,4 @@
-import { SkillActionShortcutData } from "hud/persistent/shortcut/skill-action";
+import { SkillActionShortcutData } from "hud";
 import { AbilityItemPF2e, ActorPF2e, FeatPF2e } from "module-helpers";
 import {
     BaseSidebarItem,

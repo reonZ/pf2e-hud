@@ -1,4 +1,4 @@
-import { sendItemToChat } from "hud";
+import { itemWithActor, sendItemToChat } from "hud";
 import {
     ActorPF2e,
     ApplicationConfiguration,
@@ -67,8 +67,8 @@ class ItemHudPopup extends BaseHudPopup {
 
     protected async _prepareContext(options: ApplicationRenderOptions): Promise<ItemHudContext> {
         const actor = this.actor;
-        const item = this.item as ItemPF2e<ActorPF2e>;
         const dataset = this.#dataset;
+        const item = itemWithActor(this.item, actor);
 
         return {
             actor,

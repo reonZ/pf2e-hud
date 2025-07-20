@@ -1,4 +1,4 @@
-import { ActorPF2e, htmlClosest, ItemPF2e, unownedItemToMessage } from "module-helpers";
+import { ActorPF2e, htmlClosest, ItemPF2e } from "module-helpers";
 
 function getItemFromElement<T extends ItemPF2e>(
     actor: ActorPF2e,
@@ -38,12 +38,11 @@ function getItemFromElement(actor: ActorPF2e, el: HTMLElement, sync?: boolean) {
 }
 
 async function sendItemToChat(actor: ActorPF2e, event: MouseEvent, el: HTMLElement) {
-    const item = await getItemFromElement(actor, el);
+    const rawItem = await getItemFromElement(actor, el);
+    const item = rawItem ? itemWithActor(rawItem, actor) : null;
     if (!item) return;
 
-    if (!item.actor) {
-        unownedItemToMessage(actor, item, event);
-    } else if (item.isOfType("spell")) {
+    if (item.isOfType("spell")) {
         const rankStr = htmlClosest(el, "[data-cast-rank]")?.dataset.castRank;
         const castRank = Number(rankStr ?? NaN);
 
@@ -53,4 +52,10 @@ async function sendItemToChat(actor: ActorPF2e, event: MouseEvent, el: HTMLEleme
     }
 }
 
-export { getItemFromElement, sendItemToChat };
+function itemWithActor(item: ItemPF2e, actor: ActorPF2e): ItemPF2e<ActorPF2e> {
+    return (
+        item.parent ? item : new (getDocumentClass("Item"))(item.toObject(), { parent: actor })
+    ) as ItemPF2e<ActorPF2e>;
+}
+
+export { itemWithActor, getItemFromElement, sendItemToChat };
