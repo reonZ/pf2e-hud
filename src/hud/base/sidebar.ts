@@ -25,7 +25,7 @@ abstract class FoundrySidebarPF2eHUD<
         return htmlQuery(this.chatElement, "#chat-message");
     }
 
-    init(isGM: boolean): void {
+    ready(isGM: boolean): void {
         const hookId = Hooks.on("renderChatInput", () => {
             if (this.chatMessageElement) {
                 Hooks.off("renderChatInput", hookId);
