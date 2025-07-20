@@ -1,3 +1,17 @@
+# 2.17.0
+
+-   expose some stance related functions to the api
+-   `Actions Sidebar`:
+    -   no longer hide actions with the `stance` trait that do not have a self-applied effect
+-   `Combat Tracker`:
+    -   implement missing `Reveal Name` functionality
+    -   fix `End Turn` tooltip localization
+-   `Persistent HUD`:
+    -   fix hotbar hokey color when using light-theme interface
+-   `Time Tracker`:
+    -   delay render of the HUD to hopefully avoid possible race condition with the world clock
+-   fix not being able to open the item popup or send-to-chat some orphan items (i.e. `Bon Mot`)
+
 # 2.16.0
 
 -   this release implements the `Combat Tracker` HUD and concludes the rewriting of the module for v13
