@@ -1,3 +1,8 @@
+# 2.17.1
+
+-   `Elemental Blast Shortcut`:
+    -   fix multi-gate kineticist shortcuts not always pointing to the right element
+
 # 2.17.0
 
 -   expose some stance related functions to the api
