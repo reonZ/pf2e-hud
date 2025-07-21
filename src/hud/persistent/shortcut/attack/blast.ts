@@ -21,9 +21,7 @@ class BlastShortcut extends AttackShortcut<
     }
 
     async _getAttackData(): Promise<Maybe<ElementalBlastsData>> {
-        return this.cached("elementalBlastData", () => {
-            return getElementalBlastsData(this.actor, this.elementTrait);
-        });
+        return getElementalBlastsData(this.actor, this.elementTrait);
     }
 
     get usedImage(): ImageFilePath {

@@ -1,7 +1,6 @@
 import {
     createDraggable,
     CustomSpellcastingEntry,
-    ElementalBlastsData,
     FoundryDragData,
     getNpcStrikeImage,
     ShortcutPopup,
@@ -529,7 +528,6 @@ type ShortcutCacheData = {
     animistVesselsData?: dailies.AnimistVesselsData | null;
     canCastStaffRank?: Partial<Record<OneToTen, boolean>>;
     canUseStances?: boolean | null;
-    elementalBlastData?: ElementalBlastsData | null;
     explorations?: string[];
     getActionMacro?: toolbelt.ToolbeltApi["actionable"]["getActionMacro"] | null;
     hasItemWithSourceId?: Record<DocumentUUID, boolean>;
