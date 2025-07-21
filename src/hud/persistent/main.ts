@@ -387,7 +387,7 @@ class PersistentPF2eHUD
         }
 
         if (!skipRender && newValue !== previous) {
-            this.shortcutsPanel.render();
+            this.shortcutsPanel.render({ keepCache: true });
         }
     }
 
