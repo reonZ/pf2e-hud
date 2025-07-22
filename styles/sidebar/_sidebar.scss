@@ -38,6 +38,8 @@
     --action-img-background: #ffffff7a;
     --action-image-height: 1.6em;
 
+    --input-checkbox-width: 1.7em;
+
     position: absolute;
     padding: var(--sidebar-external-padding);
     // max-height: 100vh;
@@ -46,7 +48,7 @@
 
     input[type="checkbox"] {
         height: 1.3em;
-        width: 1.7em;
+        width: var(--input-checkbox-width);
         margin: 0;
 
         &::after {
@@ -193,14 +195,28 @@
             flex: 1;
 
             label {
+                --row-gap: 0.1em;
+
                 display: flex;
                 flex-wrap: wrap;
                 row-gap: 0.2em;
-                column-gap: 0.1em;
+                column-gap: var(--row-gap);
                 flex: 1;
+                overflow: hidden;
 
                 span {
                     margin-top: 1px;
+                    max-width: calc(
+                        var(--max-column-width) - var(--input-checkbox-width) - var(--row-gap)
+                    );
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                &:has(input.hidden) {
+                    span {
+                        max-width: var(--max-column-width);
+                    }
                 }
             }
 
