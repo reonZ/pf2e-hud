@@ -1,6 +1,5 @@
 import {
     CreaturePF2e,
-    IdField,
     ItemPF2e,
     localize,
     RollOptionToggle,
@@ -23,10 +22,6 @@ function generateToggleShortcutFields(type: string): ToggleShortcutSchema {
             nullable: false,
             blank: false,
         }),
-        itemId: new IdField({
-            required: true,
-            nullable: false,
-        }),
         option: new fields.StringField({
             required: true,
             nullable: false,
@@ -45,8 +40,9 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
 
     static async getItem(
         actor: CreaturePF2e,
-        { itemId }: ToggleShortcutData
+        { domain, option }: ToggleShortcutData
     ): Promise<Maybe<ItemPF2e>> {
+        const itemId = actor.synthetics.toggles[domain]?.[option]?.itemId ?? "";
         return actor.items.get(itemId);
     }
 
@@ -57,6 +53,10 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
 
     get toggle(): RollOptionToggle | undefined {
         return this.#toggle;
+    }
+
+    get itemId() {
+        return this.toggle?.itemId;
     }
 
     get selected(): Suboption | undefined {
@@ -154,7 +154,6 @@ interface ToggleShortcut extends ModelPropsFromSchema<ToggleShortcutSchema> {}
 
 type ToggleShortcutSchema = BaseShortcutSchema & {
     domain: fields.StringField<string, string, true, false, false>;
-    itemId: IdField<true, false, false>;
     option: fields.StringField<string, string, true, false, false>;
 };
 
