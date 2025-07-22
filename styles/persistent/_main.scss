@@ -301,6 +301,16 @@
     }
 }
 
+#ui-left-column-1:has(> #pf2e-hud-persistent) {
+    width: calc(
+        (var(--control-columns) * var(--control-size)) + ((var(--control-columns) - 1) * 8px) + 12px
+    );
+
+    #scene-controls {
+        overflow: hidden auto;
+    }
+}
+
 #ui-bottom {
     #pf2e-hud-persistent {
         margin-bottom: var(--panel-gap);
