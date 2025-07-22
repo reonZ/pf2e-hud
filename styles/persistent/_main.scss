@@ -21,6 +21,7 @@
     align-self: start;
     display: grid;
     gap: var(--panel-gap);
+    scale: revert;
 
     grid-template-columns:
         [full-start menu-start] var(--columns-icon)
