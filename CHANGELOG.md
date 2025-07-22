@@ -1,3 +1,14 @@
+# 2.18.0
+
+-   `Sidebar`:
+    -   improve the styling of roll options (when they have a long ass label)
+-   `Persistent HUD`:
+    -   fix scaling and positioning weirdness when using an `Interface Scale` other than 1
+-   `RollOption Shortcut`:
+    -   now use the item based on the currently selected suboption instead of snapshoting it at shortcut creation
+        -   which means that the suboptions image will be updated if it points to a different item (with a different image)
+        -   nothing should be required from the user for this change
+
 # 2.17.1
 
 -   `Elemental Blast Shortcut`:
