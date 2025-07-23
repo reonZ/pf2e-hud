@@ -15,6 +15,7 @@
       },
       "tracker": {
         "alternate": {
+          "name": "Commandes alternatives",
           "hint": "Active les commandes du compteur de rencontre permettant d'afficher des options supplémentaires."
         }
       }
@@ -64,8 +65,12 @@
           "hint": "Si vous n'avez pas effectué de changements manuels, les emplacements des raccourcis seront automatiquement remplis."
         },
         "display": {
+          "name": "Position d'affichage",
+          "hint": "Où le hud doit être affiché dans l'interface utilisateur.",
           "choices": {
-            "disabled": "Désactivé"
+            "disabled": "Désactivé",
+            "left": "Partie gauche",
+            "middle": "Partie centrale"
           }
         },
         "selection": {
@@ -396,6 +401,7 @@
       }
     },
     "tracker": {
+      "award": "Récompense: {xp} XP",
       "collapsed": "Réduit, cliquer pour agrandir",
       "delay": "Retarder le tour",
       "expanded": "Agrandi, cliquer pour réduire",
@@ -403,6 +409,7 @@
         "nothing": "La rencontre n'a pas débuté",
         "secret": "Quelque chose de secret se produit"
       },
+      "force-turn": "Forcer le Tour de combat",
       "join": "Rejoindre le tour",
       "unknown": "Inconnu"
     },
