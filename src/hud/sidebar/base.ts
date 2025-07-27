@@ -16,6 +16,7 @@ import {
 } from "hud";
 import {
     ActorPF2e,
+    addEnterKeyListeners,
     addListener,
     addListenerAll,
     ApplicationClosingOptions,
@@ -560,19 +561,7 @@ abstract class SidebarPF2eHUD<
             el.select();
         });
 
-        addListenerAll(
-            html,
-            `input[type="number"]`,
-            "keyup",
-            (el, event) => {
-                if (event.key === "Enter") {
-                    event.stopPropagation();
-
-                    el.blur();
-                }
-            },
-            true
-        );
+        addEnterKeyListeners(html, "number");
 
         addListenerAll(
             html,

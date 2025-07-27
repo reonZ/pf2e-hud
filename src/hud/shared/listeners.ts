@@ -1,4 +1,4 @@
-import { ActorPF2e, addListenerAll, createHTMLElement, ItemPF2e, R } from "module-helpers";
+import { ActorPF2e, createHTMLElement, ItemPF2e, R } from "module-helpers";
 
 function addTextNumberInputListeners(doc: ActorPF2e | ItemPF2e, html: HTMLElement) {
     const textNumbers = html.querySelectorAll<HTMLInputElement>("input[type='text'].text-number");
@@ -68,14 +68,6 @@ function addTextNumberInputListeners(doc: ActorPF2e | ItemPF2e, html: HTMLElemen
     }
 }
 
-function addEnterKeyListeners(html: HTMLElement) {
-    addListenerAll(html, "input", "keyup", (el, event) => {
-        if (event.key === "Enter") {
-            el.blur();
-        }
-    });
-}
-
 function processSliderEvent<TAction extends string>(
     event: PointerEvent,
     target: HTMLElement,
@@ -137,5 +129,5 @@ type FoundryDragData = {
     tokenId: string | null;
 };
 
-export { addEnterKeyListeners, addTextNumberInputListeners, createDraggable, processSliderEvent };
+export { addTextNumberInputListeners, createDraggable, processSliderEvent };
 export type { FoundryDragData };

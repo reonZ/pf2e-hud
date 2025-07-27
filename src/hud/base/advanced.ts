@@ -1,6 +1,5 @@
 import { useResolve } from "actions";
 import {
-    addEnterKeyListeners,
     addSidebarsListeners,
     addTextNumberInputListeners,
     calculateActorHealth,
@@ -17,6 +16,7 @@ import {
 import {
     ActionUseOptions,
     ActorPF2e,
+    addEnterKeyListeners,
     addListener,
     ApplicationRenderOptions,
     CharacterPF2e,

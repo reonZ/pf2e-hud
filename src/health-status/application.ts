@@ -1,4 +1,5 @@
 import {
+    addEnterKeyListeners,
     addListenerAll,
     ApplicationConfiguration,
     ApplicationRenderOptions,
@@ -89,11 +90,7 @@ class HealthStatusMenu extends foundry.applications.api.ApplicationV2 {
     }
 
     #activateListeners(html: HTMLElement) {
-        addListenerAll(html, "input", "keyup", (el, event) => {
-            if (event.key === "Enter") {
-                el.blur();
-            }
-        });
+        addEnterKeyListeners(html);
 
         addListenerAll(html, "input[type='number']", "focus", (el: HTMLInputElement) => {
             el.select();
