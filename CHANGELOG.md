@@ -1,3 +1,8 @@
+# 2.18.1
+
+-   `Persistent HUD`:
+    -   modify some foundry styling so when the hud is on the left part, controls columns have a scrollbar when needed
+
 # 2.18.0
 
 -   `Sidebar`:
