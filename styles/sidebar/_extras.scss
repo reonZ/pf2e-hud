@@ -68,7 +68,7 @@
     }
 }
 
-.chat-message.message .message-header .flavor-text .pf2e-hud-rk {
+.chat-message.message .pf2e-hud-rk {
     @mixin table($nbColumns) {
         --nb-rows: 1;
         --row-height: 1.8em;

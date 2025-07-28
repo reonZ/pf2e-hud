@@ -71,7 +71,7 @@
         {{/each}}
     </div>
     <hr>
-    <div class="rk-lores-rolls" style="--nb-rows: {{add lores.length 1}}">
+    <div class="rk-lores-rolls" style="--nb-rows: {{add lores.length 1}};">
         <span class="header">{{@root.i18n 'lore'}}</span>
         <span class="header">{{@root.i18n 'proficiency'}}</span>
         <span class="header">{{@root.i18n 'modifier'}}</span>
@@ -81,7 +81,7 @@
     {{/if}}
     {{!-- else no target --}}
     {{else}}
-    <div class="rk" style="--nb-rows: {{add skills.length 1}}">
+    <div class="rk" style="--nb-rows: {{add skills.length 1}};">
         <span class="header">{{@root.i18n 'skill'}}</span>
         <span class="header">{{@root.i18n 'proficiency'}}</span>
         <span class="header">{{@root.i18n 'modifier'}}</span>
