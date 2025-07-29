@@ -3,6 +3,7 @@ export * from "./base";
 export * from "./action";
 export * from "./attack";
 export * from "./item";
+export * from "./macro";
 export * from "./rolloption";
 export * from "./spell";
 export * from "./stance";

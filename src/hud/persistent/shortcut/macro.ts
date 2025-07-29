@@ -1,0 +1,71 @@
+import { getFlag, localize, MacroPF2e } from "module-helpers";
+import {
+    BaseShortcutSchema,
+    generateBaseShortcutFields,
+    PersistentShortcut,
+    ShortcutSource,
+} from ".";
+import fields = foundry.data.fields;
+
+class MacroShortcut extends PersistentShortcut<MacroShortcutSchema> {
+    #macro: Maybe<MacroPF2e>;
+
+    static defineSchema(): MacroShortcutSchema {
+        return {
+            ...generateBaseShortcutFields("macro"),
+            macroUUID: new fields.DocumentUUIDField({
+                required: true,
+                nullable: false,
+                type: "Macro",
+            }),
+        };
+    }
+
+    async _initShortcut() {
+        const onActor = (getFlag<string[]>(this.worldActor, "macros", game.user.id) ?? []).find(
+            (uuid) => uuid === this.macroUUID
+        );
+        this.#macro = onActor ? await fromUuid<MacroPF2e>(this.macroUUID) : null;
+    }
+
+    get macro(): Maybe<MacroPF2e> {
+        return this.#macro;
+    }
+
+    get icon(): string {
+        return "fa-solid fa-code";
+    }
+
+    get subtitle(): string {
+        return localize("shortcuts.tooltip.subtitle", this.type);
+    }
+
+    get inactive(): boolean {
+        return !this.macro;
+    }
+
+    get canUse(): boolean {
+        return !!this.macro;
+    }
+
+    get unusableReason(): string | undefined {
+        return !this.macro ? "macro" : undefined;
+    }
+
+    use(event: MouseEvent): void {
+        this.macro?.execute({ actor: this.actor });
+    }
+}
+
+interface MacroShortcut extends ModelPropsFromSchema<MacroShortcutSchema> {}
+
+type MacroShortcutSchema = BaseShortcutSchema & {
+    macroUUID: fields.DocumentUUIDField<DocumentUUID, true, false, false>;
+};
+
+type MacroShortcutData = ShortcutSource<MacroShortcutSchema> & {
+    type: "macro";
+};
+
+export { MacroShortcut };
+export type { MacroShortcutData };

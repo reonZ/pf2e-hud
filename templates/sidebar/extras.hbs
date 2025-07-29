@@ -64,13 +64,13 @@
 {{!-- macros --}}
 {{#if macros.length}}
 {{#each macros as |macro|}}
-<div class="item macro" data-uuid="{{macro.uuid}}"
-    data-filter-value="{{@root.filterValue macro.name localize=false}}">
+<div class="item macro" data-item-uuid="{{macro.uuid}}" data-filter-value="{{macro.filterValue}}"
+    draggable="true">
     <div class="image">
         <img src="{{macro.img}}">
     </div>
     <div class="details">
-        <div class="name">{{macro.name}}</div>
+        <div class="name">{{macro.label}}</div>
         <div class="extras">
             <div class="item-controls">
                 <a data-action="use-macro" {{{@root.i18n.tooltip 'use' }}}>

@@ -88,6 +88,10 @@ abstract class PersistentShortcut<
         return this.#actor;
     }
 
+    get worldActor(): CreaturePF2e {
+        return (this.actor.token?.baseActor ?? this.actor) as CreaturePF2e;
+    }
+
     get cached(): ShortcutCache {
         return this.#cached;
     }

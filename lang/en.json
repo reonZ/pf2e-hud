@@ -331,6 +331,7 @@
                     "equip": "Not Equipped",
                     "expended": "Expended Spell",
                     "focus": "Focus Pool Empty",
+                    "macro": "No Matching Macro",
                     "match": "No Matching Item",
                     "prepared": "Spell Not Prepared",
                     "quantity": "Quantity Is Zero",

@@ -38,6 +38,8 @@ import {
     ExtraActionShortcut,
     ExtraActionShortcutData,
     getItemSlug,
+    MacroShortcut,
+    MacroShortcutData,
     PersistentPartPF2eHUD,
     PersistentShortcut,
     ShortcutDataset,
@@ -61,6 +63,7 @@ const SHORTCUTS = {
     consumable: ConsumableShortcut,
     equipment: EquipmentShortcut,
     extraAction: ExtraActionShortcut,
+    macro: MacroShortcut,
     skillAction: SkillActionShortcut,
     spell: SpellShortcut,
     stance: StanceShortcut,
@@ -541,6 +544,7 @@ type ShortcutData =
     | ConsumableShortcutData
     | EquipmentShortcutData
     | ExtraActionShortcutData
+    | MacroShortcutData
     | SkillActionShortcutData
     | SpellShortcutData
     | StanceShortcutData

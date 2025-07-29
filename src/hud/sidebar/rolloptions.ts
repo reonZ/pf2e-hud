@@ -36,7 +36,6 @@ class ToggleSidebarItem<
         return {
             domain: this.domain,
             img: this.img,
-            itemId: this.item.id,
             name: this.label,
             option: this.option,
             type: "toggle",

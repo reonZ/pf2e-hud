@@ -2,35 +2,39 @@ import { FilterValue, rollInitiative } from "hud/shared";
 import {
     AbilityItemPF2e,
     ActorInitiative,
+    ActorPF2e,
     addListenerAll,
     ApplicationRenderOptions,
-    confirmDialog,
     getDragEventData,
     getFlag,
-    htmlClosest,
     htmlQueryIn,
+    ItemPF2e,
     MacroPF2e,
     R,
     setFlag,
     SpecialResourceRuleElement,
 } from "module-helpers";
-import { ExtrasSidebarItem, getExtrasActions, getStatistics, SidebarPF2eHUD } from "..";
+import { ExtrasSidebarItem, getExtrasActions, MacroSidebarItem } from ".";
+import { getStatistics, SidebarPF2eHUD } from "..";
 
-class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e, ExtrasSidebarItem> {
+class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<
+    AbilityItemPF2e | ItemPF2e,
+    ExtrasSidebarItem | MacroSidebarItem
+> {
     get name(): "extras" {
         return "extras";
     }
 
-    get worldActor() {
-        return this.actor.token?.baseActor ?? this.actor;
-    }
-
-    get macros() {
-        return getFlag<string[]>(this.worldActor, "macros", game.user.id)?.slice() ?? [];
+    get worldActor(): ActorPF2e {
+        return (this.actor.token?.baseActor ?? this.actor) as ActorPF2e;
     }
 
     get fadeoutOnDrag(): boolean {
         return false;
+    }
+
+    get macrosFlag(): string[] {
+        return getFlag<string[]>(this.worldActor, "macros", game.user.id) ?? [];
     }
 
     protected async _prepareContext(
@@ -55,14 +59,15 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e, ExtrasSidebar
             return new FilterValue(localized);
         };
 
-        const macros: ExtrasSidebarContext["macros"] = R.pipe(
-            this.macros,
-            R.map((uuid) => {
-                const macro = fromUuidSync<CompendiumIndexData>(uuid);
-                if (!macro) return null;
-                return { img: macro.img, name: macro.name, uuid };
-            }),
-            R.filter(R.isTruthy)
+        const macros = R.filter(
+            await Promise.all(
+                this.macrosFlag.map(async (uuid) => {
+                    const macro = await fromUuid<MacroPF2e>(uuid);
+                    if (!macro) return;
+                    return this.addSidebarItem(MacroSidebarItem, "uuid", { macro, actor });
+                })
+            ),
+            R.isTruthy
         );
 
         return {
@@ -85,25 +90,19 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e, ExtrasSidebar
             const { variant } = target.dataset as Record<string, string>;
             if (!variant && event.button !== 0) return;
 
-            return this.getSidebarItemFromElement(target)?.roll(actor, event, { variant });
+            return this.getSidebarItemFromElement<ExtrasSidebarItem>(target)?.roll(actor, event, {
+                variant,
+            });
         }
 
         if (event.button !== 0) return;
 
-        const getMacroUuid = () => {
-            return htmlClosest(target, ".macro")?.dataset.uuid ?? "";
-        };
-
-        const getMacro = () => {
-            const uuid = getMacroUuid();
-            return fromUuid<MacroPF2e>(uuid);
-        };
-
         if (action === "delete-macro") {
-            this.#deleteMacro(getMacroUuid());
+            const macro = this.getSidebarItemFromElement<MacroSidebarItem>(target);
+            macro?.delete();
         } else if (action === "edit-macro") {
-            const macro = await getMacro();
-            macro?.sheet.render(true);
+            const macro = this.getSidebarItemFromElement<MacroSidebarItem>(target);
+            macro?.edit();
         } else if (action === "prepare-dailies") {
             game.dailies?.api.openDailiesInterface(actor);
         } else if (action === "rest-for-the-night") {
@@ -112,8 +111,8 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e, ExtrasSidebar
             const statistic = htmlQueryIn(target, ".initiative", "select")?.value;
             rollInitiative(event, actor, statistic);
         } else if (action === "use-macro") {
-            const macro = await getMacro();
-            macro?.execute({ actor });
+            const macro = this.getSidebarItemFromElement<MacroSidebarItem>(target);
+            macro?.execute();
         }
     }
 
@@ -124,9 +123,8 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e, ExtrasSidebar
             const { type, uuid } = getDragEventData(event);
             if (type !== "Macro" || typeof uuid !== "string" || !fromUuidSync(uuid)) return;
 
-            const macros = this.macros;
+            const macros = this.macrosFlag.slice();
             if (macros.includes(uuid)) return;
-
             macros.push(uuid);
             await setFlag(this.worldActor, "macros", game.user.id, macros);
         });
@@ -145,20 +143,6 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e, ExtrasSidebar
             }
         });
     }
-
-    async #deleteMacro(uuid: string) {
-        const confirm = await confirmDialog("sidebar.extras.delete");
-        if (!confirm) return;
-
-        const macros = this.macros;
-        if (!macros?.length) return;
-
-        const index = macros.indexOf(uuid);
-        if (index === -1) return;
-
-        macros.splice(index, 1);
-        await setFlag(this.worldActor, "macros", game.user.id, macros);
-    }
 }
 
 type EventAction =
@@ -176,7 +160,7 @@ type ExtrasSidebarContext = {
     filterValue: (str: string, options: { hash: { localize?: boolean } }) => FilterValue;
     initiative: ActorInitiative | null;
     isCharacter: boolean;
-    macros: { img: string; name: string; uuid: string }[];
+    macros: MacroSidebarItem[];
     resources: SpecialResourceRuleElement[];
     statistics: SelectOptions;
 };

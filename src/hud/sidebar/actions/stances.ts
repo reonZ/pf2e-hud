@@ -132,7 +132,7 @@ function getSidebarStancesData(this: ActionsSidebarPF2eHUD): StancesContext | un
     const stances = getStances(actor);
     if (!stances?.length) return;
 
-    const actions = stances?.map((data) => {
+    const actions = stances.map((data) => {
         return this.addSidebarItem(ActionsStance, "id", data);
     });
 
