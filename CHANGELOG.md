@@ -1,3 +1,9 @@
+# 2.19.1
+
+-   `Macro Shortcut`:
+    -   can now be created by dragging an actual macro instead of a sidebar one
+    -   no longer relies on having the macro on the actor to be used, only needs the macro to exist in your world
+
 # 2.19.0
 
 -   add `Macro Shortcut`:
