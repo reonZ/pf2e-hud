@@ -3,8 +3,6 @@ import { BaseSidebarItem } from "..";
 import { MacroShortcutData } from "hud/persistent";
 
 class MacroSidebarItem extends BaseSidebarItem<ItemPF2e, ExtraMacroData> {
-    static DEFAULT_IMG: "icons/svg/dice-target.svg";
-
     get item(): ItemPF2e {
         return null as any;
     }
@@ -18,7 +16,7 @@ class MacroSidebarItem extends BaseSidebarItem<ItemPF2e, ExtraMacroData> {
     }
 
     get img(): ImageFilePath {
-        return this.macro.img ?? MacroSidebarItem.DEFAULT_IMG;
+        return this.macro.img ?? "icons/svg/dice-target.svg";
     }
 
     get label(): string {

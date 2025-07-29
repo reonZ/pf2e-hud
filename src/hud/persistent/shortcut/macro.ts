@@ -1,4 +1,4 @@
-import { getFlag, localize, MacroPF2e } from "module-helpers";
+import { localize, MacroPF2e } from "module-helpers";
 import {
     BaseShortcutSchema,
     generateBaseShortcutFields,
@@ -22,10 +22,7 @@ class MacroShortcut extends PersistentShortcut<MacroShortcutSchema> {
     }
 
     async _initShortcut() {
-        const onActor = (getFlag<string[]>(this.worldActor, "macros", game.user.id) ?? []).find(
-            (uuid) => uuid === this.macroUUID
-        );
-        this.#macro = onActor ? await fromUuid<MacroPF2e>(this.macroUUID) : null;
+        this.#macro = await fromUuid<MacroPF2e>(this.macroUUID);
     }
 
     get macro(): Maybe<MacroPF2e> {

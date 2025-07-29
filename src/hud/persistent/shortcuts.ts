@@ -17,6 +17,7 @@ import {
     getFlag,
     isCastConsumable,
     isInstanceOf,
+    MacroPF2e,
     MODULE,
     NPCPF2e,
     OneToTen,
@@ -355,20 +356,37 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             target.addEventListener("drop", async (event) => {
                 if (isLocked(event)) return;
 
-                const dragData = getDragEventData<SidebarDragData | ShortcutDragData>(event);
+                const dragData = getDragEventData<
+                    SidebarDragData | ShortcutDragData | MacroSlotData
+                >(event);
 
                 if (!R.isPlainObject(dragData)) {
                     return warning("shortcuts.error.wrongType");
                 }
 
-                if (!this.parent.actor || this.parent.actor.uuid !== dragData.actorUUID) {
+                const isMacro = isMacroDragData(dragData);
+
+                if (
+                    !isMacro &&
+                    (!this.parent.actor || this.parent.actor.uuid !== dragData.actorUUID)
+                ) {
                     return warning("shortcuts.error.wrongActor");
                 }
 
-                if ("fromSidebar" in dragData && R.isPlainObject(dragData.fromSidebar)) {
-                    const replaced = await this.replace(slot, dragData.fromSidebar);
+                const macroData = isMacro ? getMacroShortcutData(dragData.uuid) : null;
+                if (isMacro && !macroData) {
+                    return warning("shortcuts.error.wrongType");
+                }
 
-                    if (!replaced) {
+                if (
+                    isMacro ||
+                    ("fromSidebar" in dragData && R.isPlainObject(dragData.fromSidebar))
+                ) {
+                    const shortcutData = isMacro
+                        ? (macroData as MacroShortcutData)
+                        : (dragData.fromSidebar as ShortcutData);
+
+                    if (!(await this.replace(slot, shortcutData))) {
                         warning("shortcuts.error.wrongType");
                     }
 
@@ -503,6 +521,24 @@ function createShortcutCache(): ShortcutCache {
     return getShortcutCache as unknown as ShortcutCache;
 }
 
+function isMacroDragData(
+    data: SidebarDragData | ShortcutDragData | MacroSlotData
+): data is MacroSlotData {
+    return "type" in data && data.type === "Macro" && "uuid" in data;
+}
+
+function getMacroShortcutData(uuid: DocumentUUID): MacroShortcutData | undefined {
+    const macro = fromUuidSync<MacroPF2e>(uuid);
+    if (!macro) return;
+
+    return {
+        img: macro.img ?? "icons/svg/dice-target.svg",
+        macroUUID: uuid,
+        name: macro.name,
+        type: "macro",
+    };
+}
+
 type ShortcutCache = { get values(): ShortcutCacheData } & {
     <
         A extends keyof Pathable<ShortcutCacheData>,
@@ -536,6 +572,13 @@ type ShortcutCacheData = {
     hasItemWithSourceId?: Record<DocumentUUID, boolean>;
     shortcutSpellData?: Record<string, SpellEntryData | null>;
     spellcastingEntry?: Record<string, CustomSpellcastingEntry | null>;
+};
+
+type MacroSlotData = {
+    slot: `${number}`;
+    type: "Macro";
+    uuid: `Macro.${string}`;
+    [k: string]: any;
 };
 
 type ShortcutData =
