@@ -1,3 +1,9 @@
+# 2.19.0
+
+-   add `Macro Shortcut`:
+    -   like every other shortcut, it needs to be created from the sidebar
+    -   the macro needs to be present on the actor to be usable in the shortcuts
+
 # 2.18.1
 
 -   `Persistent HUD`:
