@@ -1,10 +1,12 @@
 import {
     addListenerAll,
+    advanceTime,
     ApplicationClosingOptions,
     ApplicationConfiguration,
     ApplicationRenderOptions,
     createHook,
-    DateTime,
+    getShortDateTime,
+    getTimeWithSeconds,
     htmlQuery,
     settingPath,
 } from "module-helpers";
@@ -142,49 +144,6 @@ class TimePF2eHUD extends FoundrySidebarPF2eHUD<TimeSettings> {
         }
     }
 }
-
-function advanceTime(interval: TimeInterval, direction: "+" | "-") {
-    const sign = direction === "+" ? 1 : -1;
-    const increment = Number(interval) * sign;
-
-    if (increment !== 0) {
-        game.time.advance(increment);
-    }
-}
-
-function getTimeWithSeconds(time: DateTime) {
-    return game.pf2e.worldClock.timeConvention === 24
-        ? time.toFormat("HH:mm:ss")
-        : time.toLocaleString(DateTime.TIME_WITH_SECONDS);
-}
-
-function getShortTime(time: DateTime) {
-    return game.pf2e.worldClock.timeConvention === 24
-        ? time.toFormat("HH:mm")
-        : time.toLocaleString(DateTime.TIME_SIMPLE);
-}
-
-function getShortDateTime() {
-    const worldClock = game.pf2e.worldClock;
-    const worldTime = worldClock.worldTime;
-    const time = getShortTime(worldTime);
-
-    const date =
-        worldClock.dateTheme === "CE"
-            ? worldTime.toLocaleString(DateTime.DATE_SHORT)
-            : DateTime.local(worldClock["year"], worldTime.month, worldTime.day).toLocaleString(
-                  DateTime.DATE_SHORT
-              );
-
-    return {
-        worldClock,
-        worldTime,
-        time,
-        date,
-    };
-}
-
-type TimeInterval = "dawn" | "noon" | "dusk" | "midnight" | `${number}` | number;
 
 type TimeContext = {
     isGM: boolean;
