@@ -35,9 +35,26 @@
                 "toggle": "开关效果显示"
             },
             "shortcuts": {
+                "clear": {
+                    "hint": "你确认要删除以下快捷栏吗？",
+                    "all": "全部快捷栏设置",
+                    "yes": "删除",
+                    "set": "仅当前设置",
+                    "title": "清空快捷栏"
+                },
+                "copy": {
+                    "title": "复制用户快捷栏",
+                    "hint": "选择一位用户，复制他的快捷栏设置。",
+                    "none": "该角色没有其他拥有者。",
+                    "yes": "复制",
+                    "label": "权限为拥有的用户"
+                },
                 "fill": {
-                    "title": "自动填充快捷栏"
-                }
+                    "title": "自动填充快捷栏",
+                    "content": "你确定你要自动填充快捷栏吗？",
+                    "yes": "自动填充"
+                },
+                "tab": "更改快捷栏设置"
             }
         },
         "rightClick": "[右键点击]",
@@ -75,7 +92,7 @@
                 },
                 "status": {
                     "name": "显示健康状况",
-                    "hint": "如果你的世界已启用，则生物的健康状况将以什么方式显示在工具提示中。"
+                    "hint": "若你的世界已启用，是否将生物的健康状况显示在工具提示中。"
                 }
             },
             "token": {
@@ -94,30 +111,31 @@
             "persistent": {
                 "title": "受控HUD",
                 "autoFill": {
-                    "name": "NPC自动填充",
-                    "hint": "如果您没有进行任何手动更改，NPC快捷栏将自动填充。"
+                    "name": "自动填充NPC",
+                    "hint": "若你未做任何手动更改，将自动填充快捷栏位。"
                 },
                 "display": {
+                    "name": "显示位置",
+                    "hint": "HUD要在UI的哪一侧显示。",
                     "choices": {
-                        "disabled": "禁用"
+                        "disabled": "禁用",
+                        "left": "左侧",
+                        "middle": "中间"
                     }
                 },
                 "selection": {
-                    "hint": "受控角色的选择模式。",
                     "name": "选择模式",
+                    "hint": "选择受控角色的选取模式。",
                     "choices": {
                         "manual": "手动选择",
-                        "select": "所选择的指示物",
-                        "combat": "当前回合的参战者"
+                        "combat": "当前回合的参战者",
+                        "select": "所选择的指示物"
                     }
                 }
             },
             "enabled": {
                 "name": "启用",
                 "hint": "在客户端启用HUD元素。"
-            },
-            "dice": {
-                "title": "骰子面板"
             },
             "global": {
                 "highestSpeed": {
@@ -135,25 +153,36 @@
                     "hint": "在HUD上显示关系/部署按键。"
                 }
             },
+            "dice": {
+                "title": "骰子面板"
+            },
+            "foundrySidebar": {
+                "expand": {
+                    "name": "加载时自动展开",
+                    "hint": "强制foundry侧边栏在页面加载完成时展开。"
+                },
+                "title": "Foundry侧边栏"
+            },
             "time": {
-                "title": "时间跟踪",
+                "title": "时间追踪",
                 "enabled": {
-                    "hint": "在您的客户端上启用此HUD元素。当系统设置中世界时钟的“玩家访问权”被禁用时，该设置将被覆盖。"
+                    "hint": "在您的客户端启用此HUD元素。当系统设置中世界时钟的“玩家访问权”被禁用时，该设置将被覆盖。"
                 }
             },
             "tracker": {
-                "title": "战斗跟踪器",
                 "partyAsObserved": {
-                    "name": "队伍盟友可查看"
+                    "name": "队伍盟友可见",
+                    "hint": "将“队伍”中的盟友角色对玩家可见，以显示其健康状况。注意，不要与“队伍”角色混淆。"
                 },
                 "started": {
-                    "name": "仅",
-                    "hint": "只有当战斗实际开始（并且有战斗参与者时），跟踪器才会向玩家显示。"
+                    "name": "仅在战斗开始时",
+                    "hint": "只有在战斗实际开始（且有参战者参与时），战斗追踪板才会显示给玩家。"
                 },
                 "textureScaling": {
                     "name": "尺寸缩放",
-                    "hint": "基于指示物尺寸缩放对参展者画像进行缩放。"
-                }
+                    "hint": "基于指示物尺寸缩放对参战者画像进行缩放。"
+                },
+                "title": "战斗追踪板"
             }
         },
         "dialogs": {
@@ -186,8 +215,14 @@
             },
             "sidebar": {
                 "filter": {
-                    "name": "应用侧边栏筛选",
-                    "hint": "允许对侧边栏内容进行筛选。"
+                    "name": "应用侧边栏过滤",
+                    "hint": "允许对侧边栏内容进行过滤。"
+                }
+            },
+            "tracker": {
+                "alternate": {
+                    "hint": "切换战斗追踪板的控键显示额外选项。",
+                    "name": "切换控键"
                 }
             }
         },
@@ -203,8 +238,8 @@
                 "background": "背景颜色",
                 "enabled": "启用背景颜色"
             },
-            "contain": "容器",
-            "reset": "恢复默认",
+            "contain": "填充头像框",
+            "reset": "重置",
             "save": "保存",
             "src": {
                 "actor": "使用角色画像",
@@ -308,35 +343,82 @@
         "shortcuts": {
             "error": {
                 "wrongType": "你无法创建此类快捷栏选项。",
-                "wrongActor": "你只能为受控角色创建快捷栏选项。"
+                "wrongActor": "你只能为受控角色创建快捷栏选项。",
+                "locked": "快捷栏已被热键锁定"
             },
             "tooltip": {
-                "altUse": {
-                    "skillAction": "菜单变体"
-                },
                 "click": {
                     "control": "[Ctrl+右键点击]",
-                    "shift": "[Shift+右键点击] 移除快捷栏选项",
-                    "popup": "物品弹出"
+                    "middle": "[鼠标中键] 移除快捷栏选项",
+                    "popup": "快捷栏弹窗"
                 },
                 "reason": {
                     "dropped": "未携带该物品",
                     "uses": "无可用物品剩余",
-                    "quantity": "物品数为零",
-                    "match": "该物品不匹配"
+                    "quantity": "物品数量为零",
+                    "match": "未找到可匹配物品",
+                    "available": "当前不可用",
+                    "equip": "未装备该物品",
+                    "focus": "聚能点已耗尽",
+                    "prepared": "该法术未准备",
+                    "rank": "无法以此环级施法",
+                    "broken": "该法术进程无响应",
+                    "charges": "充能已耗尽",
+                    "expended": "法术已消耗",
+                    "vessel": "非主要容器",
+                    "combat": "未进入战斗",
+                    "macro": "未找到可匹配的宏"
+                },
+                "active": "激活",
+                "altUse": {
+                    "blast": "冲击窗口",
+                    "skillAction": "变体菜单",
+                    "strike": "打击窗口",
+                    "toggle": "选择子选项"
+                },
+                "disabled": "禁用",
+                "enabled": "启用",
+                "subtitle": {
+                    "blast": "元素冲击",
+                    "extraAction": "额外动作",
+                    "macro": "自动执行宏",
+                    "spell": "施法",
+                    "strike": "打击攻击",
+                    "toggle": "掷骰选项"
+                },
+                "inactive": "未激活"
+            },
+            "blast": {
+                "cost": {
+                    "label": "元素冲击消耗"
                 }
+            },
+            "use": {
+                "toggle": "此开关始终处于启用状态"
+            }
+        },
+        "edit-shortcut": {
+            "image": "图片路径",
+            "name": "快捷栏名称",
+            "yes": "保存"
+        },
+        "popup": {
+            "shortcut": {
+                "config": "自定义快捷栏"
             }
         },
         "tracker": {
-            "delay": "延迟回合",
-            "join": "加入回合",
-            "expanded": "已展开，点击折叠",
+            "award": "奖励：{xp} XP",
             "collapsed": "已折叠，点击展开",
+            "delay": "延迟回合",
+            "expanded": "已展开，点击折叠",
             "fake": {
-                "nothing": "未开始",
-                "secret": "某些隐秘之事正在发生"
+                "nothing": "战斗遭遇未开始",
+                "secret": "正有隐秘之事悄然发生"
             },
-            "unknown": "未知"
+            "join": "加入回合",
+            "unknown": "未知",
+            "force-turn": "强制移动战斗回合至此"
         }
     }
 }
