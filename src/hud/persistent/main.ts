@@ -288,11 +288,6 @@ class PersistentPF2eHUD
         if (this.#actor) {
             this.#actor.apps[this.id] = this;
 
-            //  TODO is this still needed?
-            // if (this.#actor.token) {
-            //     this.#actor.token.baseActor.apps[this.id] = this;
-            // }
-
             if (this.#actor !== this.#previousActor) {
                 this.#shortcutsTab.value = 1;
             }

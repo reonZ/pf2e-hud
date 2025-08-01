@@ -1,4 +1,4 @@
-import { ConsumableShortcutData, EquipmentShortcutData, getItemSlug } from "hud";
+import { BaseSidebarItem, ConsumableShortcutData, EquipmentShortcutData, getItemSlug } from "hud";
 import {
     ActorPF2e,
     createHTMLElement,
@@ -12,7 +12,6 @@ import {
     tupleHasValue,
     usePhysicalItem,
 } from "module-helpers";
-import { BaseSidebarItem } from "..";
 import applications = foundry.applications;
 
 class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, SidebarItem> {
@@ -152,16 +151,15 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
             return;
         }
 
-        // TODO when toolbelt.identify is implemented
-        // if (game.toolbelt?.getToolSetting("identify", "enabled")) {
-        //     if (game.user.isGM) {
-        //         game.toolbelt.api.identify.openTracker(item);
-        //     } else {
-        //         game.toolbelt.api.identify.requestIdentify(item);
-        //     }
-        // } else {
-        new IdentifyItemPopup(item).render(true);
-        // }
+        if (game.toolbelt?.getToolSetting("identify", "enabled")) {
+            if (game.user.isGM) {
+                game.toolbelt.api.identify.openTracker(item);
+            } else if (game.toolbelt.getToolSetting("identify", "playerRequest")) {
+                game.toolbelt.api.identify.requestIdentify(item);
+            }
+        } else if (game.user.isGM) {
+            new IdentifyItemPopup(item).render(true);
+        }
     }
 
     toggleInvested() {

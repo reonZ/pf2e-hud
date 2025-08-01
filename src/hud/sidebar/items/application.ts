@@ -1,3 +1,4 @@
+import { FilterValue } from "hud";
 import {
     ActorPF2e,
     ApplicationRenderOptions,
@@ -8,7 +9,6 @@ import {
 } from "module-helpers";
 import { ItemsSidebarItem, SidebarItem } from ".";
 import { SidebarPF2eHUD } from "..";
-import { FilterValue } from "hud/shared";
 
 class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, ItemsSidebarItem> {
     get name(): "items" {
@@ -84,9 +84,10 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
             )
         );
 
-        // TODO when toolbelt.identify is back
-        data.canIdentify = isGM;
-        // data.canIdentify = isGM || game.toolbelt?.api.identify.canPlayerIdentify()
+        data.canIdentify =
+            isGM ||
+            (!!game.toolbelt?.getToolSetting("identify", "enabled") &&
+                game.toolbelt.getToolSetting("identify", "playerRequest"));
         data.investedTooltip = getInvestedTooltip(data);
         data.isCharacter = actor.isOfType("character");
         data.isNPC = actor.isOfType("npc");
