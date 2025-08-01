@@ -1,3 +1,7 @@
+# 2.20.0
+
+-   add support for the `Identify` tool of the `PF2e Toolbelt` module
+
 # 2.19.1
 
 -   `Macro Shortcut`:
