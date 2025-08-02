@@ -331,6 +331,7 @@
           "equip": "Pas équipé",
           "expended": "Sort dépensé",
           "focus": "Réserve de focalisation vide",
+          "macro": "Pas de macro correspondante",
           "match": "Pas d'objet correspondant",
           "prepared": "Sort non préparé",
           "quantity": "Quantité de zéro",
