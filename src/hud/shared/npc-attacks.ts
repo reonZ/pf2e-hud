@@ -237,6 +237,16 @@ const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
     "gloom-blade": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/gloom-blade.webp",
     "claw-blade": "systems/pf2e/icons/equipment/weapons/claw-blade.webp",
     shears: "systems/pf2e/icons/equipment/weapons/shears.webp",
+    torch: "icons/sundries/lights/torch-brown-lit.webp",
+    pincer: "icons/creatures/claws/pincer-crab-red.webp",
+    "bony-hand": "icons/magic/death/hand-undead-skeleton-fire-green.webp",
+    "shield-bash": "systems/pf2e/icons/equipment/weapons/shield-boss.webp",
+    "stone-longsword": "icons/weapons/swords/sword-guard-worn.webp",
+    spit: "icons/magic/acid/projectile-faceted-glob.webp",
+    spittle: "icons/magic/acid/projectile-faceted-glob.webp",
+    "spectral-hand": "icons/magic/death/hand-withered-gray.webp",
+    "shadow-hand": "icons/magic/unholy/hand-claw-fire-blue.webp",
+    antlers: "icons/creatures/mammals/deer-antlers-blue.webp",
 };
 
 function getNpcStrikeImage(strike: { item: WeaponPF2e | MeleePF2e; slug: string }): ImageFilePath {
