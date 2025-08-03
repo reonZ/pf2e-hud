@@ -319,6 +319,7 @@
                     "extraAction": "Extra Action",
                     "macro": "Self-Executed Macro",
                     "spell": "Spellcasting",
+                    "skillAction": "Skill Action",
                     "strike": "Strike Attack",
                     "toggle": "Roll Option"
                 },

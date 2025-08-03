@@ -1,10 +1,4 @@
-import {
-    BaseStatisticAction,
-    BaseStatisticRollOptions,
-    getMapLabel,
-    getStatisticTypes,
-    StatisticType,
-} from "hud";
+import { BaseStatisticAction, BaseStatisticRollOptions, getMapLabel } from "hud";
 import { AbilityItemPF2e, CreaturePF2e, FeatPF2e, R, ZeroToTwo } from "module-helpers";
 import {
     BaseShortcutSchema,
@@ -35,7 +29,6 @@ function generateStatisticActionSchema(
             statistic: new fields.StringField({
                 required: false,
                 nullable: false,
-                choices: () => getStatisticTypes(),
                 initial: undefined,
             }),
         }),
@@ -116,8 +109,8 @@ abstract class StatisticActionShortcut<
     }
 }
 
-const _mapRadialCached: PartialRecord<string, { value: string; label: string }[]> = {};
-function generateMapRadialOptions(agile: boolean): { value: string; label: string }[] {
+const _mapRadialCached: PartialRecord<string, RequiredSelectOptions> = {};
+function generateMapRadialOptions(agile: boolean): RequiredSelectOptions {
     return (_mapRadialCached[String(agile)] ??= R.times(3, (map) => {
         return {
             label: getMapLabel(map as ZeroToTwo, agile),
@@ -133,7 +126,7 @@ interface StatisticActionShortcut<
 
 type StatisticActionOverrideSchema = {
     agile: fields.BooleanField<boolean, boolean, false, false, true>;
-    statistic: fields.StringField<StatisticType, StatisticType, false, false, false>;
+    statistic: fields.StringField<string, string, false, false, false>;
 };
 
 type StatisticActionShortcutSchema = BaseShortcutSchema & {

@@ -44,7 +44,10 @@ class SkillActionShortcut extends StatisticActionShortcut<SkillAction, FeatPF2e 
 
     get subtitle(): string {
         const statistic = this.override.statistic ?? this.statistic;
-        const label = getSkillActionGroup(statistic)?.label ?? super.subtitle;
+        const label =
+            this.actor.getStatistic(statistic)?.label ??
+            getSkillActionGroup(statistic)?.label ??
+            localize("shortcuts.tooltip.subtitle", this.type);
 
         return this.variant ? `${label} (${this.name})` : label;
     }

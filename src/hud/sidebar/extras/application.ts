@@ -78,7 +78,7 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<
             isCharacter,
             macros,
             resources: R.values(actor.synthetics.resources),
-            statistics: getStatistics(),
+            statistics: getStatistics(actor),
         };
     }
 

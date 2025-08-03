@@ -736,7 +736,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             content: "dialogs/action-alternates",
             i18n: "dialogs.alternates",
             data: {
-                statistics: getStatistics(),
+                statistics: getStatistics(actor),
             },
         });
 

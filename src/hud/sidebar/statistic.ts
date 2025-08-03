@@ -215,7 +215,7 @@ abstract class BaseStatisticAction<
                     ...usedOptions,
                     label,
                     maps: R.times(3, (i) => ({ value: i, label: i })),
-                    statistics: usedOptions.statistic ? getStatistics() : undefined,
+                    statistics: usedOptions.statistic ? getStatistics(actor) : undefined,
                 },
                 onRender: (event, dialog) => {
                     const statistic = this.statistic;
@@ -309,8 +309,8 @@ abstract class BaseStatisticAction<
     }
 }
 
-const _cachedStatistics: SelectOptions = [];
-function getStatistics(): SelectOptions {
+const _cachedStatistics: RequiredSelectOptions = [];
+function getStatistics(actor: ActorPF2e): RequiredSelectOptions {
     if (_cachedStatistics.length === 0) {
         _cachedStatistics.push({
             value: "perception",
@@ -320,14 +320,22 @@ function getStatistics(): SelectOptions {
         _cachedStatistics.push(
             ...R.pipe(
                 R.entries(CONFIG.PF2E.skills),
-                R.map(([value, { label }]): SelectOption => {
+                R.map(([value, { label }]): Required<SelectOption> => {
                     return { value, label: game.i18n.localize(label) };
                 })
             )
         );
     }
 
-    return _cachedStatistics;
+    return R.sortBy(
+        [
+            ..._cachedStatistics,
+            ...actor.itemTypes.lore.map((lore) => {
+                return { value: lore.slug, label: lore.name };
+            }),
+        ],
+        R.prop("label")
+    );
 }
 
 function getMapValue(map: 1 | 2, agile = false): -4 | -5 | -8 | -10 {
@@ -378,7 +386,7 @@ type BaseStatisticRollOptions = {
     dc?: number;
     map?: ZeroToTwo;
     notes?: SingleCheckActionRollNoteData[];
-    statistic?: StatisticType;
+    statistic?: string;
     variant?: string;
 };
 

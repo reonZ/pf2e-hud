@@ -78,6 +78,7 @@
         border: none;
         border-radius: 2px;
         color: var(--color);
+        padding-inline: 0;
 
         &:focus {
             --input-focus-outline-color: var(--color-cool-3);
