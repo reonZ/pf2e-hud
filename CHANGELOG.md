@@ -1,3 +1,15 @@
+# 2.21.0
+
+-   the `Initiative` and `Action Variants` selects will now offer the lores as possible choices and sort everything by alphabetical order
+-   `Extra Sidebar`:
+    -   initiative will default to the currently selected statistic (on the actor sheet) instead of always defaulting to `Perception`
+-   `Persistent HUD`:
+    -   now only flash the avatar for unlinked actors
+-   `Skill/Extra Action Shortcut`
+    -   you can now create the shortcut using a lore as variant
+-   `Strike Shortcut`:
+    -   add more NPC attack custom images (thanks to [shemetz](https://github.com/shemetz))
+
 # 2.20.0
 
 -   add support for the `Identify` tool of the `PF2e Toolbelt` module
