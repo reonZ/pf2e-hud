@@ -141,7 +141,7 @@ class TokenPF2eHUD
             !actor.sheet.rendered &&
             !actor.isOfType("loot", "party") &&
             actor.isOwner &&
-            !hud.persistent.isCurrentActor(actor, true)
+            !hud.persistent.isCurrentActor(actor, !!actor.token)
         );
     }
 
