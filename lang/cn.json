@@ -384,7 +384,8 @@
                     "macro": "自动执行宏",
                     "spell": "施法",
                     "strike": "打击攻击",
-                    "toggle": "掷骰选项"
+                    "toggle": "掷骰选项",
+                    "skillAction": "技能动作"
                 },
                 "inactive": "未激活"
             },
