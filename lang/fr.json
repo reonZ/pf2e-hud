@@ -319,6 +319,7 @@
           "extraAction": "Action supplémentaire",
           "macro": "Macro auto-exécutée",
           "spell": "Incantation",
+          "skillAction": "Action de compétence",
           "strike": "Attaque de frappe",
           "toggle": "Option de lancer"
         },
