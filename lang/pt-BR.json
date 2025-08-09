@@ -1,0 +1,425 @@
+{
+    "pf2e-hud": {
+        "keybindings": {
+            "persistent": {
+                "setActor": {
+                    "name": "Definir Ator Persistente",
+                    "hint": "Define o ator do token selecionado como persistente."
+                }
+            },
+            "sidebar": {
+                "filter": {
+                    "name": "Usar Filtro da Barra Lateral",
+                    "hint": "Permite filtrar o conteúdo atual da barra lateral."
+                }
+            },
+            "tracker": {
+                "alternate": {
+                    "name": "Alternar Controles",
+                    "hint": "Alterna os controles do Monitor de Combate para mostrar mais opções."
+                }
+            }
+        },
+        "settings": {
+            "menus": {
+                "healthStatusMenu": {
+                    "name": "Estado de Vida",
+                    "label": "Configurar Estado de Vida",
+                    "hint": "Define as divisões d Estado de Vida para serem exibidas nas HUDs."
+                }
+            },
+            "enabled": {
+                "name": "Habilitar",
+                "hint": "Habilita este elemento de HUD no seu browser."
+            },
+            "dice": {
+                "title": "Painel de Dados"
+            },
+            "foundrySidebar": {
+                "title": "Barra Lateral do Foundry",
+                "expand": {
+                    "name": "Auto-expandir ao Carregar",
+                    "hint": "Força a barra lateral a ser expandida ao carregar a página."
+                }
+            },
+            "global": {
+                "highestSpeed": {
+                    "name": "Mostrar Maior Velocidade",
+                    "hint": "Se nenhuma velocidade for selecionada manualmente, a maior será exibida por padrão mesmo se a velocidade terrestre não for 0."
+                },
+                "useModifiers": {
+                    "name": "Usar Modificadores",
+                    "hint": "Exibe modificaroes em vez do valor da dificuldade em diferentes elementos da HUD."
+                }
+            },
+            "advanced": {
+                "alliance": {
+                    "name": "Botão de Aliança",
+                    "hint": "Exibe o botão de Aliança/Disposição na HUD."
+                }
+            },
+            "persistent": {
+                "title": "HUD Persistente",
+                "autoFill": {
+                    "name": "Auto-Preencher PDMs",
+                    "hint": "Se você não tiver feito nenhuma mudança manual, os atalhos serão preenchidos automaticamente."
+                },
+                "display": {
+                    "name": "Exibir Posição",
+                    "hint": "Onde a HUD deve ser exibida na interface.",
+                    "choices": {
+                        "disabled": "Desabilitada",
+                        "left": "Esquerda",
+                        "middle": "Meio"
+                    }
+                },
+                "selection": {
+                    "name": "Modo de Seleção",
+                    "hint": "Modo de Seleção para o ator persistente.",
+                    "choices": {
+                        "manual": "Seleção Manual",
+                        "select": "Ao Selecionar o Token",
+                        "combat": "Combatente Atual"
+                    }
+                }
+            },
+            "sidebar": {
+                "title": "Barra Lateral"
+            },
+            "time": {
+                "title": "Monitor de Tempo",
+                "enabled": {
+                    "hint": "Habilita este elemento de HUD no seu browser. Esta configuração é ignorada se a configuração \"Acesso do Jogador\" (configuração do PF2e -> Relógio do Mundo) estiver desabilitada."
+                }
+            },
+            "token": {
+                "title": "HUD do Token",
+                "mode": {
+                    "name": "Modo de Exibição",
+                    "hint": "Selecione o modo de exibição da HUD do token.",
+                    "choices": {
+                        "disabled": "Desabilitada",
+                        "exploded": "Explodida",
+                        "left": "Agrupada à Esquerda",
+                        "right": "Agrupada à Direita"
+                    }
+                }
+            },
+            "tooltip": {
+                "title": "Dica do Token",
+                "delay": {
+                    "name": "Atraso da Dica",
+                    "hint": "Atraso em milisegundos antes da dica aparecer na tela."
+                },
+                "distance": {
+                    "name": "Mostrar Distância",
+                    "hint": "Irá mostrar a distância entre o token selecionado e outro token que será inferido automaticamente.",
+                    "choices": {
+                        "never": "Nunca Mostrar",
+                        "idiot": "Medir em Pés",
+                        "smart": "Medir em Metros",
+                        "weird": "Medir em Quadrados"
+                    }
+                },
+                "draw": {
+                    "name": "Grossura da Linha de Distância",
+                    "hint": "A grossura da linha de distância desenhada entre tokens."
+                },
+                "status": {
+                    "name": "Mostrar Estado de Vida",
+                    "hint": "Define se a dica de Estado de Vida deve ser exibida no mundo."
+                }
+            },
+            "tracker": {
+                "title": "Monitor de Combate",
+                "partyAsObserved": {
+                    "name": "Considerar Aliados como Observados",
+                    "hint": "Considera atores com aliança definida como \"Grupo\" como obserados pelos jogadores para exibir detalhes de vida."
+                },
+                "started": {
+                    "name": "Apenas Quando Iniciado",
+                    "hint": "O monitor só será exibido para os jogadores se o combate tiver combatantes e foi iniciado."
+                },
+                "textureScaling": {
+                    "name": "Escala de Texture",
+                    "hint": "Inverte a escala da imagem do combatente baseada na Escala de Textura do token."
+                }
+            }
+        },
+        "actions": {
+            "borrowArcaneSpell": "Emprestar uma Magia Arcana",
+            "drive": {
+                "drive1": "Dirigir <span class=\"action-glyph\">1</span>",
+                "drive2": "Dirigir <span class=\"action-glyph\">2</span>",
+                "drive3": "Dirigir <span class=\"action-glyph\">3</span>"
+            }
+        },
+        "actor-hud": {
+            "alliance": "Aliança: {value}",
+            "temp": "Pontos da Vida Temporários",
+            "resolve": "Usar Pontos de Determinação"
+        },
+        "avatar-editor": {
+            "title": "Editar Avatar - {name}",
+            "cancel": "Cancelar",
+            "color": {
+                "background": "Cor de Fundo",
+                "enabled": "Habilita a Cor de Fundo"
+            },
+            "contain": "Contém",
+            "reset": "Redefinir",
+            "save": "Salvar",
+            "src": {
+                "actor": "Usar Image do Ator",
+                "token": "Usar Imagem do Token",
+                "none": "Não foi possível achar uma fonte de imagem válida",
+                "video": "Vídeos não são suportados para este recurso"
+            }
+        },
+        "dialogs": {
+            "alternates": {
+                "dc": "Classe de Dificuldade",
+                "drag": "Arraste para criar um atalho",
+                "statistic": "Estatística",
+                "title": "Variantes de Ação - {label}",
+                "yes": "Usar Variantes"
+            },
+            "resolve": {
+                "title": "Usar Ponto de Determinação",
+                "full": "{name} está com Estamina cheia e não precisa descansar.",
+                "breather": {
+                    "label": "Recuperar o Fôlego",
+                    "hint": "Descanse por 10 minutos, gaste um pontos de determinação e recupera toda a sua estamina."
+                },
+                "steel": {
+                    "hint": "Use uma ação, gaste um ponto de determinação e recupera metade da sua estamina."
+                },
+                "yes": "Usar Determinação"
+            }
+        },
+        "edit-shortcut": {
+            "image": "Caminho da Imagem",
+            "name": "Nome do Atalho",
+            "yes": "Salvar"
+        },
+        "health-status": {
+            "title": "Estado de Vida",
+            "enabled": "Habilitado",
+            "add": "Adicionar Marcador",
+            "delete": "Excluir Marcador",
+            "save": "Salvar",
+            "cancel": "Cancelar",
+            "import": {
+                "title": "Importar Estado de Vida",
+                "yes": "Importar",
+                "no": "Cancelar",
+                "error": "Os dados enviados são inválidos."
+            },
+            "export": {
+                "title": "Exportar Estado de Vida",
+                "confirm": "Estado de Vida foi copiado para o clipboard."
+            },
+            "default": "Morto, Com o pé na cova, Não está bem, Já esteve melhor, Quase perfeito, Perfeitamente bem"
+        },
+        "leftClick": "[Clique]",
+        "persistent": {
+            "effects": {
+                "shift": "Shift",
+                "toggle": "Alterar Efeitos"
+            },
+            "error": {
+                "selectOne": "Selecione um único token de PJ ou PDM para definir como ator persistente."
+            },
+            "menu": {
+                "clean": {
+                    "always": "Sempre mostrar interface no retrato",
+                    "hover": "Apenas mostrar interface ao passar o mouse sobre o retrato"
+                },
+                "editAvatar": "Editar Avatar",
+                "setActor": {
+                    "set": "Definir o token selecionado como ator persistente",
+                    "unset": "Redefinir ator persistente"
+                }
+            },
+            "shortcuts": {
+                "clear": {
+                    "title": "Limpar Atalhos",
+                    "all": "Todos os conjuntos de atalhos",
+                    "hint": "Você tem certeza que deseja excluir os seguintes atalhos?",
+                    "set": "Apenas o conjunto atual",
+                    "yes": "Excluir"
+                },
+                "copy": {
+                    "title": "Copiar Atalhos de Usuário",
+                    "hint": "Seleciona um usuário para copiar os atalhos.",
+                    "label": "Usuário Dono",
+                    "none": "Este ator não tem outro dono.",
+                    "yes": "Copiar"
+                },
+                "fill": {
+                    "title": "Auto-preencher Atalhos",
+                    "content": "Você tem certeza que deseja auto-preencher os atalhos?",
+                    "yes": "Auto-preencher"
+                },
+                "tab": "Mudar Conjunto de Atalhos"
+            }
+        },
+        "popup": {
+            "shortcut": {
+                "config": "Personalizar Atalhos"
+            }
+        },
+        "recall-knowledge": {
+            "result": "Resultado",
+            "modifier": "Mod.",
+            "target": "Alvo",
+            "first": "1°",
+            "second": "2°",
+            "third": "3°",
+            "fourth": "4°",
+            "fifth": "5°",
+            "sixth": "6°",
+            "dc": "CD",
+            "unspecific": "Não específico",
+            "specific": "Específico",
+            "skill": "Perícia",
+            "lore": "Perícia de Saber",
+            "proficiency": "Proficiência"
+        },
+        "rightClick": "[Clique direito]",
+        "shortcuts": {
+            "blast": {
+                "cost": {
+                    "label": "Custo da Explosão Elemental"
+                }
+            },
+            "error": {
+                "locked": "Os atalhos estão travados na barra de macro",
+                "wrongActor": "Você só pode criar atalhos do mesmo ator persistente.",
+                "wrongType": "Você não pode criar um atalho do mesmo tipo."
+            },
+            "tooltip": {
+                "active": "Ativado",
+                "altUse": {
+                    "blast": "Janela de Explosão",
+                    "skillAction": "Menu e Variantes",
+                    "strike": "Janela de Golpes",
+                    "toggle": "Selecione uma opção"
+                },
+                "click": {
+                    "control": "[Ctrl + Clique direito]",
+                    "middle": "[Clique do meio] Remover atalho",
+                    "popup": "Atalho de popup"
+                },
+                "disabled": "Desabilitado",
+                "enabled": "Habilitado",
+                "inactive": "Desativado",
+                "subtitle": {
+                    "blast": "Explosão Elemental",
+                    "extraAction": "Ação Extra",
+                    "macro": "Macro Auto-executada",
+                    "spell": "Conjuração",
+                    "skillAction": "Ação de Perícia",
+                    "strike": "Golpe",
+                    "toggle": "Opção de rolagem"
+                },
+                "reason": {
+                    "available": "Atualmente indisponível",
+                    "broken": "Magia órfã",
+                    "charges": "Sem cargas disponíveis",
+                    "combat": "Não está em combate",
+                    "dropped": "Não está carregando o item",
+                    "equip": "Não equipado",
+                    "expended": "Magia gasta",
+                    "focus": "Reserva de Foco vazia",
+                    "macro": "Nenhuma macro correspondente",
+                    "match": "Nenhum item correspondente",
+                    "prepared": "Magia não preparada",
+                    "quantity": "Quantidade é zero",
+                    "rank": "Não pode conjurar este círculo",
+                    "uses": "Sem usos restantes",
+                    "vessel": "Não é o Receptáculo primário"
+                }
+            },
+            "use": {
+                "toggle": "Esta alternativa sempre está habilitada"
+            }
+        },
+        "sidebar": {
+            "filter": "Filtro da Barra Lateral",
+            "actions": {
+                "blasts": "Explosões Elementals",
+                "ranged": "Distância {max} pés",
+                "rangedWithIncrement": "Distância {increment}/{max} pés",
+                "reach": "Alcance {reach} pés",
+                "reset": "Redifinir Usos",
+                "shields": {
+                    "shown": "Exibir escudos",
+                    "hidden": "Esconder escudos"
+                },
+                "stances": "Posturas",
+                "stowedWeapons": {
+                    "shown": "Exibir itens guardados",
+                    "hidden": "Esconder itens guardados"
+                },
+                "thrown": "Arremesso {increment}/{max} pés"
+            },
+            "extras": {
+                "delete": {
+                    "title": "Excluir Macro",
+                    "content": "Você tem certeza que deseja excluir esta macro?"
+                },
+                "edit": "Editar Macro",
+                "noMacro": "Solte macros aqui",
+                "use": "Executar Macro"
+            },
+            "removeEffect": "Remover Efeito",
+            "skills": {
+                "alternate": "[Clique direito] Menu de Variantes",
+                "hideUntrained": "Esconder Ações Destreinadas",
+                "proficient": "Proficiente"
+            },
+            "spells": {
+                "broken": "Magia quebrada",
+                "cast": "Conjurar a Magia"
+            }
+        },
+        "sidebars": {
+            "actions": "Ações",
+            "items": "Inventário",
+            "spells": "Conjuração",
+            "skills": "Perícias",
+            "extras": "Extras"
+        },
+        "spellcasting": {
+            "charges": "Cargas",
+            "staff": "Cajado"
+        },
+        "tooltip": {
+            "distance": {
+                "feet": "pés",
+                "meter": "m",
+                "square": "q"
+            }
+        },
+        "tracker": {
+            "award": "Recompensa: {xp} XP",
+            "collapsed": "Encolhido, clique para expandir",
+            "delay": "Atrasar Turno",
+            "expanded": "Expandido, clique para encolher",
+            "fake": {
+                "nothing": "Encontro não iniciado",
+                "secret": "Alguma coisa secreta está acontecendo"
+            },
+            "force-turn": "Forçar turno de combate",
+            "join": "Entrar no turno",
+            "unknown": "Desconhecido"
+        },
+        "use-resolve": {
+            "full": "{name} está com Estamina cheia e não precisa descansar.",
+            "breather": {
+                "used": "{name} tem {ratio} PD e gasta um ponto de determinação, recuperando o fôlego por 10 minutos. Estamina foi preenchida."
+            }
+        }
+    }
+}
