@@ -269,10 +269,7 @@ function getActionCategory(
 
 function isAlchemicalStrike(strike: StrikeData): strike is WeaponStrike {
     return (
-        strike.item.isOfType("weapon") &&
-        strike.item.isAlchemical &&
-        strike.item.traits.has("bomb") &&
-        strike.item.isTemporary
+        strike.item.isOfType("weapon") && strike.item.isAlchemical && strike.item.traits.has("bomb")
     );
 }
 
