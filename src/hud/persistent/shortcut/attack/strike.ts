@@ -52,7 +52,12 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get canUse(): boolean {
-        return super.canUse && !!this.attackData?.canStrike && this.isEquipped;
+        return (
+            super.canUse &&
+            !!this.attackData?.canStrike &&
+            this.isEquipped &&
+            (!("quantity" in this.attackData.item) || this.attackData.item.quantity > 0)
+        );
     }
 
     get item(): Maybe<MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>> {
@@ -136,6 +141,8 @@ class StrikeShortcut extends AttackShortcut<
             ? "available"
             : !this.isEquipped
             ? "equip"
+            : this.item && "quantity" in this.item && this.item.quantity <= 0
+            ? "quantity"
             : undefined;
     }
 
