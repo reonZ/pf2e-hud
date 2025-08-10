@@ -85,7 +85,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
     }
 
     protected _onClickAction(event: PointerEvent, target: HTMLElement): void {
-        if (event.button !== 0) return;
+        if (event.button !== 0 || target.dataset.disabled === "true") return;
 
         const action = target.dataset.action as string;
         const sidebarItem = this.getSidebarItemFromElement(target);

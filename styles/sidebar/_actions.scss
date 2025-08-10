@@ -151,6 +151,11 @@
             &.attack {
                 background: var(--attack-background);
                 border-color: var(--attack-border-color);
+
+                &[data-disabled="true"] {
+                    opacity: 0.3;
+                    cursor: not-allowed;
+                }
             }
 
             &.auxiliary {

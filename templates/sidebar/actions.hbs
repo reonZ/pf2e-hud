@@ -228,7 +228,8 @@
     {{#each variants as |variant index|}}
     <div class="variant attack" data-action="strike-attack" data-variant-index="{{index}}" {{#if
         ../isAltUsage}} data-alt-usage="{{../altUsage}}" {{/if}} {{#if (eq ../quantity 0)}}
-        data-disabled data-tooltip="{{localize 'PF2E.ErrorMessage.WeaponQuantityZero'}}" {{/if}}>
+        data-disabled="true" data-tooltip="{{localize 'PF2E.ErrorMessage.WeaponQuantityZero'}}"
+        {{/if}}>
         {{!-- first attack --}}
         {{#if (eq index 0)}}
         {{#if @root.isCharacter}}

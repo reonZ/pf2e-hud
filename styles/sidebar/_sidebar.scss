@@ -435,9 +435,10 @@
             border: none;
             flex: 0;
             gap: 0.2em;
-            padding: 3px 3px 1px;
             white-space: nowrap;
             height: 1.584em;
+            padding: 1px 3px 0;
+            align-items: center;
 
             &[data-action] {
                 cursor: pointer;
