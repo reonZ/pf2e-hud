@@ -368,7 +368,8 @@
             }
         }
 
-        .linked {
+        .linked,
+        .history {
             display: none;
         }
     }
@@ -385,7 +386,8 @@
             }
         }
 
-        .metrics {
+        .metrics,
+        .settings {
             display: none;
         }
     }

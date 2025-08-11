@@ -206,6 +206,10 @@
     <a class="settings" data-action="trackerSettings" data-tooltip="COMBAT.Settings">
         <i class="fa-solid fa-cog"></i>
     </a>
+    <a class="combat-control history" data-action="clearMovementHistories"
+        data-tooltip="COMBAT.ClearMovementHistories">
+        <i class="fa-solid fa-shoe-prints"></i>
+    </a>
     {{!-- else not isGM --}}
     {{else}}
     <a class="combat-control end-turn{{#unless isOwner}} disabled{{/unless}}" data-action="nextTurn"
