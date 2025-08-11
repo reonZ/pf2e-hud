@@ -82,7 +82,7 @@ class ItemHudPopup extends BaseHudPopup {
     protected async _renderHTML(
         context: ItemHudContext,
         options: ApplicationRenderOptions
-    ): Promise<unknown> {
+    ): Promise<HTMLElement> {
         const summaryElement = createHTMLElement("div", {
             classes: ["item-summary", "item"],
             dataset: {
