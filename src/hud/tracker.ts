@@ -374,7 +374,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
 
         const linked = {
             icon: combatScene !== null ? "fa-solid fa-link" : "fa-solid fa-link-slash",
-            tooltip: combatScene !== null ? "COMBAT.Linked" : "COMBAT.Unlinked",
+            tooltip: `COMBAT.ACTIONS.${combatScene !== null ? "LinkToScene" : "UnlinkFromScene"}`,
         };
 
         const nextCombatant = (() => {
