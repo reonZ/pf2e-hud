@@ -2,11 +2,14 @@ import { FilterValue, getNpcStrikeImage, StrikeShortcutData } from "hud";
 import {
     ActorPF2e,
     addListenerAll,
+    CharacterPF2e,
+    createAreaFireMessage,
     ErrorPF2e,
     getFlag,
     htmlQuery,
     localize,
     MeleePF2e,
+    NPCAttackTrait,
     objectHasKey,
     R,
     StrikeData,
@@ -65,6 +68,22 @@ class ActionsSidebarStrike extends BaseSidebarItem<
         return (this.#img ??= this.actor.isOfType("npc") ? getNpcStrikeImage(this) : this.item.img);
     }
 
+    // we handle sf2e auxiliary here
+    get extraAuxiliaryAction(): { label: string; glyph: string } | undefined {
+        if (!game.modules.get("sf2e-anachronism")?.active) return;
+
+        const item = this.item;
+        const traits = item.system.traits.value as (NPCAttackTrait | "grenade" | "automatic")[];
+        const isArea = traits.some((trait) => trait.startsWith("area-") || trait === "grenade");
+        const isAutomatic = traits.includes("automatic");
+        if (!isArea && !isAutomatic) return;
+
+        return {
+            glyph: traits.some((t) => t === "grenade") ? "1" : "2",
+            label: game.i18n.localize(`SF2E.Actions.${isArea ? "AreaFire" : "AutoFire"}.Title`),
+        };
+    }
+
     getStrike(altUsage: StrikeAltUsage, readyOnly = false): ActionsSidebarStrike | null {
         const strike = altUsage
             ? this.altStrikes?.find((s) =>
@@ -107,7 +126,7 @@ class ActionsSidebarStrike extends BaseSidebarItem<
         weapon.update({ system: { selectedAmmoId: ammo?.id ?? null } });
     }
 
-    auxiliaryAction(index: number, selection: string | undefined | null = null) {
+    executeAuxiliaryAction(index: number, selection: string | undefined | null = null) {
         if ("auxiliaryActions" in this) {
             (this.auxiliaryActions as WeaponAuxiliaryAction[]).at(index)?.execute({ selection });
         }
@@ -300,7 +319,10 @@ function onStrikeClickAction(
     if (action === "auxiliary-action") {
         const index = Number(target.dataset.auxiliaryActionIndex);
         const selected = htmlQuery(target, "select")?.value;
-        sidebarItem.auxiliaryAction(index, selected);
+        sidebarItem.executeAuxiliaryAction(index, selected);
+    } else if (action === "extra-auxiliary-action") {
+        const item = sidebarItem.item as WeaponPF2e<CharacterPF2e>;
+        createAreaFireMessage(item);
     } else if (action === "strike-attack") {
         const variantIndex = Number(target.dataset.variantIndex);
         strike.variants[variantIndex]?.roll({ event, altUsage });
@@ -315,6 +337,7 @@ function onStrikeClickAction(
 
 type StrikeEventAction =
     | "auxiliary-action"
+    | "extra-auxiliary-action"
     | "strike-attack"
     | "strike-critical"
     | "strike-damage"
