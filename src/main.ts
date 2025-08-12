@@ -2,11 +2,8 @@ import { rollRecallKnowledge, useResolve } from "actions";
 import { AvatarEditor, AvatarModel } from "avatar-editor";
 import { HealthStatus } from "health-status";
 import {
-    addStance,
-    canUseStances,
     DicePF2eHUD,
     getNpcStrikeImage,
-    getStances,
     PersistentPF2eHUD,
     prepareActionGroups,
     prepareExtrasActions,
@@ -98,9 +95,6 @@ Hooks.once("ready", async () => {
 });
 
 MODULE.apiExpose({
-    addStance,
-    canUseStances,
-    getStances,
     actions: {
         rollRecallKnowledge,
         useResolve,
@@ -114,7 +108,9 @@ MODULE.apiExpose({
         getNpcStrikeImage,
     },
 });
+
 MODULE.devExpose({ huds: HUDS });
+
 MODULE.debugExpose({ AvatarModel, HealthStatus });
 
 export { HUDS as hud };

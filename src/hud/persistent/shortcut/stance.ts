@@ -1,11 +1,13 @@
 import {
     AbilityItemPF2e,
+    canUseStances,
     CreaturePF2e,
     EffectPF2e,
     FeatPF2e,
     hasItemWithSourceId,
     IdField,
     localize,
+    toggleStance,
 } from "module-helpers";
 import {
     BaseShortcutSchema,
@@ -14,7 +16,6 @@ import {
     ShortcutSource,
 } from ".";
 import fields = foundry.data.fields;
-import { canUseStances, toggleStance } from "hud/sidebar";
 
 class StanceShortcut extends PersistentShortcut<
     StanceShortcutSchema,
