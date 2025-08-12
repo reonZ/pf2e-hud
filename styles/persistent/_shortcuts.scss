@@ -153,14 +153,14 @@
         &.inactive,
         &.greyed {
             .image {
-                filter: grayscale(1);
+                filter: grayscale(1) contrast(0.7);
             }
         }
 
         &.greyed {
             &:hover {
                 .image {
-                    filter: grayscale(1) brightness(1.5);
+                    filter: grayscale(1) contrast(0.7) brightness(1.5);
                 }
             }
         }
@@ -256,7 +256,7 @@
 
             &.disabled,
             &.greyed {
-                filter: grayscale(1);
+                filter: grayscale(1) contrast(0.7);
             }
         }
 

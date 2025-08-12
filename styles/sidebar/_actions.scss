@@ -190,7 +190,7 @@
         &.action {
             &.inactive {
                 .image {
-                    filter: grayscale(1);
+                    filter: grayscale(1) contrast(0.7);
                 }
 
                 .name {
