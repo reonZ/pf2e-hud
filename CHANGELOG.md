@@ -1,3 +1,31 @@
+# 2.22.0
+
+-   if you are using the `PF2e Dailies` module, you must update it to version `4.3.0`
+-   expose the missing api functions that were available in the v12 version
+-   add Brazilian Portuguese localization (thanks to [mclemente](https://github.com/mclemente))
+-   `Actions Sidebar`:
+    -   add support for `PF2e Toolbelt`'s `Hero Actions` tool
+        -   if you are using it, you must update toolbelt to version `3.8.3`
+        -   due to the ephemeral lifespan of hero actions, they cannot be made into shorctuts
+    -   add support for `PF2e Dailies`'s `Commander Tactics` daily
+    -   add the `Area Fire` and `Auto Fire` extra auxiliary actions from the `Starfinder Anachronism` module
+-   `Combat Tracker`:
+    -   add `Clear Movement Histories` button to the alternate layout where the settings button is at the bottom
+    -   fix scene link state tooltip localization
+        -   to mimic foundry's V13, the icon now represents the action instead of the current state
+-   `Extras Sidebar`:
+    -   add the `Point Out` action
+-   `Shortcuts`:
+    -   add a `contrast` filter on top of the already existing `grayscale` one to help identify unusable shortcuts that have black & white icons (i.e. all the action cost icons)
+    -   shortcuts are now removed by dragging them into a trash slot next to the shortcuts menu panel instead of using `[Middle-Click]`
+-   `Spells Sidebar`:
+    -   add support for the latest changes of `PF2e Dailies`'s `Animist` daily
+        -   the vessel spells that aren't from a primary apparition are no longer hidden but instead have a "retrain" button
+-   `Strike Shortcut`:
+    -   add an extra option to the `Use` context menu for extra auxiliary actions from the `Starfinder Anachronism` module
+    -   fix non-temporary alchemical weapons not being replaced by a similar one if the original has a quantity of 0
+-   fix strikes and their shortcuts with an associated item quantity of 0 not being disabled (also fix their tooltip)
+
 # 2.21.0
 
 -   the `Initiative` and `Action Variants` selects will now offer the lores as possible choices and sort everything by alphabetical order
