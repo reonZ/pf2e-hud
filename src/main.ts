@@ -1,9 +1,11 @@
-import { AvatarModel } from "avatar-editor";
+import { rollRecallKnowledge, useResolve } from "actions";
+import { AvatarEditor, AvatarModel } from "avatar-editor";
 import { HealthStatus } from "health-status";
 import {
     addStance,
     canUseStances,
     DicePF2eHUD,
+    getNpcStrikeImage,
     getStances,
     PersistentPF2eHUD,
     prepareActionGroups,
@@ -14,7 +16,15 @@ import {
     TrackerPF2eHUD,
 } from "hud";
 import { registerKeybinds } from "keybinds";
-import { createHTMLElement, MODULE, R, templatePath, userIsGM } from "module-helpers";
+import {
+    ActorPF2e,
+    createHTMLElement,
+    CreaturePF2e,
+    MODULE,
+    R,
+    templatePath,
+    userIsGM,
+} from "module-helpers";
 import { getGlobalSetting, registerSettings } from "settings";
 
 MODULE.register("pf2e-hud");
@@ -91,6 +101,18 @@ MODULE.apiExpose({
     addStance,
     canUseStances,
     getStances,
+    actions: {
+        rollRecallKnowledge,
+        useResolve,
+    },
+    utils: {
+        editAvatar: (actor: ActorPF2e) => {
+            if (!actor.isOfType("creature", "npc")) return;
+            const worldActor = (actor.token?.baseActor ?? actor) as CreaturePF2e;
+            new AvatarEditor(worldActor).render(true);
+        },
+        getNpcStrikeImage,
+    },
 });
 MODULE.devExpose({ huds: HUDS });
 MODULE.debugExpose({ AvatarModel, HealthStatus });
