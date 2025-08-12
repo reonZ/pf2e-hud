@@ -10,7 +10,7 @@
 </header>
 {{!-- spell --}}
 {{#each group.slotSpells}}
-<div class="item{{#if isVirtual}} virtual{{/if}}"
+<div class="item{{#if isVirtual}} virtual{{/if}}{{#if disabled}} inactive{{/if}}"
     data-item-type="spell{{#if isVirtual}}-slot-group{{/if}}" data-item-id="{{spell.id}}"
     data-entry-id="{{entryId}}" data-cast-rank="{{castRank}}" data-group-id="{{groupId}}" {{#if
     isPrepared}}data-slot-id="{{slotId}}" {{/if}} {{#if expended}}data-slot-expended{{/if}}
@@ -42,12 +42,15 @@
             {{/if}}
             {{!-- actions --}}
             <div class="actions">
+                {{!-- is not primary vessel --}}
+                {{#if untrainedVessel}}
+                {{{untrainedVessel}}}
                 {{!-- if broken --}}
-                {{#if isBroken}}
+                {{else if isBroken}}
                 <div class="broken" data-tooltip="{{@root.i18n.path 'broken'}}">
                     <i class="fa-solid fa-link-slash broken"></i>
                 </div>
-                {{!-- not broken --}}
+                {{!-- not broken or untrained --}}
                 {{else}}
                 {{!-- if uses --}}
                 {{#if uses}}

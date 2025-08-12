@@ -28,6 +28,10 @@
                     }
                 }
 
+                [data-action="dailies-retrain"] {
+                    margin-right: 1px;
+                }
+
                 .cast,
                 [data-action="toggle-slot-expended"] {
                     margin-top: 1px;
@@ -35,7 +39,7 @@
             }
         }
 
-        &[data-slot-expended] {
+        &.inactive {
             .image {
                 filter: grayscale(1);
             }

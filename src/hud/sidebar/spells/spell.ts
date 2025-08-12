@@ -81,6 +81,7 @@ type SlotSpellData = Omit<
     castRank: OneToTen;
     category: { icon: string; label: string };
     categoryType: SpellCategoryType;
+    disabled: boolean;
     entryId: string;
     entryTooltip: string;
     expended: boolean | undefined;
@@ -92,6 +93,7 @@ type SlotSpellData = Omit<
     signature: { toggled: boolean | undefined } | undefined;
     slotId: number;
     spell: SpellPF2e<CreaturePF2e>;
+    untrainedVessel: string | undefined;
     uses: (ValueAndMax & { input: string; itemId: string; hasMaxUses: boolean }) | undefined;
 };
 

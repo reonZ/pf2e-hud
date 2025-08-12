@@ -14,6 +14,7 @@ import {
     CreaturePF2e,
     dataToDatasetString,
     getEquipAnnotation,
+    htmlClosest,
     localeCompare,
     OneToTen,
     R,
@@ -39,14 +40,19 @@ class SpellsSidebarPF2eHUD extends SidebarPF2eHUD<SpellPF2e, SpellSidebarItem> {
         return getSpellcastingData.call(this);
     }
 
-    protected _onClickAction(event: PointerEvent, target: HTMLElement): void {
+    protected _onClickAction(event: PointerEvent, target: HTMLElement) {
         const action = target.dataset.action as EventAction;
 
         if (action === "slider") {
-            processSliderEvent(event, target, this.#onSlider.bind(this));
+            return processSliderEvent(event, target, this.#onSlider.bind(this));
         }
 
         if (event.button !== 0) return;
+
+        if (action === "dailies-retrain") {
+            const itemId = htmlClosest(target, "[data-item-id]")?.dataset.itemId;
+            return itemId && game.dailies?.api.retrainVessel(this.actor, itemId);
+        }
 
         const sidebarItem = this.getSidebarItemFromElement(target);
         if (!sidebarItem) return;
@@ -200,12 +206,16 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                 if (!active?.spell || active.uses?.max === 0) continue;
 
                 const spell = active.spell as SpellPF2e<CreaturePF2e>;
-                if (isVessel && !vesselsData.primary.includes(spell.id)) continue;
-
+                const expended = entry.isFocusPool ? focusExpended : active.expended;
                 const isVirtual = entry.isSpontaneous && !isCantrip && active.virtual;
                 const signature =
                     entry.isAnimist && !isCantrip && !isVirtual
                         ? { toggled: active.signature }
+                        : undefined;
+
+                const untrainedVesselBtn =
+                    isVessel && !vesselsData.primary.includes(spell.id)
+                        ? game.dailies?.api.createRetrainBtn(actor, spell.id, "vessel")
                         : undefined;
 
                 const spellData: SlotSpellData = {
@@ -215,9 +225,10 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                     castRank: (active.castRank ?? spell.rank) as OneToTen,
                     category,
                     categoryType: categoryType as SpellCategoryType,
+                    disabled: expended || isBroken || !!untrainedVesselBtn,
                     entryId,
                     entryTooltip,
-                    expended: entry.isFocusPool ? focusExpended : active.expended,
+                    expended,
                     groupId: group.id,
                     isBroken,
                     isVessel,
@@ -226,6 +237,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                     signature,
                     slotId,
                     spell,
+                    untrainedVessel: untrainedVesselBtn?.outerHTML,
                     uses: getUses(active),
                 };
 
@@ -279,6 +291,7 @@ interface SpellsSidebarPF2eHUD {
 
 type EventAction =
     | "cast-spell"
+    | "dailies-retrain"
     | "draw-item"
     | "slider"
     | "toggle-signature"
