@@ -1,11 +1,15 @@
+import { FilterValue, TextHudPopup } from "hud";
 import {
     ApplicationClosingOptions,
     ApplicationRenderOptions,
+    CharacterPF2e,
     CombatantPF2e,
     createHook,
     getFlag,
+    htmlClosest,
     ItemPF2e,
     setFlag,
+    TemplateLocalize,
 } from "module-helpers";
 import {
     ActionSection,
@@ -57,6 +61,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
         return {
             sections: await getSidebarActionsData.call(this),
             blasts: isCharacter && (await getSidebarBlastsData.call(this)),
+            heroActions: isCharacter && getHeroActionsData(actor),
             isCharacter,
             stances: isCharacter && getSidebarStancesData.call(this),
             strikes: await getSidebarStrikeData.call(this),
@@ -112,6 +117,37 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
             actor.setFlag("pf2e", "hideStowed", !actor.flags.pf2e.hideStowed);
         } else if (action === "toggle-show-shields") {
             setFlag(actor, "showShields", !getFlag(actor, "showShields"));
+        } else {
+            this.#onHeroEventAction(event, action);
+        }
+    }
+
+    async #onHeroEventAction(event: PointerEvent, action: Stringptionel<EventHeroAction>) {
+        const actor = this.actor;
+        const heroActions = game.toolbelt?.api.heroActions;
+        if (!heroActions || !actor.isOfType("character")) return;
+
+        if (action === "hero-actions-draw") {
+            heroActions.drawHeroActions(actor);
+        } else if (action === "hero-actions-trade") {
+            heroActions.tradeHeroAction(actor);
+        }
+
+        const uuid = htmlClosest(event.target, "[data-uuid]")?.dataset.uuid;
+        if (!uuid) return;
+
+        if (action === "hero-action-description") {
+            const details = await heroActions.getHeroActionDetails(uuid);
+
+            if (details) {
+                new TextHudPopup(this.actor, details.name, details.description).render(true);
+            }
+        } else if (action === "hero-action-discard") {
+            heroActions.discardHeroActions(actor, [uuid]);
+        } else if (action === "hero-action-use") {
+            heroActions.useHeroAction(actor, uuid);
+        } else if (action === "send-hero-action-to-chat") {
+            heroActions.sendActionToChat(actor, uuid);
         }
     }
 
@@ -122,15 +158,57 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
     }
 }
 
-type EventAction = "toggle-hide-stowed" | "toggle-show-shields";
+function getHeroActionsData(actor: CharacterPF2e): HeroActionData | undefined {
+    if (!game.toolbelt?.getToolSetting("heroActions", "enabled")) return;
+
+    const data = game.toolbelt.api.heroActions.getHeroActionsTemplateData(actor);
+    if (!data) return;
+
+    const actions = data.actions.map(({ name, uuid }) => {
+        return {
+            filterValue: new FilterValue(name),
+            name,
+            uuid,
+        };
+    });
+
+    return {
+        ...data,
+        actions,
+        filterValue: new FilterValue(...actions),
+        i18n: (key: string, { hash }: { hash: Record<string, string> }) => {
+            return game.i18n.format(`pf2e-toolbelt.heroActions.sheet.${key}`, hash);
+        },
+    };
+}
+
+type EventHeroAction =
+    | "hero-action-description"
+    | "hero-action-discard"
+    | "hero-action-use"
+    | "hero-actions-draw"
+    | "hero-actions-draw"
+    | "hero-actions-trade";
+
+type EventAction =
+    | EventHeroAction
+    | "send-hero-action-to-chat"
+    | "toggle-hide-stowed"
+    | "toggle-show-shields";
 
 type ActionsSidebarContext = {
     sections: ActionSection[] | undefined;
     blasts: MaybeFalsy<BlastsContext>;
+    heroActions: MaybeFalsy<HeroActionData>;
     isCharacter: boolean;
     stances: MaybeFalsy<StancesContext>;
     strikes: StrikesContext | undefined;
     variantLabel: (str: string) => string;
+};
+
+type HeroActionData = toolbelt.heroActions.HeroActionsTemplateData & {
+    filterValue: FilterValue;
+    i18n: TemplateLocalize;
 };
 
 export { ActionsSidebarPF2eHUD };

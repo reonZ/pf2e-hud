@@ -159,6 +159,54 @@
     <img src="{{strike.img}}" class="drag-img">
 </div>
 {{/each}}
+{{!-- hero actions --}}
+{{#if heroActions}}
+<header class="hero-actions" data-filter-value="{{heroActions.filterValue}}">
+    <div class="name">{{heroActions.i18n 'label'}}</div>
+    <div class="controls">
+        {{#if heroActions.usesCount}}
+        <a class="redraw" data-action="hero-actions-draw"
+            data-tooltip="{{heroActions.i18n 'redraw'}}">
+            <i class="fa-regular fa-cards-blank"></i>
+        </a>
+        {{else if heroActions.mustDraw}}
+        <a class="draw" data-action="hero-actions-draw"
+            data-tooltip="{{heroActions.i18n 'draw' nb=heroActions.diff}}">
+            <i class="fa-regular fa-cards-blank"></i>
+        </a>
+        {{/if}}
+        {{#if heroActions.canTrade}}
+        <a data-action="hero-actions-trade" data-tooltip="{{heroActions.i18n 'trade'}}">
+            <i class="fas fa-right-left"></i>
+        </a>
+        {{/if}}
+    </div>
+</header>
+{{#each heroActions.actions as |action|}}
+<div class="item action" data-uuid="{{action.uuid}}" data-filter-value="{{action.filterValue}}">
+    <div class="image" data-action="send-hero-action-to-chat">
+        <img src="systems/pf2e/icons/actions/Passive.webp">
+        <i class="fa-solid fa-message chat"></i>
+    </div>
+    <div class="name">
+        <a data-action="hero-action-description">{{action.name}}</a>
+    </div>
+    <div class="controls">
+        {{#if ../heroActions.canUse}}
+        <a data-action="hero-action-use" data-tooltip="{{../heroActions.i18n 'action.use'}}">
+            <i class="fa-solid fa-play"></i>
+        </a>
+        {{/if}}
+        {{#if ../heroActions.mustDiscard}}
+        <a class="discard" data-action="hero-action-discard"
+            data-tooltip="{{../heroActions.i18n 'action.discard'}}">
+            <i class="fa-solid fa-fw fa-trash"></i>
+        </a>
+        {{/if}}
+    </div>
+</div>
+{{/each}}
+{{/if}}
 {{!-- actions --}}
 {{#each sections as |section|}}
 <header data-filter-value="{{section.filterValue}}">
