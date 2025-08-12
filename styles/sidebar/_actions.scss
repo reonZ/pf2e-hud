@@ -186,6 +186,19 @@
         &.attack {
             flex-direction: column;
         }
+
+        &.action {
+            &.inactive {
+                .image {
+                    filter: grayscale(1);
+                }
+
+                .name {
+                    color: var(--color-disabled);
+                    text-decoration: line-through;
+                }
+            }
+        }
     }
 
     &:not(.pf2e-hud-fadeout) {

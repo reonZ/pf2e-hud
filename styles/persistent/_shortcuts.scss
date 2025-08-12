@@ -196,7 +196,7 @@
 
         .header {
             display: grid;
-            grid-template-columns: 3.2em 1fr;
+            grid-template-columns: calc(3.2em - 1px) 1fr;
             grid-template-rows: repeat(2, 1.6em);
             padding: 0.7em 1em;
             border-radius: 4px 0 0 4px;

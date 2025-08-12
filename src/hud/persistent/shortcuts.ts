@@ -567,9 +567,11 @@ type ShortcutCacheData = {
     animistVesselsData?: dailies.AnimistVesselsData | null;
     canCastStaffRank?: Partial<Record<OneToTen, boolean>>;
     canUseStances?: boolean | null;
+    commanderTactics?: string[] | null;
     explorations?: string[];
     getActionMacro?: toolbelt.ToolbeltApi["actionable"]["getActionMacro"] | null;
     hasItemWithSourceId?: Record<DocumentUUID, boolean>;
+    isTacticAbility?: dailies.DailiesApi["isTacticAbility"] | null;
     shortcutSpellData?: Record<string, SpellEntryData | null>;
     spellcastingEntry?: Record<string, CustomSpellcastingEntry | null>;
 };

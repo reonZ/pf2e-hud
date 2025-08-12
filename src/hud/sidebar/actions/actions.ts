@@ -114,30 +114,34 @@ async function getSidebarActionsData(
     const useLabel = (_cached.useLabel ??= game.i18n.localize("PF2E.Action.Use"));
     const removeEffect = (_cached.removeEffect ??= localize("sidebar.removeEffect"));
     const getActionMacro = game.toolbelt?.api.actionable.getActionMacro;
+    const tactics =
+        isCharacter && game.dailies?.active
+            ? game.dailies?.api.getCommanderTactics(actor)
+            : undefined;
 
     const abilities = abilityTypes.flatMap(
         (type): (FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>)[] => actor.itemTypes[type]
     );
 
-    const abilitiesPromises = abilities.map(async (ability) => {
-        const traits = ability.system.traits.value;
+    const abilitiesPromises = abilities.map(async (item) => {
+        const traits = item.system.traits.value;
         if (traits.includes("downtime")) return;
-        if (traits.includes("stance") && ability.system.selfEffect?.uuid) return;
+        if (traits.includes("stance") && item.system.selfEffect?.uuid) return;
 
         if (
-            isSupressedFeat(ability) ||
-            (ability.slug === "elemental-blast" && hasKineticAura) ||
-            (ability.isOfType("feat") && !ability.actionCost)
+            isSupressedFeat(item) ||
+            (item.slug === "elemental-blast" && hasKineticAura) ||
+            (item.isOfType("feat") && !item.actionCost)
         )
             return;
 
         const isExploration = isCharacter && traits.includes("exploration");
         if (!inParty && isExploration) return;
 
-        const sourceId = ability.sourceId;
+        const sourceId = item.sourceId;
         if (sourceId && excludedActions.includes(sourceId)) return;
 
-        const actionCost = ability.actionCost;
+        const actionCost = item.actionCost;
         const type =
             actionCost?.type ??
             (isCharacter ? (isExploration ? "exploration" : "free") : "passive");
@@ -149,17 +153,17 @@ async function getSidebarActionsData(
             type,
         };
 
-        const abilityId = ability.id;
-        const crafting = !isExploration && ability.crafting;
-        const selfEffect = !isExploration && !crafting ? ability.system.selfEffect : null;
-        const resource = crafting ? getActionResource(ability) : undefined;
-        const frequency = !isExploration && !resource ? getActionFrequency(ability) : undefined;
-        const macro = !isExploration && actionableEnabled && (await getActionMacro?.(ability));
+        const itemId = item.id;
+        const crafting = !isExploration && item.crafting;
+        const selfEffect = !isExploration && !crafting ? item.system.selfEffect : null;
+        const resource = crafting ? getActionResource(item) : undefined;
+        const frequency = !isExploration && !resource ? getActionFrequency(item) : undefined;
+        const macro = !isExploration && actionableEnabled && (await getActionMacro?.(item));
         const usable = !!(frequency || selfEffect || crafting || macro);
         const effect = selfEffect && findItemWithSourceId(actor, selfEffect.uuid, "effect");
 
         const usage: MaybeFalsy<ActionUsage> = usable && {
-            disabled: ability.crafting ? resource?.value === 0 : frequency?.value === 0,
+            disabled: item.crafting ? resource?.value === 0 : frequency?.value === 0,
             effect,
             label: effect
                 ? removeEffect
@@ -167,17 +171,24 @@ async function getSidebarActionsData(
         };
 
         const exploration = isExploration && {
-            active: explorations.includes(abilityId),
+            active: explorations.includes(itemId),
         };
 
+        const untrainedTacticBtn =
+            tactics && game.dailies?.api.isTacticAbility(item) && !tactics.includes(itemId)
+                ? game.dailies?.api.createRetrainBtn(actor, itemId, "tactic")
+                : undefined;
+
         const data: ActionData = {
+            disabled: !!untrainedTacticBtn,
             exploration,
             frequency,
-            id: abilityId,
-            img: getActionImg(ability, macro),
-            item: ability,
+            id: itemId,
+            img: getActionImg(item, macro),
+            item,
             resource,
-            toggles: ability.system.traits.toggles?.getSheetData() ?? [],
+            toggles: item.system.traits.toggles?.getSheetData() ?? [],
+            untrainedTactic: untrainedTacticBtn?.outerHTML,
             usage: usage || null,
         };
 
@@ -303,6 +314,7 @@ type ActionSection = {
 };
 
 type ActionData = {
+    disabled: boolean;
     exploration: MaybeFalsy<{ active: boolean }>;
     frequency: Maybe<LabeledValueAndMax>;
     id: string;
@@ -310,6 +322,7 @@ type ActionData = {
     item: AbilityItemPF2e<ActorPF2e> | FeatPF2e<ActorPF2e>;
     resource: Maybe<LabeledValueAndMax & { slug: string }>;
     toggles: TraitToggleViewData[];
+    untrainedTactic: string | undefined;
     usage: Maybe<ActionUsage>;
 };
 

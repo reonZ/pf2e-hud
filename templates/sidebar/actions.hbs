@@ -213,8 +213,8 @@
     <div class="name">{{localize section.label}}</div>
 </header>
 {{#each section.actions as |action|}}
-<div class="item action" data-item-id="{{action.id}}" draggable="true"
-    data-filter-value="{{action.filterValue}}">
+<div class="item action{{#if disabled}} inactive{{/if}}" data-item-id="{{action.id}}"
+    draggable="true" data-filter-value="{{action.filterValue}}">
     {{> (@root.partial 'item-image') action}}
     <div class="name">
         <a data-action="item-description">{{action.label}}</a>
@@ -244,7 +244,7 @@
             <i class="fa-solid fa-xmark"></i>
         </a>
         {{!-- use btn --}}
-        {{else}}
+        {{else if (not action.untrainedTactic)}}
         <a data-action="use-action" {{#if action.usage.disabled}} class="disabled" {{/if}}
             data-tooltip="{{action.usage.label}}">
             <i class="fa-solid fa-play"></i>
@@ -256,6 +256,10 @@
             <i class="fa-solid fa-toggle-{{ifThen action.exploration.active 'large-on' 'off'}}"></i>
         </a>
         {{!-- end if usages --}}
+        {{/if}}
+        {{!-- untrained commander tactic --}}
+        {{#if untrainedTactic}}
+        {{{untrainedTactic}}}
         {{/if}}
     </div>
 </div>

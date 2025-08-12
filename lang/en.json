@@ -337,6 +337,7 @@
                     "prepared": "Spell Not Prepared",
                     "quantity": "Quantity Is Zero",
                     "rank": "Cannot Cast That Rank",
+                    "tactic": "Not a Prepared Tactic",
                     "uses": "No Remaining Uses",
                     "vessel": "Not Primary Vessel"
                 }

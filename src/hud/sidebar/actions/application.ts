@@ -89,10 +89,15 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
         activateActionsListeners.call(this, html);
     }
 
-    protected _onClickAction(event: PointerEvent, target: HTMLElement): void {
+    protected _onClickAction(event: PointerEvent, target: HTMLElement) {
         if (event.button !== 0 || target.dataset.disabled === "true") return;
 
-        const action = target.dataset.action as string;
+        const action = target.dataset.action as Stringptionel<"dailies-retrain">;
+
+        if (action === "dailies-retrain") {
+            return game.dailies?.api.retrainFromElement(this.actor, target);
+        }
+
         const sidebarItem = this.getSidebarItemFromElement(target);
 
         if (!sidebarItem) {

@@ -26,9 +26,11 @@ class ActionShortcut extends PersistentShortcut<
 > {
     #actionCost?: OneToThree | "reaction" | "free" | null;
     #isExploration?: boolean;
+    #isTactic?: boolean;
     #selfEffect: Maybe<SelfEffectReference>;
     #macro: Maybe<MacroPF2e>;
     #uses?: ValueAndMaybeMax;
+    #isUntrained?: boolean;
 
     static defineSchema(): ActionShortcutSchema {
         return {
@@ -48,8 +50,10 @@ class ActionShortcut extends PersistentShortcut<
     }
 
     async _initShortcut(): Promise<void> {
-        const ability = this.item;
-        if (!ability) return;
+        const item = this.item;
+        if (!item) return;
+
+        const isCharacter = this.actor.isOfType("character");
 
         const getActionMacro = this.cached("getActionMacro", () => {
             return game.toolbelt?.getToolSetting("actionable", "action")
@@ -57,17 +61,37 @@ class ActionShortcut extends PersistentShortcut<
                 : null;
         });
 
-        const crafting = ability.crafting;
-        const actionCost = this.item?.actionCost;
-        const selfEffect = (this.#selfEffect = !crafting ? ability.system.selfEffect : null);
+        const isTacticAbility =
+            isCharacter &&
+            this.cached("isTacticAbility", () => {
+                return game.dailies?.active ? game.dailies?.api.isTacticAbility : null;
+            })?.(item);
 
-        this.#macro = !crafting && !selfEffect ? await getActionMacro?.(ability) : null;
-        this.#uses = getActionResource(ability) ?? getActionFrequency(ability) ?? undefined;
+        const includedInTactics =
+            isTacticAbility &&
+            this.cached("commanderTactics", () => {
+                return game.dailies?.active
+                    ? game.dailies?.api.getCommanderTactics(this.actor)
+                    : null;
+            })?.includes(item.id);
+
+        const crafting = item.crafting;
+        const actionCost = this.item?.actionCost;
+        const selfEffect = (this.#selfEffect = !crafting ? item.system.selfEffect : null);
+
+        this.#macro = !crafting && !selfEffect ? await getActionMacro?.(item) : null;
+        this.#uses = getActionResource(item) ?? getActionFrequency(item) ?? undefined;
         this.#actionCost = (actionCost?.type !== "action" && actionCost?.type) || actionCost?.value;
+        this.#isTactic = !!isTacticAbility;
+        this.#isUntrained = !includedInTactics;
+    }
+
+    get isUntrainedTactic(): boolean {
+        return !!this.#isTactic && !!this.#isUntrained;
     }
 
     get canUse(): boolean {
-        return !!this.item && (!this.uses || this.uses.value > 0);
+        return !!this.item && (!this.uses || this.uses.value > 0) && !this.isUntrainedTactic;
     }
 
     get isExploration(): boolean {
@@ -136,7 +160,13 @@ class ActionShortcut extends PersistentShortcut<
     }
 
     get unusableReason(): string | undefined {
-        return !this.item ? "match" : this.uses && this.uses.value < 1 ? "uses" : undefined;
+        return !this.item
+            ? "match"
+            : this.uses && this.uses.value < 1
+            ? "uses"
+            : this.isUntrainedTactic
+            ? "tactic"
+            : undefined;
     }
 
     use(event: MouseEvent): void {

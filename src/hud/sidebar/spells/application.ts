@@ -14,7 +14,6 @@ import {
     CreaturePF2e,
     dataToDatasetString,
     getEquipAnnotation,
-    htmlClosest,
     localeCompare,
     OneToTen,
     R,
@@ -50,8 +49,7 @@ class SpellsSidebarPF2eHUD extends SidebarPF2eHUD<SpellPF2e, SpellSidebarItem> {
         if (event.button !== 0) return;
 
         if (action === "dailies-retrain") {
-            const itemId = htmlClosest(target, "[data-item-id]")?.dataset.itemId;
-            return itemId && game.dailies?.api.retrainVessel(this.actor, itemId);
+            return game.dailies?.api.retrainFromElement(this.actor, target);
         }
 
         const sidebarItem = this.getSidebarItemFromElement(target);
