@@ -1,3 +1,4 @@
+import { rollRecallKnowledge } from "actions";
 import {
     BaseSidebarItem,
     BaseStatisticAction,
@@ -8,7 +9,6 @@ import {
     SingleCheckActionRollNoteData,
 } from "hud";
 import { AbilityItemPF2e, ActionCost, ActorPF2e, MODULE } from "module-helpers";
-import { rollRecallKnowledge } from ".";
 
 const RAW_EXTRAS_ACTIONS = [
     {
