@@ -35,6 +35,11 @@ const RAW_EXTRAS_ACTIONS = [
         variants: { agile: false },
     },
     {
+        key: "point-out",
+        actionCost: 1,
+        sourceId: "Compendium.pf2e.actionspf2e.Item.sn2hIy1iIJX9Vpgj",
+    },
+    {
         key: "earnIncome",
         sourceId: "Compendium.pf2e.actionspf2e.Item.QyzlsLrqM0EEwd7j",
     },
