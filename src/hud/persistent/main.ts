@@ -216,6 +216,10 @@ class PersistentPF2eHUD
         return this.#shortcutsTab;
     }
 
+    get worldActor(): PersistentHudActor | null {
+        return (this.actor?.token?.baseActor ?? this.actor) as PersistentHudActor | null;
+    }
+
     protected _configurate(): void {
         const enabled = this.settings.display !== "disabled";
         const selection = this.settings.selection;
@@ -480,10 +484,6 @@ class PersistentPF2eHUD
     protected _cleanupActor(): void {
         super._cleanupActor();
         this.#actor = null;
-    }
-
-    get worldActor(): PersistentHudActor | null {
-        return (this.actor?.token?.baseActor ?? this.actor) as PersistentHudActor | null;
     }
 
     protected async _onClickAction(event: PointerEvent, target: HTMLElement) {

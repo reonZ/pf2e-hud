@@ -15,6 +15,7 @@ import {
     dataToDatasetString,
     getDragEventData,
     getFlag,
+    htmlQuery,
     isCastConsumable,
     isInstanceOf,
     MacroPF2e,
@@ -101,6 +102,10 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         );
     }
 
+    get shortcutBinElement(): HTMLElement | null {
+        return htmlQuery(this.parent.element, `[data-panel="shortcut-bin"]`);
+    }
+
     async replace(slot: number, data: ShortcutData): Promise<boolean> {
         const shortcut = await this.#instantiateShortcut(data, slot);
         if (!shortcut) return false;
@@ -111,6 +116,18 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         return true;
     }
 
+    getSlotElement(slot: number): HTMLElement | null {
+        return htmlQuery(this.element, `.shortcut[data-slot="${slot}"]`);
+    }
+
+    setSlotElement(slot: number, content = "") {
+        const slotElement = this.getSlotElement(slot);
+
+        if (slotElement) {
+            slotElement.innerHTML = content;
+        }
+    }
+
     swap(slot: number, targetSlot: number): boolean {
         if (slot === targetSlot) return false;
 
@@ -118,10 +135,13 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         if (!shortcut) return false;
 
         const targetShortcut = this.shortcuts.get(targetSlot);
+        const targetSlotContent = this.getSlotElement(targetSlot)?.innerHTML;
 
+        this.setSlotElement(targetSlot, this.getSlotElement(slot)?.innerHTML);
         this.shortcuts.set(targetSlot, shortcut);
 
         if (targetShortcut) {
+            this.setSlotElement(slot, targetSlotContent);
             this.shortcuts.set(slot, targetShortcut);
         } else {
             this.shortcuts.delete(slot);
@@ -133,6 +153,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 
     remove(slot: number): boolean {
         if (this.shortcuts.delete(slot)) {
+            this.setSlotElement(slot, "");
             this.save();
             return true;
         }
@@ -337,8 +358,16 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         const actor = this.actor;
         if (!actor) return;
 
-        const shortcuts = html.querySelectorAll<HTMLElement>(".shortcut");
+        this.shortcutBinElement?.addEventListener("drop", (event) => {
+            const dragData = getDragEventData<ShortcutDragData>(event);
+            const slot = dragData?.fromShortcut?.slot;
 
+            if (R.isNumber(slot)) {
+                this.remove(slot);
+            }
+        });
+
+        const shortcuts = html.querySelectorAll<HTMLElement>(".shortcut");
         const isLocked = (event: Event): boolean => {
             if (!ui.hotbar.locked) return false;
 
@@ -411,26 +440,17 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                 }
             });
 
-            target.addEventListener("auxclick", (event) => {
-                if (event.button === 2) {
-                    game.tooltip.deactivate();
+            target.addEventListener("contextmenu", (event) => {
+                game.tooltip.deactivate();
 
-                    if (event.ctrlKey || !shortcut.canAltUse) {
-                        if (this.actor && shortcut.item) {
-                            new ShortcutPopup(
-                                this.actor,
-                                shortcut,
-                                this.save.bind(this),
-                                event
-                            ).render(true);
-                        }
-                    } else {
-                        shortcut.item && shortcut.altUse(event);
+                if (event.ctrlKey || !shortcut.canAltUse) {
+                    if (this.actor && shortcut.item) {
+                        new ShortcutPopup(this.actor, shortcut, this.save.bind(this), event).render(
+                            true
+                        );
                     }
                 } else {
-                    game.tooltip.dismissLockedTooltips();
-                    if (isLocked(event)) return;
-                    this.remove(slot);
+                    shortcut.item && shortcut.altUse(event);
                 }
             });
 
@@ -456,6 +476,21 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                         slot: shortcut.slot,
                     },
                 });
+
+                const shortcutBinElement = this.shortcutBinElement;
+                if (shortcutBinElement) {
+                    shortcutBinElement.classList.add("visible");
+
+                    shortcutBinElement.addEventListener("drop", () => {});
+
+                    window.addEventListener(
+                        "dragend",
+                        () => {
+                            shortcutBinElement.classList.remove("visible");
+                        },
+                        { once: true }
+                    );
+                }
             });
         }
     }
@@ -636,4 +671,4 @@ type StrictlyRequired<T> = {
 };
 
 export { createShortcutCache, PersistentShortcutsPF2eHUD };
-export type { ShortcutCache, ShortcutData, ShortcutsList, ShortcutSlotId };
+export type { ShortcutCache, ShortcutData, ShortcutDragData, ShortcutsList, ShortcutSlotId };

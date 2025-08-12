@@ -203,11 +203,34 @@
         min-width: 7.154em;
         width: fit-content;
         align-items: center;
+        position: relative;
 
         .tabs {
             display: flex;
             align-items: center;
             gap: 0.1em;
+        }
+
+        [data-panel="shortcut-bin"] {
+            z-index: 999;
+            position: absolute;
+            width: 4em;
+            height: 4em;
+            align-items: center;
+            justify-content: center;
+            bottom: calc(var(--outer-border-width) * -1);
+            left: calc(100% + var(--panel-gap));
+            box-shadow: inset 0 0 8px black;
+
+            i {
+                width: unset;
+                font-size: 2em;
+                opacity: 0.5;
+            }
+
+            &:not(.visible) {
+                display: none;
+            }
         }
     }
 
