@@ -1,9 +1,12 @@
 import { getActionCategory, getNpcStrikeImage, getStrikeActions } from "hud";
 import {
     ActorPF2e,
+    CharacterPF2e,
     CharacterStrike,
     ConsumablePF2e,
+    createAreaFireMessage,
     CreaturePF2e,
+    getExtraAuxiliaryAction,
     MeleePF2e,
     R,
     StrikeData,
@@ -12,7 +15,13 @@ import {
     ZeroToTwo,
 } from "module-helpers";
 import { AttackShortcut, AttackShortcutSchema, generateAttackShortcutFields } from ".";
-import { ShortcutCost, ShortcutLabel, ShortcutRadialSection, ShortcutSource } from "..";
+import {
+    ShortcutCost,
+    ShortcutLabel,
+    ShortcutRadialOption,
+    ShortcutRadialSection,
+    ShortcutSource,
+} from "..";
 import fields = foundry.data.fields;
 
 class StrikeShortcut extends AttackShortcut<
@@ -22,6 +31,7 @@ class StrikeShortcut extends AttackShortcut<
 > {
     #ammo!: ConsumablePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e> | null;
     #damageType?: string | null;
+    #extraAuxiliaryAction?: { label: string; glyph: string } | null;
     #uses!: ValueAndMaybeMax | null;
 
     static defineSchema(): StrikeShortcutSchema {
@@ -41,10 +51,19 @@ class StrikeShortcut extends AttackShortcut<
         this.#uses =
             (ammo?.isOfType("consumable") && ammo.uses.max > 1 && ammo.uses) ||
             (ammo ? { value: ammo.quantity } : null);
+
+        if (!game.modules.get("sf2e-anachronism")?.active) return;
     }
 
     async _getAttackData(): Promise<Maybe<StrikeData | CharacterStrike>> {
         return getStrikeActions(this.actor, { id: this.itemId, slug: this.slug })[0];
+    }
+
+    get extraAuxiliaryAction(): { label: string; glyph: string } | null {
+        return (this.#extraAuxiliaryAction ??=
+            game.modules.get("sf2e-anachronism")?.active && this.item?.isOfType("weapon")
+                ? getExtraAuxiliaryAction(this.item) ?? null
+                : null);
     }
 
     get isEquipped(): boolean {
@@ -163,21 +182,37 @@ class StrikeShortcut extends AttackShortcut<
                         ? variants[0].label
                         : variants[0].label.split(" ")[1];
 
+                    const options: ShortcutRadialOption[] = [
+                        { value: `${index}-0`, label: `${strikeLabel} ${variant0Label}` },
+                        { value: `${index}-1`, label: variants[1].label },
+                        { value: `${index}-2`, label: variants[2].label },
+                    ];
+
+                    const extraAuxiliaryAction = this.extraAuxiliaryAction;
+                    if (extraAuxiliaryAction) {
+                        const glyph = Handlebars.helpers.actionGlyph(extraAuxiliaryAction.glyph);
+
+                        options.push({
+                            value: "extra-auxiliary",
+                            label: `${extraAuxiliaryAction.label} ${glyph}`,
+                        });
+                    }
+
                     return {
                         title: item.isMelee
                             ? "PF2E.WeaponRangeMelee"
                             : item.isThrown
                             ? "PF2E.TraitThrown"
                             : "PF2E.NPCAttackRanged",
-                        options: [
-                            { value: `${index}-0`, label: `${strikeLabel} ${variant0Label}` },
-                            { value: `${index}-1`, label: variants[1].label },
-                            { value: `${index}-2`, label: variants[2].label },
-                        ],
+                        options,
                     };
                 });
             },
             (event, value) => {
+                if (value === "extra-auxiliary") {
+                    return createAreaFireMessage(this.item as WeaponPF2e<CharacterPF2e>);
+                }
+
                 const [index, map] = value.split("-").map(Number) as [number, ZeroToTwo];
                 const attack = index === 0 ? attackData : attackData.altUsages?.at(index - 1);
 

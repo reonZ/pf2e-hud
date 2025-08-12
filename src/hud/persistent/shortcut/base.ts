@@ -314,6 +314,7 @@ export type {
     ShortcutCost,
     ShortcutDataset,
     ShortcutLabel,
+    ShortcutRadialOption,
     ShortcutRadialSection,
     ShortcutSource,
 };

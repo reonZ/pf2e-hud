@@ -5,11 +5,11 @@ import {
     CharacterPF2e,
     createAreaFireMessage,
     ErrorPF2e,
+    getExtraAuxiliaryAction,
     getFlag,
     htmlQuery,
     localize,
     MeleePF2e,
-    NPCAttackTrait,
     objectHasKey,
     R,
     StrikeData,
@@ -70,18 +70,7 @@ class ActionsSidebarStrike extends BaseSidebarItem<
 
     // we handle sf2e auxiliary here
     get extraAuxiliaryAction(): { label: string; glyph: string } | undefined {
-        if (!game.modules.get("sf2e-anachronism")?.active) return;
-
-        const item = this.item;
-        const traits = item.system.traits.value as (NPCAttackTrait | "grenade" | "automatic")[];
-        const isArea = traits.some((trait) => trait.startsWith("area-") || trait === "grenade");
-        const isAutomatic = traits.includes("automatic");
-        if (!isArea && !isAutomatic) return;
-
-        return {
-            glyph: traits.some((t) => t === "grenade") ? "1" : "2",
-            label: game.i18n.localize(`SF2E.Actions.${isArea ? "AreaFire" : "AutoFire"}.Title`),
-        };
+        return this.item.isOfType("weapon") ? getExtraAuxiliaryAction(this.item) : undefined;
     }
 
     getStrike(altUsage: StrikeAltUsage, readyOnly = false): ActionsSidebarStrike | null {
