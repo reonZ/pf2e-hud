@@ -256,7 +256,9 @@
 
             &.disabled,
             &.greyed {
-                filter: grayscale(1) contrast(0.7);
+                .image {
+                    filter: grayscale(1) contrast(0.7);
+                }
             }
         }
 
