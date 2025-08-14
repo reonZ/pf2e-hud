@@ -1,8 +1,9 @@
 # 2.22.1
 
+-   `Persistent HUD`:
+    -   fix the `Current Combatant` option not really working
 -   `Token HUD`:
     -   is no longer disabled when the `Current Combatant` option is selected for the `Persistent HUD` `Selection Mode`
-    -   fix the `Current Combatant` option not really working
 
 # 2.22.0
 
