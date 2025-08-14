@@ -7,9 +7,11 @@ import {
     ApplicationConfiguration,
     ApplicationRenderOptions,
     CharacterPF2e,
+    CombatantPF2e,
     confirmDialog,
     createHook,
     createToggleKeybind,
+    EncounterPF2e,
     getDataFlag,
     getFlag,
     htmlQuery,
@@ -17,6 +19,7 @@ import {
     NPCPF2e,
     R,
     render,
+    toggleHooksAndWrappers,
     TokenDocumentPF2e,
     TokenPF2e,
     updateFlag,
@@ -69,6 +72,29 @@ class PersistentPF2eHUD
         "controlToken",
         foundry.utils.debounce(() => this.render(), 1)
     );
+
+    #combatHooks = [
+        createHook("combatStart", (combat: EncounterPF2e) => {
+            const hook = combat.combatants.size ? "updateCombat" : "createCombatant";
+            Hooks.once(hook, () => {
+                this.render();
+            });
+        }),
+        createHook("deleteCombat", (combat: EncounterPF2e) => {
+            this.render();
+        }),
+        createHook("deleteCombatant", (combatant: CombatantPF2e) => {
+            if (combatant.encounter?.combatants.size === 0) {
+                Hooks.once("combatTurnChange", (combat: EncounterPF2e) => {
+                    this.render();
+                });
+
+                Hooks.once("createCombatant", () => {
+                    this.render();
+                });
+            }
+        }),
+    ];
 
     #setActorKeybind = createToggleKeybind({
         name: "setActor",
@@ -229,6 +255,8 @@ class PersistentPF2eHUD
         this.#controlTokenHook.toggle(enabled && selection === "select");
         this.#setActorKeybind.toggle(enabled && selection === "manual");
 
+        toggleHooksAndWrappers(this.#combatHooks, enabled && selection === "combat");
+
         if (game.ready) {
             if (enabled) {
                 this.render(true);
@@ -247,6 +275,12 @@ class PersistentPF2eHUD
             this.render(true);
         } else {
             this.close({ force: true });
+        }
+
+        if (this.settings.selection === "combat" && game.combat?.combatants.size === 0) {
+            Hooks.once("createCombatant", () => {
+                this.render();
+            });
         }
     }
 
