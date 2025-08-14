@@ -115,7 +115,7 @@ class TokenPF2eHUD
         const enabled =
             this.settings.enabled &&
             (hud.persistent.settings.display === "disabled" ||
-                !["select", "combat"].includes(hud.persistent.settings.selection));
+                hud.persistent.settings.selection !== "select");
 
         this._toggleTokenHooks(enabled);
         this.#tokenClickLeftWrapper.toggle(enabled);
