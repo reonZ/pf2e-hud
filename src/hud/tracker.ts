@@ -118,6 +118,15 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
                 },
             },
             {
+                key: "partyAsObserved",
+                type: Boolean,
+                default: false,
+                scope: "world",
+                onChange: () => {
+                    this.#onRenderCombatTracker();
+                },
+            },
+            {
                 key: "enabled",
                 type: Boolean,
                 default: true,
