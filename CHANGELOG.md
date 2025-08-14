@@ -1,3 +1,9 @@
+# 2.22.1
+
+-   `Token HUD`:
+    -   is no longer disabled when the `Current Combatant` option is selected for the `Persistent HUD` `Selection Mode`
+    -   fix the `Current Combatant` option not really working
+
 # 2.22.0
 
 -   if you are using the `PF2e Dailies` module, you must update it to version `4.3.0`
@@ -6,7 +12,7 @@
 -   `Actions Sidebar`:
     -   add support for `PF2e Toolbelt`'s `Hero Actions` tool
         -   if you are using it, you must update toolbelt to version `3.8.3`
-        -   due to the ephemeral lifespan of hero actions, they cannot be made into shorctuts
+        -   due to the ephemeral lifespan of hero actions, they cannot be made into shortcuts
     -   add support for `PF2e Dailies`'s `Commander Tactics` daily
     -   add the `Area Fire` and `Auto Fire` extra auxiliary actions from the `Starfinder Anachronism` module
 -   `Combat Tracker`:
