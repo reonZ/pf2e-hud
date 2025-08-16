@@ -337,6 +337,7 @@
           "prepared": "Sort non préparé",
           "quantity": "Quantité de zéro",
           "rank": "Ne peut Lancer à ce rang",
+          "tactic": "Pas une tactique préparée",
           "uses": "Pas d'utilisation restante",
           "vessel": "Pas le réceptacle primaire"
         }
