@@ -367,7 +367,8 @@
                     "expended": "法术已消耗",
                     "vessel": "非主要容器",
                     "combat": "未进入战斗",
-                    "macro": "未找到可匹配的宏"
+                    "macro": "未找到可匹配的宏",
+                    "tactic": "该战术未准备"
                 },
                 "active": "激活",
                 "altUse": {
