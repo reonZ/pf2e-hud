@@ -1,3 +1,10 @@
+# 2.22.2
+
+-   `Combat Tracker`:
+    -   fix `Health Status` showing even when disabled
+    -   fix `Party Alliance as Observed` setting not being registered (despite it being used in the code)
+        -   it used to be a global setting but is now only ever used in the combat tracker so it was moved
+
 # 2.22.1
 
 -   `Persistent HUD`:
