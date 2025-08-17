@@ -333,7 +333,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             );
 
             const health: TrackerHealth | undefined = (() => {
-                if (!actor || (!canObserve && !healthStatus)) return;
+                if (!actor || (!canObserve && !healthStatus.enabled)) return;
 
                 const health = calculateActorHealth(actor);
                 if (!health) return;
