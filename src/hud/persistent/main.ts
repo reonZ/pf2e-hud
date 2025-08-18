@@ -30,6 +30,7 @@ import { PersistentEffectsPF2eHUD, PersistentShortcutsPF2eHUD, ShortcutData } fr
 import {
     BaseActorPF2eHUD,
     createSlider,
+    getTextureMask,
     HUDSettingsList,
     IAdvancedPF2eHUD,
     makeAdvancedHUD,
@@ -45,10 +46,11 @@ class PersistentPF2eHUD
     extends makeAdvancedHUD(BaseActorPF2eHUD<PersistentSettings, PersistentHudActor>)
     implements IAdvancedPF2eHUD
 {
-    #previousActor: ActorPF2e | null = null;
     #actor: ActorPF2e | null = null;
+    #controlled: ActorPF2e | null | undefined;
     #effectsPanel = new PersistentEffectsPF2eHUD(this);
     #portraitElement: HTMLElement | null = null;
+    #previousActor: ActorPF2e | null = null;
     #shortcutsPanel = new PersistentShortcutsPF2eHUD(this);
     #shortcutsTab: ValueAndMinMax = {
         value: 1,
@@ -70,7 +72,12 @@ class PersistentPF2eHUD
 
     #controlTokenHook = createHook(
         "controlToken",
-        foundry.utils.debounce(() => this.render(), 1)
+        foundry.utils.debounce((token, controlled) => {
+            if (!controlled) {
+                this.#previousActor = null;
+            }
+            this.render();
+        }, 1)
     );
 
     #combatHooks = [
@@ -313,14 +320,16 @@ class PersistentPF2eHUD
 
         const prospectActor =
             mode === "manual"
-                ? this.savedActor ?? game.user.character
+                ? this.savedActor
                 : mode === "select"
-                ? R.only(canvas.tokens.controlled)?.actor
+                ? (this.#controlled = R.only(canvas.tokens.controlled)?.actor) ??
+                  this.#previousActor
                 : mode === "combat"
                 ? game.combat?.combatant?.actor
                 : null;
 
         this.#actor = this.isValidActor(prospectActor) ? prospectActor : null;
+
         this.#portraitElement = null;
 
         if (this.#actor) {
@@ -449,19 +458,51 @@ class PersistentPF2eHUD
         return this.updateShortcuts(`==${game.userId}`, shortcuts);
     }
 
+    protected _configureRenderOptions(options: PersistentRenderOptions): void {
+        options.selectionMode = this.settings.selection;
+    }
+
     async _prepareContext(
-        options: ApplicationRenderOptions
-    ): Promise<PersistentContext | PersistentContextBase> {
+        options: PersistentRenderOptions
+    ): Promise<EmptyPersistentContext | PersistentContext | PersistentContextBase> {
         const actor = this.actor!;
         const context = (await super._prepareContext(options)) as ReturnedAdvancedHudContext;
-        const setActor = getSetActorData(this);
         const noEffects = !this.settings.showEffects;
+
+        const setActor: PersistentContextBase["setActor"] = (() => {
+            if (options.selectionMode === "combat") return;
+
+            const isManual = options.selectionMode === "manual";
+            const hasSavedActor = isManual && !!this.savedActor;
+            const isControlled = !isManual && !!actor && !this.#controlled;
+            if (!hasSavedActor && !isControlled) return;
+
+            const unsetTxt = localize("persistent.menu.setActor.unset");
+
+            let tooltip = "";
+
+            if (isManual) {
+                if (hasSavedActor) {
+                    const setTxt = localize("persistent.menu.setActor.set");
+                    tooltip += `<div>${localize("leftClick")} ${setTxt}</div>`;
+                }
+
+                tooltip += `<div>${localize("rightClick")} ${unsetTxt}</div>`;
+            } else {
+                tooltip += `<div>${unsetTxt}</div>`;
+            }
+
+            return {
+                disabled: isManual && !hasSavedActor,
+                icon: isManual ? "fa-solid fa-user-vneck" : "fa-solid fa-turn-left",
+                tooltip,
+            };
+        })();
 
         const data: PersistentContextBase = {
             ...context,
             noEffects,
             setActor,
-            shortcutsTab: createSlider("shortcuts-tab", this.shortcutsTab),
         };
 
         if (context.hasActor) {
@@ -469,31 +510,61 @@ class PersistentPF2eHUD
                 ...data,
                 ac: actor.attributes.ac.value,
                 avatar: actor.img,
+                shortcutsTab: createSlider("shortcuts-tab", this.shortcutsTab),
             } satisfies PersistentContext;
-        }
+        } else if (options.selectionMode !== "combat") {
+            const allOwned = game.user.isGM
+                ? game.actors.party?.members.filter(
+                      (actor) => !actor.token && actor.isOfType("character", "npc")
+                  )
+                : game.actors.filter(
+                      (actor) => !actor.token && actor.isOwner && actor.isOfType("character", "npc")
+                  );
 
-        return data;
+            const actors: OwnedActorContext[] = R.pipe(
+                allOwned?.slice(0, 20) ?? [],
+                R.map((actor): OwnedActorContext => {
+                    return {
+                        id: actor.id,
+                        name: actor.name,
+                        texture: {
+                            ...actor.prototypeToken.texture,
+                            mask: getTextureMask(actor.prototypeToken.texture),
+                        },
+                    };
+                })
+            );
+
+            return {
+                ...data,
+                actors,
+                double: actors.length > 5,
+            } satisfies EmptyPersistentContext;
+        } else {
+            return data;
+        }
     }
 
     protected async _renderHTML(
-        context: PersistentContext | {},
-        options: ApplicationRenderOptions
+        context: EmptyPersistentContext | PersistentContext,
+        options: PersistentRenderOptions
     ): Promise<string> {
         const actor = this.actor;
         const persistent = await render("persistent", context);
-
         const actorHud = actor
             ? await render("actor-hud", { ...context, i18n: "actor-hud" })
-            : R.pipe(
+            : options.selectionMode === "combat"
+            ? R.pipe(
                   ["alliance", "details", "info", "npc-extras", "sidebars", "statistics"],
                   R.map((x) => `<div data-panel="${x}"></div>`),
                   R.join("")
-              );
+              )
+            : "";
 
         return persistent + actorHud;
     }
 
-    async _replaceHTML(result: string, content: HTMLElement, options: ApplicationRenderOptions) {
+    async _replaceHTML(result: string, content: HTMLElement, options: PersistentRenderOptions) {
         const hotbar = document.getElementById("hotbar");
 
         content.innerHTML = result;
@@ -510,13 +581,17 @@ class PersistentPF2eHUD
 
         this.#setupAvatar(content);
         this.effectsPanel.refresh();
-        this.shortcutsPanel.render(true);
+
+        if (this.actor || options.selectionMode === "combat") {
+            this.shortcutsPanel.render(true);
+        }
 
         this.#activateListeners(content);
     }
 
     protected _cleanupActor(): void {
         super._cleanupActor();
+        this.#controlled = null;
         this.#actor = null;
     }
 
@@ -526,7 +601,12 @@ class PersistentPF2eHUD
         const action = target.dataset.action as EventAction;
 
         if (action === "set-actor") {
-            this.setSelectedToken(event);
+            if (this.settings.selection === "manual") {
+                this.setSelectedToken(event);
+            } else {
+                this.#previousActor = null;
+                this.render();
+            }
         }
 
         if (event.button !== 0) return;
@@ -553,6 +633,8 @@ class PersistentPF2eHUD
             this.element.classList.toggle("muted", game.audio.globalMute);
         } else if (action === "open-sheet") {
             this.actor?.sheet.render(true);
+        } else if (action === "select-owned-actor") {
+            this.#setOwnedActor(target);
         } else if (action === "toggle-effects") {
             this.settings.showEffects = !this.settings.showEffects;
         } else if (action === "toggle-clean") {
@@ -566,6 +648,21 @@ class PersistentPF2eHUD
     _onSlider(action: "shortcuts-tab", direction: 1 | -1): void {
         if (action === "shortcuts-tab") {
             this.setShortcutTab(this.shortcutsTab.value + direction);
+        }
+    }
+
+    #setOwnedActor(target: HTMLElement) {
+        const actorId = target.dataset.actorId ?? "";
+        const actor = game.actors.get(actorId);
+        if (!actor) return;
+
+        const mode = this.settings.selection;
+
+        if (mode === "manual") {
+            this.setActor(actor);
+        } else if (mode === "select") {
+            this.#previousActor = actor;
+            this.render();
         }
     }
 
@@ -706,23 +803,6 @@ function toggleFoundryBtn(id: string, action: string) {
     document.querySelector<HTMLButtonElement>(`#${id} [data-action="${action}"]`)?.click();
 }
 
-function getSetActorData(hud: PersistentPF2eHUD): PersistentContextBase["setActor"] {
-    if (hud.settings.selection !== "manual") return;
-
-    const hasSavedActor = !!hud.savedActor;
-    const setTxt = localize("persistent.menu.setActor.set");
-
-    const tooltip = hasSavedActor
-        ? `<div>${localize("leftClick")} ${setTxt}</div>
-        <div>${localize("rightClick")} ${localize("persistent.menu.setActor.unset")}</div>`
-        : `<div>${setTxt}</div>`;
-
-    return {
-        tooltip,
-        disabled: !hasSavedActor,
-    };
-}
-
 type EventAction =
     | "clear-hotbar"
     | "clear-shortcuts"
@@ -731,10 +811,15 @@ type EventAction =
     | "fill-shortcuts"
     | "mute-sound"
     | "open-sheet"
+    | "select-owned-actor"
     | "set-actor"
     | "toggle-clean"
     | "toggle-effects"
     | "toggle-hotbar-lock";
+
+type PersistentRenderOptions = ApplicationRenderOptions & {
+    selectionMode: PersistentSettings["selection"];
+};
 
 type SetActorOptions = { token?: TokenPF2e };
 
@@ -752,12 +837,23 @@ type PersistentSettings = {
 type PersistentContext = PersistentContextBase & {
     ac: number;
     avatar: ImageFilePath;
+    shortcutsTab: SliderData;
+};
+
+type EmptyPersistentContext = PersistentContextBase & {
+    actors: OwnedActorContext[];
+    double: boolean;
+};
+
+type OwnedActorContext = {
+    id: string;
+    name: string;
+    texture: ModelPropsFromSchema<foundry.data.TextureDataSchema> & { mask?: string };
 };
 
 type PersistentContextBase = ReturnedAdvancedHudContext & {
     noEffects: boolean;
-    setActor: { tooltip: string; disabled: boolean } | undefined;
-    shortcutsTab: SliderData;
+    setActor: { tooltip: string; disabled: boolean; icon: string } | undefined;
 };
 
 type PersistentCloseOptions = ApplicationClosingOptions & {

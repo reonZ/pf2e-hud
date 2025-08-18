@@ -35,6 +35,7 @@ import {
     BasePF2eHUD,
     calculateActorHealth,
     getStatistics,
+    getTextureMask,
     HUDSettingsList,
     rollInitiative,
     StatisticType,
@@ -302,14 +303,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
                 ...((textureScaling && combatant.token?.texture) || { scaleX: 1, scaleY: 1 }),
                 img: await tracker._getCombatantThumbnail(combatant),
             };
-
-            if (texture.scaleX >= 1.2 || texture.scaleY >= 1.2) {
-                const scale = texture.scaleX > texture.scaleY ? texture.scaleX : texture.scaleY;
-                const ringPercent = 100 - Math.floor(((scale - 0.7) / scale) * 100);
-                const limitPercent = 100 - Math.floor(((scale - 0.8) / scale) * 100);
-
-                texture.mask = `radial-gradient(circle at center, black ${ringPercent}%, rgba(0, 0, 0, 0.2) ${limitPercent}%)`;
-            }
+            texture.mask = getTextureMask(texture);
 
             const toggleName: TrackerTurn["toggleName"] | false = isGM &&
                 tokenSetsNameVisibility &&

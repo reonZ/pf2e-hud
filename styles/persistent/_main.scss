@@ -234,6 +234,52 @@
         }
     }
 
+    [data-panel="owned-actors"] {
+        grid-column: info-start / full-end;
+        grid-row: top-start / middle-end;
+        background: none;
+        border: none;
+        padding: 0;
+        display: grid;
+        pointer-events: none;
+        gap: var(--panel-gap);
+
+        .owned-actor {
+            background: var(--panel-background);
+            border: var(--outer-border);
+            border-radius: var(--outer-border-radius);
+            display: flex;
+            cursor: pointer;
+            filter: brightness(0.6);
+            pointer-events: all;
+
+            img {
+                object-fit: contain;
+            }
+
+            &:hover {
+                filter: brightness(1.2);
+            }
+        }
+
+        &.simple {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        &.double {
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: 1fr 1fr;
+            direction: rtl;
+            transform: rotate(180deg);
+
+            .owned-actor {
+                direction: ltr;
+                transform: rotate(180deg);
+                border-radius: var(--outer-border-radius);
+            }
+        }
+    }
+
     &.cleaned {
         [data-action="toggle-clean"]:not(.cleaned) {
             display: none;

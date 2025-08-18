@@ -121,6 +121,16 @@ function getUiScale(): number {
     return game.settings.get<{ uiScale?: number }>("core", "uiConfig")?.uiScale ?? 1;
 }
 
+function getTextureMask({ scaleX, scaleY }: { scaleX: number; scaleY: number }) {
+    if (scaleX >= 1.2 || scaleY >= 1.2) {
+        const scale = scaleX > scaleY ? scaleX : scaleY;
+        const ringPercent = 100 - Math.floor(((scale - 0.7) / scale) * 100);
+        const limitPercent = 100 - Math.floor(((scale - 0.8) / scale) * 100);
+
+        return `radial-gradient(circle at center, black ${ringPercent}%, rgba(0, 0, 0, 0.2) ${limitPercent}%)`;
+    }
+}
+
 type SliderData = {
     action: string;
     canBack: boolean;
@@ -132,6 +142,7 @@ export {
     createSlider,
     FilterValue,
     getCoverEffect,
+    getTextureMask,
     getUiScale,
     isAnimistEntry,
     makeFadeable,

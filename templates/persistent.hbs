@@ -12,7 +12,7 @@
         {{#if setActor}}
         <a class="set-actor{{#if setActor.disabled}} inactive{{/if}}" data-action="set-actor"
             data-tooltip="{{setActor.tooltip}}" data-tooltip-class="pf2e-hud-element no-width">
-            <i class="fa-solid fa-user-vneck"></i>
+            <i class="{{setActor.icon}}"></i>
         </a>
         {{/if}}
         {{#if hasActor}}
@@ -61,6 +61,7 @@
     <div class="flash"></div>
 </div>
 
+{{#if hasActor}}
 <div data-panel="shortcuts-menu">
     {{#if hasActor}}
     <div class="tabs" {{{@root.i18n.tooltip 'shortcuts.tab' }}}>
@@ -84,3 +85,13 @@
         <i class="fa-solid fa-trash-can"></i>
     </div>
 </div>
+{{else}}
+<div data-panel="owned-actors" class="{{ifThen double 'double' 'simple'}}">
+    {{#each actors as |actor|}}
+    <div class="owned-actor" data-action="select-owned-actor" data-tooltip="{{actor.name}}"
+        data-actor-id="{{actor.id}}">
+        <img src="{{actor.texture.src}}" draggable="true">
+    </div>
+    {{/each}}
+</div>
+{{/if}}
