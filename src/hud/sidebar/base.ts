@@ -72,9 +72,21 @@ abstract class SidebarPF2eHUD<
         true
     );
 
-    #parentCloseListener = () => this.close();
-    #parentRenderListener = () => this.render();
-    #parentPositionListener = () => this.setPosition(this.position);
+    #parentCloseListener = () => {
+        this.close();
+    };
+
+    #parentRenderListener = () => {
+        if (this.parent.actor) {
+            this.render();
+        } else {
+            this.close();
+        }
+    };
+
+    #parentPositionListener = () => {
+        this.setPosition(this.position);
+    };
 
     static get #sidebars() {
         return {
