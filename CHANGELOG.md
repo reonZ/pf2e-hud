@@ -13,7 +13,7 @@
 -   `Persistent HUD`:
     -   when no persistent actor is selected, the HUD will now display all the owned actors available to be selected directly
         -   this is helpful to select actors while viewing a scene without any token placed
-        -   this feature doesn't work with the `Current Combatant` section mode
+        -   this feature doesn't work with the `Current Combatant` selection mode
         -   while players see the list of owned actors, the GM sees the actors in the active party
         -   a new unset button is added to the left menu for the `On Token Selection` mode to revert the selection made with this feature
         -   the module no longer fallback to the assigned actor as it now simply requires a single click to get it from the new feature
