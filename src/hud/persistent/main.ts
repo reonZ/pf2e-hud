@@ -49,6 +49,7 @@ class PersistentPF2eHUD
     #actor: ActorPF2e | null = null;
     #controlled: ActorPF2e | null | undefined;
     #effectsPanel = new PersistentEffectsPF2eHUD(this);
+    #ownedActors: string[] | null = null;
     #portraitElement: HTMLElement | null = null;
     #previousActor: ActorPF2e | null = null;
     #shortcutsPanel = new PersistentShortcutsPF2eHUD(this);
@@ -59,7 +60,16 @@ class PersistentPF2eHUD
     };
 
     #deleteActorHook = createHook("deleteActor", (actor: ActorPF2e) => {
-        if (this.isCurrentActor(actor)) {
+        if (this.isCurrentActor(actor) || this.#ownedActors?.includes(actor.id)) {
+            this.render();
+        }
+    });
+
+    #updateActorHook = createHook("updateActor", (actor: ActorPF2e) => {
+        if (
+            this.#ownedActors?.includes(actor.id) ||
+            (game.user.isGM && actor.id === "xxxPF2ExPARTYxxx")
+        ) {
             this.render();
         }
     });
@@ -505,6 +515,8 @@ class PersistentPF2eHUD
             setActor,
         };
 
+        this.#ownedActors = null;
+
         if (context.hasActor) {
             const worldActor = this.worldActor!;
             const avatarData = getDataFlag(worldActor, AvatarModel, "avatar", { strict: true });
@@ -545,6 +557,8 @@ class PersistentPF2eHUD
                     };
                 })
             );
+
+            this.#ownedActors = actors.map(R.prop("id"));
 
             return {
                 ...data,
@@ -776,6 +790,8 @@ class PersistentPF2eHUD
     }
 
     #activateListeners(html: HTMLElement) {
+        this.#updateActorHook.toggle(!!this.#ownedActors?.length);
+
         const actor = this.actor;
         if (!actor) return;
 
