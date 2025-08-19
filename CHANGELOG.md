@@ -1,3 +1,8 @@
+# 2.23.1
+
+-   `Persistent HUD`:
+    -   fix owned actors overflow when the HUD is in `Middle`
+
 # 2.23.0
 
 -   `Persistent HUD`:
