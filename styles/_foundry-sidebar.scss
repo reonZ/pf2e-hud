@@ -1,0 +1,42 @@
+#sidebar:has(#sidebar-content.expanded) {
+    flex-direction: column;
+
+    > nav {
+        width: var(--sidebar-width);
+        padding: 0 4px;
+        margin-block: 2px -2px;
+        align-self: end;
+        opacity: 1;
+
+        menu {
+            --button-size: 32px;
+            --nb-button: 13;
+
+            width: 100%;
+            flex-direction: row;
+            gap: 0;
+
+            li {
+                button {
+                    background: black;
+                }
+
+                &:not(:first-child) {
+                    margin-left: calc(
+                        ((100% - var(--button-size)) / (var(--nb-button) - 1)) - var(--button-size)
+                    );
+                }
+
+                &:has(button[aria-pressed="true"]) {
+                    z-index: 100;
+                }
+            }
+        }
+    }
+
+    #sidebar-content {
+        height: auto;
+        flex: 1;
+        margin-left: 0;
+    }
+}
