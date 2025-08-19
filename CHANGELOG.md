@@ -1,3 +1,8 @@
+# 2.23.2
+
+-   `Persistent HUD`:
+    -   fix owned actors aspect ratio when no prototype token has been set and foundry uses the avatar
+
 # 2.23.1
 
 -   `Persistent HUD`:
