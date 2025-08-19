@@ -57,6 +57,8 @@ const DELAY_BUFFER = 50;
 const SETTING_DISTANCE = ["never", "idiot", "smart", "weird"] as const;
 
 class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
+    #lastDistanceSetting: null | boolean = null;
+
     #graphics: PIXI.Graphics | null = null;
     #targetToken: TokenPF2e | null = null;
 
@@ -77,6 +79,13 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
             context: this,
             onDisable: this.clearDistance.bind(this),
         }
+    );
+
+    #tokenRenderFlagsWrapper = createToggleableWrapper(
+        "WRAPPER",
+        "CONFIG.Token.objectClass.prototype._applyRenderFlags",
+        this.#tokenApplyRenderFlags,
+        { context: this }
     );
 
     static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
@@ -162,11 +171,19 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         this.#tokenRefreshWrapper.toggle(drawEnabled);
         this.#canvasTearDownHook.toggle(drawEnabled);
 
+        this.#tokenRenderFlagsWrapper.toggle(distanceEnabled);
+
         if (enabled) {
             this.render();
         } else {
             this.close();
         }
+
+        if (game.ready && distanceEnabled && this.#lastDistanceSetting === false) {
+            canvas.draw(game.scenes.current);
+        }
+
+        this.#lastDistanceSetting = distanceEnabled;
     }
 
     init(): void {
@@ -382,6 +399,15 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         this._cleanupToken();
         this.cancelRender();
         this.closeWithDelay();
+    }
+
+    #tokenApplyRenderFlags(
+        token: TokenPF2e,
+        wrapped: libWrapper.RegisterCallback,
+        flags: Record<string, boolean>
+    ) {
+        delete flags.refreshDistanceText;
+        wrapped(flags);
     }
 
     #tokenRefreshVisibility(token: TokenPF2e, wrapped: libWrapper.RegisterCallback) {
