@@ -1,3 +1,19 @@
+# 2.23.0
+
+-   `Persistent HUD`:
+    -   when no persistent actor is selected, the HUD will now display all the owned actors available to be selected directly
+        -   this is helpful to select actors while viewing a scene without any token placed
+        -   this feature doesn't work with the `Current Combatant` section mode
+        -   while players see the list of owned actors, the GM sees the actors in the active party
+        -   a new unset button is added to the left menu for the `On Token Selection` mode to revert the selection made with this feature
+        -   the module no longer fallback to the assigned actor as it now simply requires a single click to get it from the new feature
+    -   fix sidebar not closing when unsetting the current actor
+    -   fix avatar flicker when using custom avatar
+        -   i tried to mitigate it as much as possible but there are some limitations
+-   `Token Tooltip`:
+    -   disable the system distance display when the `Display Distance` is enabled
+        -   the scene is re-rendered to remove any distance text already added to the tokens when you enable the `Display Distance` setting during play time
+
 # 2.22.2
 
 -   `Combat Tracker`:
