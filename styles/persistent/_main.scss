@@ -127,8 +127,17 @@
             img,
             video {
                 position: absolute;
-                max-width: none;
-                max-height: none;
+
+                &:not(.custom) {
+                    object-fit: contain;
+                    width: 100%;
+                    height: 100%;
+                }
+
+                &.custom {
+                    max-width: none;
+                    max-height: none;
+                }
             }
         }
     }

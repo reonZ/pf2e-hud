@@ -1,4 +1,4 @@
-import { AvatarEditor, AvatarModel, calculateAvatarPosition, loadAvatar } from "avatar-editor";
+import { AvatarEditor, AvatarModel, calculateAvatarPosition } from "avatar-editor";
 import { hud } from "main";
 import {
     ActorPF2e,
@@ -506,10 +506,21 @@ class PersistentPF2eHUD
         };
 
         if (context.hasActor) {
+            const worldActor = this.worldActor!;
+            const avatarData = getDataFlag(worldActor, AvatarModel, "avatar", { strict: true });
+            const src = avatarData?.src ?? worldActor.img;
+            const isVideo = foundry.helpers.media.VideoHelper.hasVideoExtension(src);
+
+            const avatar: PersistentContext["avatar"] = {
+                background: avatarData?.color.enabled ? avatarData.color.value : "transparent",
+                isVideo,
+                src,
+            };
+
             return {
                 ...data,
                 ac: actor.attributes.ac.value,
-                avatar: actor.img,
+                avatar,
                 shortcutsTab: createSlider("shortcuts-tab", this.shortcutsTab),
             } satisfies PersistentContext;
         } else if (options.selectionMode !== "combat") {
@@ -755,23 +766,13 @@ class PersistentPF2eHUD
         if (!avatarElement || !worldActor) return;
 
         const avatarData = getDataFlag(worldActor, AvatarModel, "avatar", { strict: true });
-        if (!avatarData) {
-            avatarElement.innerHTML = "";
-            avatarElement.style.setProperty("background-image", `url("${worldActor.img}")`);
-            avatarElement.style.removeProperty("background-color");
-            return;
-        }
+        if (!avatarData) return;
 
-        const image = await loadAvatar(avatarElement, avatarData);
+        const image = htmlQuery<HTMLImageElement | HTMLVideoElement>(html, ".avatar .image");
+        if (!image) return;
 
-        avatarElement.style.removeProperty("background-image");
+        image.classList.add("custom");
         calculateAvatarPosition(avatarData, image);
-
-        if (avatarData.color.enabled) {
-            avatarElement.style.setProperty("background-color", avatarData.color.value);
-        } else {
-            avatarElement.style.removeProperty("background-color");
-        }
     }
 
     #activateListeners(html: HTMLElement) {
@@ -836,7 +837,11 @@ type PersistentSettings = {
 
 type PersistentContext = PersistentContextBase & {
     ac: number;
-    avatar: ImageFilePath;
+    avatar: {
+        background: string;
+        isVideo: boolean;
+        src: ImageFilePath | VideoFilePath;
+    };
     shortcutsTab: SliderData;
 };
 
