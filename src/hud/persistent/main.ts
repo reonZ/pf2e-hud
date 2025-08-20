@@ -536,16 +536,20 @@ class PersistentPF2eHUD
                 shortcutsTab: createSlider("shortcuts-tab", this.shortcutsTab),
             } satisfies PersistentContext;
         } else if (options.selectionMode !== "combat") {
-            const allOwned = game.user.isGM
-                ? game.actors.party?.members.filter(
-                      (actor) => !actor.token && actor.isOfType("character", "npc")
-                  )
-                : game.actors.filter(
-                      (actor) => !actor.token && actor.isOwner && actor.isOfType("character", "npc")
-                  );
+            const allOwned: ActorPF2e[] = game.user.isGM
+                ? game.actors.party?.members ?? []
+                : game.actors.filter((actor) => actor.isOwner);
 
             const actors: OwnedActorContext[] = R.pipe(
-                allOwned?.slice(0, 20) ?? [],
+                allOwned,
+                R.filter((actor) => {
+                    return (
+                        !actor.token &&
+                        actor.isOfType("character", "npc") &&
+                        actor.flags.core?.sheetClass !== "pf2e.SimpleNPCSheet"
+                    );
+                }),
+                R.take(20),
                 R.map((actor): OwnedActorContext => {
                     return {
                         id: actor.id,
