@@ -52,6 +52,7 @@ class PersistentPF2eHUD
     #ownedActors: string[] | null = null;
     #portraitElement: HTMLElement | null = null;
     #previousActor: ActorPF2e | null = null;
+    #previousAvatar: HTMLImageElement | HTMLVideoElement | null = null;
     #shortcutsPanel = new PersistentShortcutsPF2eHUD(this);
     #shortcutsTab: ValueAndMinMax = {
         value: 1,
@@ -365,7 +366,10 @@ class PersistentPF2eHUD
             document.getElementById("ui-bottom")?.prepend(hotbar);
         }
 
+        this.#ownedActors = null;
+        this.#previousAvatar = null;
         this.#portraitElement = null;
+
         this.effectsPanel.close();
         this.shortcutsPanel.close();
 
@@ -620,6 +624,7 @@ class PersistentPF2eHUD
 
     protected _cleanupActor(): void {
         super._cleanupActor();
+
         this.#controlled = null;
         this.#actor = null;
     }
@@ -779,15 +784,25 @@ class PersistentPF2eHUD
     }
 
     async #setupAvatar(html: HTMLElement) {
+        const previousImage = this.#previousAvatar;
+        this.#previousAvatar = null;
+
         const worldActor = this.worldActor;
-        const avatarElement = htmlQuery(html, ".avatar");
-        if (!avatarElement || !worldActor) return;
+        if (!worldActor) return;
 
         const avatarData = getDataFlag(worldActor, AvatarModel, "avatar", { strict: true });
         if (!avatarData) return;
 
-        const image = htmlQuery<HTMLImageElement | HTMLVideoElement>(html, ".avatar .image");
-        if (!image) return;
+        const newImage = (this.#previousAvatar = htmlQuery(html, ".avatar .image"));
+        if (!newImage) return;
+
+        const sameImage = previousImage?.src === newImage.src;
+        const image = sameImage ? previousImage : newImage;
+
+        if (sameImage) {
+            this.#previousAvatar = previousImage;
+            newImage.replaceWith(previousImage);
+        }
 
         image.classList.add("custom");
         calculateAvatarPosition(avatarData, image);
