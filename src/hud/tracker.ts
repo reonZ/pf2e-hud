@@ -24,6 +24,7 @@ import {
     RolledCombatant,
     setFlag,
     settingPath,
+    templateLocalize,
     toggleHooksAndWrappers,
     TokenPF2e,
     unsetFlag,
@@ -965,7 +966,7 @@ function buildMetrics(metrics: EncounterPF2e["metrics"] | null): TrackerContext[
                 threat)}}</span>
         </div>
         <div>
-            ${localize("tracker.award", metrics.award)} *
+            {{@root.i18n 'award' xp=award.xp}} *
         </div>
         <div>
             {{localize 'PF2E.Encounter.Metrics.Budget' spent=budget.spent max=budget.max
@@ -985,10 +986,16 @@ function buildMetrics(metrics: EncounterPF2e["metrics"] | null): TrackerContext[
         return Handlebars.compile(template);
     })());
 
-    const tooltip = metricsTemplate(metrics, {
-        allowProtoMethodsByDefault: true,
-        allowProtoPropertiesByDefault: true,
-    });
+    const tooltip = metricsTemplate(
+        {
+            ...metrics,
+            i18n: templateLocalize("tracker"),
+        },
+        {
+            allowProtoMethodsByDefault: true,
+            allowProtoPropertiesByDefault: true,
+        }
+    );
 
     return {
         threat: metrics.threat,
