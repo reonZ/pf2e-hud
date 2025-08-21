@@ -965,7 +965,7 @@ function buildMetrics(metrics: EncounterPF2e["metrics"] | null): TrackerContext[
                 threat)}}</span>
         </div>
         <div>
-            ${localize("tracker.award", metrics.award)} *
+            {{localize 'pf2e-hud.tracker.award' xp=award.xp}} *
         </div>
         <div>
             {{localize 'PF2E.Encounter.Metrics.Budget' spent=budget.spent max=budget.max
