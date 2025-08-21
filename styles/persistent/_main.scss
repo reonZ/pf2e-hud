@@ -245,48 +245,147 @@
     }
 
     [data-panel="owned-actors"] {
-        grid-column: info-start / full-end;
+        grid-column: portrait-start / full-end;
         grid-row: top-start / middle-end;
         background: none;
         border: none;
         padding: 0;
         display: grid;
+        grid-template-columns: repeat(8, 1fr);
         pointer-events: none;
         gap: var(--panel-gap);
 
         .owned-actor {
+            position: relative;
             background: var(--panel-background);
             border: var(--outer-border);
             border-radius: var(--outer-border-radius);
             display: flex;
             cursor: pointer;
-            filter: brightness(0.6);
             pointer-events: all;
+            text-shadow: 0 0 3px black, 0 0 3px black, 0 0 2px black;
 
             img {
                 object-fit: contain;
                 aspect-ratio: 1 / 1;
             }
 
-            &:hover {
-                filter: brightness(1.2);
+            .stats {
+                position: absolute;
+                top: -0.1em;
+                left: -0.1em;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.1em;
+
+                .ac {
+                    display: grid;
+                    justify-items: center;
+                    align-items: center;
+                    margin-bottom: 0.3em;
+
+                    i {
+                        grid-column: 1;
+                        grid-row: 1;
+                        font-size: 1.4em;
+                        width: auto;
+                        color: #ffffff82;
+                    }
+
+                    .value {
+                        grid-column: 1;
+                        grid-row: 1;
+                    }
+                }
+
+                .save {
+                    display: flex;
+                    align-items: center;
+                }
+            }
+
+            .bars {
+                position: absolute;
+                align-self: end;
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                .value {
+                    z-index: 1;
+                    display: flex;
+                    align-items: center;
+                }
+
+                .fills {
+                    position: absolute;
+                    inset: 0;
+                    display: flex;
+                    flex-direction: column;
+
+                    .fill {
+                        height: 50%;
+                        width: calc(var(--ratio) * 100%);
+
+                        &.hp,
+                        &.sp {
+                            box-shadow: inset 0 0 3px 1px #000;
+                            border-radius: 10px;
+                        }
+
+                        &.hp {
+                            background: hsl(var(--hue) 75% 40%);
+                        }
+
+                        &.sp {
+                            background: blue;
+                        }
+                    }
+                }
             }
         }
 
-        &.simple {
-            grid-template-columns: repeat(5, 1fr);
+        &.inverted {
+            .owned-actor {
+                img {
+                    opacity: 0.2;
+                }
+
+                &:hover {
+                    img {
+                        opacity: 1;
+                    }
+
+                    .bars .value,
+                    .stats .save {
+                        visibility: hidden;
+                        opacity: 0.2;
+                    }
+                }
+            }
         }
 
-        &.double {
-            grid-template-columns: repeat(10, 1fr);
-            grid-template-rows: 1fr 1fr;
-            direction: rtl;
-            transform: rotate(180deg);
-
+        &:not(.inverted) {
             .owned-actor {
-                direction: ltr;
-                transform: rotate(180deg);
-                border-radius: var(--outer-border-radius);
+                .bars .value,
+                .stats .save {
+                    visibility: hidden;
+                    opacity: 0;
+                }
+
+                &:hover {
+                    img {
+                        opacity: 0.2;
+                    }
+
+                    .bars .value,
+                    .stats .save {
+                        visibility: visible;
+                        opacity: 1;
+                    }
+                }
             }
         }
     }

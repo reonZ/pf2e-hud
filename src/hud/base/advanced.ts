@@ -175,7 +175,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
                 shield: isCombatant ? actor.attributes.shield : undefined,
                 sidebars,
                 speed: getSpeed(actor),
-                statistics: getStatistics(actor),
+                statistics: getAdvancedStatistics(actor),
             } satisfies AdvancedHudContext;
         }
 
@@ -490,12 +490,12 @@ function getMainSpeed(actor: ActorPF2e, speeds: HudSpeed[]): HudSpeed {
     return speeds.findSplice((speed) => speed === highestSpeed)!;
 }
 
-function getStatistics(actor: ActorPF2e): StatsStatistic[] {
+function getAdvancedStatistics(actor: ActorPF2e): AdvancedStatistic[] {
     const useModifiers = getGlobalSetting("useModifiers");
 
     return R.pipe(
         STATISTICS,
-        R.map(({ slug, icon }): StatsStatistic | undefined => {
+        R.map(({ slug, icon }): AdvancedStatistic | undefined => {
             const statistic = actor.getStatistic(slug);
             if (!statistic) return;
             return {
@@ -590,7 +590,7 @@ type AdvancedHudContext = {
     shield: HeldShieldData | undefined;
     sidebars: SidebarMenu[];
     speed: { main: HudSpeed; others: string | undefined } | undefined;
-    statistics: StatsStatistic[];
+    statistics: AdvancedStatistic[];
 };
 
 type HudResources = {
@@ -599,7 +599,7 @@ type HudResources = {
     wounded: SliderData;
 };
 
-type StatsStatistic = {
+type AdvancedStatistic = {
     slug: string;
     icon: string;
     label: string;
@@ -636,10 +636,11 @@ type InfoSection = {
     slug: InfoSlug;
 };
 
-export { makeAdvancedHUD };
+export { getAdvancedStatistics, makeAdvancedHUD };
 export type {
     AdvancedHudContext,
     AdvancedPF2eHUD,
+    AdvancedStatistic,
     IAdvancedPF2eHUD,
     ReturnedAdvancedHudContext,
     SidebarCoords,

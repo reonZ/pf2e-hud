@@ -51,6 +51,7 @@
     </div>
 </div>
 
+{{#if hasActor}}
 <div data-panel="portrait">
     {{#if avatar}}
     <div class="avatar" data-action="open-sheet" style="background-color: {{avatar.background}};">
@@ -66,8 +67,6 @@
     {{/if}}
     <div class="flash"></div>
 </div>
-
-{{#if hasActor}}
 <div data-panel="shortcuts-menu">
     {{#if hasActor}}
     <div class="tabs" {{{@root.i18n.tooltip 'shortcuts.tab' }}}>
@@ -92,11 +91,46 @@
     </div>
 </div>
 {{else}}
-<div data-panel="owned-actors" class="{{ifThen double 'double' 'simple'}}">
+<div data-panel="owned-actors" {{#if isGM}}class="inverted" {{/if}}>
     {{#each actors as |actor|}}
     <div class="owned-actor" data-action="select-owned-actor" data-tooltip="{{actor.name}}"
         data-actor-id="{{actor.id}}">
-        <img src="{{actor.texture.src}}" draggable="true">
+        <img src="{{actor.img}}" draggable="true">
+        <div class="stats">
+            <div class="ac">
+                <i class="fa-solid fa-shield"></i>
+                <div class="value">{{actor.ac}}</div>
+            </div>
+            {{#each actor.saves as |save|}}
+            <div class="save">
+                <i class="{{save.icon}}"></i>
+                <div class="value">{{save.value}}</div>
+            </div>
+            {{/each}}
+        </div>
+        {{#if actor.hp}}
+        <div class="bars">
+            <div class="fills">
+                {{#if actor.hp.sp}}
+                <div class="fill sp" style="--ratio: {{actor.hp.sp.ratio}};"></div>
+                {{else}}
+                <div class="fill"></div>
+                {{/if}}
+                <div class="fill hp" style="--ratio: {{actor.hp.ratio}}; --hue: {{actor.hp.hue}};">
+                </div>
+            </div>
+            <div class="value hp">
+                <i class="fa-solid fa-heart"></i>
+                <div>{{actor.hp.value}}</div>
+            </div>
+            {{#if actor.hp.sp}}
+            <div class="value sp">
+                <div>{{actor.hp.sp.value}}</div>
+                <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+            {{/if}}
+        </div>
+        {{/if}}
     </div>
     {{/each}}
 </div>

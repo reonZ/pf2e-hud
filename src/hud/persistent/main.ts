@@ -11,6 +11,7 @@ import {
     confirmDialog,
     createHook,
     createToggleKeybind,
+    CreaturePF2e,
     EncounterPF2e,
     getDataFlag,
     getFlag,
@@ -28,9 +29,12 @@ import {
 } from "module-helpers";
 import { PersistentEffectsPF2eHUD, PersistentShortcutsPF2eHUD, ShortcutData } from ".";
 import {
+    AdvancedStatistic,
     BaseActorPF2eHUD,
+    calculateActorHealth,
     createSlider,
-    getTextureMask,
+    getAdvancedStatistics,
+    HealthData,
     HUDSettingsList,
     IAdvancedPF2eHUD,
     makeAdvancedHUD,
@@ -540,28 +544,30 @@ class PersistentPF2eHUD
                 shortcutsTab: createSlider("shortcuts-tab", this.shortcutsTab),
             } satisfies PersistentContext;
         } else if (options.selectionMode !== "combat") {
-            const allOwned: ActorPF2e[] = game.user.isGM
+            const isGM = game.user.isGM;
+            const allOwned: ActorPF2e[] = isGM
                 ? game.actors.party?.members ?? []
                 : game.actors.filter((actor) => actor.isOwner);
 
             const actors: OwnedActorContext[] = R.pipe(
                 allOwned,
-                R.filter((actor) => {
+                R.filter((actor): actor is CreaturePF2e => {
                     return (
                         !actor.token &&
                         actor.isOfType("character", "npc") &&
                         actor.flags.core?.sheetClass !== "pf2e.SimpleNPCSheet"
                     );
                 }),
-                R.take(20),
+                R.take(8),
+                R.sortBy((actor) => actor.isOfType("character")),
                 R.map((actor): OwnedActorContext => {
                     return {
+                        ac: actor.attributes.ac.value,
+                        hp: calculateActorHealth(actor),
                         id: actor.id,
+                        img: actor.img,
                         name: actor.name,
-                        texture: {
-                            ...actor.prototypeToken.texture,
-                            mask: getTextureMask(actor.prototypeToken.texture),
-                        },
+                        saves: getAdvancedStatistics(actor).slice(0, 3),
                     };
                 })
             );
@@ -571,7 +577,7 @@ class PersistentPF2eHUD
             return {
                 ...data,
                 actors,
-                double: actors.length > 5,
+                isGM,
             } satisfies EmptyPersistentContext;
         } else {
             return data;
@@ -882,13 +888,16 @@ type PersistentContext = PersistentContextBase & {
 
 type EmptyPersistentContext = PersistentContextBase & {
     actors: OwnedActorContext[];
-    double: boolean;
+    isGM: boolean;
 };
 
 type OwnedActorContext = {
+    ac: number;
+    hp: HealthData | undefined;
     id: string;
+    img: ImageFilePath;
     name: string;
-    texture: ModelPropsFromSchema<foundry.data.TextureDataSchema> & { mask?: string };
+    saves: AdvancedStatistic[];
 };
 
 type PersistentContextBase = ReturnedAdvancedHudContext & {
