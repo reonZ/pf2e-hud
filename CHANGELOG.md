@@ -1,3 +1,21 @@
+# 2.24.0
+
+-   `Combat Tracker`:
+    -   fix award xp being cached until reload of the page
+-   `Persistent HUD`:
+    -   implement a trick to completely avoid avatar flickering as well as preventing video restart on update
+    -   completely rework the `Owned Actors` display
+        -   exclude NPCs using the `Simple Sheet` from the list displayed actors
+        -   it now only displays 8 actors max
+            -   the portrait panel has been removed to accomodate them
+            -   priority is given to characters over NPCs
+        -   it now uses the avatar image instead of prototype token
+        -   it now displays details like HP, AC or saves
+            -   details are shown when hovering over the images for players while always for the GM
+        -   you can now drag & drop a new token on the scene from the list
+            -   the module will prevent the creation of a token if one already exists in the current scene
+    -   fix `Set selected token` button not showing for `Manual` selection mode when no actor is currently set
+
 # 2.23.2
 
 -   `Persistent HUD`:
