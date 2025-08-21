@@ -83,7 +83,7 @@ function processSliderEvent<TAction extends string>(
 
 function createDraggable<T extends FoundryDragData>(
     event: DragEvent,
-    img: ImageFilePath,
+    img: ImageFilePath | VideoFilePath,
     actor: ActorPF2e,
     item: Maybe<ItemPF2e>,
     data: Omit<T, keyof FoundryDragData>

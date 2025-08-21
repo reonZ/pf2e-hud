@@ -15,9 +15,12 @@ import {
     EncounterPF2e,
     getDataFlag,
     getFlag,
+    htmlClosest,
     htmlQuery,
     localize,
     NPCPF2e,
+    panToToken,
+    pingToken,
     R,
     render,
     toggleHooksAndWrappers,
@@ -32,6 +35,7 @@ import {
     AdvancedStatistic,
     BaseActorPF2eHUD,
     calculateActorHealth,
+    createDraggable,
     createSlider,
     getAdvancedStatistics,
     HealthData,
@@ -493,19 +497,19 @@ class PersistentPF2eHUD
             const isManual = options.selectionMode === "manual";
             const hasSavedActor = isManual && !!this.savedActor;
             const isControlled = !isManual && !!actor && !this.#controlled;
-            if (!hasSavedActor && !isControlled) return;
+            if (!isManual && !isControlled) return;
 
             const unsetTxt = localize("persistent.menu.setActor.unset");
 
             let tooltip = "";
 
             if (isManual) {
-                if (hasSavedActor) {
-                    const setTxt = localize("persistent.menu.setActor.set");
-                    tooltip += `<div>${localize("leftClick")} ${setTxt}</div>`;
-                }
+                const setTxt = localize("persistent.menu.setActor.set");
+                tooltip += `<div>${localize("leftClick")} ${setTxt}</div>`;
 
-                tooltip += `<div>${localize("rightClick")} ${unsetTxt}</div>`;
+                if (hasSavedActor) {
+                    tooltip += `<div>${localize("rightClick")} ${unsetTxt}</div>`;
+                }
             } else {
                 tooltip += `<div>${unsetTxt}</div>`;
             }
@@ -558,16 +562,18 @@ class PersistentPF2eHUD
                         actor.flags.core?.sheetClass !== "pf2e.SimpleNPCSheet"
                     );
                 }),
-                R.take(8),
                 R.sortBy((actor) => actor.isOfType("character")),
+                R.take(8),
                 R.map((actor): OwnedActorContext => {
                     return {
                         ac: actor.attributes.ac.value,
+                        heroPoints: (actor as CharacterPF2e).heroPoints?.value,
                         hp: calculateActorHealth(actor),
                         id: actor.id,
                         img: actor.img,
                         name: actor.name,
-                        saves: getAdvancedStatistics(actor).slice(0, 3),
+                        statistics: getAdvancedStatistics(actor),
+                        tokenImage: actor.prototypeToken.texture.src ?? actor.img,
                     };
                 })
             );
@@ -814,15 +820,52 @@ class PersistentPF2eHUD
         calculateAvatarPosition(avatarData, image);
     }
 
-    #activateListeners(html: HTMLElement) {
-        this.#updateActorHook.toggle(!!this.#ownedActors?.length);
+    #onDragOwnedActor(event: DragEvent) {
+        const img = event.currentTarget as HTMLImageElement;
+        const parent = htmlClosest(img, "[data-actor-id]");
+        const actorId = parent?.dataset.actorId ?? "";
+        const actor = game.actors.get(actorId);
 
-        const actor = this.actor;
-        if (!actor) return;
+        if (!actor?.isOwner || actor.token) {
+            event.preventDefault();
+            return;
+        }
 
-        addListener(html, ".avatar", "drop", (el, event) => {
-            actor.sheet._onDrop(event);
+        const exist = actor.getActiveTokens()[0];
+        if (exist) {
+            event.preventDefault();
+
+            warning("persistent.ownedActor.drag.exist");
+            panToToken(exist);
+            pingToken(exist);
+
+            return;
+        }
+
+        const image = htmlQuery<HTMLImageElement>(parent, "img.token")?.src ?? img.src;
+        createDraggable(event, image as ImageFilePath, actor, null, {
+            type: "Actor",
+            uuid: actor.uuid,
         });
+    }
+
+    #activateListeners(html: HTMLElement) {
+        const actor = this.actor;
+        const hasOwnedActors = !!this.#ownedActors?.length;
+
+        this.#updateActorHook.toggle(hasOwnedActors);
+
+        if (actor) {
+            addListener(html, ".avatar", "drop", (el, event) => {
+                actor.sheet._onDrop(event);
+            });
+        } else if (hasOwnedActors) {
+            const ownedList = html.querySelectorAll<HTMLImageElement>(".owned-actor img");
+
+            for (const img of ownedList) {
+                img.addEventListener("dragstart", this.#onDragOwnedActor.bind(this));
+            }
+        }
     }
 }
 
@@ -893,11 +936,13 @@ type EmptyPersistentContext = PersistentContextBase & {
 
 type OwnedActorContext = {
     ac: number;
+    heroPoints: number | undefined;
     hp: HealthData | undefined;
     id: string;
     img: ImageFilePath;
     name: string;
-    saves: AdvancedStatistic[];
+    statistics: AdvancedStatistic[];
+    tokenImage: ImageFilePath | VideoFilePath;
 };
 
 type PersistentContextBase = ReturnedAdvancedHudContext & {

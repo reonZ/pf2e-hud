@@ -241,6 +241,11 @@
                     "unset": "Unset persistent actor"
                 }
             },
+            "ownedActor": {
+                "drag": {
+                    "exist": "This scene already contains a token for this actor."
+                }
+            },
             "shortcuts": {
                 "clear": {
                     "title": "Clear Shortcuts",

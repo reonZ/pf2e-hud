@@ -69,6 +69,10 @@
                 padding-block: calc(var(--panel-gap) + 1px);
             }
         }
+
+        &:has(.group.bottom:only-child) {
+            justify-content: flex-end;
+        }
     }
 
     [data-panel="effects"] {
@@ -245,8 +249,8 @@
     }
 
     [data-panel="owned-actors"] {
-        grid-column: portrait-start / full-end;
-        grid-row: top-start / middle-end;
+        grid-column: portrait / full;
+        grid-row: top / middle;
         background: none;
         border: none;
         padding: 0;
@@ -265,43 +269,77 @@
             pointer-events: all;
             text-shadow: 0 0 3px black, 0 0 3px black, 0 0 2px black;
 
-            img {
-                object-fit: contain;
-                aspect-ratio: 1 / 1;
+            > * {
+                pointer-events: none;
             }
 
-            .stats {
+            img {
+                pointer-events: all;
+                object-fit: contain;
+                aspect-ratio: 1 / 1;
+
+                &.token {
+                    opacity: 0;
+                    visibility: hidden;
+                    position: absolute;
+                }
+            }
+
+            .ac {
                 position: absolute;
                 top: -0.1em;
                 left: -0.1em;
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.1em;
+                display: grid;
+                justify-items: center;
+                align-items: center;
 
-                .ac {
-                    display: grid;
-                    justify-items: center;
-                    align-items: center;
-                    margin-bottom: 0.3em;
-
-                    i {
-                        grid-column: 1;
-                        grid-row: 1;
-                        font-size: 1.4em;
-                        width: auto;
-                        color: #ffffff82;
-                    }
-
-                    .value {
-                        grid-column: 1;
-                        grid-row: 1;
-                    }
+                i {
+                    grid-column: 1;
+                    grid-row: 1;
+                    font-size: 1.4em;
+                    width: auto;
+                    color: #ffffff82;
                 }
 
-                .save {
+                .value {
+                    grid-column: 1;
+                    grid-row: 1;
+                }
+            }
+
+            .heroPoints {
+                position: absolute;
+                top: 0;
+                right: 0;
+                display: flex;
+                align-items: center;
+                gap: 0.1em;
+                justify-content: start;
+                direction: rtl;
+            }
+
+            .statistics {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 100%;
+                font-size: 0.9em;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: repeat(3, 1fr);
+                grid-auto-flow: column;
+                row-gap: 0.2em;
+                padding-inline: 0.05em;
+
+                .statistic {
                     display: flex;
                     align-items: center;
+                    gap: 0.1em;
+
+                    &:nth-child(n + 4) {
+                        justify-content: start;
+                        direction: rtl;
+                    }
                 }
             }
 
@@ -350,7 +388,7 @@
         &.inverted {
             .owned-actor {
                 img {
-                    opacity: 0.2;
+                    opacity: 0.3;
                 }
 
                 &:hover {
@@ -359,9 +397,10 @@
                     }
 
                     .bars .value,
-                    .stats .save {
+                    .statistics,
+                    .heroPoints {
                         visibility: hidden;
-                        opacity: 0.2;
+                        opacity: 0;
                     }
                 }
             }
@@ -370,24 +409,39 @@
         &:not(.inverted) {
             .owned-actor {
                 .bars .value,
-                .stats .save {
+                .statistics,
+                .heroPoints {
                     visibility: hidden;
                     opacity: 0;
                 }
 
                 &:hover {
                     img {
-                        opacity: 0.2;
+                        opacity: 0.3;
                     }
 
                     .bars .value,
-                    .stats .save {
+                    .statistics,
+                    .heroPoints {
                         visibility: visible;
                         opacity: 1;
                     }
                 }
             }
         }
+    }
+
+    [data-panel="patch"] {
+        grid-column: portrait;
+        grid-row: bottom;
+        background: var(--panel-background),
+            repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.2) 10px,
+                rgba(255, 255, 255, 0.2) 20px
+            );
     }
 
     &.cleaned {

@@ -29,7 +29,7 @@
         {{/if}}
     </div>
     {{/if}}
-    <div class="group">
+    <div class="group bottom">
         {{!-- lock button --}}
         <a class="locked" data-action="toggle-hotbar-lock" data-tooltip="HOTBAR.UNLOCK">
             <i class="fa-solid fa-lock"></i>
@@ -96,15 +96,22 @@
     <div class="owned-actor" data-action="select-owned-actor" data-tooltip="{{actor.name}}"
         data-actor-id="{{actor.id}}">
         <img src="{{actor.img}}" draggable="true">
-        <div class="stats">
-            <div class="ac">
-                <i class="fa-solid fa-shield"></i>
-                <div class="value">{{actor.ac}}</div>
-            </div>
-            {{#each actor.saves as |save|}}
-            <div class="save">
-                <i class="{{save.icon}}"></i>
-                <div class="value">{{save.value}}</div>
+        <img class="token" src="{{actor.tokenImage}}">
+        <div class="ac">
+            <i class="fa-solid fa-shield"></i>
+            <div class="value">{{actor.ac}}</div>
+        </div>
+        {{#if actor.heroPoints}}
+        <div class="heroPoints">
+            <i class="fa-solid fa-circle-h"></i>
+            <div class="value">{{heroPoints}}</div>
+        </div>
+        {{/if}}
+        <div class="statistics">
+            {{#each actor.statistics as |statistic|}}
+            <div class="statistic">
+                <i class="{{statistic.icon}}"></i>
+                <div class="value">{{statistic.value}}</div>
             </div>
             {{/each}}
         </div>
@@ -134,4 +141,5 @@
     </div>
     {{/each}}
 </div>
+<div data-panel="patch"></div>
 {{/if}}
