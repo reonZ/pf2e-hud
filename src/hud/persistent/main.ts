@@ -381,6 +381,8 @@ class PersistentPF2eHUD
         this.effectsPanel.close();
         this.shortcutsPanel.close();
 
+        this.#updateActorHook.disable();
+
         return super.close(options);
     }
 
