@@ -7,7 +7,7 @@
     -   completely rework the `Owned Actors` display
         -   exclude NPCs using the `Simple Sheet` from the list displayed actors
         -   it now only displays 8 actors max
-            -   the portrait panel has been removed to accomodate them
+            -   the portrait panel has been removed to accommodate them
             -   priority is given to characters over NPCs
         -   it now uses the avatar image instead of prototype token
         -   it now displays details like HP, AC or saves
