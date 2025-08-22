@@ -1,3 +1,15 @@
+# 2.25.0
+
+-   `Persistent HUD`:
+    -   tune up the filter added to owned actor images
+    -   rework priority and order of owned actors displayed in the list
+        -   characters are always given priority over NPCs (it was the opposite in last version)
+        -   players will see their assigned actor first, followed by actors member of the active party and finally other actors
+    -   no longer broadcast the ping to other players when trying to drag an already existing owned actor token on the scene
+    -   you can now `drop` foundry items on owned actor images just like you would on a token
+    -   you can now `[Right Click]` an owned actor image to pan to a linked active token on the current scene if one exist
+    -   you can now `[Right Click]` the persistent actor portrait to pan to an active token on the current scene if one exist
+
 # 2.24.0
 
 -   `Combat Tracker`:
