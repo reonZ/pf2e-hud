@@ -388,12 +388,12 @@
         &.inverted {
             .owned-actor {
                 img {
-                    opacity: 0.3;
+                    filter: brightness(0.5) opacity(0.8);
                 }
 
                 &:hover {
                     img {
-                        opacity: 1;
+                        filter: none;
                     }
 
                     .bars .value,
@@ -417,7 +417,7 @@
 
                 &:hover {
                     img {
-                        opacity: 0.3;
+                        filter: brightness(0.5) opacity(0.8);
                     }
 
                     .bars .value,
