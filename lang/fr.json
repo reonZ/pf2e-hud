@@ -241,6 +241,11 @@
           "unset": "Retirer l'acteur persistant"
         }
       },
+      "ownedActor": {
+        "drag": {
+          "exist": "Cette scène contient déjà un jeton pour cet acteur."
+        }
+      },
       "shortcuts": {
         "clear": {
           "title": "Effacer les raccourcis",
