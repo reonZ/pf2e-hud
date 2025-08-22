@@ -556,9 +556,25 @@ class PersistentPF2eHUD
             } satisfies PersistentContext;
         } else if (options.selectionMode !== "combat") {
             const isGM = game.user.isGM;
+            const party = game.actors.party;
             const allOwned: ActorPF2e[] = isGM
-                ? game.actors.party?.members ?? []
+                ? party?.members ?? []
                 : game.actors.filter((actor) => actor.isOwner);
+
+            const sortLogic: NonEmptyArray<Parameters<typeof R.sortBy<CreaturePF2e[]>>[1]> = [
+                (actor) => actor.isOfType("npc"),
+            ];
+
+            if (!isGM) {
+                if (party) {
+                    sortLogic.unshift((actor) => !actor.parties.has(party));
+                }
+
+                const assigned = game.user.character as CreaturePF2e | null;
+                if (this.isValidOwnedActor(assigned)) {
+                    sortLogic.unshift((actor) => actor !== assigned);
+                }
+            }
 
             const actors: OwnedActorContext[] = R.pipe(
                 allOwned,
@@ -569,7 +585,7 @@ class PersistentPF2eHUD
                         actor.flags.core?.sheetClass !== "pf2e.SimpleNPCSheet"
                     );
                 }),
-                R.sortBy((actor) => actor.isOfType("character")),
+                R.sortBy(...sortLogic),
                 R.take(8),
                 R.map((actor): OwnedActorContext => {
                     return {
