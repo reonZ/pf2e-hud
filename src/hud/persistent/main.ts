@@ -315,6 +315,10 @@ class PersistentPF2eHUD
         return super.isValidActor(actor) && actor.isOfType("character", "npc") && actor.isOwner;
     }
 
+    isValidOwnedActor(actor: Maybe<ActorPF2e>): actor is ActorPF2e {
+        return this.isValidActor(actor) && !actor.token;
+    }
+
     isCurrentActor(actor: Maybe<ActorPF2e>, flash?: boolean): actor is PersistentHudActor {
         const isCurrentActor = super.isCurrentActor(actor);
 
@@ -838,7 +842,7 @@ class PersistentPF2eHUD
         const actorId = parent?.dataset.actorId ?? "";
         const actor = game.actors.get(actorId);
 
-        if (!actor?.isOwner || actor.token) {
+        if (!this.isValidOwnedActor(actor)) {
             event.preventDefault();
             return;
         }
@@ -856,6 +860,16 @@ class PersistentPF2eHUD
                 type: "Actor",
                 uuid: actor.uuid,
             });
+        }
+    }
+
+    #onOwnedActorDrop(event: DragEvent) {
+        const parent = htmlClosest(event.currentTarget, "[data-actor-id]");
+        const actorId = parent?.dataset.actorId ?? "";
+        const actor = game.actors.get(actorId);
+
+        if (this.isValidOwnedActor(actor)) {
+            actor.sheet._onDrop(event);
         }
     }
 
@@ -889,6 +903,7 @@ class PersistentPF2eHUD
 
             for (const img of ownedList) {
                 img.addEventListener("dragstart", this.#onDragOwnedActor.bind(this));
+                img.addEventListener("drop", this.#onOwnedActorDrop.bind(this));
             }
         }
     }
