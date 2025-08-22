@@ -246,6 +246,9 @@
                     "exist": "This scene already contains a token for this actor."
                 }
             },
+            "pan": {
+                "none": "This actor doesn't have any active token on the current scene."
+            },
             "shortcuts": {
                 "clear": {
                     "title": "Clear Shortcuts",

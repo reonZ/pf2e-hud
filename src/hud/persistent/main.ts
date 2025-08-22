@@ -14,6 +14,7 @@ import {
     CreaturePF2e,
     EncounterPF2e,
     getDataFlag,
+    getFirstActiveToken,
     getFlag,
     htmlClosest,
     htmlQuery,
@@ -648,13 +649,22 @@ class PersistentPF2eHUD
 
         const action = target.dataset.action as EventAction;
 
-        if (action === "set-actor") {
+        if (action === "open-sheet") {
+            if (event.button === 0) {
+                this.actor?.sheet.render(true);
+            } else {
+                const actor = this.actor;
+                actor && this.#panToActiveToken(actor);
+            }
+        } else if (action === "set-actor") {
             if (this.settings.selection === "manual") {
                 this.setSelectedToken(event);
             } else {
                 this.#previousActor = null;
                 this.render();
             }
+        } else if (action === "select-owned-actor") {
+            this.#setOwnedActor(event, target);
         }
 
         if (event.button !== 0) return;
@@ -679,10 +689,6 @@ class PersistentPF2eHUD
         } else if (action === "mute-sound") {
             toggleFoundryBtn("hotbar-controls-left", "mute");
             this.element.classList.toggle("muted", game.audio.globalMute);
-        } else if (action === "open-sheet") {
-            this.actor?.sheet.render(true);
-        } else if (action === "select-owned-actor") {
-            this.#setOwnedActor(target);
         } else if (action === "toggle-effects") {
             this.settings.showEffects = !this.settings.showEffects;
         } else if (action === "toggle-clean") {
@@ -699,18 +705,22 @@ class PersistentPF2eHUD
         }
     }
 
-    #setOwnedActor(target: HTMLElement) {
+    #setOwnedActor(event: PointerEvent, target: HTMLElement) {
         const actorId = target.dataset.actorId ?? "";
         const actor = game.actors.get(actorId);
         if (!actor) return;
 
-        const mode = this.settings.selection;
+        if (event.button === 0) {
+            const mode = this.settings.selection;
 
-        if (mode === "manual") {
-            this.setActor(actor);
-        } else if (mode === "select") {
-            this.#previousActor = actor;
-            this.render();
+            if (mode === "manual") {
+                this.setActor(actor);
+            } else if (mode === "select") {
+                this.#previousActor = actor;
+                this.render();
+            }
+        } else {
+            this.#panToActiveToken(actor, true);
         }
     }
 
@@ -833,22 +843,35 @@ class PersistentPF2eHUD
             return;
         }
 
-        const exist = actor.getActiveTokens()[0];
+        const exist = getFirstActiveToken(actor, { linked: true });
+
         if (exist) {
             event.preventDefault();
 
             warning("persistent.ownedActor.drag.exist");
-            panToToken(exist);
-            pingToken(exist);
-
-            return;
+            this.#panToToken(exist);
+        } else {
+            const image = htmlQuery<HTMLImageElement>(parent, "img.token")?.src ?? img.src;
+            createDraggable(event, image as ImageFilePath, actor, null, {
+                type: "Actor",
+                uuid: actor.uuid,
+            });
         }
+    }
 
-        const image = htmlQuery<HTMLImageElement>(parent, "img.token")?.src ?? img.src;
-        createDraggable(event, image as ImageFilePath, actor, null, {
-            type: "Actor",
-            uuid: actor.uuid,
-        });
+    #panToActiveToken(actor: ActorPF2e, linked?: boolean) {
+        const token = getFirstActiveToken(actor, { linked });
+
+        if (token) {
+            this.#panToToken(token);
+        } else {
+            warning("persistent.pan.none");
+        }
+    }
+
+    #panToToken(token: TokenDocumentPF2e) {
+        panToToken(token);
+        pingToken(token, true);
     }
 
     #activateListeners(html: HTMLElement) {
