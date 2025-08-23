@@ -5,6 +5,7 @@ import {
     ApplicationConfiguration,
     ApplicationRenderContext,
     ApplicationRenderOptions,
+    belongToPartyAlliance,
     canObserveActor,
     createHook,
     createToggleKeybind,
@@ -280,8 +281,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
 
         const userCanObserveActor = (actor: ActorPF2e) => {
             return (
-                canObserveActor(actor, true) ||
-                (partyAsObserved && actor?.system.details.alliance === "party")
+                canObserveActor(actor, true) || (partyAsObserved && belongToPartyAlliance(actor))
             );
         };
 
