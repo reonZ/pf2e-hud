@@ -316,7 +316,7 @@ class PersistentPF2eHUD
     }
 
     isValidOwnedActor(actor: Maybe<ActorPF2e>): actor is ActorPF2e {
-        return this.isValidActor(actor) && !actor.token;
+        return this.isValidActor(actor) && !actor.token && !game.tcal?.isTransientActor(actor);
     }
 
     isCurrentActor(actor: Maybe<ActorPF2e>, flash?: boolean): actor is PersistentHudActor {
