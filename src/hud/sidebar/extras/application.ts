@@ -1,7 +1,6 @@
 import { FilterValue, rollInitiative } from "hud/shared";
 import {
     AbilityItemPF2e,
-    ActorInitiative,
     ActorPF2e,
     addListenerAll,
     ApplicationRenderOptions,
@@ -12,6 +11,7 @@ import {
     MacroPF2e,
     R,
     setFlag,
+    SkillSlug,
     SpecialResourceRuleElement,
 } from "module-helpers";
 import { ExtrasSidebarItem, getExtrasActions, MacroSidebarItem } from ".";
@@ -74,7 +74,7 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<
             actions,
             dailies,
             filterValue,
-            initiative: actor.initiative,
+            initiative: actor.system.initiative?.statistic,
             isCharacter,
             macros,
             resources: R.values(actor.synthetics.resources),
@@ -158,7 +158,7 @@ type ExtrasSidebarContext = {
     actions: ExtrasSidebarItem[];
     dailies: MaybeFalsy<{ canPrep: boolean; tooltip: string }>;
     filterValue: (str: string, options: { hash: { localize?: boolean } }) => FilterValue;
-    initiative: ActorInitiative | null;
+    initiative: SkillSlug | "perception" | undefined;
     isCharacter: boolean;
     macros: MacroSidebarItem[];
     resources: SpecialResourceRuleElement[];
