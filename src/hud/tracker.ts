@@ -740,6 +740,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             content: "dialogs/action-alternates",
             i18n: "dialogs.alternates",
             data: {
+                label: game.i18n.localize("PF2E.InitiativeLabel"),
                 statistic: actor.system.initiative?.statistic,
                 statistics: getStatistics(actor),
             },
