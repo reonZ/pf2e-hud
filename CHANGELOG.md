@@ -1,3 +1,7 @@
+# 2.25.2
+
+-   fix initiative statistic selected in the actor sheet not being the default in the `Extras Sidebar` and the `Combat Tracker` variant initiative roll
+
 # 2.25.1
 
 -   `Persistent HUD`:
