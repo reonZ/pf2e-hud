@@ -1,7 +1,7 @@
 # 2.25.1
 
 -   `Persistent HUD`:
-    -   exclude transiant actors from the list of owned actors
+    -   exclude transient actors from the list of owned actors
 
 # 2.25.0
 
