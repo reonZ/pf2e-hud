@@ -316,7 +316,12 @@ class PersistentPF2eHUD
     }
 
     isValidOwnedActor(actor: Maybe<ActorPF2e>): actor is ActorPF2e {
-        return this.isValidActor(actor) && !actor.token && !game.tcal?.isTransientActor(actor);
+        return (
+            this.isValidActor(actor) &&
+            !actor.token &&
+            !game.tcal?.isTransientActor(actor) &&
+            actor.flags.core?.sheetClass !== "pf2e.SimpleNPCSheet"
+        );
     }
 
     isCurrentActor(actor: Maybe<ActorPF2e>, flash?: boolean): actor is PersistentHudActor {
@@ -557,9 +562,9 @@ class PersistentPF2eHUD
         } else if (options.selectionMode !== "combat") {
             const isGM = game.user.isGM;
             const party = game.actors.party;
-            const allOwned: ActorPF2e[] = isGM
+            const allOwned: FilterableIterable<ActorPF2e, CreaturePF2e> = isGM
                 ? party?.members ?? []
-                : game.actors.filter((actor) => actor.isOwner);
+                : game.actors;
 
             const sortLogic: NonEmptyArray<Parameters<typeof R.sortBy<CreaturePF2e[]>>[1]> = [
                 (actor) => actor.isOfType("npc"),
@@ -577,14 +582,7 @@ class PersistentPF2eHUD
             }
 
             const actors: OwnedActorContext[] = R.pipe(
-                allOwned,
-                R.filter((actor): actor is CreaturePF2e => {
-                    return (
-                        !actor.token &&
-                        actor.isOfType("character", "npc") &&
-                        actor.flags.core?.sheetClass !== "pf2e.SimpleNPCSheet"
-                    );
-                }),
+                allOwned.filter((actor) => this.isValidOwnedActor(actor)),
                 R.sortBy(...sortLogic),
                 R.take(8),
                 R.map((actor): OwnedActorContext => {
