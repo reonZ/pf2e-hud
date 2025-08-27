@@ -246,6 +246,9 @@
           "exist": "Cette scène contient déjà un jeton pour cet acteur."
         }
       },
+      "pan": {
+        "none": "Cet acteur ne dispose d'aucun jeton actif sur la scène actuelle."
+      },
       "shortcuts": {
         "clear": {
           "title": "Effacer les raccourcis",
