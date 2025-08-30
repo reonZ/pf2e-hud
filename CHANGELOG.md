@@ -1,3 +1,7 @@
+# 2.25.4
+
+-   fix not using fallback to test if a localization key exist, preventing some localization for languages without a localization file
+
 # 2.25.3
 
 -   `Persistent HUD`:
