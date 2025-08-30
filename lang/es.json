@@ -3,19 +3,19 @@
     "keybindings": {
       "persistent": {
         "setActor": {
-          "name": "Elegir como Actor Persistente",
+          "name": "Elegir como actor persistente",
           "hint": "Establecer el actor del token seleccionado como actor persistente."
         }
       },
       "sidebar": {
         "filter": {
-          "name": "Usar el Filtro la Barra Lateral",
+          "name": "Usar el filtro de la barra lateral",
           "hint": "Permitir el filtrado del contenido actual de la barra lateral."
         }
       },
       "tracker": {
         "alternate": {
-          "name": "Controles Alternativos",
+          "name": "Controles alternativos",
           "hint": "Activa o desactiva los controles del rastreador de combate para mostrar opciones adicionales."
         }
       }
@@ -24,21 +24,21 @@
       "menus": {
         "healthStatusMenu": {
           "name": "Estado de salud",
-          "label": "Configurar Estado de salud",
+          "label": "Configurar estado de salud",
           "hint": "Configurar las divisiones del estado de salud para que se muestren en los HUDs."
         }
       },
       "enabled": {
-        "name": "Activo",
+        "name": "Activado",
         "hint": "Activa este elemento en el HUD de tu cliente."
       },
       "dice": {
-        "title": "Panel de Dados"
+        "title": "Panel de dados"
       },
       "foundrySidebar": {
-        "title": "Barra Lateral de Foundry",
+        "title": "Barra lateral de Foundry",
         "expand": {
-          "name": "Auto Expandir al Cargar",
+          "name": "Autoexpandir al cargar",
           "hint": "Forzar a Foundry a expandir la barra lateral al cargar la página."
         }
       },
@@ -48,24 +48,24 @@
           "hint": "Si no se especifica una velocidad, la más alta se mostrará incluso si la velocidad en tierra no es 0."
         },
         "useModifiers": {
-          "name": "Usar Modificadores",
+          "name": "Usar modificadores",
           "hint": "Mostrar modificadores en vez de la dificultad en los diferentes elementos del HUD."
         }
       },
       "advanced": {
         "alliance": {
-          "name": "Botón de Alianzas",
+          "name": "Botón de alianzas",
           "hint": "Mostrar el botón de alianza/disposición en el HUD."
         }
       },
       "persistent": {
-        "title": "HUD Persistente",
+        "title": "HUD persistente",
         "autoFill": {
-          "name": "Autorellenar NPCs",
+          "name": "Autorellenar PNJ",
           "hint": "Si no has realizado ningún ajuste manual, los atajos se rellenaran automágicamente."
         },
         "display": {
-          "name": "Posición de la Pantalla",
+          "name": "Posición de la pantalla",
           "hint": "¿Dónde debe mostrarse el HUD en la interfaz de usuario?",
           "choices": {
             "disabled": "Desactivado",
@@ -87,9 +87,9 @@
         "title": "Barra lateral"
       },
       "time": {
-        "title": "Registro de Tiempo",
+        "title": "Registro de tiempo",
         "enabled": {
-          "hint": "Activa este elemento en el HUD para tu cliente. Esto se sobreescribe cuando el ajuste para que los jugadores tengan acceso al reloj del mundo está desactivado."
+          "hint": "Activa este elemento en el HUD para tu cliente. Esto se sobrescribe cuando el ajuste para que los jugadores tengan acceso al reloj del mundo está desactivado."
         }
       },
       "token": {
@@ -108,7 +108,7 @@
       "tooltip": {
         "title": "Información del token (tooltip)",
         "delay": {
-          "name": "Retraso del tooltip",
+          "name": "Demora del tooltip",
           "hint": "Retraso en milisegundos antes de que se muestre el tooltip."
         },
         "distance": {
@@ -133,11 +133,11 @@
       "tracker": {
         "title": "Rastreador de combate",
         "partyAsObserved": {
-          "name": "Alianza de partidos según lo observado",
-          "hint": "Considera que los actores de la alianza \"Partido\" deben ser observados por los jugadores para mostrar información sobre su salud. No debe confundirse con el actor \"Partido\"."
+          "name": "Alianza de grupo como observado",
+          "hint": "Considera que los actores de la alianza \"Grupo\" deben ser observados por los jugadores para mostrar información sobre su salud. No debe confundirse con el actor \"Grupo\"."
         },
         "started": {
-          "name": "Sólo cuando se inicia",
+          "name": "Solo cuando se inicia",
           "hint": "El rastreador solo se mostrará a los jugadores si el combate realmente ha comenzado (además de requerir la participación de un combatiente)."
         },
         "textureScaling": {
@@ -147,11 +147,11 @@
       }
     },
     "actions": {
-      "borrowArcaneSpell": "Tomar presado un Conjuro Arcano",
+      "borrowArcaneSpell": "Tomar presado un conjuro arcano",
       "drive": {
-        "drive1": "Drive <span class=\"action-glyph\">1</span>",
-        "drive2": "Drive <span class=\"action-glyph\">2</span>",
-        "drive3": "Drive <span class=\"action-glyph\">3</span>"
+        "drive1": "Conducir <span class=\"action-glyph\">1</span>",
+        "drive2": "Conducir <span class=\"action-glyph\">2</span>",
+        "drive3": "Conducir <span class=\"action-glyph\">3</span>"
       }
     },
     "actor-hud": {
@@ -160,7 +160,7 @@
       "resolve": "Usar punto de resolución"
     },
     "avatar-editor": {
-      "title": "Editar Avatar - {name}",
+      "title": "Editar avatar - {name}",
       "cancel": "Cancelar",
       "color": {
         "background": "Color de fondo",
@@ -170,9 +170,9 @@
       "reset": "Reiniciar",
       "save": "Guardar",
       "src": {
-        "actor": "Usar la Imágen de Actor",
-        "token": "Usar la Imágen del Token",
-        "none": "No se pudo encontrar una imágen válida",
+        "actor": "Usar la imagen del actor",
+        "token": "Usar la imagen del token",
+        "none": "No se pudo encontrar una imagen válida",
         "video": "Los vídeos no están soportados"
       }
     },
@@ -181,8 +181,8 @@
         "dc": "Clase de dificultad",
         "drag": "Arrastra para crear un atajo",
         "statistic": "Estadística",
-        "title": "Acciones Variantes - {label}",
-        "yes": "Usar Variantes"
+        "title": "Acciones variantes - {label}",
+        "yes": "Usar variantes"
       },
       "resolve": {
         "title": "Usar puntos de resolución",
@@ -225,60 +225,68 @@
     "persistent": {
       "effects": {
         "shift": "Mayús",
-        "toggle": "Conmutar Efectos"
+        "toggle": "Conmutar efectos"
       },
       "error": {
         "selectOne": "Elije un token de PNJ/PJ para establecerlo como tu actor persistente."
       },
       "menu": {
         "clean": {
-          "always": "Mostrar siempre la UI en el retrato",
-          "hover": "Mostrar la UI únicamente cuando se pasa al ratón por el retrato"
+          "always": "Mostrar siempre la IU en el retrato",
+          "hover": "Mostrar la IU únicamente cuando se pasa al ratón por el retrato"
         },
-        "editAvatar": "Editar Avatar",
+        "editAvatar": "Editar avatar",
         "setActor": {
           "set": "Elegir el token seleccionado como actor persistente",
           "unset": "Deseleccionar como actor persistente"
         }
       },
+      "ownedActor": {
+        "drag": {
+          "exist": "Esta escena ya contiene un token para este actor."
+        }
+      },
+      "pan": {
+        "none": "Este actor no tiene ningún token activo en la escena actual."
+      },
       "shortcuts": {
         "clear": {
-          "title": "Limpiar Atajos",
-          "all": "Todos los Conjuntos de Atajos",
+          "title": "Limpiar atajos",
+          "all": "Todos los conjuntos de atajos",
           "hint": "¿Seguro que deseas eliminar los siguientes atajos?",
-          "set": "Solo el Conjunto Actual",
+          "set": "Solo el conjunto actual",
           "yes": "Eliminar"
         },
         "copy": {
-          "title": "Copiar los Atajos de Usuario",
+          "title": "Copiar los atajos de usuario",
           "hint": "Elije un usuario para copiar sus atajos.",
-          "label": "Usuario Propietario",
+          "label": "Usuario propietario",
           "none": "Este actor no tiene ningún otro propietario.",
           "yes": "Copiar"
         },
         "fill": {
-          "title": "Autorellenar Atajos",
+          "title": "Autorellenar atajos",
           "content": "¿Estás seguro de que quieres autorellenar los atajos?",
           "yes": "Autorellenar"
         },
-        "tab": "Cambiar el Conjunto de Atajos"
+        "tab": "Cambiar el conjunto de atajos"
       }
     },
     "popup": {
       "shortcut": {
-        "config": "Personalizar Atajo"
+        "config": "Personalizar atajo"
       }
     },
     "recall-knowledge": {
       "result": "Resultado",
       "modifier": "Mod.",
-      "target": "OBjetivo",
-      "first": "1ro",
-      "second": "2do",
-      "third": "3ro",
-      "fourth": "4to",
-      "fifth": "5to",
-      "sixth": "6to",
+      "target": "Objetivo",
+      "first": "1º",
+      "second": "2º",
+      "third": "3º",
+      "fourth": "4º",
+      "fifth": "5º",
+      "sixth": "6º",
       "dc": "CD",
       "unspecific": "Sin especificar",
       "specific": "Específico",
@@ -290,7 +298,7 @@
     "shortcuts": {
       "blast": {
         "cost": {
-          "label": "Coste de la Explosión Elemental"
+          "label": "Coste de la explosión elemental"
         }
       },
       "error": {
@@ -299,28 +307,29 @@
         "wrongType": "No puedes crear un atajo de ese tipo."
       },
       "tooltip": {
-        "active": "Active",
+        "active": "Activo",
         "altUse": {
-          "blast": "Radio de Explosión",
-          "skillAction": "Menu de Variantes",
-          "strike": "Radio de Golpe",
-          "toggle": "Seleccionar Opción Alternativa"
+          "blast": "Radio de explosión",
+          "skillAction": "Menu de variantes",
+          "strike": "Radio de golpe",
+          "toggle": "Seleccionar opción alternativa"
         },
         "click": {
           "control": "[Ctrl-Clic-Derecho]",
-          "middle": "[Clic-Central] Quitar Atajo",
+          "middle": "[Clic-Central] Quitar atajo",
           "popup": "Popup del item"
         },
         "disabled": "Desactivado",
         "enabled": "Activado",
         "inactive": "Inactivo",
         "subtitle": {
-          "blast": "Explosión Elemental",
-          "extraAction": "Acción Extra",
-          "macro": "Macro Autoejecutada",
+          "blast": "Explosión elemental",
+          "extraAction": "Acción extra",
+          "macro": "Macro autoejecutada",
           "spell": "Lanzamiento de conjuros",
+          "skillAction": "Acción de habilidad",
           "strike": "Golpear",
-          "toggle": "Modos de tirar dados"
+          "toggle": "Opción de tirar"
         },
         "reason": {
           "available": "No disponible en este momento",
@@ -328,13 +337,15 @@
           "charges": "No quedan cargas",
           "combat": "Fuera de combate",
           "dropped": "No llevas el objeto",
-          "equip": "Sin Equipar",
+          "equip": "Sin equipar",
           "expended": "Conjuro gastado",
-          "focus": "Reserva de puntos de Foco vacía",
+          "focus": "Reserva de puntos de foco vacía",
+          "macro": "No hay macro coincidente",
           "match": "No hay coincidencia",
           "prepared": "Conjuro no preparado",
           "quantity": "No hay cantidad suficiente",
           "rank": "No se puede lanzar ese de rango",
+          "tactic": "No es una táctica preparada",
           "uses": "No quedan usos",
           "vessel": "No es el recipiente principal"
         }
@@ -347,10 +358,10 @@
       "filter": "Filtro de barra lateral",
       "actions": {
         "blasts": "Explosiones elementales",
-        "ranged": "Rango {max} ft.",
-        "rangedWithIncrement": "Rango {increment}/{max} ft.",
-        "reach": "Alcance {reach} ft.",
-        "reset": "Reiniciar Usos",
+        "ranged": "Rango {máx} pies.",
+        "rangedWithIncrement": "Rango {increment}/{max} pies",
+        "reach": "Alcance {reach} pies",
+        "reset": "Reiniciar usos",
         "shields": {
           "shown": "Los escudos se muestran",
           "hidden": "Los escudos se ocultan"
@@ -360,16 +371,16 @@
           "shown": "Los objetos guardados se muestran",
           "hidden": "Los objetos guardados no se muestran"
         },
-        "thrown": "Lanzado {increment}/{max} pies."
+        "thrown": "Lanzado {increment}/{max} pies"
       },
       "extras": {
         "delete": {
-          "title": "Borrar Macro",
+          "title": "Borrar macro",
           "content": "¿Seguro que quieres borrar esta macro?"
         },
-        "edit": "Editar Macro",
-        "noMacro": "Suelta la Macro aquí",
-        "use": "Ejecutar Macro"
+        "edit": "Editar macro",
+        "noMacro": "Suelta la macro aquí",
+        "use": "Ejecutar macro"
       },
       "removeEffect": "Quitar efecto",
       "skills": {
@@ -385,7 +396,7 @@
     "sidebars": {
       "actions": "Acciones",
       "items": "Inventario",
-      "spells": "Conjuros",
+      "spells": "Lanzamiento de conjuros",
       "skills": "Habilidades",
       "extras": "Extras"
     },
@@ -395,22 +406,22 @@
     },
     "tooltip": {
       "distance": {
-        "feet": "ft.",
+        "feet": "pies",
         "meter": "m",
-        "square": "sq."
+        "square": "cuadrados"
       }
     },
     "tracker": {
       "award": "Premio: {xp} XP",
       "collapsed": "Contraído, haga clic para expandir",
-      "delay": "Retrasar el giro",
+      "delay": "Retrasar el turno",
       "expanded": "Expandido, haga clic para contraer",
       "fake": {
         "nothing": "Encuentro no iniciado",
         "secret": "Algo secreto está sucediendo"
       },
-      "force-turn": "Turno de combate de fuerza",
-      "join": "Unirse al Turno",
+      "force-turn": "Forzar turno de combate",
+      "join": "Unirse al turno",
       "unknown": "Desconocido"
     },
     "use-resolve": {
