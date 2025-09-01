@@ -1,0 +1,434 @@
+{
+    "pf2e-hud": {
+        "keybindings": {
+            "persistent": {
+                "setActor": {
+                    "name": "Als festen Akteur setzen",
+                    "hint": "Fixiert den Akteur der ausgewählten Spielfigur."
+                }
+            },
+            "sidebar": {
+                "filter": {
+                    "name": "Untermenüs filtern",
+                    "hint": "Aktiviert den Filter im aktuell offenen HUD-Untermenü (z.B. Fertigkeiten)"
+                }
+            },
+            "tracker": {
+                "alternate": {
+                    "name": "Alternative Steuerelemente",
+                    "hint": "Zeigt im Begegnungstracker zusätzliche Optionen an."
+                }
+            }
+        },
+        "settings": {
+            "menus": {
+                "healthStatusMenu": {
+                    "name": "Gesundheitszustand",
+                    "label": "Gesundheitszustand konfigurieren",
+                    "hint": "Richte Unterteilungen des Gesundheitszustands ein, die im HUD angezeigt werden."
+                }
+            },
+            "enabled": {
+                "name": "Aktiviert",
+                "hint": "Aktiviert dieses HUD-Element auf deinem Client."
+            },
+            "dice": {
+                "title": "Würfel-Leiste"
+            },
+            "foundrySidebar": {
+                "title": "Foundry-Seitenleiste",
+                "expand": {
+                    "name": "Beim Laden automatisch ausklappen",
+                    "hint": "Die Foundry-Seitenleiste wird beim Laden automatisch ausgeklappt."
+                }
+            },
+            "global": {
+                "highestSpeed": {
+                    "name": "Höchste Bewegungsrate anzeigen",
+                    "hint": "Wenn keine Bewegungsrate manuell ausgewählt wurde, wird standardmäßig immer die höchste Bewegungsrate angezeigt, auch wenn die Bewegungsrate an Land nicht 0 ist."
+                },
+                "useModifiers": {
+                    "name": "Modifikatoren nutzen",
+                    "hint": "Zeige Modifikatoren statt SGs in den verschiedenen HUD-Elementen."
+                }
+            },
+            "advanced": {
+                "alliance": {
+                    "name": "Schaltfläche Zugehörigkeit",
+                    "hint": "Zeige die Schaltfläche für die Zugehörigkeit im HUD."
+                }
+            },
+            "persistent": {
+                "title": "Festes HUD",
+                "autoFill": {
+                    "name": "NSCs automatisch füllen",
+                    "hint": "Wenn du keine manuellen Änderungen gemacht hast, dann werden die Shortcut-Plätze automatisch gefüllt."
+                },
+                "display": {
+                    "name": "Anzeigeposition",
+                    "hint": "Wo in der UI soll das HUD angezeigt werden?",
+                    "choices": {
+                        "disabled": "Deaktiviert",
+                        "left": "Linker Bereich",
+                        "middle": "Mittlerer Bereich"
+                    }
+                },
+                "selection": {
+                    "name": "Auswahlmodus",
+                    "hint": "Auswahlmodus für den fest zugewiesenen Akteur.",
+                    "choices": {
+                        "manual": "Manuelle Auswahl",
+                        "select": "Bei Auswahl einer Spielfigur",
+                        "combat": "Aktueller Kämpfer"
+                    }
+                }
+            },
+            "sidebar": {
+                "title": "Seitenleiste"
+            },
+            "time": {
+                "title": "Zeitübersicht",
+                "enabled": {
+                    "hint": "Aktiviert dieses HUD-Element auf deinem Client. Diese Einstellung wird überschrieben, wenn der Zugriff von Spielern auf die Weltuhr deaktiviert ist."
+                }
+            },
+            "token": {
+                "title": "Spielfigur-HUD",
+                "mode": {
+                    "name": "Anzeigemodus",
+                    "hint": "Wähle den Anzeigemodus für das Spielfigur-HUD.",
+                    "choices": {
+                        "disabled": "Deaktiviert",
+                        "exploded": "Explosionsmenü",
+                        "left": "Gruppiert (links)",
+                        "right": "Gruppiert (rechts)"
+                    }
+                }
+            },
+            "tooltip": {
+                "title": "Spielfigur-Tooltip",
+                "delay": {
+                    "name": "Tooltip-Verzögerung",
+                    "hint": "Verzögerung in Millisekunden, bevor der Tooltip angezeigt wird."
+                },
+                "distance": {
+                    "name": "Entfernung anzeigen",
+                    "hint": "Zeigt die Entfernung zwischen der selektierten Spielfigur und einer Spielfigur an, über die der Mauszeiger bewegt wird.",
+                    "choices": {
+                        "never": "Nie",
+                        "idiot": "In Fuß",
+                        "smart": "In Meter",
+                        "weird": "In Feldern"
+                    }
+                },
+                "draw": {
+                    "name": "Entfernungszeiger",
+                    "hint": "Dicke der Linie, die zwischen der selektierten und der Spielfigur, über der sich der Mauszeiger befindet, gezogen wird."
+                },
+                "status": {
+                    "name": "Gesundheitszustand anzeigen",
+                    "hint": "Soll der Gesundheitszustand im Tooltip angezeigt werden, sofern dieser in der Welt aktiv ist."
+                }
+            },
+            "tracker": {
+                "title": "Begegnungstracker",
+                "partyAsObserved": {
+                    "name": "Verbündete der Gruppe als Beobachtet",
+                    "hint": "Betrachte Akteure, die sich in der Zugehörigkeit \"Gruppe\" befinden, als Beobachtet in Bezug auf die Anzeige der TP-Details. Nicht zu verwechseln mit dem Gruppenbogen."
+                },
+                "started": {
+                    "name": "Nur wenn gestartet",
+                    "hint": "Der Tracker wird Spielern nur angezeigt, wenn der Kampf tatsächlich gestartet wurde und es Kampfteilnehmer gibt."
+                },
+                "textureScaling": {
+                    "name": "Textur-Skalierung",
+                    "hint": "Invertiert die Skalierung des Kampfbeteiligten basierend auf der Skalierung der Spielfigur-Textur."
+                }
+            }
+        },
+        "actions": {
+            "borrowArcaneSpell": "Aus fremdem Zauberbuch vorbereiten",
+            "drive": {
+                "drive1": "Fahren <span class=\"action-glyph\">1</span>",
+                "drive2": "Fahren <span class=\"action-glyph\">2</span>",
+                "drive3": "Fahren <span class=\"action-glyph\">3</span>"
+            }
+        },
+        "actor-hud": {
+            "alliance": "Zugehörigkeit: {value}",
+            "temp": "Temporäre Trefferpunkte",
+            "resolve": "Reservepunkt nutzen"
+        },
+        "avatar-editor": {
+            "title": "Avatar anpassen - {name}",
+            "cancel": "Abbrechen",
+            "color": {
+                "background": "Hintergrundfarbe",
+                "enabled": "Hintergrundfarbe aktivieren"
+            },
+            "contain": "Ausfüllen",
+            "reset": "Zurücksetzen",
+            "save": "Speichern",
+            "src": {
+                "actor": "Nutze des Akteur-Bild",
+                "token": "Nutze Spielfigur-Bild",
+                "none": "Es konnte keine gültige Bildquelle gefunden werden",
+                "video": "Videos werden von dieser Funktion nicht unterstützt"
+            }
+        },
+        "dialogs": {
+            "alternates": {
+                "dc": "Schwierigkeitsgrad",
+                "drag": "Ziehen zum Erstellen eines Shortcuts",
+                "statistic": "Wert",
+                "title": "Aktionsvarianten - {label}",
+                "yes": "Variante nutzen"
+            },
+            "resolve": {
+                "title": "Reservepunkt nutzen",
+                "full": "{name} hat volle Ausdauer und muss nicht rasten.",
+                "breather": {
+                    "label": "Zu Atem kommen",
+                    "hint": "Raste für 10 Minuten, gib einen Reservepunkt aus und regeneriere deine Ausdauer"
+                },
+                "steel": {
+                    "hint": "Nutze eine Aktion, gib einen Reservepunkt aus und regeneriere Ausdauer in Höhe der Hälfte deines Maximums."
+                },
+                "yes": "Reservepunkt nutzen"
+            }
+        },
+        "edit-shortcut": {
+            "image": "Pfad zur Bilddatei",
+            "name": "Shortcut-Name",
+            "yes": "Speichern"
+        },
+        "health-status": {
+            "title": "Gesundheitszustand",
+            "enabled": "Aktiviert",
+            "add": "Markierung setzen",
+            "delete": "Markierung löschen",
+            "save": "Speichern",
+            "cancel": "Abbrechen",
+            "import": {
+                "title": "Gesundheitszustand importieren",
+                "yes": "Importieren",
+                "no": "Abbrechen",
+                "error": "Die eingegebenen Daten sind ungültig."
+            },
+            "export": {
+                "title": "Gesundheitszustand exportieren",
+                "confirm": "Der Gesundheitszustand wurde in die Zwischenablage kopiert."
+            },
+            "default": "Tot, Dem Tode nah, Schwer verletzt, Verletzt, Leicht verletzt, Unverletzt"
+        },
+        "leftClick": "[Linksklick]",
+        "persistent": {
+            "effects": {
+                "shift": "Shift",
+                "toggle": "Effekte umschalten"
+            },
+            "error": {
+                "selectOne": "Wähle eine einzelne Spielfigur eines NSCs/Charakters, um ihn als Akteur zu fixieren."
+            },
+            "menu": {
+                "clean": {
+                    "always": "UI auf Protrait immer sichtbar",
+                    "hover": "Zeige UI nur, wenn der Mauszeiger über das Portrait bewegt wird"
+                },
+                "editAvatar": "Avatar anpassen",
+                "setActor": {
+                    "set": "Fixiere die ausgewählte Spielfigur als festen Akteur",
+                    "unset": "Festen Akteur lösen"
+                }
+            },
+            "ownedActor": {
+                "drag": {
+                    "exist": "Diese Szene enthält bereits eine Figur für diesen Akteur."
+                }
+            },
+            "pan": {
+                "none": "Dieser Akteur hat in der aktuellen Szene keine aktive Spielfigur."
+            },
+            "shortcuts": {
+                "clear": {
+                    "title": "Shortcuts leeren",
+                    "all": "Alle Shortcut-Sets",
+                    "hint": "Bist du sicher, dass du diese Shortcuts löschen willst?",
+                    "set": "Nur aktuelles Shortcut-Set",
+                    "yes": "Löschen"
+                },
+                "copy": {
+                    "title": "Benutzer-Shortcuts kopieren",
+                    "hint": "Wähle einen Benutzer, von dem du die Shortcuts kopieren willst.",
+                    "label": "Benutzer",
+                    "none": "Dieser Akteur hat keinen anderen Besitzer.",
+                    "yes": "Kopieren"
+                },
+                "fill": {
+                    "title": "Shortcuts automatisch füllen",
+                    "content": "Bist du sicher, dass du die Shortcuts automatisch befüllen möchtest?",
+                    "yes": "Automatisch füllen"
+                },
+                "tab": "Shortcut-Set wechseln"
+            }
+        },
+        "popup": {
+            "shortcut": {
+                "config": "Shortcut anpassen"
+            }
+        },
+        "recall-knowledge": {
+            "result": "Ergebnis",
+            "modifier": "Mod.",
+            "target": "Ziel",
+            "first": "1.",
+            "second": "2.",
+            "third": "3.",
+            "fourth": "4.",
+            "fifth": "5.",
+            "sixth": "6.",
+            "dc": "SG",
+            "unspecific": "Unspezifisch",
+            "specific": "Spezifisch",
+            "skill": "Fertigkeit",
+            "lore": "Kenntnis-Fertigkeit",
+            "proficiency": "Kompetenz"
+        },
+        "rightClick": "[Rechtsklick]",
+        "shortcuts": {
+            "blast": {
+                "cost": {
+                    "label": "Kosten Elementargeschoss"
+                }
+            },
+            "error": {
+                "locked": "Die Shortcuts sind zusammen mit der Schnelleiste gesperrt",
+                "wrongActor": "Du kannst nur Shortcuts vom gleichen festen Akteur erstellen.",
+                "wrongType": "Du kannst keinen Shortcut dieser Art erstellen."
+            },
+            "tooltip": {
+                "active": "Aktiv",
+                "altUse": {
+                    "blast": "Geschossmenü",
+                    "skillAction": "Variantenmenü",
+                    "strike": "Angriffsmenü",
+                    "toggle": "Wähle Unteroption"
+                },
+                "click": {
+                    "control": "[Strg-Rechtsklick]",
+                    "middle": "[Mittelklick] Shortcut entfernen",
+                    "popup": "Shortcut-Popup"
+                },
+                "disabled": "Deaktiviert",
+                "enabled": "Aktiviert",
+                "inactive": "Inaktiv",
+                "subtitle": {
+                    "blast": "Elementargeschoss",
+                    "extraAction": "Zus. Aktion",
+                    "macro": "Selbst ausgeführtes Makro",
+                    "spell": "Zauberei",
+                    "skillAction": "Fertigkeitsaktion",
+                    "strike": "Angriff Offensiv",
+                    "toggle": "Wurf-Option"
+                },
+                "reason": {
+                    "available": "Derzeit nicht verfügbar",
+                    "broken": "Verwaister Zauber",
+                    "charges": "Keine Aufladungen übrig",
+                    "combat": "Nicht im Kampf",
+                    "dropped": "Gegenstand nicht getragen",
+                    "equip": "Nicht ausgerüstet",
+                    "expended": "Zauber verbraucht",
+                    "focus": "Fokusvorrat leer",
+                    "macro": "Kein passendes Makro",
+                    "match": "Kein passender Gegenstand",
+                    "prepared": "Zauber nicht vorbereitet",
+                    "quantity": "Menge ist Null",
+                    "rank": "Kann diesen Grad nicht wirken",
+                    "tactic": "Keine vorbereitete Taktik",
+                    "uses": "Keine Nutzungen übrig",
+                    "vessel": "Nicht Primärerscheinung"
+                }
+            },
+            "use": {
+                "toggle": "Dieser Schalter ist immer aktiv"
+            }
+        },
+        "sidebar": {
+            "filter": "Untermenü-Filter",
+            "actions": {
+                "blasts": "Elementargeschosse",
+                "ranged": "Reichweite {max} Fuß",
+                "rangedWithIncrement": "Reichweite {increment}/{max} Fuß",
+                "reach": "Angriffsradius {reach} Fuß",
+                "reset": "Verwendungen zurücksetzen",
+                "shields": {
+                    "shown": "Schilde werden angezeigt",
+                    "hidden": "Schilde sind ausgeblendet"
+                },
+                "stances": "Haltungen",
+                "stowedWeapons": {
+                    "shown": "Verstaute Gegenstände werden angezeigt",
+                    "hidden": "Verstaute Gegenstände sind ausgeblendet"
+                },
+                "thrown": "Wurfwaffe {increment}/{max} Fuß"
+            },
+            "extras": {
+                "delete": {
+                    "title": "Makro löschen",
+                    "content": "Bist du sicher, dass du dieses Makro löschen willst?"
+                },
+                "edit": "Makro anpassen",
+                "noMacro": "Lege Makros hier ab",
+                "use": "Makro ausführen"
+            },
+            "removeEffect": "Effekt entfernen",
+            "skills": {
+                "alternate": "[Rechtsklick] Variantenmenü",
+                "hideUntrained": "Ungeübte ausblenden",
+                "proficient": "Geübt"
+            },
+            "spells": {
+                "broken": "Zauber defekt",
+                "cast": "Zauber wirken"
+            }
+        },
+        "sidebars": {
+            "actions": "Aktionen",
+            "items": "Inventar",
+            "spells": "Zauberei",
+            "skills": "Fertigkeiten",
+            "extras": "Extras"
+        },
+        "spellcasting": {
+            "charges": "Aufladungen",
+            "staff": "Zauberstecken"
+        },
+        "tooltip": {
+            "distance": {
+                "feet": "Fuß",
+                "meter": "m",
+                "square": "Fld."
+            }
+        },
+        "tracker": {
+            "award": "Belohnung: {xp} EP",
+            "collapsed": "Eingeklappt, Klicken zum Ausklappen",
+            "delay": "Zug verzögern",
+            "expanded": "Ausgeklappt, Klicken zum Einklappen",
+            "fake": {
+                "nothing": "Begegnung nicht gestartet",
+                "secret": "Etwas Geheimes geschieht"
+            },
+            "force-turn": "Kampfrunde erzwingen",
+            "join": "Zug beitreten",
+            "unknown": "Unbekannt"
+        },
+        "use-resolve": {
+            "full": "{name} hat volle Ausdauer und muss nicht rasten.",
+            "breather": {
+                "used": "{name} hat {ratio} Ausdauer und gibt einen Reservepunkt aus, um 10 Minuten zu rasten. Ausdauer aufgefüllt."
+            }
+        }
+    }
+}
