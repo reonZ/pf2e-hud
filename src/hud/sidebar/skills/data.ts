@@ -143,7 +143,7 @@ let _cachedSkillActionGroups: SkillActionGroups | undefined;
 async function prepareActionGroups() {
     if (_cachedSkillActionGroups) return;
 
-    const isSf2e = !!getActiveModule("starfinder-field-test-for-pf2e");
+    const isSf2e = !!getActiveModule("sf2e-anachronism");
     const skillActionGroups: SkillActionGroup[] = [];
 
     for (const { actions, statistic, sf2e } of RAW_STATISTICS) {

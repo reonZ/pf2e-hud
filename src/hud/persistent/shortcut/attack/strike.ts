@@ -51,8 +51,6 @@ class StrikeShortcut extends AttackShortcut<
         this.#uses =
             (ammo?.isOfType("consumable") && ammo.uses.max > 1 && ammo.uses) ||
             (ammo ? { value: ammo.quantity } : null);
-
-        if (!game.modules.get("sf2e-anachronism")?.active) return;
     }
 
     async _getAttackData(): Promise<Maybe<StrikeData | CharacterStrike>> {

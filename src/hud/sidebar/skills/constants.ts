@@ -164,17 +164,17 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
         actions: [
             {
                 key: "access-infosphere",
-                sourceId: "Compendium.starfinder-field-test-for-pf2e.actions.Item.Yn4jLPVWVE1vtAaF",
+                sourceId: "Compendium.sf2e-anachronism.actions.Item.Yn4jLPVWVE1vtAaF",
+            },
+            {
+                key: "operate-device",
+                label: "operateDevice",
+                sourceId: "Compendium.sf2e-anachronism.actions.Item.wWtBcshahm11stMY",
             },
             {
                 key: "hack",
                 requireTrained: true,
-                sourceId: "Compendium.starfinder-field-test-for-pf2e.actions.Item.RF8xNJ8QsMwogerB",
-            },
-            {
-                key: "program",
-                requireTrained: true,
-                sourceId: "Compendium.starfinder-field-test-for-pf2e.actions.Item.9zvazWNY5tKbMFnC",
+                sourceId: "Compendium.sf2e-anachronism.actions.Item.RF8xNJ8QsMwogerB",
             },
             "recall-knowledge",
             "decipher-writing",
@@ -351,31 +351,37 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
             "recall-knowledge",
             {
                 key: "drive",
-                sourceId: "Compendium.starfinder-field-test-for-pf2e.actions.Item.OxF2dvUCdTYHrnIm",
+                requireTrained: true,
+                sourceId: "Compendium.pf2e.actionspf2e.Item.uS3qDAgOkZ7b8ERL",
                 variants: ["drive1", "drive2", "drive3"],
             },
             {
                 key: "navigate",
-                sourceId: "Compendium.starfinder-field-test-for-pf2e.actions.Item.hsUKPqTdAvWwsqH2",
+                requireTrained: true,
+                sourceId: "Compendium.sf2e-anachronism.actions.Item.hsUKPqTdAvWwsqH2",
             },
             {
                 key: "plot-course",
-                sourceId: "Compendium.starfinder-field-test-for-pf2e.actions.Item.LXqcXRayK58inaKo",
+                requireTrained: true,
+                sourceId: "Compendium.sf2e-anachronism.actions.Item.LXqcXRayK58inaKoo",
             },
             {
                 key: "run-over",
                 actionCost: 3,
-                sourceId: "Compendium.starfinder-field-test-for-pf2e.actions.Item.FisNbAu9pdMnz6vF",
+                requireTrained: true,
+                sourceId: "Compendium.pf2e.actionspf2e.Item.lID4rJHAVZB6tavf",
             },
             {
                 key: "stop",
                 actionCost: 1,
-                sourceId: "Compendium.starfinder-field-test-for-pf2e.actions.Item.3oL5ap2Qb00Saaz9",
+                requireTrained: true,
+                sourceId: "Compendium.pf2e.actionspf2e.Item.9gDMkIfDifh61yLz",
             },
             {
                 key: "stunt",
-                sourceId: "Compendium.starfinder-field-test-for-pf2e.actions.Item.ailFBRjKuGCOAsCR",
                 actionCost: 1,
+                requireTrained: true,
+                sourceId: "Compendium.sf2e-anachronism.actions.Item.7KMyRISNqp7JTzMn",
                 variants: [
                     "back-off",
                     "evade",
@@ -389,7 +395,8 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
             {
                 key: "take-control",
                 actionCost: 1,
-                sourceId: "Compendium.starfinder-field-test-for-pf2e.actions.Item.9Msf0P33UR5mNRuz",
+                requireTrained: true,
+                sourceId: "Compendium.pf2e.actionspf2e.Item.yh9O9BQjwWrAIiuf",
             },
         ],
         sf2e: true,
