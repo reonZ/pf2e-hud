@@ -5,7 +5,7 @@
 -   `Combat Tracker`:
     -   now display the health (and stamina) details when hovering over their respective icons
 -   `Skills Sidebar`:
-    -   make the necessary changes to support the ``Starfinder Anachronism` module instead of previously the playtest module
+    -   make the necessary changes to support the `Starfinder Anachronism` module instead of previously the playtest module
 
 # 2.25.4
 
