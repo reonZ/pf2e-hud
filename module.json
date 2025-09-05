@@ -12,15 +12,15 @@
         "scripts/main.js"
     ],
     "compatibility": {
-        "minimum": "13.344",
+        "minimum": "13.348",
         "verified": "13.348",
         "maximum": "13"
     },
-    "version": "2.25.4",
+    "version": "2.26.0",
     "url": "https://github.com/reonZ/pf2e-hud",
     "readme": "https://github.com/reonZ/pf2e-hud/blob/master/README.md",
     "manifest": "https://raw.githubusercontent.com/reonZ/pf2e-hud/master/module.json",
-    "download": "https://github.com/reonZ/pf2e-hud/releases/download/2.25.4/module.zip",
+    "download": "https://github.com/reonZ/pf2e-hud/releases/download/2.26.0/module.zip",
     "changelog": "https://github.com/reonZ/pf2e-hud/blob/master/CHANGELOG.md",
     "bugs": "https://github.com/reonZ/pf2e-hud/issues",
     "styles": [
@@ -33,7 +33,7 @@
                 "type": "system",
                 "manifest": "https://raw.githubusercontent.com/foundryvtt/pf2e/master/system.json",
                 "compatibility": {
-                    "minimum": "7.1.1"
+                    "minimum": "7.4.3"
                 }
             }
         ],

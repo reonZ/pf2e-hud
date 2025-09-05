@@ -1,3 +1,12 @@
+# 2.26.0
+
+-   bump the system minimum compatibility version to `7.4.3` and foundry's to `13.348`
+-   add german localization (thanks to [MSAbaddon](https://github.com/MSAbaddon))
+-   `Combat Tracker`:
+    -   now display the health (and stamina) details when hovering over their respective icons
+-   `Skills Sidebar`:
+    -   make the necessary changes to support the ``Starfinder Anachronism` module instead of previously the playtest module
+
 # 2.25.4
 
 -   fix not using fallback to test if a localization key exist, preventing some localization for languages without a localization file
@@ -104,7 +113,7 @@
 -   `Extras Sidebar`:
     -   add the `Point Out` action
 -   `Shortcuts`:
-    -   add a `contrast` filter on top of the already existing `grayscale` one to help identify unusable shortcuts that have black & white icons (i.e. all the action cost icons)
+    -   add a `contrast` filter on top of the already existing `greyscale` one to help identify unusable shortcuts that have black & white icons (i.e. all the action cost icons)
     -   shortcuts are now removed by dragging them into a trash slot next to the shortcuts menu panel instead of using `[Middle-Click]`
 -   `Spells Sidebar`:
     -   add support for the latest changes of `PF2e Dailies`'s `Animist` daily
@@ -154,7 +163,7 @@
 -   `Persistent HUD`:
     -   fix scaling and positioning weirdness when using an `Interface Scale` other than 1
 -   `RollOption Shortcut`:
-    -   now use the item based on the currently selected suboption instead of snapshoting it at shortcut creation
+    -   now use the item based on the currently selected suboption instead of snapshotting it at shortcut creation
         -   which means that the suboptions image will be updated if it points to a different item (with a different image)
         -   nothing should be required from the user for this change
 
@@ -362,7 +371,7 @@
 -   `Token HUD`, `Popup` and `Sidebar` will now fadeout whenever anything is dragged across the screen
 -   `Extras Sidebar`:
     -   now inject the `Effect: Aid` link in the resulting message when using the `Aid` action
-    -   you can now open the descriptio popup of resources
+    -   you can now open the description popup of resources
 -   `Skills Sidebar`:
     -   fix action controls not showing up on mouseover
     -   fix all shared actions (e.g. `Identify Magic`) always using the same statistic
@@ -446,7 +455,7 @@
 -   `Token HUD`:
     -   remove the `Full Close on Click` setting
     -   revert removal of `Enabled` setting (the `Display Mode` setting felt alone in that section)
-    -   fix exploded top panel not being centered when the token is large enough to accomodate it
+    -   fix exploded top panel not being centered when the token is large enough to accommodate it
 -   add spanish localization (thanks to [HonzoNebro](https://github.com/HonzoNebro))
 
 # 2.2.0
@@ -704,7 +713,7 @@
 # 1.24.1
 
 -   `Skills Sidebar`:
-    -   add `Halfling Ingenuity` & `Eclectic Skill` to the feats allowing you to use skill actions requiring to be tained
+    -   add `Halfling Ingenuity` & `Eclectic Skill` to the feats allowing you to use skill actions requiring to be trained
 
 # 1.24.0
 
@@ -739,7 +748,7 @@
 
 -   add new `Dice Panel` HUD:
     -   you can find it right above the chat input field
-    -   depending on which key (`Shift` or `Ctrl`) is held while clicking, the behaviour will differ
+    -   depending on which key (`Shift` or `Ctrl`) is held while clicking, the behavior will differ
         -   [None]: the die will be rolled right away and displayed in chat
         -   [Ctrl]: the die will be rolled right away and displayed in chat as a `Private` roll
         -   [Shift]: will update the chat and give it focus subsequently
@@ -1109,7 +1118,7 @@
 # 1.1.1
 
 -   the critical button for NPC strikes will no longer show the formula directly but only `Critical`
-    -   NPC criticals are always double damage
+    -   NPC critical hits are always double damage
     -   you can still hover over it to see the formula
 -   `Persistent HUD`:
     -   fixed NPC strike shortcuts not showing the damage variant buttons
@@ -1186,7 +1195,7 @@
         -   this was the cause for the scene navbar offset issue
         -   this was the cause for smalltime not being able to dock on the players window
         -   the players window is no longer removed from its original container anymore
--   `Token Toolip`:
+-   `Token Tooltip`:
     -   fixed tooltip position on hex-grid maps
 
 # 0.17.1
@@ -1259,14 +1268,14 @@
 -   `Persistent HUD`:
     -   added a variants dialog for skill/statistic actions when right clicking on the roll button
         -   can change the associated statistic
-        -   can add/remove the agile trait behaviour for rolls that have a MAP
+        -   can add/remove the agile trait behavior for rolls that have a MAP
         -   can change the DC value for rolls with a defined DC
-    -   the `Auto-Set Actor` behaviour has changed, it is now "smarter"
-        -   manually set actor will override any other behaviour (it will never change regardless of the auto-set option)
+    -   the `Auto-Set Actor` behavior has changed, it is now "smarter"
+        -   manually set actor will override any other behavior (it will never change regardless of the auto-set option)
         -   if the persistent actor is supposed to change but leads to no actor, it will automatically revert to the user assigned actor
             -   this can happen for instance when the current combatant/selected token isn't owned or an invalid actor
             -   it can also happen when un-selecting a token while using the `On Token Selection` option
-        -   similar behaviour will happen when manually un-setting the actor, it will first try to look at the currently selected token/current combatant and then for the user assigned actor.
+        -   similar behavior will happen when manually un-setting the actor, it will first try to look at the currently selected token/current combatant and then for the user assigned actor.
     -   fixed action shortcut opening the action popup instead of running the toolbelt macro
 
 # 0.13.0
@@ -1328,7 +1337,7 @@
 -   `Persistent HUD`:
     -   added a new effects section that display the effects currently present on the persistent actor even when not selected
     -   added a new `Hold Shift for Effects` setting
-        -   this is a fail-safe preventing misclicks on effects, when enabled, you are forced to hold `shift` to interact with the effect icons
+        -   this is a fail-safe preventing misclick on effects, when enabled, you are forced to hold `shift` to interact with the effect icons
 -   `Token Tooltip`:
     -   fixed health status not selecting the right string to display
     -   fixed the tooltip not always showing up when moving too fast in, out and in again on a token that wasn't previously hovered
@@ -1389,7 +1398,7 @@
 
 -   added support for `Persistent HUD` sidebars
 -   added trait description tooltips to NPCs strikes
--   tweaked the multi-columns logic to try to avoid useless scrollbars
+-   tweaked the multi-columns logic to try to avoid useless scrollbar
 -   heavily distinguish NPCs ability related strike traits from other strike traits
 -   disable the `actions` sidebar icon for non-character actors that don't have any action
 -   the selected persistent actor is now saved in a user flag instead of client setting (this shouldn't be cross-world)
