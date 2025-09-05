@@ -59,4 +59,4 @@ type HealthData = {
 MODULE.devExpose({ calculateActorHealth });
 
 export { calculateActorHealth };
-export type { HealthData };
+export type { HealthData, HealthSection };

@@ -129,7 +129,8 @@
                 {{#if canObserve}}
                 {{!-- has stamina --}}
                 {{#if combatant.health.sp}}
-                <span class="entry" data-tooltip="PF2E.StaminaPointsShortLabel">
+                <span class="entry"
+                    data-tooltip="{{localize 'PF2E.StaminaPointsShortLabel'}}: {{combatant.health.sp.value}}/{{combatant.health.sp.max}}">
                     <span style="--hue: {{combatant.health.sp.hue}};">
                         {{combatant.health.sp.value}}
                     </span>

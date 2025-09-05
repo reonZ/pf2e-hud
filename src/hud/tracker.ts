@@ -38,6 +38,8 @@ import {
     calculateActorHealth,
     getStatistics,
     getTextureMask,
+    HealthData,
+    HealthSection,
     HUDSettingsList,
     rollInitiative,
     StatisticType,
@@ -285,6 +287,22 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             );
         };
 
+        const tempHeader = game.i18n.localize("PF2E.TempHitPointsShortLabel");
+        const healthHeader = game.i18n.localize("PF2E.HitPointsHeader");
+        const createHealthTooltip = (canObserve: boolean, health: HealthData) => {
+            if (!canObserve) {
+                return healthStatus.getEntryFromHealthData(health);
+            }
+
+            let tooltip = `${healthHeader}: ${health.value}/${health.max}`;
+
+            if (health.temp > 0) {
+                tooltip = `${tempHeader}: ${health.temp}<br>${tooltip}`;
+            }
+
+            return tooltip;
+        };
+
         const turns: TrackerTurn[] = [];
 
         for (let [index, combatant] of combat.turns.entries()) {
@@ -336,12 +354,8 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
                 return {
                     hue: health.totalTemp.hue,
                     value: canObserve ? health.totalTemp.value : "???",
-                    sp: health.sp
-                        ? { hue: health.sp.hue, value: canObserve ? health.sp.value : "???" }
-                        : undefined,
-                    tooltip: canObserve
-                        ? game.i18n.localize("PF2E.HitPointsHeader")
-                        : healthStatus.getEntryFromHealthData(health),
+                    sp: health.sp,
+                    tooltip: createHealthTooltip(canObserve, health),
                 };
             })();
 
@@ -1022,7 +1036,7 @@ type TrackerTexture = {
 
 type TrackerHealth = {
     hue: number;
-    sp: { value: number | "???"; hue: number } | undefined;
+    sp: HealthSection | undefined;
     tooltip: string;
     value: number | "???";
 };
