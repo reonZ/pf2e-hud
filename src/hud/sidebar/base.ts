@@ -14,6 +14,7 @@ import {
     SidebarCoords,
     SidebarName,
 } from "hud";
+import { hud } from "main";
 import {
     ActorPF2e,
     addEnterKeyListeners,
@@ -514,6 +515,7 @@ abstract class SidebarPF2eHUD<
 
         event.stopPropagation();
         this.close();
+        hud.tooltip._onMouseDown();
     }
 
     #onDragStart(target: HTMLElement, event: DragEvent) {

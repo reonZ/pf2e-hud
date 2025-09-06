@@ -65,7 +65,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
     #closeTimeout = createTimeout(this.close.bind(this), { minDelay: DELAY_BUFFER });
     #renderTimeout = createTimeout(this.render.bind(this), { minDelay: DELAY_BUFFER });
 
-    #mouseDownEvent = createToggleableEvent("mousedown", null, this.#onMouseDown.bind(this));
+    #mouseDownEvent = createToggleableEvent("mousedown", null, this._onMouseDown.bind(this));
 
     #canvasPanHook = createHook("canvasPan", this.#onCanvasPan.bind(this));
     #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
@@ -356,7 +356,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         return position;
     }
 
-    #onMouseDown() {
+    _onMouseDown() {
         this._cleanupToken();
         this.cancelRender();
         this.close();
