@@ -739,6 +739,8 @@ class PersistentPF2eHUD
             case "toggle-hotbar-lock":
                 toggleFoundryBtn("hotbar-controls-right", "lock");
                 return this.element.classList.toggle("locked", ui.hotbar.locked);
+            case "travel-sheet":
+                return this.#launchTravelSheet();
         }
     }
 
@@ -746,6 +748,18 @@ class PersistentPF2eHUD
         if (action === "shortcuts-tab") {
             this.setShortcutTab(this.shortcutsTab.value + direction);
         }
+    }
+
+    #launchTravelSheet() {
+        const controlled = canvas.tokens.controlled.filter(
+            (token) => !!token.actor?.isOfType("character", "npc")
+        );
+
+        const actors = controlled.length
+            ? controlled.map((token) => token.actor)
+            : game.actors.party?.members?.filter((actor) => actor.isOfType("character", "npc"));
+
+        return game.pf2e.gm.launchTravelSheet((actors ?? []) as CharacterPF2e[]);
     }
 
     #setOwnedActor(event: PointerEvent, target: HTMLElement) {
@@ -986,7 +1000,8 @@ type EventAction =
     | "set-actor"
     | "toggle-clean"
     | "toggle-effects"
-    | "toggle-hotbar-lock";
+    | "toggle-hotbar-lock"
+    | "travel-sheet";
 
 type PersistentRenderOptions = ApplicationRenderOptions & {
     selectionMode: PersistentSettings["selection"];

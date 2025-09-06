@@ -1,3 +1,17 @@
+#
+
+-   `Persistent HUD`:
+    -   add new `party` button to the hud when no actor is currently set
+        -   `[Left Click]` opens the party sheet
+        -   `[Right Click]` pans to party token on the scene if one exist
+        -   `Drag & Drop` a new party token on the scene if none exist
+-   `Token HUD`:
+    -   replace the `Enabled` setting with the new `Activation Mode` (default `On Second Click`)
+        -   the `On First Click` option behaves the same as previously
+        -   the `On Second Click` option will only display the token HUD if the token is already selected (from a previous click), making the board clean until you actually want to display the HUD
+-   `Token Tooltip`:
+    -   fix tooltip not closing when a sidebar is currently opened and clicking on a new token
+
 # 2.26.0
 
 -   bump the system minimum compatibility version to `7.4.3` and foundry's to `13.348`
