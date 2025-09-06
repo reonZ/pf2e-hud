@@ -149,15 +149,18 @@
         <img class="token" src="{{party.img}}">
     </a>
     {{/if}}
-    {{#if isGM}}
-    <a data-action="check-prompt" {{{@root.i18n.tooltip 'check-prompt' }}}>
+    <a data-action="check-prompt" {{{@root.i18n.tooltip 'patch.check-prompt' }}}>
         <i class="fa-solid fa-dice-d20"></i>
     </a>
-    <a data-action="travel-sheet" {{{@root.i18n.tooltip 'travel-sheet' }}}>
+    <a data-action="travel-sheet" {{{@root.i18n.tooltip 'patch.travel-sheet' }}}>
         <i class="fa-solid fa-plane"></i>
     </a>
-    <a data-action="perception-check" {{{@root.i18n.tooltip 'perception-check' }}}>
+    <a data-action="perception-check" {{{@root.i18n.tooltip 'patch.perception-check' }}}>
         <i class="fa-solid fa-magnifying-glass"></i>
+    </a>
+    {{#if identify}}
+    <a data-action="identify-menu" {{{@root.i18n.tooltip 'patch.identify-menu' }}}>
+        <i class="fa-solid fa-circle-question"></i>
     </a>
     {{/if}}
 </div>

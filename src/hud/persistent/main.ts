@@ -608,6 +608,7 @@ class PersistentPF2eHUD
             return {
                 ...data,
                 actors,
+                identify: !!game.toolbelt?.getToolSetting("identify", "enabled"),
                 isGM,
                 party: party && {
                     id: party.id,
@@ -731,6 +732,8 @@ class PersistentPF2eHUD
                 }
                 return;
             }
+            case "identify-menu":
+                return game.toolbelt?.api.identify.openTracker();
             case "mute-sound":
                 toggleFoundryBtn("hotbar-controls-left", "mute");
                 return this.element.classList.toggle("muted", game.audio.globalMute);
@@ -996,9 +999,11 @@ type EventAction =
     | "copy-shortcuts"
     | "edit-avatar"
     | "fill-shortcuts"
+    | "identify-menu"
     | "mute-sound"
     | "open-sheet"
     | "party-sheet"
+    | "perception-check"
     | "select-owned-actor"
     | "set-actor"
     | "toggle-clean"
@@ -1035,6 +1040,7 @@ type PersistentContext = PersistentContextBase & {
 
 type EmptyPersistentContext = PersistentContextBase & {
     actors: OwnedActorContext[];
+    identify: boolean;
     isGM: boolean;
     party: MaybeFalsy<{
         id: string;

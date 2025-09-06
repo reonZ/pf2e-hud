@@ -260,6 +260,8 @@
             },
             "patch": {
                 "check-prompt": "Generate Check Prompt",
+                "identify-menu": "Open Identify Menu",
+                "perception-check": "Roll Group Perception",
                 "travel-sheet": "Calculate Travel Duration"
             },
             "shortcuts": {
