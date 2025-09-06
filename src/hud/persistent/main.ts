@@ -713,6 +713,8 @@ class PersistentPF2eHUD
         if (event.button !== 0) return;
 
         switch (action) {
+            case "check-prompt":
+                return game.pf2e.gm.checkPrompt();
             case "clear-hotbar":
                 return clearHotbar();
             case "clear-shortcuts":
@@ -988,6 +990,7 @@ function getTokenImage(actor: ActorPF2e): ImageFilePath | VideoFilePath {
 }
 
 type EventAction =
+    | "check-prompt"
     | "clear-hotbar"
     | "clear-shortcuts"
     | "copy-shortcuts"

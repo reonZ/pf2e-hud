@@ -258,6 +258,10 @@
             "pan": {
                 "none": "This actor doesn't have any active token on the current scene."
             },
+            "patch": {
+                "check-prompt": "Generate Check Prompt",
+                "travel-sheet": "Calculate Travel Duration"
+            },
             "shortcuts": {
                 "clear": {
                     "title": "Clear Shortcuts",
