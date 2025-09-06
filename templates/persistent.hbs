@@ -141,5 +141,24 @@
     </div>
     {{/each}}
 </div>
-<div data-panel="patch"></div>
+<div data-panel="patch">
+    {{#if party}}
+    <a data-action="party-sheet" data-actor-id="{{party.id}}" data-tooltip="{{party.name}}"
+        draggable="true">
+        <i class="fa-solid fa-users"></i>
+        <img class="token" src="{{party.img}}">
+    </a>
+    {{/if}}
+    {{#if isGM}}
+    <a data-action="check-prompt" {{{@root.i18n.tooltip 'check-prompt' }}}>
+        <i class="fa-solid fa-dice-d20"></i>
+    </a>
+    <a data-action="travel-sheet" {{{@root.i18n.tooltip 'travel-sheet' }}}>
+        <i class="fa-solid fa-plane"></i>
+    </a>
+    <a data-action="perception-check" {{{@root.i18n.tooltip 'perception-check' }}}>
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </a>
+    {{/if}}
+</div>
 {{/if}}

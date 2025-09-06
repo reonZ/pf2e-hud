@@ -324,6 +324,10 @@ class PersistentPF2eHUD
         );
     }
 
+    isValidDraggableActor(actor: Maybe<ActorPF2e>): actor is ActorPF2e {
+        return actor instanceof Actor && actor.isOwner;
+    }
+
     isCurrentActor(actor: Maybe<ActorPF2e>, flash?: boolean): actor is PersistentHudActor {
         const isCurrentActor = super.isCurrentActor(actor);
 
@@ -594,7 +598,7 @@ class PersistentPF2eHUD
                         img: actor.img,
                         name: actor.name,
                         statistics: getAdvancedStatistics(actor),
-                        tokenImage: actor.prototypeToken.texture.src ?? actor.img,
+                        tokenImage: getTokenImage(actor),
                     };
                 })
             );
@@ -605,6 +609,11 @@ class PersistentPF2eHUD
                 ...data,
                 actors,
                 isGM,
+                party: party && {
+                    id: party.id,
+                    name: party.name,
+                    img: getTokenImage(party),
+                },
             } satisfies EmptyPersistentContext;
         } else {
             return data;
@@ -667,53 +676,69 @@ class PersistentPF2eHUD
 
         const action = target.dataset.action as EventAction;
 
-        if (action === "open-sheet") {
-            if (event.button === 0) {
-                this.actor?.sheet.render(true);
-            } else {
-                const actor = this.actor;
-                actor && this.#panToActiveToken(actor);
+        switch (action) {
+            case "open-sheet": {
+                if (event.button === 0) {
+                    return this.actor?.sheet.render(true);
+                } else {
+                    const actor = this.actor;
+                    return actor && this.#panToActiveToken(actor);
+                }
             }
-        } else if (action === "set-actor") {
-            if (this.settings.selection === "manual") {
-                this.setSelectedToken(event);
-            } else {
-                this.#previousActor = null;
-                this.render();
+
+            case "party-sheet": {
+                const party = game.actors.party;
+                if (!party) return;
+
+                if (event.button === 0) {
+                    return party.sheet.render(true);
+                } else {
+                    return this.#panToActiveToken(party, true);
+                }
             }
-        } else if (action === "select-owned-actor") {
-            this.#setOwnedActor(event, target);
+
+            case "set-actor": {
+                if (this.settings.selection === "manual") {
+                    return this.setSelectedToken(event);
+                } else {
+                    this.#previousActor = null;
+                    return this.render();
+                }
+            }
+
+            case "select-owned-actor":
+                return this.#setOwnedActor(event, target);
         }
 
         if (event.button !== 0) return;
 
-        if (action === "clear-hotbar") {
-            clearHotbar();
-        } else if (action === "clear-shortcuts") {
-            this.#clearShortcuts();
-        } else if (action === "copy-shortcuts") {
-            this.#copyShortcuts();
-        } else if (action === "edit-avatar") {
-            const worldActor = this.worldActor;
-
-            if (worldActor) {
-                new AvatarEditor(worldActor).render(true);
+        switch (action) {
+            case "clear-hotbar":
+                return clearHotbar();
+            case "clear-shortcuts":
+                return this.#clearShortcuts();
+            case "copy-shortcuts":
+                return this.#copyShortcuts();
+            case "edit-avatar":
+                const worldActor = this.worldActor;
+                return worldActor && new AvatarEditor(worldActor).render(true);
+            case "fill-shortcuts": {
+                if (await confirmDialog("persistent.shortcuts.fill")) {
+                    const shortcutsData = await this.shortcutsPanel.generateFillShortcuts();
+                    this.overrideShortcuts({ "1": shortcutsData });
+                }
+                return;
             }
-        } else if (action === "fill-shortcuts") {
-            if (await confirmDialog("persistent.shortcuts.fill")) {
-                const shortcutsData = await this.shortcutsPanel.generateFillShortcuts();
-                this.overrideShortcuts({ "1": shortcutsData });
-            }
-        } else if (action === "mute-sound") {
-            toggleFoundryBtn("hotbar-controls-left", "mute");
-            this.element.classList.toggle("muted", game.audio.globalMute);
-        } else if (action === "toggle-effects") {
-            this.settings.showEffects = !this.settings.showEffects;
-        } else if (action === "toggle-clean") {
-            this.settings.cleanPortrait = !this.settings.cleanPortrait;
-        } else if (action === "toggle-hotbar-lock") {
-            toggleFoundryBtn("hotbar-controls-right", "lock");
-            this.element.classList.toggle("locked", ui.hotbar.locked);
+            case "mute-sound":
+                toggleFoundryBtn("hotbar-controls-left", "mute");
+                return this.element.classList.toggle("muted", game.audio.globalMute);
+            case "toggle-clean":
+                return (this.settings.cleanPortrait = !this.settings.cleanPortrait);
+            case "toggle-effects":
+                return (this.settings.showEffects = !this.settings.showEffects);
+            case "toggle-hotbar-lock":
+                toggleFoundryBtn("hotbar-controls-right", "lock");
+                return this.element.classList.toggle("locked", ui.hotbar.locked);
         }
     }
 
@@ -851,17 +876,16 @@ class PersistentPF2eHUD
     }
 
     #onDragOwnedActor(event: DragEvent) {
-        const img = event.currentTarget as HTMLImageElement;
-        const parent = htmlClosest(img, "[data-actor-id]");
-        const actorId = parent?.dataset.actorId ?? "";
-        const actor = game.actors.get(actorId);
+        const target = event.currentTarget as HTMLImageElement;
+        const parent = htmlClosest(target, "[data-actor-id]");
+        const actor = game.actors.get(parent?.dataset.actorId ?? "");
 
-        if (!this.isValidOwnedActor(actor)) {
+        if (!this.isValidDraggableActor(actor)) {
             event.preventDefault();
             return;
         }
 
-        const exist = getFirstActiveToken(actor, { linked: true });
+        const exist = !actor.token && getFirstActiveToken(actor, { linked: true });
 
         if (exist) {
             event.preventDefault();
@@ -869,7 +893,7 @@ class PersistentPF2eHUD
             warning("persistent.ownedActor.drag.exist");
             this.#panToToken(exist);
         } else {
-            const image = htmlQuery<HTMLImageElement>(parent, "img.token")?.src ?? img.src;
+            const image = htmlQuery<HTMLImageElement>(parent, "img.token")?.src ?? "";
             createDraggable(event, image as ImageFilePath, actor, null, {
                 type: "Actor",
                 uuid: actor.uuid,
@@ -882,7 +906,7 @@ class PersistentPF2eHUD
         const actorId = parent?.dataset.actorId ?? "";
         const actor = game.actors.get(actorId);
 
-        if (this.isValidOwnedActor(actor)) {
+        if (this.isValidDraggableActor(actor)) {
             actor.sheet._onDrop(event);
         }
     }
@@ -913,11 +937,14 @@ class PersistentPF2eHUD
                 actor.sheet._onDrop(event);
             });
         } else if (hasOwnedActors) {
-            const ownedList = html.querySelectorAll<HTMLImageElement>(".owned-actor img");
+            const ownedList = [
+                ...html.querySelectorAll<HTMLElement>(".owned-actor img"),
+                html.querySelector<HTMLElement>(`[data-action="party-sheet"]`),
+            ].filter(R.isTruthy);
 
-            for (const img of ownedList) {
-                img.addEventListener("dragstart", this.#onDragOwnedActor.bind(this));
-                img.addEventListener("drop", this.#onOwnedActorDrop.bind(this));
+            for (const el of ownedList) {
+                el.addEventListener("dragstart", this.#onDragOwnedActor.bind(this));
+                el.addEventListener("drop", this.#onOwnedActorDrop.bind(this));
             }
         }
     }
@@ -942,6 +969,10 @@ function toggleFoundryBtn(id: string, action: string) {
     document.querySelector<HTMLButtonElement>(`#${id} [data-action="${action}"]`)?.click();
 }
 
+function getTokenImage(actor: ActorPF2e): ImageFilePath | VideoFilePath {
+    return actor.prototypeToken.texture.src ?? actor.img;
+}
+
 type EventAction =
     | "clear-hotbar"
     | "clear-shortcuts"
@@ -950,6 +981,7 @@ type EventAction =
     | "fill-shortcuts"
     | "mute-sound"
     | "open-sheet"
+    | "party-sheet"
     | "select-owned-actor"
     | "set-actor"
     | "toggle-clean"
@@ -986,6 +1018,11 @@ type PersistentContext = PersistentContextBase & {
 type EmptyPersistentContext = PersistentContextBase & {
     actors: OwnedActorContext[];
     isGM: boolean;
+    party: MaybeFalsy<{
+        id: string;
+        name: string;
+        img: string;
+    }>;
 };
 
 type OwnedActorContext = {

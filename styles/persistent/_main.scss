@@ -24,6 +24,13 @@
     scale: revert;
     width: min-content;
 
+    img.token {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        position: absolute;
+    }
+
     grid-template-columns:
         [full-start menu-start] var(--columns-icon)
         [menu-end portrait-start] 11em
@@ -280,7 +287,8 @@
 
                 &.token {
                     opacity: 0;
-                    visibility: hidden;
+                    width: 0;
+                    height: 0;
                     position: absolute;
                 }
             }
@@ -434,6 +442,7 @@
     [data-panel="patch"] {
         grid-column: portrait;
         grid-row: bottom;
+
         background: var(--panel-background),
             repeating-linear-gradient(
                 45deg,
@@ -442,6 +451,18 @@
                 rgba(255, 255, 255, 0.2) 10px,
                 rgba(255, 255, 255, 0.2) 20px
             );
+
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: 1fr 1fr;
+        gap: 0;
+
+        > * {
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 calc(100% / 5);
+        }
     }
 
     &.cleaned {
