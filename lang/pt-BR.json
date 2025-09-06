@@ -98,7 +98,6 @@
                     "name": "Modo de Exibição",
                     "hint": "Selecione o modo de exibição da HUD do token.",
                     "choices": {
-                        "disabled": "Desabilitada",
                         "exploded": "Explodida",
                         "left": "Agrupada à Esquerda",
                         "right": "Agrupada à Direita"

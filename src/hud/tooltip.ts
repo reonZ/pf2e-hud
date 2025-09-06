@@ -248,7 +248,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
             .lineTo(targetCenter.x, targetCenter.y);
     }
 
-    protected _onSetToken(token: TokenPF2e | null): void {
+    protected _onSetToken(token: TokenPF2e): void {
         this.renderWithDelay();
     }
 

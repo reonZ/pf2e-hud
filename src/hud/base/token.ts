@@ -62,7 +62,7 @@ abstract class BaseTokenPF2eHUD<
         }
     }
 
-    protected abstract _onSetToken(token: TokenPF2e | null): void;
+    protected abstract _onSetToken(token: TokenPF2e): void;
 
     protected _onClose(options: ApplicationClosingOptions) {
         this._cleanupToken();

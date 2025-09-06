@@ -98,7 +98,6 @@
                     "name": "Tryb wyświetlania",
                     "hint": "Wybierz tryb wyświetlania HUD tokena.",
                     "choices": {
-                        "disabled": "Wyłączone",
                         "exploded": "Rozłożony",
                         "left": "Zgrupowany (po lewej)",
                         "right": "Zgrupowany (po prawej)"

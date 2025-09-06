@@ -98,7 +98,6 @@
           "name": "Mode d'affichage",
           "hint": "Sélectionne le mode d'affichage du HUD jeton.",
           "choices": {
-            "disabled": "Désactivé",
             "exploded": "Explosé",
             "left": "Groupé (gauche)",
             "right": "Groupé (droite)"

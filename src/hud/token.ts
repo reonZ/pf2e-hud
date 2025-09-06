@@ -14,7 +14,6 @@ import {
     LootPF2e,
     PartyPF2e,
     render,
-    settingPath,
     signedInteger,
     TokenDocumentPF2e,
     TokenPF2e,
@@ -30,12 +29,16 @@ import {
     SidebarMenu,
 } from ".";
 
+const TOKEN_ACTIVATION = ["disabled", "first", "second"] as const;
 const TOKEN_MODE = ["exploded", "left", "right"] as const;
 
 class TokenPF2eHUD
     extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, TokenHudActor>)
     implements IAdvancedPF2eHUD
 {
+    #controlled: TokenPF2e | null = null;
+    #tokenClickAction: (token: TokenPF2e) => void = () => {};
+
     #canvasPanHook = createHook("canvasPan", this.#onCanvasPan.bind(this));
     #canvasTearDownHook = createHook("canvasTearDown", () => this.setToken(null));
     #renderActorSheetHook = createHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
@@ -67,25 +70,24 @@ class TokenPF2eHUD
     get settingsSchema(): HUDSettingsList<TokenSettings> {
         return [
             {
-                key: "enabled",
-                default: true,
-                hint: settingPath("enabled.hint"),
-                name: settingPath("enabled.name"),
+                key: "activation",
+                type: String,
+                default: "second",
+                scope: "user",
+                choices: TOKEN_ACTIVATION,
                 onChange: () => {
                     this.configurate();
                 },
-                scope: "user",
-                type: Boolean,
             },
             {
-                choices: TOKEN_MODE,
-                default: "exploded",
                 key: "mode",
+                type: String,
+                default: "exploded",
+                scope: "user",
+                choices: TOKEN_MODE,
                 onChange: () => {
                     this.render();
                 },
-                scope: "user",
-                type: String,
             },
         ];
     }
@@ -112,8 +114,9 @@ class TokenPF2eHUD
     }
 
     protected _configurate(): void {
+        const activation = this.settings.activation;
         const enabled =
-            this.settings.enabled &&
+            activation !== "disabled" &&
             (hud.persistent.settings.display === "disabled" ||
                 hud.persistent.settings.selection !== "select");
 
@@ -123,6 +126,23 @@ class TokenPF2eHUD
 
         this.#canvasTearDownHook.toggle(enabled);
         this.#renderActorSheetHook.toggle(enabled);
+
+        if (activation === "first") {
+            this.#tokenClickAction = (token) => {
+                this.setToken(token);
+            };
+        } else if (activation === "second") {
+            this.#tokenClickAction = (token) => {
+                if (token === this.#controlled) {
+                    this.setToken(token);
+                } else {
+                    this.close();
+                    this.#controlled = token;
+                }
+            };
+        } else {
+            this.#tokenClickAction = () => {};
+        }
 
         if (enabled) {
             this.render();
@@ -159,7 +179,7 @@ class TokenPF2eHUD
         return super._onClose(options);
     }
 
-    protected _onSetToken(token: TokenPF2e | null): void {
+    protected _onSetToken(token: TokenPF2e): void {
         this.render(true);
     }
 
@@ -238,7 +258,7 @@ class TokenPF2eHUD
 
         // we delay this because of the #onMouseDown which is fucking annoying
         requestAnimationFrame(() => {
-            this.setToken(token);
+            this.#tokenClickAction(token);
         });
     }
 
@@ -266,10 +286,11 @@ class TokenPF2eHUD
 
 type TokenHudActor = Exclude<ActorInstances<TokenDocumentPF2e>[ActorType], LootPF2e | PartyPF2e>;
 
+type TokenActivation = (typeof TOKEN_ACTIVATION)[number];
 type TokenMode = (typeof TOKEN_MODE)[number];
 
 type TokenSettings = {
-    enabled: boolean;
+    activation: TokenActivation;
     mode: TokenMode;
 };
 

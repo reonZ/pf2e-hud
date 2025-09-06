@@ -98,7 +98,6 @@
                     "name": "Anzeigemodus",
                     "hint": "Wähle den Anzeigemodus für das Spielfigur-HUD.",
                     "choices": {
-                        "disabled": "Deaktiviert",
                         "exploded": "Explosionsmenü",
                         "left": "Gruppiert (links)",
                         "right": "Gruppiert (rechts)"

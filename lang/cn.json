@@ -109,8 +109,7 @@
                     "choices": {
                         "left": "集中（左侧）",
                         "right": "集中（右侧）",
-                        "exploded": "分散",
-                        "disabled": "禁用"
+                        "exploded": "分散"
                     },
                     "name": "显示模式",
                     "hint": "选择指示物HUD的显示模式。"

@@ -89,16 +89,24 @@
             "time": {
                 "title": "Time Tracker",
                 "enabled": {
-                    "hint": "Enables this HUD element on your client. This is overriden when the 'Player Access' system worldclock setting is disabled."
+                    "hint": "Enables this HUD element on your client. This is overridden when the 'Player Access' system worldclock setting is disabled."
                 }
             },
             "token": {
                 "title": "Token HUD",
+                "activation": {
+                    "name": "Activation Mode",
+                    "hint": "Select the mode to activate the to token HUD.",
+                    "choices": {
+                        "disabled": "Disabled",
+                        "first": "On First Click",
+                        "second": "On Second Click"
+                    }
+                },
                 "mode": {
                     "name": "Display Mode",
                     "hint": "Select the mode of display of the token HUD.",
                     "choices": {
-                        "disabled": "Disabled",
                         "exploded": "Exploded",
                         "left": "Grouped (Left)",
                         "right": "Grouped (Right)"
