@@ -154,7 +154,10 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get unusableReason(): string | undefined {
-        return super.unusableReason ?? !this.attackData?.canStrike
+        const parent = super.unusableReason;
+        if (parent) return parent;
+
+        return !this.attackData?.canStrike
             ? "available"
             : !this.isEquipped
             ? "equip"

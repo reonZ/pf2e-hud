@@ -98,7 +98,7 @@ class StanceShortcut extends PersistentShortcut<
     }
 
     get unusableReason(): string | undefined {
-        return super.unusableReason ?? !this.canUseStances ? "combat" : undefined;
+        return super.unusableReason ?? (!this.canUseStances ? "combat" : undefined);
     }
 
     use(event: MouseEvent): void {

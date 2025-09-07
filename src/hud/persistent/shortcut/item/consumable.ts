@@ -39,15 +39,7 @@ class ConsumableShortcut extends ItemShortcut<
     }
 
     get unusableReason(): string | undefined {
-        return !this.item
-            ? "match"
-            : this.dropped
-            ? "dropped"
-            : this.quantity < 1
-            ? "quantity"
-            : this.uses.value < 1
-            ? "uses"
-            : undefined;
+        return super.unusableReason ?? (this.uses.value < 1 ? "uses" : undefined);
     }
 }
 
