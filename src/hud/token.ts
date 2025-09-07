@@ -72,7 +72,7 @@ class TokenPF2eHUD
             {
                 key: "activation",
                 type: String,
-                default: "second",
+                default: "first",
                 scope: "user",
                 choices: TOKEN_ACTIVATION,
                 onChange: () => {
