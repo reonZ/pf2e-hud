@@ -288,7 +288,7 @@
 }
 
 #pf2e-hud-radial-panel {
-    --padding: 0.2em 0.5em;
+    --row-height: 1.7em;
 
     z-index: calc(var(--z-index-tooltip) + 1);
     pointer-events: all;
@@ -299,27 +299,32 @@
     border-radius: var(--outer-border-radius);
     box-shadow: var(--outer-box-shadow);
     padding-bottom: 1px;
+    min-height: calc(var(--row-height) * 2);
     display: grid;
     grid-template-columns: repeat(var(--columns), 1fr);
     cursor: default;
-
-    .title {
-        grid-row: 2;
-        text-align: center;
-        border-bottom: var(--header-border);
-        padding: var(--padding);
-        background: var(--header-background);
-    }
 
     .section {
         display: flex;
         flex-direction: column;
         min-width: 7em;
 
+        .title,
+        .option {
+            height: var(--row-height);
+            padding-inline: 0.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .title {
+            border-bottom: var(--header-border);
+            background: var(--header-background);
+        }
+
         .option {
             min-width: 7em;
-            padding: var(--padding);
-            text-align: center;
 
             > * {
                 pointer-events: none;

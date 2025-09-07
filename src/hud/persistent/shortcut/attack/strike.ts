@@ -11,6 +11,7 @@ import {
     R,
     StrikeData,
     ValueAndMaybeMax,
+    WeaponAuxiliaryAction,
     WeaponPF2e,
     ZeroToTwo,
 } from "module-helpers";
@@ -24,6 +25,8 @@ import {
 } from "..";
 import fields = foundry.data.fields;
 
+const DRAW_AUXILIARY_ANNOTATION = ["draw", "pick-up", "retrieve"];
+
 class StrikeShortcut extends AttackShortcut<
     StrikeShortcutSchema,
     MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>,
@@ -31,7 +34,9 @@ class StrikeShortcut extends AttackShortcut<
 > {
     #ammo!: ConsumablePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e> | null;
     #damageType?: string | null;
+    #drawAuxiliaries!: WeaponAuxiliaryAction[];
     #extraAuxiliaryAction?: { label: string; glyph: string } | null;
+    #isEquipped!: boolean;
     #uses!: ValueAndMaybeMax | null;
 
     static defineSchema(): StrikeShortcutSchema {
@@ -51,6 +56,15 @@ class StrikeShortcut extends AttackShortcut<
         this.#uses =
             (ammo?.isOfType("consumable") && ammo.uses.max > 1 && ammo.uses) ||
             (ammo ? { value: ammo.quantity } : null);
+
+        this.#isEquipped = !!this.item && (!("isEquipped" in this.item) || this.item.isEquipped);
+
+        this.#drawAuxiliaries =
+            this.attackData && "auxiliaryActions" in this.attackData && !this.#isEquipped
+                ? this.attackData.auxiliaryActions.filter(({ annotation }) => {
+                      return annotation && DRAW_AUXILIARY_ANNOTATION.includes(annotation);
+                  })
+                : [];
     }
 
     async _getAttackData(): Promise<Maybe<StrikeData | CharacterStrike>> {
@@ -65,14 +79,13 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get isEquipped(): boolean {
-        return !!this.item && (!("isEquipped" in this.item) || this.item.isEquipped);
+        return this.#isEquipped;
     }
 
     get canUse(): boolean {
         return (
             !!this.item &&
             !!this.attackData?.canStrike &&
-            this.isEquipped &&
             (!("quantity" in this.attackData.item) || this.attackData.item.quantity > 0)
         );
     }
@@ -95,7 +108,9 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get cost(): ShortcutCost | null {
-        return this.attackData ? { value: 1 } : null;
+        return this.attackData
+            ? { value: this.isEquipped ? 1 : this.#drawAuxiliaries.at(0)?.actions ?? 1 }
+            : null;
     }
 
     get label(): ShortcutLabel | null {
@@ -147,6 +162,10 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get subtitle(): string {
+        if (this.mustBeDrawn) {
+            return this.#drawAuxiliaries.map((aux) => aux.label).join(" / ");
+        }
+
         const label = this.ammo?.name ?? this.damageType ?? super.subtitle;
         const range = this.item ? getActionCategory(this.actor, this.item)?.tooltip : null;
 
@@ -159,16 +178,44 @@ class StrikeShortcut extends AttackShortcut<
 
         return !this.attackData?.canStrike
             ? "available"
-            : !this.isEquipped
-            ? "equip"
             : this.item && "quantity" in this.item && this.item.quantity <= 0
             ? "quantity"
             : undefined;
     }
 
+    get mustBeDrawn(): boolean {
+        return this.#drawAuxiliaries.length > 0 && !this.isEquipped;
+    }
+
     use(event: MouseEvent): void {
         const attackData = this.attackData;
         if (!attackData) return;
+
+        if (this.mustBeDrawn) {
+            if (this.#drawAuxiliaries.length === 1) {
+                this.#drawAuxiliaries[0].execute();
+                return;
+            }
+
+            this.radialMenu(
+                () => {
+                    return [
+                        {
+                            title: "PF2E.ActionTypeAction",
+                            options: this.#drawAuxiliaries.map((aux, index) => {
+                                return { value: String(index), label: aux.label };
+                            }),
+                        },
+                    ];
+                },
+                (event, value) => {
+                    const index = Number(value);
+                    this.#drawAuxiliaries.at(index)?.execute();
+                }
+            );
+
+            return;
+        }
 
         this.radialMenu(
             () => {
