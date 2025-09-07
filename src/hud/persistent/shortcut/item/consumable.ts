@@ -1,4 +1,4 @@
-import { ConsumablePF2e, CreaturePF2e, R, ValueAndMaybeMax } from "module-helpers";
+import { ConsumablePF2e, CreaturePF2e, ValueAndMaybeMax } from "module-helpers";
 import { generateItemShortcutFields, ItemShortcut, ItemShortcutSchema, ShortcutSource } from "..";
 
 class ConsumableShortcut extends ItemShortcut<
@@ -19,7 +19,7 @@ class ConsumableShortcut extends ItemShortcut<
                 ? item.uses
                 : undefined;
 
-        this.#uses = uses ?? { value: this.quantity };
+        this.#uses = (this.quantity > 0 && uses) || { value: this.quantity };
     }
 
     get canUse(): boolean {
@@ -43,10 +43,8 @@ class ConsumableShortcut extends ItemShortcut<
             ? "match"
             : this.dropped
             ? "dropped"
-            : R.isNullish(this.uses)
-            ? this.quantity < 1
-                ? "quantity"
-                : undefined
+            : this.quantity < 1
+            ? "quantity"
             : this.uses.value < 1
             ? "uses"
             : undefined;

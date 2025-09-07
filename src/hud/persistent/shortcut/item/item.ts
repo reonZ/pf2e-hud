@@ -43,7 +43,7 @@ abstract class ItemShortcut<
     }
 
     get canUse(): boolean {
-        return super.canUse && !this.dropped;
+        return super.canUse && !this.dropped && this.quantity > 0;
     }
 
     get canAltUse(): boolean {
