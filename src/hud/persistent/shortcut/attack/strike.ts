@@ -70,7 +70,7 @@ class StrikeShortcut extends AttackShortcut<
 
     get canUse(): boolean {
         return (
-            super.canUse &&
+            !!this.item &&
             !!this.attackData?.canStrike &&
             this.isEquipped &&
             (!("quantity" in this.attackData.item) || this.attackData.item.quantity > 0)

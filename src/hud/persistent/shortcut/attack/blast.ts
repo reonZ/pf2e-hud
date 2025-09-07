@@ -1,8 +1,17 @@
 import { ElementalBlastsData, getElementalBlastsData } from "hud";
-import { AbilityItemPF2e, CharacterPF2e, EffectTrait, R, ZeroToTwo } from "module-helpers";
+import {
+    AbilityItemPF2e,
+    CharacterPF2e,
+    EffectTrait,
+    findItemWithSourceId,
+    R,
+    ZeroToTwo,
+} from "module-helpers";
 import { AttackShortcut, AttackShortcutSchema, generateAttackShortcutFields } from ".";
 import { ShortcutCost, ShortcutLabel, ShortcutRadialSection, ShortcutSource } from "..";
 import fields = foundry.data.fields;
+
+const CHANNEL_ELEMENTS_UUID = "Compendium.pf2e.actionspf2e.Item.g8QrV39TmZfkbXgE";
 
 class BlastShortcut extends AttackShortcut<
     BlastShortcutSchema,
@@ -28,6 +37,14 @@ class BlastShortcut extends AttackShortcut<
         return this.attackData?.img ?? this.img;
     }
 
+    get canUse(): boolean {
+        return !!this.item && !!this.attackData;
+    }
+
+    get canAltUse(): boolean {
+        return super.canAltUse && !!this.attackData?.ready;
+    }
+
     get icon(): string {
         return "fa-solid fa-meteor fa-rotate-180";
     }
@@ -46,14 +63,31 @@ class BlastShortcut extends AttackShortcut<
             return super.subtitle;
         }
 
-        const label = game.i18n.localize(CONFIG.PF2E.damageTypes[attackData.damageType]);
-        const range = attackData.range.label;
-        return `${label} (${range})`;
+        if (attackData.ready) {
+            const label = game.i18n.localize(CONFIG.PF2E.damageTypes[attackData.damageType]);
+            const range = attackData.range.label;
+
+            return `${label} (${range})`;
+        } else {
+            return game.i18n.localize(
+                "PF2E.SpecificRule.Kineticist.Impulse.ElementalBlast.Channel"
+            );
+        }
     }
 
     use(event: MouseEvent): void {
         const attackData = this.attackData;
         if (!attackData) return;
+
+        if (!attackData.ready) {
+            const action = findItemWithSourceId(this.actor, CHANNEL_ELEMENTS_UUID);
+
+            if (action) {
+                game.pf2e.rollItemMacro(action.uuid, event);
+            }
+
+            return;
+        }
 
         this.radialMenu(
             () => {

@@ -37,10 +37,6 @@ abstract class AttackShortcut<
         return this.#attackData;
     }
 
-    get canUse(): boolean {
-        return !!this.item && !!this.attackData;
-    }
-
     get canAltUse(): boolean {
         return !!this.item && !!this.attackData && this.actor.isOfType("character");
     }
