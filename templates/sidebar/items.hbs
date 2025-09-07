@@ -89,7 +89,7 @@
                 {{/if}}
                 {{!-- use --}}
                 {{#if canBeUsed}}
-                {{#if (and hasCharges (lt item.uses.value 1))}}
+                {{#if (or (lt item.quantity 1) (and hasCharges (lt item.uses.value 1)))}}
                 <span class="use" data-tooltip="PF2E.Item.Consumable.Uses.None">
                     <i class="fa-solid fa-play"></i>
                 </span>
