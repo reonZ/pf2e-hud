@@ -1,3 +1,4 @@
+import { rollGroupPerception } from "actions";
 import { AvatarEditor, AvatarModel, calculateAvatarPosition } from "avatar-editor";
 import { hud } from "main";
 import {
@@ -50,6 +51,8 @@ import {
 
 const ENABLED_MODES = ["disabled", "left", "middle"] as const;
 const SELECTION_MODES = ["manual", "select", "combat"] as const;
+
+const GM_SCREEN_UUID = "Compendium.pf2e.journals.JournalEntry.S55aqwWIzpQRFhcq";
 
 class PersistentPF2eHUD
     extends makeAdvancedHUD(BaseActorPF2eHUD<PersistentSettings, PersistentHudActor>)
@@ -608,7 +611,7 @@ class PersistentPF2eHUD
             return {
                 ...data,
                 actors,
-                identify: !!game.toolbelt?.getToolSetting("identify", "enabled"),
+                identify: isGM && !!game.toolbelt?.getToolSetting("identify", "enabled"),
                 isGM,
                 party: party && {
                     id: party.id,
@@ -732,11 +735,16 @@ class PersistentPF2eHUD
                 }
                 return;
             }
+            case "gm-screen":
+                const journal = await fromUuid(GM_SCREEN_UUID);
+                return journal?.sheet.render(true);
             case "identify-menu":
                 return game.toolbelt?.api.identify.openTracker();
             case "mute-sound":
                 toggleFoundryBtn("hotbar-controls-left", "mute");
                 return this.element.classList.toggle("muted", game.audio.globalMute);
+            case "group-perception":
+                return rollGroupPerception();
             case "toggle-clean":
                 return (this.settings.cleanPortrait = !this.settings.cleanPortrait);
             case "toggle-effects":
@@ -999,11 +1007,12 @@ type EventAction =
     | "copy-shortcuts"
     | "edit-avatar"
     | "fill-shortcuts"
+    | "gm-screen"
     | "identify-menu"
     | "mute-sound"
     | "open-sheet"
     | "party-sheet"
-    | "perception-check"
+    | "group-perception"
     | "select-owned-actor"
     | "set-actor"
     | "toggle-clean"
