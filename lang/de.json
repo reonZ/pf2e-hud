@@ -94,6 +94,15 @@
             },
             "token": {
                 "title": "Spielfigur-HUD",
+                "activation": {
+                    "name": "Aktivierungsmodus",
+                    "hint": "Wähle den Aktivierungsmodus für das Spielfiguren HUD.",
+                    "choices": {
+                        "disabled": "Deaktiviert",
+                        "first": "Beim ersten Klick",
+                        "second": "Beim zweiten Klick"
+                    }
+                },
                 "mode": {
                     "name": "Anzeigemodus",
                     "hint": "Wähle den Anzeigemodus für das Spielfigur-HUD.",
@@ -151,7 +160,8 @@
                 "drive1": "Fahren <span class=\"action-glyph\">1</span>",
                 "drive2": "Fahren <span class=\"action-glyph\">2</span>",
                 "drive3": "Fahren <span class=\"action-glyph\">3</span>"
-            }
+            },
+            "operateDevice": "Gerät bedienen"
         },
         "actor-hud": {
             "alliance": "Zugehörigkeit: {value}",
@@ -247,6 +257,12 @@
             },
             "pan": {
                 "none": "Dieser Akteur hat in der aktuellen Szene keine aktive Spielfigur."
+            },
+            "patch": {
+                "check-prompt": "Wurfaufforderung erstellen",
+                "identify-menu": "Identifikationsmenü öffnen",
+                "perception-check": "Gruppenwahrnehmung würfeln",
+                "travel-sheet": "Reisedauer berechnen"
             },
             "shortcuts": {
                 "clear": {
