@@ -1,0 +1,22 @@
+<div class="pf2e-hud-perceptions">
+    <div class="title">{{@root.i18n 'title'}}</div>
+    <hr>
+    <div class="rows">
+        {{#each actors as |actor|}}
+        <span class="name">{{actor.name}}</span>
+        {{#if actor.rank}}
+        <span class="proficiency">
+            <span class="tag {{actor.rank}}">
+                {{localize (concat 'PF2E.ProficiencyLevel' actor.rank)}}
+            </span>
+        </span>
+        {{else}}
+        <span></span>
+        {{/if}}
+        <span
+            class="roll{{#if (eq actor.die 1)}} failure{{else if (eq actor.die 20)}} success{{/if}}">
+            {{actor.roll}}
+        </span>
+        {{/each}}
+    </div>
+</div>

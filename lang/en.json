@@ -211,6 +211,10 @@
             "name": "Shortcut Name",
             "yes": "Save"
         },
+        "group-perception": {
+            "title": "Group Perception Checks",
+            "no-selection": "You need to select at least one valid creature."
+        },
         "health-status": {
             "title": "Health Status",
             "enabled": "Enabled",

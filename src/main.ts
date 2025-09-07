@@ -1,4 +1,4 @@
-import { rollRecallKnowledge, useResolve } from "actions";
+import { rollGroupPerception, rollRecallKnowledge, useResolve } from "actions";
 import { AvatarEditor, AvatarModel } from "avatar-editor";
 import { HealthStatus } from "health-status";
 import {
@@ -96,6 +96,7 @@ Hooks.once("ready", async () => {
 
 MODULE.apiExpose({
     actions: {
+        rollGroupPerception,
         rollRecallKnowledge,
         useResolve,
     },

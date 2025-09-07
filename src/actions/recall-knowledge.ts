@@ -77,9 +77,10 @@ async function rollRecallKnowledge(actor: CreaturePF2e) {
         );
     }
 
+    const ChatMessagePF2e = getDocumentClass("ChatMessage");
     const isSecret = !game.pf2e.settings.metagame.secretChecks;
 
-    ChatMessage.create({
+    ChatMessagePF2e.create({
         flavor: await render("recall-knowledge", templateData),
         speaker: ChatMessage.getSpeaker({ actor }),
         whisper: isSecret ? ChatMessage.getWhisperRecipients("GM") : undefined,
