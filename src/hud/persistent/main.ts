@@ -717,6 +717,8 @@ class PersistentPF2eHUD
         if (event.button !== 0) return;
 
         switch (action) {
+            case "browser":
+                return game.pf2e.compendiumBrowser.render(true);
             case "check-prompt":
                 return game.pf2e.gm.checkPrompt();
             case "clear-hotbar":
@@ -1000,25 +1002,32 @@ function getTokenImage(actor: ActorPF2e): ImageFilePath | VideoFilePath {
     return actor.prototypeToken.texture.src ?? actor.img;
 }
 
-type EventAction =
+type PatchEventAction =
+    | "browser"
     | "check-prompt"
-    | "clear-hotbar"
-    | "clear-shortcuts"
-    | "copy-shortcuts"
-    | "edit-avatar"
-    | "fill-shortcuts"
     | "gm-screen"
-    | "identify-menu"
-    | "mute-sound"
-    | "open-sheet"
-    | "party-sheet"
     | "group-perception"
-    | "select-owned-actor"
+    | "identify-menu"
+    | "party-sheet"
+    | "travel-sheet";
+
+type ShortcutsEventAction = "clear-shortcuts" | "copy-shortcuts" | "fill-shortcuts";
+
+type MenuEventAction =
+    | "clear-hotbar"
+    | "edit-avatar"
+    | "mute-sound"
     | "set-actor"
     | "toggle-clean"
     | "toggle-effects"
-    | "toggle-hotbar-lock"
-    | "travel-sheet";
+    | "toggle-hotbar-lock";
+
+type EventAction =
+    | MenuEventAction
+    | PatchEventAction
+    | ShortcutsEventAction
+    | "open-sheet"
+    | "select-owned-actor";
 
 type PersistentRenderOptions = ApplicationRenderOptions & {
     selectionMode: PersistentSettings["selection"];

@@ -263,6 +263,7 @@
                 "none": "This actor doesn't have any active token on the current scene."
             },
             "patch": {
+                "browser": "Open Compendium Browser",
                 "check-prompt": "Generate Check Prompt",
                 "gm-screen": "Open GM-Screen",
                 "group-perception": "Roll Group Perception",
