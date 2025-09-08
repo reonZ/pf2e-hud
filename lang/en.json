@@ -212,7 +212,8 @@
             "yes": "Save"
         },
         "group-perception": {
-            "title": "Group Perception Checks"
+            "title": "Group Perception Checks",
+            "search": "Is Actively Searching"
         },
         "health-status": {
             "title": "Health Status",

@@ -1,7 +1,9 @@
 <div class="pf2e-hud-random">
     <div class="rows">
         {{#each actors as |actor|}}
-        <span class="name{{#if actor.targeted}} targeted{{/if}}">{{actor.name}}</span>
+        <span class="name{{#if actor.targeted}} targeted{{/if}}">
+            <span>{{actor.name}}</span>
+        </span>
         {{#if actor.targeted}}
         <span class="targeted">
             <i class="fa-solid fa-crosshairs-simple"></i>

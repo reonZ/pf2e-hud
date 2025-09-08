@@ -1,5 +1,4 @@
 import {
-    CheckRoll,
     CreaturePF2e,
     R,
     render,
@@ -9,6 +8,8 @@ import {
     warning,
     ZeroToFour,
 } from "module-helpers";
+
+const SEARCH_UUID = "Compendium.pf2e.actionspf2e.Item.TiNDYUGlMmxzxBYU";
 
 async function rollGroupPerception() {
     if (!game.user.isGM) return;
@@ -26,16 +27,24 @@ async function rollGroupPerception() {
     const data = await Promise.all(
         actors.map(async (actor): Promise<ActorData> => {
             const perception = actor.getStatistic("perception");
-            const roll = (await perception.roll({ createMessage: false })) as Rolled<CheckRoll>;
-            const rank =
-                perception.rank ??
-                (actor.isOfType("familiar") ? actor.master?.getStatistic("perception").rank : 0);
+
+            const isSearching =
+                actor.isOfType("character") &&
+                actor.system.exploration.find((id) => {
+                    return actor.items.get(id)?.sourceId === SEARCH_UUID;
+                });
+
+            const roll = await perception.roll({
+                createMessage: false,
+                skipDialog: true,
+            });
 
             return {
-                die: roll.dice[0].total ?? 1,
+                die: roll?.dice[0].total ?? 1,
                 name: actor.name,
-                rank: rank ?? 0,
-                roll: roll.total,
+                search: !!isSearching,
+                rank: perception.rank ?? 0,
+                roll: roll?.total ?? 0,
             };
         })
     );
@@ -52,6 +61,15 @@ async function rollGroupPerception() {
     });
 }
 
+// function getFamiliarPerceptionRank(actor: FamiliarPF2e): ZeroToFour {
+//     return actor.master?.getStatistic("perception").rank ?? 0;
+// }
+
+// function getNpcPerceptionRank(actor: NPCPF2e): ZeroToFour {
+//     const level = actor.level;
+//     return level < 7 ? 1 : level < 13 ? 2 : 3;
+// }
+
 type ControlledToken = TokenPF2e<TokenDocumentPF2e<ScenePF2e>> & {
     actor: CreaturePF2e;
 };
@@ -59,6 +77,7 @@ type ControlledToken = TokenPF2e<TokenDocumentPF2e<ScenePF2e>> & {
 type ActorData = {
     die: number;
     name: string;
+    search: boolean;
     rank: ZeroToFour;
     roll: number;
 };

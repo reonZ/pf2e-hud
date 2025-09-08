@@ -76,10 +76,17 @@
 
 @mixin gridRows($nbColumns) {
     .name {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
         padding-left: 0.3em;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+
+        span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
     }
 
     .rows {
@@ -102,7 +109,7 @@
             }
 
             &:not(.name) {
-                padding-left: 0.5rem;
+                padding-left: 0.3rem;
             }
         }
     }

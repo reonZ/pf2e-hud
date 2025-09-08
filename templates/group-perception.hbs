@@ -1,9 +1,14 @@
-<div class="pf2e-hud-perceptions">
+<div class="pf2e-hud-perceptions" data-tooltip-class="pf2e">
     <div class="title">{{@root.i18n 'title'}}</div>
     <hr>
     <div class="rows">
         {{#each actors as |actor|}}
-        <span class="name">{{actor.name}}</span>
+        <span class="name">
+            <span>{{actor.name}}</span>
+            {{#if actor.search}}
+            <i class="fa-solid fa-eye" {{{@root.i18n.tooltip 'search' }}}></i>
+            {{/if}}
+        </span>
         {{#if actor.rank}}
         <span class="proficiency">
             <span class="tag {{actor.rank}}">
