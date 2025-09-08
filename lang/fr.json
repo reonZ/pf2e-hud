@@ -94,6 +94,15 @@
       },
       "token": {
         "title": "HUD du jeton",
+        "activation": {
+          "name": "Mode d'activation",
+          "hint": "Sélectionnez le mode pour activer le HUD du jeton.",
+          "choices": {
+            "disabled": "Désactivé",
+            "first": "Au premier clic",
+            "second": "Au deuxième clic"
+          }
+        },
         "mode": {
           "name": "Mode d'affichage",
           "hint": "Sélectionne le mode d'affichage du HUD jeton.",
@@ -151,7 +160,8 @@
         "drive1": "Piloter <span class=\"action-glyph\">1</span>",
         "drive2": "Piloter <span class=\"action-glyph\">2</span>",
         "drive3": "Piloter <span class=\"action-glyph\">3</span>"
-      }
+      },
+      "operateDevice": "Faire fonctionner l'appareil"
     },
     "actor-hud": {
       "alliance": "Alliance : {value}",
@@ -201,6 +211,9 @@
       "name": "Nom du raccourci",
       "yes": "Enregistrer"
     },
+    "group-perception": {
+      "title": "Tests de perception de groupe"
+    },
     "health-status": {
       "title": "État de santé",
       "enabled": "Activé",
@@ -221,6 +234,7 @@
       "default": "Mort, Aux portes de la mort, Ne se sent pas bien, A vu des jours meilleurs, Légèrement touché, En pleine forme"
     },
     "leftClick": "[Clic gauche]",
+    "no-selection": "Vous devez sélectionner au moins une créature valide.",
     "persistent": {
       "effects": {
         "shift": "Maj",
@@ -247,6 +261,17 @@
       },
       "pan": {
         "none": "Cet acteur ne dispose d'aucun jeton actif sur la scène actuelle."
+      },
+      "patch": {
+        "browser": "Ouvrir le Navigateur de compendium",
+        "check-prompt": "Générer une invite de test",
+        "gm-screen": "Ouvrir l'écran du MJ",
+        "group-perception": "Lancer la Perception du groupe",
+        "identify-menu": "Ouvrir le menu d'identification",
+        "random-pick": "Choisissez une cible aléatoire",
+        "select-all": "Sélectionnez les jetons de joueur",
+        "set-journal": "Sélectionnez une entrée de journal",
+        "travel-sheet": "Calculer la durée du voyage"
       },
       "shortcuts": {
         "clear": {
@@ -276,6 +301,9 @@
         "config": "Personnaliser le raccourci"
       }
     },
+    "random-pick": {
+      "title": "une oie, deux oies, trois oies..."
+    },
     "recall-knowledge": {
       "result": "Résultat",
       "modifier": "Mod.",
@@ -294,6 +322,15 @@
       "proficiency": "Maîtrise"
     },
     "rightClick": "[Clic droit]",
+    "set-journal": {
+      "uuid": {
+        "label": "IDUU du journal"
+      },
+      "world": {
+        "label": "Journal du monde"
+      },
+      "yes": "Déterminez le journal"
+    },
     "shortcuts": {
       "blast": {
         "cost": {
