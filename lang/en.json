@@ -269,6 +269,7 @@
                 "group-perception": "Roll Group Perception",
                 "identify-menu": "Open Identify Menu",
                 "random-pick": "Pick Random Target",
+                "select-all": "Select Player Tokens",
                 "travel-sheet": "Calculate Travel Duration"
             },
             "shortcuts": {

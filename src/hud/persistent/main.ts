@@ -25,6 +25,7 @@ import {
     pingToken,
     R,
     render,
+    selectTokens,
     toggleHooksAndWrappers,
     TokenDocumentPF2e,
     TokenPF2e,
@@ -749,6 +750,10 @@ class PersistentPF2eHUD
                 return this.element.classList.toggle("muted", game.audio.globalMute);
             case "random-pick":
                 return randomPick();
+            case "select-all":
+                const scene = canvas.scene;
+                const tokens = scene?.tokens.filter((token) => !!token.actor?.hasPlayerOwner);
+                return selectTokens(tokens ?? []);
             case "toggle-clean":
                 return (this.settings.cleanPortrait = !this.settings.cleanPortrait);
             case "toggle-effects":
@@ -1012,6 +1017,7 @@ type PatchEventAction =
     | "identify-menu"
     | "party-sheet"
     | "random-pick"
+    | "select-all"
     | "travel-sheet";
 
 type ShortcutsEventAction = "clear-shortcuts" | "copy-shortcuts" | "fill-shortcuts";
