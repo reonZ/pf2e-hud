@@ -10,6 +10,7 @@ import {
     CharacterPF2e,
     CombatantPF2e,
     confirmDialog,
+    CreateFormGroupParams,
     createHook,
     createToggleKeybind,
     CreaturePF2e,
@@ -198,6 +199,16 @@ class PersistentPF2eHUD
                     if (this.rendered) {
                         this.element.classList.toggle("cleaned", value);
                     }
+                },
+            },
+            {
+                key: "journal",
+                type: String,
+                default: "",
+                scope: "user",
+                config: false,
+                onChange: (value: string) => {
+                    this.render();
                 },
             },
             {
@@ -609,11 +620,14 @@ class PersistentPF2eHUD
 
             this.#ownedActors = actors.map(R.prop("id"));
 
+            const journal = isGM && (await fromUuid(this.settings.journal));
+
             return {
                 ...data,
                 actors,
                 identify: isGM && !!game.toolbelt?.getToolSetting("identify", "enabled"),
                 isGM,
+                journal: journal instanceof JournalEntry ? journal.name : undefined,
                 party: party && {
                     id: party.id,
                     name: party.name,
@@ -682,6 +696,15 @@ class PersistentPF2eHUD
         const action = target.dataset.action as EventAction;
 
         switch (action) {
+            case "journal-sheet": {
+                if (event.button === 0) {
+                    const journal = await fromUuid(this.settings.journal);
+                    return journal?.sheet.render(true);
+                } else {
+                    return (this.settings.journal = "");
+                }
+            }
+
             case "open-sheet": {
                 if (event.button === 0) {
                     return this.actor?.sheet.render(true);
@@ -738,29 +761,35 @@ class PersistentPF2eHUD
                 }
                 return;
             }
-            case "gm-screen":
+            case "gm-screen": {
                 const journal = await fromUuid(GM_SCREEN_UUID);
                 return journal?.sheet.render(true);
+            }
             case "group-perception":
                 return rollGroupPerception();
             case "identify-menu":
                 return game.toolbelt?.api.identify.openTracker();
-            case "mute-sound":
+            case "mute-sound": {
                 toggleFoundryBtn("hotbar-controls-left", "mute");
                 return this.element.classList.toggle("muted", game.audio.globalMute);
+            }
             case "random-pick":
                 return randomPick();
-            case "select-all":
+            case "select-all": {
                 const scene = canvas.scene;
                 const tokens = scene?.tokens.filter((token) => !!token.actor?.hasPlayerOwner);
                 return selectTokens(tokens ?? []);
+            }
+            case "set-journal":
+                return this.#setJournal();
             case "toggle-clean":
                 return (this.settings.cleanPortrait = !this.settings.cleanPortrait);
             case "toggle-effects":
                 return (this.settings.showEffects = !this.settings.showEffects);
-            case "toggle-hotbar-lock":
+            case "toggle-hotbar-lock": {
                 toggleFoundryBtn("hotbar-controls-right", "lock");
                 return this.element.classList.toggle("locked", ui.hotbar.locked);
+            }
             case "travel-sheet":
                 return this.#launchTravelSheet();
         }
@@ -770,6 +799,57 @@ class PersistentPF2eHUD
         if (action === "shortcuts-tab") {
             this.setShortcutTab(this.shortcutsTab.value + direction);
         }
+    }
+
+    async #setJournal() {
+        const worlds = game.journal.map((journal) => {
+            return { value: journal.uuid, label: journal.name };
+        });
+
+        const content: CreateFormGroupParams[] = [
+            {
+                type: "text",
+                inputConfig: { name: "uuid" },
+            },
+        ];
+
+        if (worlds.length) {
+            content.unshift({
+                type: "select",
+                inputConfig: {
+                    name: "world",
+                    options: [{ value: "", label: "" }, ...worlds],
+                },
+            });
+        }
+
+        const result = await waitDialog<{ uuid: DocumentUUID }>({
+            content,
+            i18n: "set-journal",
+            title: localize("persistent.patch.set-journal"),
+            yes: {
+                icon: "fa-solid fa-book-open",
+            },
+            onRender: (event, dialog) => {
+                const html = dialog.element;
+                const select = htmlQuery(html, "select");
+                const input = htmlQuery(html, "input");
+                if (!input || !select) return;
+
+                select.addEventListener("change", async (event) => {
+                    const journal = await fromUuid(select.value);
+                    input.value = journal instanceof JournalEntry ? select.value : "";
+                });
+
+                input.addEventListener("input", (event) => {
+                    select.value = input.value;
+                });
+            },
+        });
+
+        if (!result || !result.uuid) return;
+
+        this.settings.journal = result.uuid;
     }
 
     #launchTravelSheet() {
@@ -1015,9 +1095,11 @@ type PatchEventAction =
     | "gm-screen"
     | "group-perception"
     | "identify-menu"
+    | "journal-sheet"
     | "party-sheet"
     | "random-pick"
     | "select-all"
+    | "set-journal"
     | "travel-sheet";
 
 type ShortcutsEventAction = "clear-shortcuts" | "copy-shortcuts" | "fill-shortcuts";
@@ -1046,15 +1128,6 @@ type SetActorOptions = { token?: TokenPF2e };
 
 type PersistentHudActor = CharacterPF2e | NPCPF2e;
 
-type PersistentSettings = {
-    autoFill: boolean;
-    cleanPortrait: boolean;
-    display: (typeof ENABLED_MODES)[number];
-    selection: (typeof SELECTION_MODES)[number];
-    savedActor: string;
-    showEffects: boolean;
-};
-
 type PersistentContext = PersistentContextBase & {
     ac: number;
     avatar: {
@@ -1069,6 +1142,7 @@ type EmptyPersistentContext = PersistentContextBase & {
     actors: OwnedActorContext[];
     identify: boolean;
     isGM: boolean;
+    journal: string | undefined;
     party: MaybeFalsy<{
         id: string;
         name: string;
@@ -1094,6 +1168,16 @@ type PersistentContextBase = ReturnedAdvancedHudContext & {
 
 type PersistentCloseOptions = ApplicationClosingOptions & {
     force?: boolean;
+};
+
+type PersistentSettings = {
+    autoFill: boolean;
+    cleanPortrait: boolean;
+    display: (typeof ENABLED_MODES)[number];
+    journal: string;
+    selection: (typeof SELECTION_MODES)[number];
+    savedActor: string;
+    showEffects: boolean;
 };
 
 export { PersistentPF2eHUD };

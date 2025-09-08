@@ -270,6 +270,7 @@
                 "identify-menu": "Open Identify Menu",
                 "random-pick": "Pick Random Target",
                 "select-all": "Select Player Tokens",
+                "set-journal": "Select Journal Entry",
                 "travel-sheet": "Calculate Travel Duration"
             },
             "shortcuts": {
@@ -321,6 +322,15 @@
             "proficiency": "Proficiency"
         },
         "rightClick": "[Right-Click]",
+        "set-journal": {
+            "uuid": {
+                "label": "Journal UUID"
+            },
+            "world": {
+                "label": "World Journal"
+            },
+            "yes": "Set Journal"
+        },
         "shortcuts": {
             "blast": {
                 "cost": {

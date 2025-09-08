@@ -176,6 +176,15 @@
     <a data-action="select-all" {{{@root.i18n.tooltip 'patch.select-all' }}}>
         <i class="fa-solid fa-expand"></i>
     </a>
+    {{#if journal}}
+    <a data-action="journal-sheet" data-tooltip="{{journal}}">
+        <i class="fa-solid fa-book-open"></i>
+    </a>
+    {{else}}
+    <a data-action="set-journal" {{{@root.i18n.tooltip 'patch.set-journal' }}}>
+        <i class="fa-solid fa-square-dashed-circle-plus"></i>
+    </a>
+    {{/if}}
     {{/if}}
 </div>
 {{/if}}
