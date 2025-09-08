@@ -1,4 +1,4 @@
-import { rollGroupPerception } from "actions";
+import { randomPick, rollGroupPerception } from "actions";
 import { AvatarEditor, AvatarModel, calculateAvatarPosition } from "avatar-editor";
 import { hud } from "main";
 import {
@@ -740,13 +740,15 @@ class PersistentPF2eHUD
             case "gm-screen":
                 const journal = await fromUuid(GM_SCREEN_UUID);
                 return journal?.sheet.render(true);
+            case "group-perception":
+                return rollGroupPerception();
             case "identify-menu":
                 return game.toolbelt?.api.identify.openTracker();
             case "mute-sound":
                 toggleFoundryBtn("hotbar-controls-left", "mute");
                 return this.element.classList.toggle("muted", game.audio.globalMute);
-            case "group-perception":
-                return rollGroupPerception();
+            case "random-pick":
+                return randomPick();
             case "toggle-clean":
                 return (this.settings.cleanPortrait = !this.settings.cleanPortrait);
             case "toggle-effects":
@@ -1009,6 +1011,7 @@ type PatchEventAction =
     | "group-perception"
     | "identify-menu"
     | "party-sheet"
+    | "random-pick"
     | "travel-sheet";
 
 type ShortcutsEventAction = "clear-shortcuts" | "copy-shortcuts" | "fill-shortcuts";

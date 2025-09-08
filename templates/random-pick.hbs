@@ -1,0 +1,14 @@
+<div class="pf2e-hud-random">
+    <div class="rows">
+        {{#each actors as |actor|}}
+        <span class="name{{#if actor.targeted}} targeted{{/if}}">{{actor.name}}</span>
+        {{#if actor.targeted}}
+        <span class="targeted">
+            <i class="fa-solid fa-crosshairs-simple"></i>
+        </span>
+        {{else}}
+        <span></span>
+        {{/if}}
+        {{/each}}
+    </div>
+</div>

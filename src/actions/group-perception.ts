@@ -41,7 +41,7 @@ async function rollGroupPerception() {
     );
 
     if (!data.length) {
-        return warning("group-perception.no-selection");
+        return warning("no-selection");
     }
 
     const ChatMessagePF2e = getDocumentClass("ChatMessage");

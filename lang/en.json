@@ -212,8 +212,7 @@
             "yes": "Save"
         },
         "group-perception": {
-            "title": "Group Perception Checks",
-            "no-selection": "You need to select at least one valid creature."
+            "title": "Group Perception Checks"
         },
         "health-status": {
             "title": "Health Status",
@@ -235,6 +234,7 @@
             "default": "Dead, At Death's Door, Not Feeling Good, Seen Better Days, Barely Hurt, Perfectly Fine"
         },
         "leftClick": "[Left-Click]",
+        "no-selection": "You need to select at least one valid creature.",
         "persistent": {
             "effects": {
                 "shift": "Shift",
@@ -268,6 +268,7 @@
                 "gm-screen": "Open GM-Screen",
                 "group-perception": "Roll Group Perception",
                 "identify-menu": "Open Identify Menu",
+                "random-pick": "Pick Random Target",
                 "travel-sheet": "Calculate Travel Duration"
             },
             "shortcuts": {
@@ -297,6 +298,9 @@
             "shortcut": {
                 "config": "Customize Shortcut"
             }
+        },
+        "random-pick": {
+            "title": "Eeny, meeny, miny, moe"
         },
         "recall-knowledge": {
             "result": "Result",

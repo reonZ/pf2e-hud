@@ -74,6 +74,48 @@
     }
 }
 
+@mixin gridRows($nbColumns) {
+    .name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-left: 0.3em;
+    }
+
+    .rows {
+        display: grid;
+        grid-template-columns: 1fr repeat($nbColumns - 1, auto);
+
+        > * {
+            $double: $nbColumns * 2;
+
+            padding-block: 0.1em;
+
+            @for $i from ($nbColumns + 1) through $double {
+                &:nth-child(#{$double}n + #{$i}) {
+                    background: rgba(0, 0, 0, 0.102);
+                }
+            }
+
+            &:nth-child(#{$nbColumns}n) {
+                padding-right: 0.3em;
+            }
+
+            &:not(.name) {
+                padding-left: 0.5rem;
+            }
+        }
+    }
+}
+
+.chat-message.message .pf2e-hud-random {
+    @include gridRows(2);
+
+    .targeted {
+        color: red;
+    }
+}
+
 .chat-message.message .pf2e-hud-perceptions {
     --color-rank-0: #424242;
     --color-rank-1: #171f69;
@@ -81,35 +123,14 @@
     --color-rank-3: #664400;
     --color-rank-4: #5e0000;
 
+    @include gridRows(3);
+
     .title {
         font-weight: bold;
         font-size: 1.2em;
     }
 
-    .rows {
-        display: grid;
-        grid-template-columns: 1fr auto auto;
-
-        > * {
-            padding-block: 0.1em;
-
-            &:nth-child(6n + 4),
-            &:nth-child(6n + 5),
-            &:nth-child(6n + 6) {
-                background: rgba(0, 0, 0, 0.102);
-            }
-        }
-    }
-
-    .name {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
     .proficiency {
-        padding-left: 0.5rem;
-
         .tag {
             border: 1px solid rgba(0, 0, 0, 0.5);
             border-radius: 2px;
@@ -145,7 +166,6 @@
     }
 
     .roll {
-        padding-left: 0.5rem;
         text-align: end;
         font-weight: bold;
         font-size: 1.05em;
