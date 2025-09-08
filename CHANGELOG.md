@@ -1,3 +1,11 @@
+# 2.27.1
+
+-   `Persistent HUD`:
+    -   `Roll Group Perception`:
+        -   add an icon for characters that have the `Search` exploration activity active
+        -   no longer show the master's proficiency for familiar
+        -   fix rolls not skipping modifiers dialog
+
 # 2.27.0
 
 -   `Blast Shortcut`:
