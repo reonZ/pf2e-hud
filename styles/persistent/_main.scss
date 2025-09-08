@@ -23,6 +23,7 @@
     gap: var(--panel-gap);
     scale: revert;
     width: min-content;
+    text-shadow: var(--text-shadow);
 
     img.token {
         opacity: 0;
@@ -274,7 +275,6 @@
             display: flex;
             cursor: pointer;
             pointer-events: all;
-            text-shadow: 0 0 3px black, 0 0 3px black, 0 0 2px black;
 
             > * {
                 pointer-events: none;

@@ -1,5 +1,6 @@
 .pf2e-hud-element.advanced {
     --panel-inner-gap: 0.3em;
+    --text-shadow: 0 0 3px #000, 0 0 3px #000, 0 0 3px #000;
 
     [data-panel] {
         white-space: nowrap;
