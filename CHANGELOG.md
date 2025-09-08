@@ -1,12 +1,37 @@
-#
+# 2.27.0
 
+-   `Blast Shortcut`:
+    -   make the shortcut usable to channel the elements directly
+-   `Item Shortcut`:
+    -   fix consumables not being disabled if they had remaining uses but a quantity of `0`
+    -   fix some mixup with disabled tooltip reasons
+-   `Items Sidebar`:
+    -   disable the `use` button if the item's quantity is `0`
 -   `Persistent HUD`:
-    -   add new `party` button to the hud when no actor is currently set
-        -   `[Left Click]` opens the party sheet
-        -   `[Right Click]` pans to party token on the scene if one exist
-        -   `Drag & Drop` a new party token on the scene if none exist
+    -   make icons and labels pop out (be more defined) across the HUD
+    -   add the following buttons to the hud when no actor is currently set
+        -   active `party` actor button:
+            -   `[Left Click]` opens the party sheet
+            -   `[Right Click]` pans to party token on the scene if one exist
+            -   `Drag & Drop` a new party token on the scene if none exist
+        -   `Calculate Travel Duration` opens the system's application of the same name for the currently selected creatures or party members
+        -   `Generate Check Prompt` opens the system's application of the same name
+        -   `Open Compendium Browser` opens the system compendium browser
+        -   `Open GM-Screen` opens the gm-screen system journal
+        -   `Open Identify Menu` opens the `PF2e Toolbelt` identify tracker
+        -   `Pick Random Target` picks a player-owned creature among the currently selected tokens or party members
+            -   if an active token exists for that actor in the current scene, it will be targeted and pan to
+        -   `Roll Group Perception` rolls perception for the selection or party members and whisper the results to GMs (players aren't aware at all)
+        -   `Select Players Tokens` select all player-owned tokens in the current scene
+        -   `Set Journal Entry` lets you select any journal from your world or compendiums as persistent to be opened at any time from the menu
+            -   `[Right Click]` to unset it
+-   `Strike Shortcut`:
+    -   the shortcut is now usable even when the a strike weapon isn't equipped
+        -   the module will look auxiliary actions related to drawing the weapon in hand
+        -   if a single action exist, using the shortcut will execute it right away
+        -   if multiple actions, a context menu will show up where you can select the one you want
 -   `Token HUD`:
-    -   replace the `Enabled` setting with the new `Activation Mode` (default `On Second Click`)
+    -   replace the `Enabled` setting with the new `Activation Mode` (default `On First Click`)
         -   the `On First Click` option behaves the same as previously
         -   the `On Second Click` option will only display the token HUD if the token is already selected (from a previous click), making the board clean until you actually want to display the HUD
 -   `Token Tooltip`:
