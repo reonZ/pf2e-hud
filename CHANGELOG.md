@@ -1,3 +1,11 @@
+# 2.28.0
+
+-   `Persistent HUD`:
+    -   add new `Pin Token` button to the menu when no actor is currently set
+        -   the module will ask you to select a token in the scene and add its actor to the list of owned actors
+        -   this "owned actor" doesn't behave like the others when it comes to unlinked actor, anything you drop on it will be added to the actor of the original pinned token instead of the world actor and right clicking on it will always pan to the original token too.
+        -   deleting the original token in the scene will remove the pinned actor if it is an unlinked actor
+
 # 2.27.1
 
 -   `Persistent HUD`:
