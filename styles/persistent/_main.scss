@@ -391,6 +391,15 @@
                     }
                 }
             }
+
+            .unpin {
+                position: absolute;
+                pointer-events: all;
+                font-size: 1.8em;
+                top: 0;
+                left: 50%;
+                transform: translate(-45%, -50%) rotate(12deg);
+            }
         }
 
         &.inverted {

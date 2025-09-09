@@ -1,6 +1,7 @@
 import {
     ApplicationClosingOptions,
     ApplicationConfiguration,
+    DataField,
     getSetting,
     RegisterSettingOptions,
     setSetting,
@@ -87,7 +88,7 @@ abstract class BasePF2eHUD<
 }
 
 type HUDSetting<TSettings extends Record<string, any>> = TSettings extends Record<infer K, infer V>
-    ? RegisterSettingOptions & { key: K; type: FromPrimitive<V> }
+    ? RegisterSettingOptions & { key: K; type: FromPrimitive<V> | DataField }
     : never;
 
 type HUDSettingsList<TSettings extends Record<string, any>> = Array<HUDSetting<TSettings>>;

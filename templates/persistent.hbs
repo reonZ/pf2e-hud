@@ -7,7 +7,7 @@
         </a>
     </div>
     {{/if}}
-    {{#if (or setActor hasActor)}}
+    {{#if (or setActor hasActor canPin)}}
     <div class="group">
         {{#if setActor}}
         <a class="set-actor{{#if setActor.disabled}} inactive{{/if}}" data-action="set-actor"
@@ -25,6 +25,11 @@
         </a>
         <a data-action="toggle-clean" {{{@root.i18n.tooltip 'menu.clean.always' }}}>
             <i class="fa-solid fa-chart-bar"></i>
+        </a>
+        {{/if}}
+        {{#if canPin}}
+        <a data-action="pin-token" {{{@root.i18n.tooltip 'menu.pin' }}}>
+            <i class="fa-solid fa-thumbtack"></i>
         </a>
         {{/if}}
     </div>
@@ -94,7 +99,8 @@
 <div data-panel="owned-actors" {{#if isGM}}class="inverted" {{/if}}>
     {{#each actors as |actor|}}
     <div class="owned-actor" data-action="select-owned-actor" data-tooltip="{{actor.name}}"
-        data-actor-id="{{actor.id}}">
+        data-actor-id="{{actor.id}}" {{#if actor.favorite}} data-actor-uuid="{{actor.uuid}}"
+        {{/if}}>
         <img src="{{actor.img}}" draggable="true">
         <img class="token" src="{{actor.tokenImage}}">
         <div class="ac">
@@ -137,6 +143,12 @@
             </div>
             {{/if}}
         </div>
+        {{/if}}
+        {{#if actor.favorite}}
+        <a class="unpin" {{{@root.i18n.tooltip 'ownedActor.unpin' }}}
+            data-action="unpin-owned-actor">
+            <i class="fa-solid fa-thumbtack"></i>
+        </a>
         {{/if}}
     </div>
     {{/each}}

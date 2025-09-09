@@ -27,6 +27,7 @@ import {
     R,
     render,
     selectTokens,
+    success,
     toggleHooksAndWrappers,
     TokenDocumentPF2e,
     TokenPF2e,
@@ -50,6 +51,7 @@ import {
     SidebarCoords,
     SliderData,
 } from "..";
+import fields = foundry.data.fields;
 
 const ENABLED_MODES = ["disabled", "left", "middle"] as const;
 const SELECTION_MODES = ["manual", "select", "combat"] as const;
@@ -60,6 +62,8 @@ class PersistentPF2eHUD
     extends makeAdvancedHUD(BaseActorPF2eHUD<PersistentSettings, PersistentHudActor>)
     implements IAdvancedPF2eHUD
 {
+    static #nbOwnedActors = 8;
+
     #actor: ActorPF2e | null = null;
     #controlled: ActorPF2e | null | undefined;
     #effectsPanel = new PersistentEffectsPF2eHUD(this);
@@ -90,14 +94,27 @@ class PersistentPF2eHUD
     });
 
     #deleteTokenHook = createHook("deleteToken", (token: TokenDocumentPF2e) => {
-        if (!token.isLinked && this.isCurrentActor(token.actor)) {
+        const actor = token.actor;
+
+        if (actor?.token) {
+            const favorites = this.settings.favorites;
+            const index = favorites.indexOf(actor.uuid);
+
+            if (index !== -1) {
+                favorites.splice(index, 1);
+                this.settings.favorites = favorites;
+                return;
+            }
+        }
+
+        if (!token.isLinked && this.isCurrentActor(actor)) {
             this.render();
         }
     });
 
     #controlTokenHook = createHook(
         "controlToken",
-        foundry.utils.debounce((token, controlled) => {
+        foundry.utils.debounce((token: TokenPF2e, controlled: boolean) => {
             if (!controlled) {
                 this.#previousActor = null;
             }
@@ -219,6 +236,22 @@ class PersistentPF2eHUD
                 config: false,
                 onChange: (value) => {
                     this.effectsPanel.refresh();
+                },
+            },
+            {
+                key: "favorites",
+                type: new fields.ArrayField(
+                    new fields.DocumentUUIDField({
+                        blank: false,
+                        nullable: false,
+                        type: "Actor",
+                    })
+                ),
+                default: [],
+                scope: "user",
+                config: false,
+                onChange: (value: string) => {
+                    this.render();
                 },
             },
         ];
@@ -581,9 +614,6 @@ class PersistentPF2eHUD
         } else if (options.selectionMode !== "combat") {
             const isGM = game.user.isGM;
             const party = game.actors.party;
-            const allOwned: FilterableIterable<ActorPF2e, CreaturePF2e> = isGM
-                ? party?.members ?? []
-                : game.actors;
 
             const sortLogic: NonEmptyArray<Parameters<typeof R.sortBy<CreaturePF2e[]>>[1]> = [
                 (actor) => actor.isOfType("npc"),
@@ -600,13 +630,43 @@ class PersistentPF2eHUD
                 }
             }
 
-            const actors: OwnedActorContext[] = R.pipe(
-                allOwned.filter((actor) => this.isValidOwnedActor(actor)),
+            type OwnedActorEntry = { actor: CreaturePF2e; favorite: boolean } | undefined;
+
+            const favoriteUUIDS = this.settings.favorites;
+            const favorites: OwnedActorEntry[] = await Promise.all(
+                favoriteUUIDS
+                    .slice(0, PersistentPF2eHUD.#nbOwnedActors)
+                    .map(async (uuid): Promise<OwnedActorEntry> => {
+                        const actor = (await fromUuid(uuid)) as Maybe<CreaturePF2e>;
+                        if (!this.isValidActor(actor)) return;
+
+                        return { actor, favorite: true };
+                    })
+            );
+
+            const freeSlots = PersistentPF2eHUD.#nbOwnedActors - favorites.length;
+
+            const allOwned: FilterableIterable<ActorPF2e, CreaturePF2e> =
+                freeSlots > 0 ? (isGM ? party?.members ?? [] : game.actors) : [];
+
+            const ownedActors: OwnedActorEntry[] = R.pipe(
+                allOwned.filter((actor) => {
+                    return !favoriteUUIDS.includes(actor.uuid) && this.isValidOwnedActor(actor);
+                }),
                 R.sortBy(...sortLogic),
-                R.take(8),
-                R.map((actor): OwnedActorContext => {
+                R.take(freeSlots),
+                R.map((actor) => {
+                    return { actor, favorite: false };
+                })
+            );
+
+            const actors = R.pipe(
+                [...favorites, ...ownedActors],
+                R.filter(R.isTruthy),
+                R.map(({ actor, favorite }): OwnedActorContext => {
                     return {
                         ac: actor.attributes.ac.value,
+                        favorite,
                         heroPoints: (actor as CharacterPF2e).heroPoints?.value,
                         hp: calculateActorHealth(actor),
                         id: actor.id,
@@ -614,6 +674,7 @@ class PersistentPF2eHUD
                         name: actor.name,
                         statistics: getAdvancedStatistics(actor),
                         tokenImage: getTokenImage(actor),
+                        uuid: actor.uuid,
                     };
                 })
             );
@@ -625,6 +686,7 @@ class PersistentPF2eHUD
             return {
                 ...data,
                 actors,
+                canPin: isGM,
                 identify: isGM && !!game.toolbelt?.getToolSetting("identify", "enabled"),
                 isGM,
                 journal: journal instanceof JournalEntry ? journal.name : undefined,
@@ -773,6 +835,8 @@ class PersistentPF2eHUD
                 toggleFoundryBtn("hotbar-controls-left", "mute");
                 return this.element.classList.toggle("muted", game.audio.globalMute);
             }
+            case "pin-token":
+                return this.#pinToken();
             case "random-pick":
                 return randomPick();
             case "select-all": {
@@ -792,6 +856,8 @@ class PersistentPF2eHUD
             }
             case "travel-sheet":
                 return this.#launchTravelSheet();
+            case "unpin-owned-actor":
+                return this.#unpinOwnedActor(event);
         }
     }
 
@@ -799,6 +865,51 @@ class PersistentPF2eHUD
         if (action === "shortcuts-tab") {
             this.setShortcutTab(this.shortcutsTab.value + direction);
         }
+    }
+
+    #unpinOwnedActor(event: PointerEvent) {
+        const uuid = htmlClosest(event.target, "[data-actor-uuid")?.dataset.actorUuid;
+
+        if (uuid) {
+            const favorites = this.settings.favorites;
+            const index = favorites.indexOf(uuid as ActorUUID);
+
+            if (index !== -1) {
+                favorites.splice(index, 1);
+                this.settings.favorites = favorites;
+            }
+        }
+    }
+
+    async #pinToken() {
+        canvas.tokens.releaseAll();
+
+        const notified = success("pin-token.notify", true);
+
+        const hook = Hooks.once("controlToken", (token: TokenPF2e) => {
+            const actor = token.actor;
+            if (!actor) return;
+
+            const uuid = actor.uuid;
+            const favorites = this.settings.favorites;
+
+            if (!favorites.includes(uuid)) {
+                favorites.unshift(uuid);
+            }
+
+            this.settings.favorites = favorites.slice(0, PersistentPF2eHUD.#nbOwnedActors);
+        });
+
+        requestAnimationFrame(() => {
+            window.addEventListener(
+                "click",
+                () => {
+                    ui.notifications.remove(notified.id);
+                    Hooks.off("controlToken", hook);
+                },
+                { once: true }
+            );
+        });
     }
 
     async #setJournal() {
@@ -864,9 +975,15 @@ class PersistentPF2eHUD
         return game.pf2e.gm.launchTravelSheet((actors ?? []) as CharacterPF2e[]);
     }
 
-    #setOwnedActor(event: PointerEvent, target: HTMLElement) {
-        const actorId = target.dataset.actorId ?? "";
-        const actor = game.actors.get(actorId);
+    async #getOwnedActorFromEvent(event: Event): Promise<Maybe<ActorPF2e>> {
+        const target = htmlClosest(event.target, "[data-actor-id]");
+        const { actorId, actorUuid } = target?.dataset ?? {};
+
+        return actorUuid ? fromUuid<ActorPF2e>(actorUuid) : game.actors.get(actorId ?? "");
+    }
+
+    async #setOwnedActor(event: PointerEvent, target: HTMLElement) {
+        const actor = await this.#getOwnedActorFromEvent(event);
         if (!actor) return;
 
         if (event.button === 0) {
@@ -991,9 +1108,8 @@ class PersistentPF2eHUD
         calculateAvatarPosition(avatarData, image);
     }
 
-    #onDragOwnedActor(event: DragEvent) {
-        const target = event.currentTarget as HTMLImageElement;
-        const parent = htmlClosest(target, "[data-actor-id]");
+    async #onDragOwnedActor(event: DragEvent) {
+        const parent = htmlClosest(event.currentTarget, "[data-actor-id]");
         const actor = game.actors.get(parent?.dataset.actorId ?? "");
 
         if (!this.isValidDraggableActor(actor)) {
@@ -1017,18 +1133,15 @@ class PersistentPF2eHUD
         }
     }
 
-    #onOwnedActorDrop(event: DragEvent) {
-        const parent = htmlClosest(event.currentTarget, "[data-actor-id]");
-        const actorId = parent?.dataset.actorId ?? "";
-        const actor = game.actors.get(actorId);
-
+    async #onOwnedActorDrop(event: DragEvent) {
+        const actor = await this.#getOwnedActorFromEvent(event);
         if (this.isValidDraggableActor(actor)) {
             actor.sheet._onDrop(event);
         }
     }
 
     #panToActiveToken(actor: ActorPF2e, linked?: boolean) {
-        const token = getFirstActiveToken(actor, { linked });
+        const token = actor.token ?? getFirstActiveToken(actor, { linked });
 
         if (token) {
             this.#panToToken(token);
@@ -1108,6 +1221,7 @@ type MenuEventAction =
     | "clear-hotbar"
     | "edit-avatar"
     | "mute-sound"
+    | "pin-token"
     | "set-actor"
     | "toggle-clean"
     | "toggle-effects"
@@ -1118,7 +1232,8 @@ type EventAction =
     | PatchEventAction
     | ShortcutsEventAction
     | "open-sheet"
-    | "select-owned-actor";
+    | "select-owned-actor"
+    | "unpin-owned-actor";
 
 type PersistentRenderOptions = ApplicationRenderOptions & {
     selectionMode: PersistentSettings["selection"];
@@ -1140,6 +1255,7 @@ type PersistentContext = PersistentContextBase & {
 
 type EmptyPersistentContext = PersistentContextBase & {
     actors: OwnedActorContext[];
+    canPin: boolean;
     identify: boolean;
     isGM: boolean;
     journal: string | undefined;
@@ -1152,6 +1268,7 @@ type EmptyPersistentContext = PersistentContextBase & {
 
 type OwnedActorContext = {
     ac: number;
+    favorite: boolean;
     heroPoints: number | undefined;
     hp: HealthData | undefined;
     id: string;
@@ -1159,6 +1276,7 @@ type OwnedActorContext = {
     name: string;
     statistics: AdvancedStatistic[];
     tokenImage: ImageFilePath | VideoFilePath;
+    uuid: ActorUUID;
 };
 
 type PersistentContextBase = ReturnedAdvancedHudContext & {
@@ -1174,6 +1292,7 @@ type PersistentSettings = {
     autoFill: boolean;
     cleanPortrait: boolean;
     display: (typeof ENABLED_MODES)[number];
+    favorites: ActorUUID[];
     journal: string;
     selection: (typeof SELECTION_MODES)[number];
     savedActor: string;

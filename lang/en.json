@@ -250,6 +250,7 @@
                     "hover": "Only show UI when hovering the portrait"
                 },
                 "editAvatar": "Edit Avatar",
+                "pin": "Pin Token",
                 "setActor": {
                     "set": "Set selected token as persistent actor",
                     "unset": "Unset persistent actor"
@@ -258,7 +259,8 @@
             "ownedActor": {
                 "drag": {
                     "exist": "This scene already contains a token for this actor."
-                }
+                },
+                "unpin": "Unpin Actor"
             },
             "pan": {
                 "none": "This actor doesn't have any active token on the current scene."
@@ -296,6 +298,9 @@
                 },
                 "tab": "Change Shortcuts Set"
             }
+        },
+        "pin-token": {
+            "notify": "Select a token to pin as favorite."
         },
         "popup": {
             "shortcut": {
