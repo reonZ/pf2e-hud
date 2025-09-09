@@ -212,7 +212,8 @@
       "yes": "Enregistrer"
     },
     "group-perception": {
-      "title": "Tests de perception de groupe"
+      "title": "Tests de perception de groupe",
+      "search": "est en train de Chercher activement"
     },
     "health-status": {
       "title": "État de santé",
@@ -249,6 +250,7 @@
           "hover": "Afficher l'IU lorsque vous survolez le portrait"
         },
         "editAvatar": "Éditer l'avatar",
+        "pin": "Épingler le jeton",
         "setActor": {
           "set": "Déterminer le jeton sélectionné en tant qu'acteur persistant",
           "unset": "Retirer l'acteur persistant"
@@ -257,7 +259,8 @@
       "ownedActor": {
         "drag": {
           "exist": "Cette scène contient déjà un jeton pour cet acteur."
-        }
+        },
+        "unpin": "Désépingler l'acteur"
       },
       "pan": {
         "none": "Cet acteur ne dispose d'aucun jeton actif sur la scène actuelle."
@@ -295,6 +298,9 @@
         },
         "tab": "Changer les raccourcis choisis"
       }
+    },
+    "pin-token": {
+      "notify": "Sélectionnez un jeton à épingler comme favori."
     },
     "popup": {
       "shortcut": {
