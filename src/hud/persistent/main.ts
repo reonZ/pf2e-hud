@@ -197,6 +197,12 @@ class PersistentPF2eHUD
                 },
             },
             {
+                key: "shiftEffect",
+                type: Boolean,
+                default: true,
+                scope: "user",
+            },
+            {
                 key: "savedActor",
                 type: String,
                 default: "",
@@ -1294,8 +1300,9 @@ type PersistentSettings = {
     display: (typeof ENABLED_MODES)[number];
     favorites: ActorUUID[];
     journal: string;
-    selection: (typeof SELECTION_MODES)[number];
     savedActor: string;
+    selection: (typeof SELECTION_MODES)[number];
+    shiftEffect: boolean;
     showEffects: boolean;
 };
 

@@ -81,6 +81,10 @@
                         "select": "On Token Selection",
                         "combat": "Current Combatant"
                     }
+                },
+                "shiftEffect": {
+                    "name": "Hold Shift for Effects",
+                    "hint": "When enabled, you need to hold the 'shift' key to interact with the hud effect icons."
                 }
             },
             "sidebar": {

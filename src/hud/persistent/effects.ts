@@ -147,7 +147,7 @@ class PersistentEffectsPF2eHUD extends PersistentPartPF2eHUD {
      * https://github.com/foundryvtt/pf2e/blob/7baadf276f3d3f13fd77adf411387312ab287042/src/module/apps/effects-panel.ts#L47
      */
     async #onEffectClick(event: MouseEvent, target: HTMLElement) {
-        if (!event.shiftKey) return;
+        if (this.parent.settings.shiftEffect && !event.shiftKey) return;
 
         const actor = this.actor as CreaturePF2e;
         const itemId = target.dataset.itemId ?? "";
