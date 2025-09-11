@@ -69,6 +69,7 @@ class PersistentPF2eHUD
     #actor: ActorPF2e | null = null;
     #controlled: ActorPF2e | null | undefined;
     #effectsPanel = new PersistentEffectsPF2eHUD(this);
+    #isPinning: boolean = false;
     #ownedActors: string[] | null = null;
     #portraitElement: HTMLElement | null = null;
     #previousActor: ActorPF2e | null = null;
@@ -695,7 +696,7 @@ class PersistentPF2eHUD
             return {
                 ...data,
                 actors,
-                canPin: isGM,
+                canPin: true,
                 identify: isGM && !!game.toolbelt?.getToolSetting("identify", "enabled"),
                 isGM,
                 journal: journal instanceof JournalEntry ? journal.name : undefined,
@@ -895,18 +896,10 @@ class PersistentPF2eHUD
 
         const notified = success("pin-token.notify", true);
 
+        this.#isPinning = true;
+
         const hook = Hooks.once("controlToken", (token: TokenPF2e) => {
-            const actor = token.actor;
-            if (!actor) return;
-
-            const uuid = actor.uuid;
-            const favorites = this.settings.favorites;
-
-            if (!favorites.includes(uuid)) {
-                favorites.unshift(uuid);
-            }
-
-            this.settings.favorites = favorites.slice(0, PersistentPF2eHUD.#nbOwnedActors);
+            this.#addToFavorites(token.actor);
         });
 
         requestAnimationFrame(() => {
@@ -915,10 +908,26 @@ class PersistentPF2eHUD
                 () => {
                     ui.notifications.remove(notified.id);
                     Hooks.off("controlToken", hook);
+                    this.#isPinning = false;
                 },
                 { once: true }
             );
         });
+    }
+
+    #addToFavorites(actor: Maybe<ActorPF2e>) {
+        if (!actor) return;
+
+        const uuid = actor.uuid;
+        const favorites = this.settings.favorites;
+
+        favorites.findSplice((x) => x === uuid);
+
+        if (this.isValidActor(actor)) {
+            favorites.unshift(uuid);
+        }
+
+        this.settings.favorites = favorites.slice(0, PersistentPF2eHUD.#nbOwnedActors);
     }
 
     async #setJournal() {
@@ -995,17 +1004,21 @@ class PersistentPF2eHUD
         const actor = await this.#getOwnedActorFromEvent(event);
         if (!actor) return;
 
-        if (event.button === 0) {
-            const mode = this.settings.selection;
+        if (event.button !== 0) {
+            return this.#panToActiveToken(actor, true);
+        }
 
-            if (mode === "manual") {
-                this.setActor(actor);
-            } else if (mode === "select") {
-                this.#previousActor = actor;
-                this.render();
-            }
-        } else {
-            this.#panToActiveToken(actor, true);
+        if (this.#isPinning) {
+            return this.#addToFavorites(actor);
+        }
+
+        const mode = this.settings.selection;
+
+        if (mode === "manual") {
+            this.setActor(actor);
+        } else if (mode === "select") {
+            this.#previousActor = actor;
+            this.render();
         }
     }
 
