@@ -272,6 +272,8 @@ class StrikeShortcut extends AttackShortcut<
     altUse(event: MouseEvent): void {
         if (!this.item) return;
 
+        super.altUse(event);
+
         game.pf2e.rollActionMacro({
             actorUUID: this.actor.uuid,
             type: "strike",

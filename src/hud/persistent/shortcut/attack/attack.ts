@@ -1,4 +1,12 @@
-import { CreaturePF2e, EffectTrait, IdField, ItemPF2e, localize } from "module-helpers";
+import {
+    AttackPopout,
+    CharacterPF2e,
+    CreaturePF2e,
+    EffectTrait,
+    IdField,
+    ItemPF2e,
+    localize,
+} from "module-helpers";
 import {
     BaseShortcutSchema,
     generateBaseShortcutFields,
@@ -55,6 +63,20 @@ abstract class AttackShortcut<
 
     get subtitle(): string {
         return localize("shortcuts.tooltip.subtitle", this.type);
+    }
+
+    altUse(event: MouseEvent): void {
+        Hooks.once("renderAttackPopout", (popup: AttackPopout<CharacterPF2e>) => {
+            const html = popup.element[0];
+            const bounds = html.getBoundingClientRect();
+            const left = Math.max(event.x - bounds.width / 2, 50);
+            const top = Math.min(
+                event.y - bounds.height / 2 - 15,
+                window.innerHeight - 50 - bounds.height
+            );
+
+            popup.setPosition({ left, top });
+        });
     }
 }
 

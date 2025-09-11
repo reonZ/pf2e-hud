@@ -122,7 +122,9 @@ class BlastShortcut extends AttackShortcut<
         );
     }
 
-    altUse(): void {
+    altUse(event: MouseEvent): void {
+        super.altUse(event);
+
         game.pf2e.rollActionMacro({
             actorUUID: this.actor.uuid,
             type: this.type,
