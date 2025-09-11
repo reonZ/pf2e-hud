@@ -1,4 +1,7 @@
 {
+    "LEVIKTIMES": {
+        "playerOnly": "Player Only"
+    },
     "pf2e-hud": {
         "keybindings": {
             "persistent": {
@@ -40,6 +43,10 @@
                 "expand": {
                     "name": "Auto Expand on Load",
                     "hint": "Force the foundry sidebar to expand on page load."
+                },
+                "noRollMode": {
+                    "name": "Hide Roll Modes",
+                    "hint": "Roll mode buttons will be removed from the chat."
                 }
             },
             "global": {

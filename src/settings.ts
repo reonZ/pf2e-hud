@@ -117,6 +117,16 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
                 default: true,
                 scope: "user",
             },
+            {
+                key: "noRollMode",
+                type: Boolean,
+                default: false,
+                scope: "user",
+                playerOnly: true,
+                onChange: (value) => {
+                    document.body.classList.toggle("pf2e-hud-noRollMode", !game.user.isGM && value);
+                },
+            },
         ],
     ]);
 
@@ -127,6 +137,7 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
 
 type GlobalSetting = {
     "foundrySidebar.expand": boolean;
+    "foundrySidebar.noRollMode": boolean;
     healthStatusData: HealthStatus;
     hideUntrained: boolean;
     highestSpeed: boolean;

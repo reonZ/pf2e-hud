@@ -77,6 +77,10 @@ Hooks.once("init", () => {
             checkbox.remove();
         }
     }, 1000);
+
+    if (!isGM && getGlobalSetting("foundrySidebar.noRollMode")) {
+        document.body.classList.add("pf2e-hud-noRollMode");
+    }
 });
 
 Hooks.once("ready", async () => {
