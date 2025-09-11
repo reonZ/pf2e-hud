@@ -104,40 +104,16 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
 
     const moduleSettings = R.pipe(
         R.values(huds),
-        R.map((hud) => [hud.key, hud._getHudSettings()] as const)
+        R.map((hud) => [hud.key, hud._getHudSettings()] as const),
+        R.mapToObj(([key, entries]) => [key, entries])
     );
 
-    // not a HUD so we cheat a little
-    moduleSettings.unshift([
-        "foundrySidebar",
-        [
-            {
-                key: "expand",
-                type: Boolean,
-                default: true,
-                scope: "user",
-            },
-            {
-                key: "noRollMode",
-                type: Boolean,
-                default: false,
-                scope: "user",
-                playerOnly: true,
-                onChange: (value) => {
-                    document.body.classList.toggle("pf2e-hud-noRollMode", !game.user.isGM && value);
-                },
-            },
-        ],
-    ]);
-
-    registerModuleSettings(R.mapToObj(moduleSettings, ([key, entries]) => [key, entries]));
+    registerModuleSettings(moduleSettings);
 
     MODULE.debugExpose({ getHealthStatusData });
 }
 
 type GlobalSetting = {
-    "foundrySidebar.expand": boolean;
-    "foundrySidebar.noRollMode": boolean;
     healthStatusData: HealthStatus;
     hideUntrained: boolean;
     highestSpeed: boolean;

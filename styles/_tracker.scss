@@ -402,7 +402,14 @@
     }
 
     #chat-notifications {
-        display: none;
+        position: absolute;
+        bottom: 5px;
+        right: 0;
+
+        .overflow,
+        #chat-message {
+            display: none;
+        }
     }
 
     &.pf2e-hud-tracker-tall {

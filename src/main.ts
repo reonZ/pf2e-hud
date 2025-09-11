@@ -1,5 +1,6 @@
 import { randomPick, rollGroupPerception, rollRecallKnowledge, useResolve } from "actions";
 import { AvatarEditor, AvatarModel } from "avatar-editor";
+import { FoundrySidebarPF2eNotHUD } from "foundry-sidebar";
 import { HealthStatus } from "health-status";
 import {
     DicePF2eHUD,
@@ -22,12 +23,13 @@ import {
     templatePath,
     userIsGM,
 } from "module-helpers";
-import { getGlobalSetting, registerSettings } from "settings";
+import { registerSettings } from "settings";
 
 MODULE.register("pf2e-hud");
 // MODULE.enableDebugMode();
 
 const HUDS = {
+    foundrySidebar: new FoundrySidebarPF2eNotHUD(),
     tracker: new TrackerPF2eHUD(),
     dice: new DicePF2eHUD(),
     persistent: new PersistentPF2eHUD(),
@@ -77,10 +79,6 @@ Hooks.once("init", () => {
             checkbox.remove();
         }
     }, 1000);
-
-    if (!isGM && getGlobalSetting("foundrySidebar.noRollMode")) {
-        document.body.classList.add("pf2e-hud-noRollMode");
-    }
 });
 
 Hooks.once("ready", async () => {
@@ -91,10 +89,6 @@ Hooks.once("ready", async () => {
 
     for (const hud of R.values(HUDS)) {
         hud.ready(isGM);
-    }
-
-    if (getGlobalSetting("foundrySidebar.expand")) {
-        ui.sidebar.toggleExpanded(true);
     }
 });
 
