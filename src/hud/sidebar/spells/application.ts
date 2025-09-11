@@ -262,6 +262,10 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                     slotSpells: [],
                 });
 
+                if (groupRank === 0 && entry.isFocusPool) {
+                    spellsGroup.focusPool = focusPool;
+                }
+
                 spellsGroup.filterValue.add(...slotSpells);
                 spellsGroup.slotSpells.push(...slotSpells);
             }
