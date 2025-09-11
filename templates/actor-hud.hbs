@@ -218,9 +218,9 @@
 {{/inline}}
 
 {{#*inline 'speed'}}
-<a data-section="speeds" data-tooltip="{{speed.others}}" data-tooltip-class="pf2e-hud iconed-list"
-    {{#unless speed.others}}class="disabled" {{/unless}} data-speed="{{speed.main.type}}"
-    data-action="change-speed">
+<a data-section="speeds" data-tooltip="{{speed.others}}"
+    data-tooltip-class="pf2e-hud-element iconed-list" {{#unless speed.others}}class="disabled"
+    {{/unless}} data-speed="{{speed.main.type}}" data-action="change-speed">
     <i class="{{speed.main.icon}}"></i>
     <span>{{speed.main.total}}</span>
 </a>
