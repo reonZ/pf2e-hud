@@ -1,3 +1,28 @@
+# 2.29.0
+
+-   `Foundry Sidebar`:
+    -   add new `Hide Roll Modes` setting
+        -   it hides the roll mode buttons from the chat
+        -   for the GMs, it moves the `Export Chat Log` and `Clear Chat Log` buttons to the side
+-   `Persistent HUD`:
+    -   you can now directly pin an owned actor portrait instead of a token
+    -   re-pinning an actor will move it to the front
+    -   add pin functionality to player users
+    -   add the actor speed (uses the best speed) to owned actors
+    -   add `Hold Shift for Effects` setting (enabled by default)
+        -   when enabled, you need to hold the `shift` key to interact with the hud effect icons
+    -   fix owned actors hero points not showing when the value is `0`
+-   `Persistent Shortcuts`:
+    -   now display the system attack popup at the shortcut location instead off the middle of the screen when using `[Right click]` on a `Blast Shortcut` or `Strike Shortcut`
+    -   fix the checkbox being unreadable
+-   `Spell Shortcut`:
+    -   now display the focus pool for cantrips that can potentially consume a focus point
+    -   if no focus point remain, the cantrips that are supposed to consume one will be disabled, but won't be disabled if they are currently in a state that doesn't require to consume any
+-   `Spells Sidebar`:
+    -   now only show the focus pool in the cantrip section if at least one of the cantrip can potentially consume a focus point
+    -   fix focus pool not always showing in the cantrip section whenever it should
+-   fix multi-speed tooltip not using the module style
+
 # 2.28.0
 
 -   `Persistent HUD`:
