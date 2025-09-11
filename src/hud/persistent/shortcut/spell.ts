@@ -192,16 +192,15 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         const groupUses =
             typeof group?.uses?.value === "number" ? (group.uses as ValueAndMax) : undefined;
 
-        const uses =
-            isCantrip || entryData.isConsumable || (entryData.isPrepared && !entryData.isFlexible)
-                ? undefined
-                : entryData.isFocus
-                ? (actor as CreaturePF2e).system.resources?.focus
-                : entryData.isCharges && !isBroken
-                ? entryData.uses
-                : entryData.isInnate && !spell.atWill
-                ? spell.system.location.uses
-                : groupUses;
+        const uses = entryData.isFocus
+            ? (actor as CreaturePF2e).system.resources?.focus
+            : isCantrip || entryData.isConsumable || (entryData.isPrepared && !entryData.isFlexible)
+            ? undefined
+            : entryData.isCharges && !isBroken
+            ? entryData.uses
+            : entryData.isInnate && !spell.atWill
+            ? spell.system.location.uses
+            : groupUses;
 
         this.#uses =
             entryData.consumable && entryData.consumable.quantity > 1

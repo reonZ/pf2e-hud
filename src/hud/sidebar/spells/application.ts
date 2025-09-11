@@ -2,6 +2,7 @@ import {
     createSlider,
     FilterValue,
     isAnimistEntry,
+    isFocusCantrip,
     processSliderEvent,
     SidebarPF2eHUD,
     SliderData,
@@ -253,7 +254,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
 
                 const spellsGroup = (spellGroups[groupRank] ??= {
                     filterValue: new FilterValue(),
-                    focusPool: entry.isFocusPool ? focusPool : null,
+                    focusPool: isFocusGroup ? focusPool : null,
                     label: isFocusGroup
                         ? "PF2E.Focus.Spells"
                         : entry.isRitual
@@ -262,7 +263,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                     slotSpells: [],
                 });
 
-                if (groupRank === 0 && entry.isFocusPool) {
+                if (groupRank === 0 && entry.isFocusPool && hasFocustCantrip(slotSpells)) {
                     spellsGroup.focusPool = focusPool;
                 }
 
@@ -285,6 +286,10 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
     return {
         spellGroups,
     };
+}
+
+function hasFocustCantrip(spells: SpellSidebarItem[]) {
+    return spells.some(({ spell }) => isFocusCantrip(spell));
 }
 
 interface SpellsSidebarPF2eHUD {

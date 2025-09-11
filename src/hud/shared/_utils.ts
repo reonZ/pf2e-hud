@@ -8,6 +8,7 @@ import {
     eventToRollParams,
     InitiativeRollResult,
     R,
+    SpellPF2e,
     ValueAndMax,
 } from "module-helpers";
 
@@ -131,6 +132,12 @@ function getTextureMask({ scaleX, scaleY }: { scaleX: number; scaleY: number }) 
     }
 }
 
+function isFocusCantrip(spell: SpellPF2e): boolean {
+    return (
+        spell.system.cast.focusPoints > 0 || spell.system.traits.otherTags.includes("psi-cantrip")
+    );
+}
+
 type SliderData = {
     action: string;
     canBack: boolean;
@@ -145,6 +152,7 @@ export {
     getTextureMask,
     getUiScale,
     isAnimistEntry,
+    isFocusCantrip,
     makeFadeable,
     rollInitiative,
 };
