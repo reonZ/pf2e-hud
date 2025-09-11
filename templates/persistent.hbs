@@ -107,13 +107,19 @@
             <i class="fa-solid fa-shield"></i>
             <div class="value">{{actor.ac}}</div>
         </div>
-        {{#if actor.heroPoints}}
-        <div class="heroPoints">
-            <i class="fa-solid fa-circle-h"></i>
-            <div class="value">{{heroPoints}}</div>
-        </div>
-        {{/if}}
         <div class="statistics">
+            <div class="statistic heroPoints">
+                {{#if actor.heroPoints includeZero=true}}
+                <i class="fa-solid fa-circle-h"></i>
+                <div class="value">{{heroPoints}}</div>
+                {{/if}}
+            </div>
+            <div class="statistic speed">
+                {{#if speed}}
+                <i class="{{speed.icon}}"></i>
+                <div class="value">{{speed.total}}</div>
+                {{/if}}
+            </div>
             {{#each actor.statistics as |statistic|}}
             <div class="statistic">
                 <i class="{{statistic.icon}}"></i>

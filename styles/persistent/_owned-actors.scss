@@ -1,0 +1,186 @@
+#pf2e-hud-persistent [data-panel="owned-actors"] {
+    background: none;
+    border: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    pointer-events: none;
+    gap: var(--panel-gap);
+
+    .owned-actor {
+        position: relative;
+        background: var(--panel-background);
+        border: var(--outer-border);
+        border-radius: var(--outer-border-radius);
+        display: flex;
+        cursor: pointer;
+        pointer-events: all;
+
+        > * {
+            pointer-events: none;
+        }
+
+        img {
+            pointer-events: all;
+            object-fit: contain;
+            aspect-ratio: 1 / 1;
+
+            &.token {
+                opacity: 0;
+                width: 0;
+                height: 0;
+                position: absolute;
+            }
+        }
+
+        .ac {
+            position: absolute;
+            top: -0.1em;
+            left: -0.1em;
+            display: grid;
+            justify-items: center;
+            align-items: center;
+
+            i {
+                grid-column: 1;
+                grid-row: 1;
+                font-size: 1.4em;
+                width: auto;
+                color: #ffffff82;
+            }
+
+            .value {
+                grid-column: 1;
+                grid-row: 1;
+            }
+        }
+
+        .statistics {
+            position: absolute;
+            bottom: 1.6em;
+            left: 0;
+            width: 100%;
+            font-size: 0.9em;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(5, 1fr);
+            grid-auto-flow: column;
+            row-gap: 0.2em;
+            padding-inline: 0.05em;
+
+            .heroPoints,
+            .speed {
+                grid-column: 1 / -1;
+            }
+
+            .speed {
+                grid-row: 5;
+            }
+
+            .statistic {
+                display: flex;
+                align-items: center;
+                gap: 0.1em;
+
+                &:nth-child(n + 6),
+                &.heroPoints {
+                    justify-content: start;
+                    direction: rtl;
+                }
+            }
+        }
+
+        .bars {
+            position: absolute;
+            align-self: end;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            line-height: 1.3;
+
+            .value {
+                z-index: 1;
+                display: flex;
+                align-items: center;
+            }
+
+            .fills {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                flex-direction: column;
+
+                .fill {
+                    height: 50%;
+                    width: calc(var(--ratio) * 100%);
+
+                    &.hp,
+                    &.sp {
+                        box-shadow: inset 0 0 3px 1px #000;
+                        border-radius: 10px;
+                    }
+
+                    &.hp {
+                        background: hsl(var(--hue) 75% 40%);
+                    }
+
+                    &.sp {
+                        background: blue;
+                    }
+                }
+            }
+        }
+
+        .unpin {
+            position: absolute;
+            pointer-events: all;
+            font-size: 1.8em;
+            top: 0;
+            left: 50%;
+            transform: translate(-45%, -50%) rotate(12deg);
+        }
+    }
+
+    &.inverted {
+        .owned-actor {
+            img {
+                filter: brightness(0.5) opacity(0.8);
+            }
+
+            &:hover {
+                img {
+                    filter: none;
+                }
+
+                .bars .value,
+                .statistics {
+                    visibility: hidden;
+                    opacity: 0;
+                }
+            }
+        }
+    }
+
+    &:not(.inverted) {
+        .owned-actor {
+            .bars .value,
+            .statistics {
+                visibility: hidden;
+                opacity: 0;
+            }
+
+            &:hover {
+                img {
+                    filter: brightness(0.5) opacity(0.8);
+                }
+
+                .bars .value,
+                .statistics {
+                    visibility: visible;
+                    opacity: 1;
+                }
+            }
+        }
+    }
+}

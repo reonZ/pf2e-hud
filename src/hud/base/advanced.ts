@@ -4,9 +4,11 @@ import {
     addTextNumberInputListeners,
     calculateActorHealth,
     createSlider,
+    getAllSpeeds,
     getCoverEffect,
     getSidebars,
     HealthData,
+    HudSpeed,
     NpcNotesHudPopup,
     processSliderEvent,
     SidebarMenu,
@@ -21,8 +23,6 @@ import {
     ApplicationRenderOptions,
     CharacterPF2e,
     CreaturePF2e,
-    CreatureSpeeds,
-    getFlag,
     getSkillLabel,
     HeldShieldData,
     localize,
@@ -66,14 +66,6 @@ const STATISTICS = [
     { slug: "stealth", icon: "fa-solid fa-mask" },
     { slug: "athletics", icon: "fa-solid fa-hand-fist" },
 ] as const;
-
-const SPEEDS_ICONS = {
-    land: "fa-solid fa-shoe-prints",
-    burrow: "fa-solid fa-chevrons-down",
-    climb: "fa-solid fa-spider",
-    fly: "fa-solid fa-feather",
-    swim: "fa-solid fa-person-swimming",
-};
 
 const INFOS = [
     {
@@ -441,24 +433,10 @@ function getNpcTags(actor: NPCPF2e): string | undefined {
 function getSpeed(actor: ActorPF2e): AdvancedHudContext["speed"] {
     if (!actor.isOfType("creature")) return;
 
-    const speeds: HudSpeed[] = R.pipe(
-        [actor.attributes.speed, ...actor.attributes.speed.otherSpeeds] as ActorSpeed[],
-        R.filter(({ total, type }) => {
-            return type === "land" || (typeof total === "number" && total > 0);
-        }),
-        R.map(
-            ({ type, total, label }): HudSpeed => ({
-                icon: SPEEDS_ICONS[type],
-                total,
-                label,
-                type,
-            })
-        )
-    );
+    const allSpeeds = getAllSpeeds(actor);
+    if (!allSpeeds) return;
 
-    if (!speeds?.length) return;
-
-    const mainSpeed = getMainSpeed(actor, speeds);
+    const { mainSpeed, speeds } = allSpeeds;
     const otherSpeeds = speeds
         .map((speed) => `<li><i class="${speed.icon}"></i> <span>${speed.total}</span></li>`)
         .join("");
@@ -467,27 +445,6 @@ function getSpeed(actor: ActorPF2e): AdvancedHudContext["speed"] {
         main: mainSpeed,
         others: otherSpeeds ? `<ul>${otherSpeeds}</ul>` : undefined,
     };
-}
-
-function getMainSpeed(actor: ActorPF2e, speeds: HudSpeed[]): HudSpeed {
-    if (speeds.length === 1) {
-        return speeds.shift()!;
-    }
-
-    const selectedSpeed = getFlag<MovementType>(actor, "speed");
-    if (selectedSpeed) {
-        const speed = speeds.findSplice((speed) => speed.type === selectedSpeed);
-        if (speed) {
-            return speed;
-        }
-    }
-
-    if (!getGlobalSetting("highestSpeed")) {
-        return speeds.shift()!;
-    }
-
-    const highestSpeed = R.firstBy(speeds, [R.prop("total"), "desc"])!;
-    return speeds.findSplice((speed) => speed === highestSpeed)!;
 }
 
 function getAdvancedStatistics(actor: ActorPF2e): AdvancedStatistic[] {
@@ -555,17 +512,6 @@ type SidebarCoords = {
         top: number;
         bottom: number;
     };
-};
-
-type HudSpeed = {
-    icon: string;
-    total: number;
-    label: string | undefined;
-    type: "land" | "burrow" | "climb" | "fly" | "swim";
-};
-
-type ActorSpeed = CreatureSpeeds & {
-    type: MovementType;
 };
 
 type ReturnedAdvancedHudContext = AdvancedHudContext | { hasActor: false };

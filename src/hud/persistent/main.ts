@@ -43,8 +43,10 @@ import {
     createDraggable,
     createSlider,
     getAdvancedStatistics,
+    getAllSpeeds,
     HealthData,
     HUDSettingsList,
+    HudSpeed,
     IAdvancedPF2eHUD,
     makeAdvancedHUD,
     ReturnedAdvancedHudContext,
@@ -678,6 +680,7 @@ class PersistentPF2eHUD
                         id: actor.id,
                         img: actor.img,
                         name: actor.name,
+                        speed: getAllSpeeds(actor)?.mainSpeed,
                         statistics: getAdvancedStatistics(actor),
                         tokenImage: getTokenImage(actor),
                         uuid: actor.uuid,
@@ -1280,6 +1283,7 @@ type OwnedActorContext = {
     id: string;
     img: ImageFilePath;
     name: string;
+    speed: HudSpeed | undefined;
     statistics: AdvancedStatistic[];
     tokenImage: ImageFilePath | VideoFilePath;
     uuid: ActorUUID;
