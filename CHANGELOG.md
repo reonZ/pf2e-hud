@@ -1,3 +1,13 @@
+# 2.30.0
+
+-   `Persistent HUD`:
+    -   the owned actors list is now refreshed when actor ownerships linked to the player user are modified
+        -   this makes new owned actors show up and former owned actors removed from the list
+    -   override foundry's hotbar style to fit perfectly inside the hud and improve some parts that don't really work when changing `Font Size`
+-   `Stance Shortcut`:
+    -   is now updated whenever the actor enters or leaves combat
+-   plus some internal refactors
+
 # 2.29.0
 
 -   `Foundry Sidebar`:
@@ -13,7 +23,7 @@
         -   when enabled, you need to hold the `shift` key to interact with the hud effect icons
     -   fix owned actors hero points not showing when the value is `0`
 -   `Persistent Shortcuts`:
-    -   now display the system attack popup at the shortcut location instead off the middle of the screen when using `[Right click]` on a `Blast Shortcut` or `Strike Shortcut`
+    -   now display the system attack popup at the shortcut location instead of the middle of the screen when using `[Right click]` on a `Blast Shortcut` or `Strike Shortcut`
     -   fix the checkbox being unreadable
 -   `Spell Shortcut`:
     -   now display the focus pool for cantrips that can potentially consume a focus point
