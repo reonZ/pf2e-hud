@@ -40,6 +40,10 @@
         "expand": {
           "name": "Autoexpandir al cargar",
           "hint": "Forzar a Foundry a expandir la barra lateral al cargar la página."
+        },
+        "noRollMode": {
+          "name": "Ocultar modos de tirada",
+          "hint": "Los botones del modo tirada se eliminarán del chat."
         }
       },
       "global": {
@@ -81,6 +85,10 @@
             "select": "Selección según el token",
             "combat": "Combatiente actual"
           }
+        },
+        "shiftEffect": {
+          "name": "Mantenga presionado \"shift\" para ver los efectos",
+          "hint": "Cuando esté habilitado, debe mantener presionada la tecla \"shift\" para interactuar con los íconos de efectos del HUD."
         }
       },
       "sidebar": {
@@ -94,6 +102,15 @@
       },
       "token": {
         "title": "HUD de token",
+        "activation": {
+          "name": "Modo de activación",
+          "hint": "Seleccione el modo para activar el token HUD.",
+          "choices": {
+            "disabled": "Desactivado",
+            "first": "En el primer clic",
+            "second": "En el segundo clic"
+          }
+        },
         "mode": {
           "name": "Modo de visualización",
           "hint": "Elegir el modo de visualización del HUD del token.",
@@ -151,7 +168,8 @@
         "drive1": "Conducir <span class=\"action-glyph\">1</span>",
         "drive2": "Conducir <span class=\"action-glyph\">2</span>",
         "drive3": "Conducir <span class=\"action-glyph\">3</span>"
-      }
+      },
+      "operateDevice": "Manejar el dispositivo"
     },
     "actor-hud": {
       "alliance": "Alianza: {value}",
@@ -201,6 +219,10 @@
       "name": "Nombre del atajo",
       "yes": "Guardar"
     },
+    "group-perception": {
+      "title": "Pruebas de percepción grupal",
+      "search": "Está buscando activamente"
+    },
     "health-status": {
       "title": "Estado de salud",
       "enabled": "Activado",
@@ -221,6 +243,7 @@
       "default": "Muerto, Moribundo, Herido, Magullado, Rasguñado, Perfecto"
     },
     "leftClick": "[Clic izquierdo]",
+    "no-selection": "Debes seleccionar al menos una criatura válida.",
     "persistent": {
       "effects": {
         "shift": "Mayús",
@@ -235,6 +258,7 @@
           "hover": "Mostrar la IU únicamente cuando se pasa al ratón por el retrato"
         },
         "editAvatar": "Editar avatar",
+        "pin": "Fijar actor",
         "setActor": {
           "set": "Elegir el token seleccionado como actor persistente",
           "unset": "Deseleccionar como actor persistente"
@@ -243,10 +267,22 @@
       "ownedActor": {
         "drag": {
           "exist": "Esta escena ya contiene un token para este actor."
-        }
+        },
+        "unpin": "Desfijar actor"
       },
       "pan": {
         "none": "Este actor no tiene ningún token activo en la escena actual."
+      },
+      "patch": {
+        "browser": "Abrir navegador del compendio",
+        "check-prompt": "Generar solicitud de prueba",
+        "gm-screen": "Abrir la pantalla de MJ",
+        "group-perception": "Tirada de percepción grupal",
+        "identify-menu": "Abrir menú de identificación",
+        "random-pick": "Elegir objetivo aleatorio",
+        "select-all": "Seleccionar token de jugador",
+        "set-journal": "Seleccionar entrada de diario",
+        "travel-sheet": "Calcular duración del viaje"
       },
       "shortcuts": {
         "clear": {
@@ -271,10 +307,16 @@
         "tab": "Cambiar el conjunto de atajos"
       }
     },
+    "pin-token": {
+      "notify": "Seleccione un token para fijarlo como favorito."
+    },
     "popup": {
       "shortcut": {
         "config": "Personalizar atajo"
       }
+    },
+    "random-pick": {
+      "title": "Eeny, meeny, miny, moe"
     },
     "recall-knowledge": {
       "result": "Resultado",
@@ -294,6 +336,15 @@
       "proficiency": "Competencia"
     },
     "rightClick": "[Clic derecho]",
+    "set-journal": {
+      "uuid": {
+        "label": "UUID del diario"
+      },
+      "world": {
+        "label": "Diario mundial"
+      },
+      "yes": "Establecer diario"
+    },
     "shortcuts": {
       "blast": {
         "cost": {
