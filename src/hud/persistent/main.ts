@@ -23,6 +23,7 @@ import {
     localize,
     NPCPF2e,
     panToToken,
+    PARTY_ACTOR_ID,
     pingToken,
     R,
     render,
@@ -87,14 +88,7 @@ class PersistentPF2eHUD
         }
     });
 
-    #updateActorHook = createHook("updateActor", (actor: ActorPF2e) => {
-        if (
-            this.#ownedActors?.includes(actor.id) ||
-            (game.user.isGM && actor.id === "xxxPF2ExPARTYxxx")
-        ) {
-            this.render();
-        }
-    });
+    #updateActorHook = createHook("updateActor", this.#onUpdateActor.bind(this));
 
     #deleteTokenHook = createHook("deleteToken", (token: TokenDocumentPF2e) => {
         const actor = token.actor;
@@ -1162,6 +1156,17 @@ class PersistentPF2eHUD
         }
     }
 
+    #onUpdateActor(actor: ActorPF2e, changes: ActorUpdateChanges) {
+        if (this.#ownedActors?.includes(actor.id)) {
+            this.render();
+        } else if (game.user.isGM) {
+            actor.id === PARTY_ACTOR_ID && this.render();
+        } else {
+            const ownership = changes.ownership ?? changes["==ownership"];
+            ownership && game.userId in ownership && this.render();
+        }
+    }
+
     #panToActiveToken(actor: ActorPF2e, linked?: boolean) {
         const token = actor.token ?? getFirstActiveToken(actor, { linked });
 
@@ -1223,6 +1228,11 @@ function toggleFoundryBtn(id: string, action: string) {
 function getTokenImage(actor: ActorPF2e): ImageFilePath | VideoFilePath {
     return actor.prototypeToken.texture.src ?? actor.img;
 }
+
+type ActorUpdateChanges = {
+    ownership?: DocumentOwnership;
+    "==ownership"?: DocumentOwnership;
+};
 
 type PatchEventAction =
     | "browser"
