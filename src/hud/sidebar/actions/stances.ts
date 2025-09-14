@@ -1,21 +1,17 @@
-import { FilterValue, StanceShortcutData } from "hud";
+import { canUseStances, FilterValue, getStances, StanceShortcutData, toggleStance } from "hud";
 import {
     AbilityItemPF2e,
-    canUseStances,
     CharacterPF2e,
     CreaturePF2e,
     FeatPF2e,
-    getStances,
     hasItemWithSourceId,
-    StanceData,
-    toggleStance,
 } from "module-helpers";
 import { ActionsSidebarPF2eHUD } from ".";
 import { BaseSidebarItem } from "..";
 
 class ActionsStance extends BaseSidebarItem<
     FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>,
-    StanceData
+    hud.StanceData
 > {
     get uuid(): string {
         return this.effectUUID;
@@ -44,7 +40,7 @@ class ActionsStance extends BaseSidebarItem<
     }
 }
 
-interface ActionsStance extends Readonly<StanceData> {}
+interface ActionsStance extends Readonly<hud.StanceData> {}
 
 function getSidebarStancesData(this: ActionsSidebarPF2eHUD): StancesContext | undefined {
     const actor = this.actor as CharacterPF2e;

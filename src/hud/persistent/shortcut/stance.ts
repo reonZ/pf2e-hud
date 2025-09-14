@@ -1,13 +1,12 @@
+import { canUseStances, toggleStance } from "hud";
 import {
     AbilityItemPF2e,
-    canUseStances,
     CreaturePF2e,
     EffectPF2e,
     FeatPF2e,
     hasItemWithSourceId,
     IdField,
     localize,
-    toggleStance,
 } from "module-helpers";
 import {
     BaseShortcutSchema,

@@ -5,3 +5,4 @@ export * from "./listeners";
 export * from "./npc-attacks";
 export * from "./sidebars";
 export * from "./speed";
+export * from "./stances";

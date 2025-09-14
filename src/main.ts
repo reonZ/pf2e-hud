@@ -3,12 +3,16 @@ import { AvatarEditor, AvatarModel } from "avatar-editor";
 import { FoundrySidebarPF2eNotHUD } from "foundry-sidebar";
 import { HealthStatus } from "health-status";
 import {
+    addStance,
+    canUseStances,
     DicePF2eHUD,
     getNpcStrikeImage,
+    getStances,
     PersistentPF2eHUD,
     prepareActionGroups,
     prepareExtrasActions,
     TimePF2eHUD,
+    toggleStance,
     TokenPF2eHUD,
     TooltipPF2eHUD,
     TrackerPF2eHUD,
@@ -100,12 +104,16 @@ MODULE.apiExpose({
         useResolve,
     },
     utils: {
+        addStance,
+        canUseStances,
         editAvatar: (actor: ActorPF2e) => {
             if (!actor.isOfType("creature", "npc")) return;
             const worldActor = (actor.token?.baseActor ?? actor) as CreaturePF2e;
             new AvatarEditor(worldActor).render(true);
         },
         getNpcStrikeImage,
+        getStances,
+        toggleStance,
     },
 });
 
