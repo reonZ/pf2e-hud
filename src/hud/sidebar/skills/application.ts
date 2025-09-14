@@ -139,7 +139,7 @@ async function toggleFollowTheExpert(actor: ActorPF2e) {
         return exist.delete();
     }
 
-    const source = await getItemSourceFromUuid(FOLLOW_THE_EXPERT_EFFECT, "EffectPF2e");
+    const source = await getItemSourceFromUuid(FOLLOW_THE_EXPERT_EFFECT, "effect");
     if (!source) return;
 
     actor.createEmbeddedDocuments("Item", [source]);
