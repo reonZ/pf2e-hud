@@ -1,0 +1,62 @@
+#pf2e-hud-persistent #hotbar {
+    grid-column: info / full;
+    grid-row: bottom;
+    flex-wrap: nowrap;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    transform: none;
+    gap: var(--panel-gap);
+    opacity: 1;
+
+    #action-bar {
+        width: auto;
+        gap: var(--panel-gap);
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        grid-template-rows: 1fr;
+
+        li {
+            border-radius: var(--outer-border-radius);
+            background: var(--panel-background);
+            height: var(--row-2fr);
+            width: var(--row-2fr);
+
+            img {
+                border-radius: calc(var(--outer-border-radius) - 1px);
+            }
+
+            span {
+                background: var(--panel-background);
+                color: var(--color);
+                font-size: var(--hud-font-size);
+                padding-right: 0;
+                width: 1.35em;
+                top: -1px;
+                left: -1px;
+                line-height: 1.4;
+            }
+        }
+    }
+
+    #hotbar-controls-left,
+    #hotbar-controls-right > div {
+        display: none;
+    }
+
+    #hotbar-controls-right {
+        height: var(--row-2fr);
+    }
+
+    #hotbar-page-controls {
+        --button-size: 1.4em;
+
+        background: var(--panel-background);
+        border-radius: var(--outer-border-radius);
+
+        button {
+            font-size: var(--hud-font-size);
+            color: var(--color);
+        }
+    }
+}

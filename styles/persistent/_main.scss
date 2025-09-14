@@ -331,50 +331,6 @@
             display: none;
         }
     }
-
-    #hotbar {
-        grid-column: info / full;
-        grid-row: bottom;
-        flex-wrap: nowrap;
-        height: var(--hotbar-size);
-        margin: 0;
-        padding: 0;
-        transform: none;
-        gap: var(--panel-gap);
-        opacity: 1;
-
-        #action-bar {
-            width: auto;
-            gap: var(--panel-gap);
-
-            li {
-                border-radius: var(--outer-border-radius);
-                background: var(--panel-background);
-
-                span {
-                    background: var(--panel-background);
-                    color: var(--color);
-                }
-            }
-        }
-
-        #hotbar-controls-left,
-        #hotbar-controls-right > div {
-            display: none;
-        }
-
-        #hotbar-page-controls {
-            --button-size: 1.4em;
-
-            background: var(--panel-background);
-            border-radius: var(--outer-border-radius);
-
-            button {
-                font-size: var(--hud-font-size);
-                color: var(--color);
-            }
-        }
-    }
 }
 
 #ui-left-column-1:has(> #pf2e-hud-persistent) {
@@ -394,5 +350,6 @@
 }
 
 @import "./effects";
+@import "./hotbar";
 @import "./owned-actors";
 @import "./shortcuts";
