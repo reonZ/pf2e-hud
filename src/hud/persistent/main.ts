@@ -90,24 +90,7 @@ class PersistentPF2eHUD
 
     #updateActorHook = createHook("updateActor", this.#onUpdateActor.bind(this));
 
-    #deleteTokenHook = createHook("deleteToken", (token: TokenDocumentPF2e) => {
-        const actor = token.actor;
-
-        if (actor?.token) {
-            const favorites = this.settings.favorites;
-            const index = favorites.indexOf(actor.uuid);
-
-            if (index !== -1) {
-                favorites.splice(index, 1);
-                this.settings.favorites = favorites;
-                return;
-            }
-        }
-
-        if (!token.isLinked && this.isCurrentActor(actor)) {
-            this.render();
-        }
-    });
+    #deleteTokenHook = createHook("deleteToken", this.#onDeleteToken.bind(this));
 
     #controlTokenHook = createHook(
         "controlToken",
@@ -1164,6 +1147,25 @@ class PersistentPF2eHUD
         } else {
             const ownership = changes.ownership ?? changes["==ownership"];
             ownership && game.userId in ownership && this.render();
+        }
+    }
+
+    #onDeleteToken(token: TokenDocumentPF2e) {
+        const actor = token.actor;
+
+        if (actor?.token) {
+            const favorites = this.settings.favorites;
+            const index = favorites.indexOf(actor.uuid);
+
+            if (index !== -1) {
+                favorites.splice(index, 1);
+                this.settings.favorites = favorites;
+                return;
+            }
+        }
+
+        if (!token.isLinked && this.isCurrentActor(actor)) {
+            this.render();
         }
     }
 

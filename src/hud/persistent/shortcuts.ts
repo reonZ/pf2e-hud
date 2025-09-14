@@ -8,9 +8,12 @@ import {
     SpellCategoryType,
 } from "hud";
 import {
+    ApplicationClosingOptions,
     ApplicationRenderContext,
     ApplicationRenderOptions,
+    CombatantPF2e,
     ConsumablePF2e,
+    createHook,
     CreaturePF2e,
     dataToDatasetString,
     getDragEventData,
@@ -73,9 +76,26 @@ const SHORTCUTS = {
     toggle: ToggleShortcut,
 } satisfies Record<string, ConstructorOf<PersistentShortcut>>;
 
+class Shortcuts extends Map<number, PersistentShortcut> {
+    some(condition: (value: PersistentShortcut, index: number, collection: this) => boolean) {
+        let i = 0;
+        for (const v of this.values()) {
+            const pass = condition(v, i, this);
+            i++;
+            if (pass) return true;
+        }
+        return false;
+    }
+}
+
 class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
-    #shortcuts: Map<number, PersistentShortcut> = new Map();
+    #shortcuts: Shortcuts = new Shortcuts();
     #shortcutsCache: ShortcutCache = createShortcutCache();
+
+    #combatantHooks = createHook(
+        ["createCombatant", "deleteCombatant"],
+        this.#onCombatantUpdate.bind(this)
+    );
 
     get nbSlots(): number {
         return 18;
@@ -89,7 +109,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         return "shortcuts";
     }
 
-    get shortcuts(): Map<number, PersistentShortcut> {
+    get shortcuts(): Shortcuts {
         return this.#shortcuts;
     }
 
@@ -303,6 +323,11 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         return super.render(options, _options);
     }
 
+    protected _onClose(options: ApplicationClosingOptions): void {
+        super._onClose(options);
+        this.#combatantHooks.disable();
+    }
+
     protected async _prepareContext(
         options: ApplicationRenderOptions
     ): Promise<PersistentShortcutsContext> {
@@ -357,6 +382,9 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     _activateListeners(html: HTMLElement): void {
         const actor = this.actor;
         if (!actor) return;
+
+        const hasStanceShortcut = this.shortcuts.some((shortcut) => shortcut.type === "stance");
+        this.#combatantHooks.toggle(hasStanceShortcut);
 
         this.shortcutBinElement?.addEventListener("drop", (event) => {
             const dragData = getDragEventData<ShortcutDragData>(event);
@@ -495,6 +523,12 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         }
     }
 
+    #onCombatantUpdate(combatant: CombatantPF2e) {
+        if (this.actor && combatant.actor?.uuid === this.actor?.uuid) {
+            this.render();
+        }
+    }
+
     async #instantiateShortcut(
         data: ShortcutData,
         slot: number
@@ -604,9 +638,9 @@ type ShortcutCacheData = {
     canUseStances?: boolean | null;
     commanderTactics?: string[] | null;
     explorations?: string[];
-    getActionMacro?: toolbelt.ToolbeltApi["actionable"]["getActionMacro"] | null;
+    getActionMacro?: toolbelt.Api["actionable"]["getActionMacro"] | null;
     hasItemWithSourceId?: Record<DocumentUUID, boolean>;
-    isTacticAbility?: dailies.DailiesApi["isTacticAbility"] | null;
+    isTacticAbility?: dailies.Api["isTacticAbility"] | null;
     shortcutSpellData?: Record<string, SpellEntryData | null>;
     spellcastingEntry?: Record<string, CustomSpellcastingEntry | null>;
 };
