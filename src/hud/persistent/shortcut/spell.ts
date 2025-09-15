@@ -216,7 +216,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
                 ? { value: entryData.consumable.quantity }
                 : uses;
 
-        if ((isCantrip && !uses) || spell.system.cast.focusPoints <= 0) {
+        if (isCantrip && (!uses || spell.system.cast.focusPoints <= 0)) {
             return returnDisabled(false, "");
         }
 
