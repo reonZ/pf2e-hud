@@ -249,7 +249,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         const active = entryData.isConsumable
             ? group?.active[0]
             : slotId != null
-            ? group?.active[slotId]
+            ? group?.active.find((x) => x?.spell.id === spell.id)
             : undefined;
 
         // no longer prepared
@@ -257,7 +257,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
             return returnDisabled(true, "prepared");
         }
 
-        returnDisabled(!!active?.expended, "expended");
+        returnDisabled(!!active.expended, "expended");
     }
 
     get canUse(): boolean {
