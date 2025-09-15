@@ -278,7 +278,9 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
 
     get cost(): ShortcutCost | null {
         const value = this.item?.system.time.value;
-        return R.isNonNullish(value) ? { value, combo: isNaN(Number(value)) } : null;
+        return R.isNonNullish(value)
+            ? { value, combo: isNaN(Number(value)) && value !== "reaction" }
+            : null;
     }
 
     get uses(): ValueAndMaybeMax | null {
