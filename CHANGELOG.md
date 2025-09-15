@@ -1,3 +1,10 @@
+# 2.30.1
+
+-   `Spell Shortcut`:
+    -   fix action cost icon of reaction spells
+    -   fix shortcut not being disabled when the spell is no longer prepared but still exists in the book
+    -   fix shortcut not being disabled when expended or no more use remaining
+
 # 2.30.0
 
 -   `Persistent HUD`:
