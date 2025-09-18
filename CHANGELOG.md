@@ -1,3 +1,9 @@
+# 2.30.2
+
+-   `Strike Shortcut`:
+    -   fix weapon attachment shortcuts showing as `No Matching Item` when attached to a weapon no currently equipped
+        -   this requires you to re-create the weapon attachment shortcut
+
 # 2.30.1
 
 -   `Spell Shortcut`:
