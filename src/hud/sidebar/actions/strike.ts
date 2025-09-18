@@ -123,6 +123,7 @@ class ActionsSidebarStrike extends BaseSidebarItem<
 
     toShortcut(): StrikeShortcutData {
         return {
+            attachment: !!(this.item as WeaponPF2e).isAttachable,
             img: this.img,
             itemId: this.id,
             name: this.item._source.name,

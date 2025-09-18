@@ -37,19 +37,28 @@ class StrikeShortcut extends AttackShortcut<
     #drawAuxiliaries!: WeaponAuxiliaryAction[];
     #extraAuxiliaryAction?: { label: string; glyph: string } | null;
     #isEquipped!: boolean;
+    #item: Maybe<StrikeItem>;
     #uses!: ValueAndMaybeMax | null;
 
     static defineSchema(): StrikeShortcutSchema {
         return {
             ...generateAttackShortcutFields("strike"),
+            attachment: new fields.BooleanField({
+                required: false,
+                nullable: false,
+                initial: false,
+            }),
             slug: new fields.StringField({
                 required: true,
                 nullable: false,
             }),
         };
     }
+
     async _initShortcut(): Promise<void> {
         await super._initShortcut();
+
+        this.#item = this.#getItem();
 
         const ammo = (this.#ammo = this.item && "ammo" in this.item ? this.item.ammo : null);
 
@@ -86,12 +95,12 @@ class StrikeShortcut extends AttackShortcut<
         return (
             !!this.item &&
             !!this.attackData?.canStrike &&
-            (!("quantity" in this.attackData.item) || this.attackData.item.quantity > 0)
+            (!("quantity" in this.item) || this.item.quantity > 0)
         );
     }
 
     get item(): Maybe<MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>> {
-        return this.attackData?.item as Maybe<MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>>;
+        return this.#item;
     }
 
     get usedImage(): ImageFilePath {
@@ -173,10 +182,9 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get unusableReason(): string | undefined {
-        const parent = super.unusableReason;
-        if (parent) return parent;
-
-        return !this.attackData?.canStrike
+        return !this.item
+            ? "match"
+            : !this.attackData?.canStrike
             ? "available"
             : this.item && "quantity" in this.item && this.item.quantity <= 0
             ? "quantity"
@@ -281,6 +289,15 @@ class StrikeShortcut extends AttackShortcut<
             slug: this.slug,
         });
     }
+
+    #getItem(): Maybe<StrikeItem> {
+        const dataItem = this.attackData?.item;
+        if (dataItem || !this.attachment) return dataItem as Maybe<StrikeItem>;
+
+        return this.actor.itemTypes.weapon
+            .find((item) => item.subitems.has(this.itemId))
+            ?.subitems.get(this.itemId) as Maybe<StrikeItem>;
+    }
 }
 
 const _cached: { strikeLabel?: string } = {};
@@ -299,12 +316,15 @@ interface StrikeShortcut extends ModelPropsFromSchema<StrikeShortcutSchema> {
 }
 
 type StrikeShortcutSchema = AttackShortcutSchema & {
+    attachment: fields.BooleanField<boolean, boolean, false, false, true>;
     slug: fields.StringField<string, string, true, false, false>;
 };
 
-type StrikeShortcutData = ShortcutSource<StrikeShortcutSchema> & {
+type StrikeShortcutData = WithPartial<ShortcutSource<StrikeShortcutSchema>, "attachment"> & {
     type: "strike";
 };
+
+type StrikeItem = MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>;
 
 export { StrikeShortcut };
 export type { StrikeShortcutData };
