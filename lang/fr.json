@@ -40,6 +40,10 @@
         "expand": {
           "name": "Extension auto au chargement",
           "hint": "Oblige la barre latérale foundry à s'étendre au chargement de la page."
+        },
+        "noRollMode": {
+          "name": "Cacher les modes de jet de dés",
+          "hint": "Les boutons des modes de lancer de dés seront supprimés de la conversation."
         }
       },
       "global": {
@@ -81,6 +85,10 @@
             "select": "Sélection sur le jeton",
             "combat": "Combattant actuel"
           }
+        },
+        "shiftEffect": {
+          "name": "Maintenez la touche Maj enfoncée pour les effets",
+          "hint": "Lorsqu'elle est activée, vous devez maintenir la touche 'Maj' pour interagir avec les icônes d'effet du HUD."
         }
       },
       "sidebar": {
@@ -250,7 +258,7 @@
           "hover": "Afficher l'IU lorsque vous survolez le portrait"
         },
         "editAvatar": "Éditer l'avatar",
-        "pin": "Épingler le jeton",
+        "pin": "Épingler l'acteur",
         "setActor": {
           "set": "Déterminer le jeton sélectionné en tant qu'acteur persistant",
           "unset": "Retirer l'acteur persistant"
