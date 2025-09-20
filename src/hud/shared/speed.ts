@@ -11,14 +11,18 @@ const SPEEDS_ICONS = {
 
 function getAllSpeeds(actor: CreaturePF2e): ActorSpeeds | undefined {
     const speeds: HudSpeed[] = R.pipe(
-        [actor.attributes.speed, ...actor.attributes.speed.otherSpeeds] as ActorSpeed[],
-        R.filter(({ total, type }) => {
-            return type === "land" || (typeof total === "number" && total > 0);
+        R.values(actor.movement.speeds),
+        R.filter((speed): speed is ModuleSpeed => {
+            return (
+                R.isTruthy(speed) &&
+                speed.type !== "travel" &&
+                (speed.type === "land" || speed.value > 0)
+            );
         }),
-        R.map(({ type, total, label }): HudSpeed => {
+        R.map(({ type, value, label }): HudSpeed => {
             return {
                 icon: SPEEDS_ICONS[type],
-                total,
+                total: value,
                 label,
                 type,
             };
@@ -61,14 +65,12 @@ type HudSpeed = {
     type: "land" | "burrow" | "climb" | "fly" | "swim";
 };
 
-type ActorSpeed = CreatureSpeeds & {
-    type: MovementType;
-};
-
 type ActorSpeeds = {
     mainSpeed: HudSpeed;
     speeds: HudSpeed[];
 };
+
+type ModuleSpeed = NonNullable<Omit<CreatureSpeeds<CreaturePF2e>, "travel">[MovementType]>;
 
 export { getAllSpeeds };
 export type { HudSpeed };

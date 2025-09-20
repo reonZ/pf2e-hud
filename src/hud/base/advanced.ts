@@ -296,10 +296,11 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             if (!actor?.isOfType("creature")) return;
 
             const selected = target.dataset.speed as MovementType;
-            const speeds: MovementType[] = [
-                "land",
-                ...actor.attributes.speed.otherSpeeds.map((speed) => speed.type),
-            ];
+            const speeds: MovementType[] = R.pipe(
+                R.values(actor.movement.speeds),
+                R.filter((speed) => R.isTruthy(speed) && speed.type !== "travel"),
+                R.map((speed) => speed.type)
+            );
 
             const speedIndex = speeds.indexOf(selected);
             const newSpeed = speeds[(speedIndex + 1) % speeds.length];
