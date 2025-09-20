@@ -1,3 +1,10 @@
+# 2.31.0
+
+-   this is a system `7.5.0` release
+-   make the necessary changes to use the new system speed data structure
+-   `Token Tooltip`:
+    -   now disable the `Token Distance Display` system setting instead of intercepting the token render flag to prevent the system from showing its own distance panel
+
 # 2.30.2
 
 -   `Strike Shortcut`:
