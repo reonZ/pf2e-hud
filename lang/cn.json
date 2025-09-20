@@ -6,7 +6,8 @@
                 "drive2": "驱动 <span class=\"action-glyph\">2</span>",
                 "drive1": "驱动 <span class=\"action-glyph\">1</span>",
                 "drive3": "驱动 <span class=\"action-glyph\">3</span>"
-            }
+            },
+            "operateDevice": "操作设备 Operate Device"
         },
         "tooltip": {
             "distance": {
@@ -25,7 +26,8 @@
                 "setActor": {
                     "set": "设置选中指示物为受控角色",
                     "unset": "解绑受控角色"
-                }
+                },
+                "pin": "选取角色加入受控队列"
             },
             "error": {
                 "selectOne": "选择一个NPC/角色指示物以设置你的受控角色。"
@@ -36,33 +38,45 @@
             },
             "shortcuts": {
                 "clear": {
-                    "hint": "你确认要删除以下快捷栏吗？",
-                    "all": "全部快捷栏设置",
+                    "hint": "你确认要删除以下快捷坞栏位吗？",
+                    "all": "全部快捷坞设置",
                     "yes": "删除",
                     "set": "仅当前设置",
-                    "title": "清空快捷栏"
+                    "title": "清空快捷坞"
                 },
                 "copy": {
-                    "title": "复制用户快捷栏",
-                    "hint": "选择一位用户，复制他的快捷栏设置。",
+                    "title": "复制用户快捷坞",
+                    "hint": "选择一位用户，复制他的快捷坞设置。",
                     "none": "该角色没有其他拥有者。",
                     "yes": "复制",
                     "label": "权限为拥有的用户"
                 },
                 "fill": {
-                    "title": "自动填充快捷栏",
-                    "content": "你确定你要自动填充快捷栏吗？",
+                    "title": "自动填充快捷坞",
+                    "content": "你确定你要自动填充快捷坞吗？",
                     "yes": "自动填充"
                 },
-                "tab": "更改快捷栏设置"
+                "tab": "更换快捷坞预设"
             },
             "ownedActor": {
                 "drag": {
                     "exist": "该场景已存在此角色的指示物。"
-                }
+                },
+                "unpin": "将角色从队列移除"
             },
             "pan": {
                 "none": "该角色在当前场景中没有任何可活动指示物。"
+            },
+            "patch": {
+                "check-prompt": "生成检定提示",
+                "gm-screen": "打开GM帷幕",
+                "group-perception": "骰掷团体察觉检定",
+                "select-all": "选择玩家指示物",
+                "set-journal": "选择日志入口",
+                "travel-sheet": "计算旅行时间",
+                "identify-menu": "打开鉴定目录",
+                "browser": "打开合集包浏览器",
+                "random-pick": "随机选取目标"
             }
         },
         "rightClick": "[右键点击]",
@@ -113,13 +127,22 @@
                     },
                     "name": "显示模式",
                     "hint": "选择指示物HUD的显示模式。"
+                },
+                "activation": {
+                    "choices": {
+                        "disabled": "禁用",
+                        "first": "单击激活",
+                        "second": "双击激活"
+                    },
+                    "hint": "选择激活指示物HUD的模式。",
+                    "name": "激活模式"
                 }
             },
             "persistent": {
                 "title": "受控HUD",
                 "autoFill": {
                     "name": "自动填充NPC",
-                    "hint": "若你未做任何手动更改，将自动填充快捷栏位。"
+                    "hint": "若你未做任何手动更改，将自动填充快捷坞栏位。"
                 },
                 "display": {
                     "name": "显示位置",
@@ -138,11 +161,15 @@
                         "combat": "当前回合的参战者",
                         "select": "所选择的指示物"
                     }
+                },
+                "shiftEffect": {
+                    "name": "长按Shift编辑效果",
+                    "hint": "启用时，你需要按住Shift键才能与HUD的效果图标交互。"
                 }
             },
             "enabled": {
                 "name": "启用",
-                "hint": "在客户端启用HUD元素。"
+                "hint": "在客户端启用该HUD元素。"
             },
             "global": {
                 "highestSpeed": {
@@ -168,7 +195,11 @@
                     "name": "加载时自动展开",
                     "hint": "强制foundry侧边栏在页面加载完成时展开。"
                 },
-                "title": "Foundry侧边栏"
+                "title": "Foundry侧边栏",
+                "noRollMode": {
+                    "name": "掷骰模式隐藏",
+                    "hint": "聊天栏处的掷骰模式按钮将被移除。"
+                }
             },
             "time": {
                 "title": "时间追踪",
@@ -207,7 +238,7 @@
             },
             "alternates": {
                 "dc": "困难等级",
-                "drag": "拖拽至快捷栏创建选项",
+                "drag": "拖拽至快捷坞创建选项",
                 "statistic": "统计技能",
                 "title": "动作变体 - {label}",
                 "yes": "使用变体"
@@ -349,15 +380,15 @@
         },
         "shortcuts": {
             "error": {
-                "wrongType": "你无法创建此类快捷栏选项。",
-                "wrongActor": "你只能为受控角色创建快捷栏选项。",
-                "locked": "快捷栏已被热键锁定"
+                "wrongType": "你无法创建此类快捷坞选项。",
+                "wrongActor": "你只能为受控角色创建快捷坞选项。",
+                "locked": "快捷坞已被热键锁定"
             },
             "tooltip": {
                 "click": {
                     "control": "[Ctrl+右键点击]",
-                    "middle": "[鼠标中键] 移除快捷栏选项",
-                    "popup": "快捷栏弹窗"
+                    "middle": "[鼠标中键] 移除快捷坞选项",
+                    "popup": "快捷坞弹窗"
                 },
                 "reason": {
                     "dropped": "未携带该物品",
@@ -408,12 +439,12 @@
         },
         "edit-shortcut": {
             "image": "图片路径",
-            "name": "快捷栏名称",
+            "name": "快捷坞名称",
             "yes": "保存"
         },
         "popup": {
             "shortcut": {
-                "config": "自定义快捷栏"
+                "config": "自定义快捷坞"
             }
         },
         "tracker": {
@@ -428,6 +459,26 @@
             "join": "加入回合",
             "unknown": "未知",
             "force-turn": "强制移动战斗回合至此"
+        },
+        "set-journal": {
+            "uuid": {
+                "label": "日志 UUID"
+            },
+            "world": {
+                "label": "本世界日志"
+            },
+            "yes": "设置该日志"
+        },
+        "no-selection": "你需要选择至少一个有效生物。",
+        "group-perception": {
+            "search": "积极搜寻中",
+            "title": "团体察觉检定"
+        },
+        "random-pick": {
+            "title": "点兵点将，点到谁就选谁"
+        },
+        "pin-token": {
+            "notify": "选择要固定在队列中的角色指示物。"
         }
     }
 }
