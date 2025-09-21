@@ -375,7 +375,17 @@ type RawBaseActionData = {
     /** item used for description and send-to-chat */
     sourceId: CompendiumItemUUID;
     // object refers to map, array refers to actual variants
-    variants?: (string | { slug: string; label: string; cost?: ActionCost })[] | { agile: boolean };
+    variants?: (string | ActionVariant)[] | ActionMapVariant;
+};
+
+type ActionVariant = {
+    slug: string;
+    label: string;
+    cost?: ActionCost;
+};
+
+type ActionMapVariant = {
+    agile: boolean;
 };
 
 type BaseActionData = SkillActionData & ExtrasActionData;
