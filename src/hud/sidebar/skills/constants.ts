@@ -234,7 +234,7 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
                 key: "bonMot",
                 actionCost: 1,
                 sourceId: "Compendium.pf2e.feats-srd.Item.0GF2j54roPFIDmXf",
-                useInstance: true,
+                hasOptions: "feat:bon-mot",
             },
             {
                 key: "gather-information",
@@ -308,7 +308,7 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
                 requireTrained: true,
                 label: "PF2E.Actions.TreatWounds.Label",
                 sourceId: "Compendium.pf2e.feats-srd.Item.WC4xLBGmBsdOdHWu",
-                useInstance: true,
+                hasOptions: "feat:natural-medicine",
             },
             "recall-knowledge",
             "identify-magic",
@@ -515,13 +515,13 @@ function getStatisticTypes(): StatisticType[] {
 }
 
 type SkillActionData = RawBaseActionData & {
+    /** this roll options must be present on the actor to show u */
+    hasOptions?: string;
     img?: ImageFilePath;
     label?: string;
     requireTrained?: boolean;
     rollOptions?: string[];
     statistic?: StatisticType;
-    /** the item must be present on the actor to show up */
-    useInstance?: boolean;
 };
 
 type RawStatisticActionGroup = {

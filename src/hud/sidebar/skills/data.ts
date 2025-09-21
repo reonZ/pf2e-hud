@@ -44,8 +44,8 @@ class SkillAction extends BaseStatisticAction<SkillActionData> {
         return !!this.data.requireTrained;
     }
 
-    get useInstance(): boolean {
-        return !!this.data.useInstance;
+    get mustHaveRollOption(): string | undefined {
+        return this.data.hasOptions;
     }
 
     get label(): string {

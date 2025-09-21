@@ -74,8 +74,8 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e | AbilityItemPF2e, Sk
             const actions = group.map((action) => {
                 if (!isProficient && !showUntrained && action.requireTrained) return;
                 if (
-                    action.useInstance &&
-                    (!isCharacter || !hasItemWithSourceId(actor, action.sourceId, "feat"))
+                    action.mustHaveRollOption &&
+                    (!isCharacter || !(action.mustHaveRollOption in actor.rollOptions.all))
                 )
                     return;
 
