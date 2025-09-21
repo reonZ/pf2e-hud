@@ -133,3 +133,9 @@ body > input[type="checkbox"].fake {
 #travel-duration {
     width: 700px;
 }
+
+.application.dialog.pf2e-hud {
+    input.invalid {
+        outline: 2px solid #970303;
+    }
+}

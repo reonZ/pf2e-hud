@@ -668,15 +668,17 @@ class PersistentPF2eHUD
 
             this.#ownedActors = actors.map(R.prop("id"));
 
-            const journal = isGM && (await fromUuid(this.settings.journal));
+            const gmScreen = await fromUuid(GM_SCREEN_UUID);
+            const journal = await fromUuid(this.settings.journal);
 
             return {
                 ...data,
                 actors,
                 canPin: true,
+                gmScreen: isValidJournal(gmScreen),
                 identify: isGM && !!game.toolbelt?.getToolSetting("identify", "enabled"),
                 isGM,
-                journal: journal instanceof JournalEntry ? journal.name : undefined,
+                journal: isValidJournal(journal) ? journal.name : undefined,
                 party: party && {
                     id: party.id,
                     name: party.name,
@@ -812,7 +814,11 @@ class PersistentPF2eHUD
             }
             case "gm-screen": {
                 const journal = await fromUuid(GM_SCREEN_UUID);
-                return journal?.sheet.render(true);
+                if (isValidJournal(journal)) {
+                    const pageId = game.user.isGM ? "" : "a7RGk2IiPaC3bLkf";
+                    journal?.sheet.render(true, { pageId });
+                }
+                return;
             }
             case "group-perception":
                 return rollGroupPerception();
@@ -908,9 +914,12 @@ class PersistentPF2eHUD
     }
 
     async #setJournal() {
-        const worlds = game.journal.map((journal) => {
-            return { value: journal.uuid, label: journal.name };
-        });
+        const user = game.user;
+        const worlds = game.journal
+            .filter((journal) => journal.testUserPermission(user, "OBSERVER"))
+            .map((journal) => {
+                return { value: journal.uuid, label: journal.name };
+            });
 
         const content: CreateFormGroupParams[] = [
             {
@@ -942,14 +951,27 @@ class PersistentPF2eHUD
                 const input = htmlQuery(html, "input");
                 if (!input || !select) return;
 
-                select.addEventListener("change", async (event) => {
-                    const journal = await fromUuid(select.value);
-                    input.value = journal instanceof JournalEntry ? select.value : "";
+                input.classList.add("invalid");
+
+                select.addEventListener("change", (event) => {
+                    input.value = select.value;
+                    input.classList.remove("invalid");
                 });
 
-                input.addEventListener("input", (event) => {
-                    select.value = input.value;
-                });
+                const onInput = foundry.utils.debounce(async () => {
+                    const value = input.value;
+                    const journal = await fromUuid(value);
+
+                    if (isValidJournal(journal)) {
+                        select.value = value;
+                        input.classList.remove("invalid");
+                    } else {
+                        select.value = "";
+                        input.classList.add("invalid");
+                    }
+                }, 150);
+
+                input.addEventListener("input", onInput);
             },
         });
 
@@ -1223,6 +1245,10 @@ async function clearHotbar() {
     }
 }
 
+function isValidJournal(journal: unknown): journal is JournalEntry {
+    return journal instanceof JournalEntry && journal.testUserPermission(game.user, "OBSERVER");
+}
+
 function toggleFoundryBtn(id: string, action: string) {
     document.querySelector<HTMLButtonElement>(`#${id} [data-action="${action}"]`)?.click();
 }
@@ -1290,6 +1316,7 @@ type PersistentContext = PersistentContextBase & {
 type EmptyPersistentContext = PersistentContextBase & {
     actors: OwnedActorContext[];
     canPin: boolean;
+    gmScreen: boolean;
     identify: boolean;
     isGM: boolean;
     journal: string | undefined;

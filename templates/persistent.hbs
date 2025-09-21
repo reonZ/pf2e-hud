@@ -173,12 +173,24 @@
     <a data-action="travel-sheet" {{{@root.i18n.tooltip 'patch.travel-sheet' }}}>
         <i class="fa-solid fa-plane"></i>
     </a>
-    <a data-action="gm-screen" {{{@root.i18n.tooltip 'patch.gm-screen' }}}>
+    {{#if gmScreen}}
+    <a data-action="gm-screen" {{{@root.i18n.tooltip 'patch' (ifThen
+        isGM 'gm-screen' 'player-screen' ) }}}>
         <i class="fa-solid fa-presentation-screen"></i>
     </a>
+    {{/if}}
     <a data-action="browser" {{{@root.i18n.tooltip 'patch.browser' }}}>
         <i class="fa-solid fa-magnifying-glass"></i>
     </a>
+    {{#if journal}}
+    <a data-action="journal-sheet" data-tooltip="{{journal}}">
+        <i class="fa-solid fa-book-open"></i>
+    </a>
+    {{else}}
+    <a data-action="set-journal" {{{@root.i18n.tooltip 'patch.set-journal' }}}>
+        <i class="fa-solid fa-square-dashed-circle-plus"></i>
+    </a>
+    {{/if}}
     {{#if isGM}}
     <a data-action="group-perception" {{{@root.i18n.tooltip 'patch.group-perception' }}}>
         <i class="fa-solid fa-eye"></i>
@@ -194,15 +206,6 @@
     <a data-action="select-all" {{{@root.i18n.tooltip 'patch.select-all' }}}>
         <i class="fa-solid fa-expand"></i>
     </a>
-    {{#if journal}}
-    <a data-action="journal-sheet" data-tooltip="{{journal}}">
-        <i class="fa-solid fa-book-open"></i>
-    </a>
-    {{else}}
-    <a data-action="set-journal" {{{@root.i18n.tooltip 'patch.set-journal' }}}>
-        <i class="fa-solid fa-square-dashed-circle-plus"></i>
-    </a>
-    {{/if}}
     {{/if}}
 </div>
 {{/if}}
