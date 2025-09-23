@@ -1,3 +1,19 @@
+# 2.32.0
+
+-   add the `Arrest A Fall` and `Grab An Edge` extra actions:
+    -   the system actions do not let you pick between the `Reflex` and `Athletics/Acrobatics` when using them, so the module adds an extra popup window when using the actions from the extras sidebar while an automatic context menu is shown when using them as shortcuts
+    -   add custom images for their shortcuts
+-   `Blast Cost Shortcut`:
+    -   fix roman number being hard to read
+-   `Persistent HUD`:
+    -   no longer display the `Open Gm-Screen` button to users that don't have the permission to access the journal
+    -   now directly open the `GM Screen` journal to the `Player Screen` page for players (also rename the tooltip)
+    -   add the `Select Journal entry` button to the players menu so they can add a custom journal if they want
+-   `Roll Option Shortcut`:
+    -   will now show the `Not Currently Available` message in the tooltip instead of the `No Matching Item`
+        -   this will almost always be the more appropriate reason as there is technically no way to know which should be used
+-   fix pre-remaster traits showing up (as `undefined`) in the NPC tags tooltip
+
 # 2.31.0
 
 -   this is a system `7.5.0` release
