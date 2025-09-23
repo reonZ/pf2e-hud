@@ -6,9 +6,17 @@ import {
     ExtraActionShortcutData,
     FilterValue,
     RawBaseActionData,
-    SingleCheckActionRollNoteData,
+    StatisticType,
 } from "hud";
-import { AbilityItemPF2e, ActionCost, ActorPF2e, MODULE } from "module-helpers";
+import {
+    AbilityItemPF2e,
+    ActorPF2e,
+    DialogV2Button,
+    MODULE,
+    R,
+    SaveType,
+    signedInteger,
+} from "module-helpers";
 
 const RAW_EXTRAS_ACTIONS = [
     {
@@ -27,6 +35,18 @@ const RAW_EXTRAS_ACTIONS = [
         key: "recall-knowledge",
         actionCost: 1,
         sourceId: "Compendium.pf2e.actionspf2e.Item.1OagaWtBpVXExToo",
+    },
+    {
+        key: "arrest-a-fall",
+        actionCost: "reaction",
+        sourceId: "Compendium.pf2e.actionspf2e.Item.qm7xptMSozAinnPS",
+        choices: ["reflex", "acrobatics"],
+    },
+    {
+        key: "grab-an-edge",
+        actionCost: "reaction",
+        sourceId: "Compendium.pf2e.actionspf2e.Item.3yoajuKjwHZ9ApUY",
+        choices: ["reflex", "athletics"],
     },
     {
         key: "escape",
@@ -49,6 +69,44 @@ const EXTRAS_KEYS = RAW_EXTRAS_ACTIONS.map(({ key }) => key);
 
 class ExtrasSidebarItem extends BaseSidebarItem<AbilityItemPF2e, ExtractedExtraActionData> {
     async roll(actor: ActorPF2e, event: MouseEvent, options: BaseStatisticRollOptions) {
+        if (!options.statistic && this.hasChoices) {
+            const result = await new Promise<StatisticType | SaveType | null>((resolve) => {
+                const buttons: DialogV2Button[] = R.pipe(
+                    this.choices,
+                    R.map((slug): DialogV2Button | undefined => {
+                        const statistic = actor.getStatistic(slug);
+                        if (!statistic) return;
+
+                        return {
+                            action: slug,
+                            label: `${statistic.label} ${signedInteger(statistic.mod)}`,
+                            callback: () => {
+                                return resolve(slug);
+                            },
+                        };
+                    }),
+                    R.filter(R.isTruthy)
+                );
+
+                foundry.applications.api.DialogV2.wait({
+                    buttons,
+                    classes: ["pf2e-hud-action-choices"],
+                    close: () => {
+                        resolve(null);
+                    },
+                    window: {
+                        title: this.label,
+                    },
+                });
+            });
+
+            if (!result) {
+                return;
+            }
+
+            options.statistic = result;
+        }
+
         getExtraAction(this.sourceId)?.roll(actor, event, options);
     }
 
@@ -79,7 +137,15 @@ class ExtraAction extends BaseStatisticAction<ExtrasActionData, AbilityItemPF2e>
         return true;
     }
 
-    roll(actor: ActorPF2e, event: MouseEvent, options: BaseStatisticRollOptions) {
+    get choices(): (StatisticType | SaveType)[] {
+        return this.data.choices ?? [];
+    }
+
+    get hasChoices(): boolean {
+        return this.choices.length > 1;
+    }
+
+    async roll(actor: ActorPF2e, event: MouseEvent, options: BaseStatisticRollOptions) {
         if (this.key === "earnIncome") {
             return game.pf2e.actions.earnIncome(actor);
         }
@@ -127,9 +193,7 @@ function getExtraKeys(): string[] {
 }
 
 type ExtrasActionData = RawBaseActionData & {
-    actionCost?: ActionCost["value"] | ActionCost["type"];
-    notes?: SingleCheckActionRollNoteData[];
-    sourceId: CompendiumItemUUID;
+    choices?: (StatisticType | SaveType)[];
 };
 
 type ExtraActionKey = (typeof RAW_EXTRAS_ACTIONS)[number]["key"];

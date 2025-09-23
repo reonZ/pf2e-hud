@@ -32,6 +32,8 @@ import {
 } from "module-helpers";
 
 const ACTION_IMAGES: Record<string, ImageFilePath> = {
+    "arrest-a-fall": "systems/pf2e/icons/spells/feather-fall.webp",
+    "grab-an-edge": "systems/pf2e/icons/spells/mage-hand.webp",
     lore: "systems/pf2e/icons/spells/divine-decree.webp",
     treatWounds: "systems/pf2e/icons/spells/delay-affliction.webp",
     "recall-knowledge": "systems/pf2e/icons/spells/brain-drain.webp",
@@ -79,7 +81,7 @@ abstract class BaseStatisticAction<
     }
 
     get notes(): SingleCheckActionRollNoteData[] {
-        return (this.data as BaseActionData).notes ?? [];
+        return this.data.notes ?? [];
     }
 
     get sourceId(): CompendiumItemUUID {
@@ -371,6 +373,7 @@ type RawBaseActionData = {
     actionCost?: ActionCost["value"] | ActionCost["type"];
     dc?: number;
     key: string;
+    notes?: SingleCheckActionRollNoteData[];
     sf2e?: boolean;
     /** item used for description and send-to-chat */
     sourceId: CompendiumItemUUID;

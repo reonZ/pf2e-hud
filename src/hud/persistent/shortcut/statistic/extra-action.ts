@@ -6,9 +6,10 @@ import {
     SIDEBAR_ICONS,
     StatisticType,
 } from "hud";
-import { AbilityItemPF2e, localize } from "module-helpers";
+import { AbilityItemPF2e, localize, R, SaveType, signedInteger } from "module-helpers";
 import {
     generateStatisticActionSchema,
+    ShortcutRadialOption,
     ShortcutSource,
     StatisticActionShortcut,
     StatisticActionShortcutSchema,
@@ -45,6 +46,50 @@ class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityIt
 
     get useOptions(): BaseStatisticRollOptions {
         return this.override;
+    }
+
+    use(event: MouseEvent): void {
+        const action = this.action;
+        if (!action) return;
+
+        if (action.choices.length > 1) {
+            const actor = this.actor;
+
+            this.radialMenu(
+                () => {
+                    const options: ShortcutRadialOption[] = R.pipe(
+                        action.choices,
+                        R.map((slug): ShortcutRadialOption | undefined => {
+                            const statistic = actor.getStatistic(slug);
+                            if (!statistic) return;
+
+                            return {
+                                value: slug,
+                                label: `${statistic.label} ${signedInteger(statistic.mod)}`,
+                            };
+                        }),
+                        R.filter(R.isTruthy)
+                    );
+
+                    return [
+                        {
+                            title: this.title,
+                            options,
+                        },
+                    ];
+                },
+                (event, value: StatisticType | SaveType) => {
+                    action.roll(this.actor, event, {
+                        ...this.useOptions,
+                        statistic: value,
+                    });
+                }
+            );
+
+            return;
+        }
+
+        super.use(event);
     }
 }
 
