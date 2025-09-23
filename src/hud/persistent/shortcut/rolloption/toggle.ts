@@ -100,7 +100,7 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
     }
 
     get unusableReason(): string | undefined {
-        return !this.item ? "match" : !this.toggle ? "available" : undefined;
+        return !this.item || !this.toggle ? "available" : undefined;
     }
 
     get altUseLabel(): string {
