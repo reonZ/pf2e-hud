@@ -421,10 +421,15 @@ function getKnowledge(actor: NPCPF2e): AdvancedHudContext["knowledge"] {
 }
 
 function getNpcTags(actor: NPCPF2e): string | undefined {
-    const traits = [...actor.traits].map((trait) => {
-        const label = game.i18n.localize(CONFIG.PF2E.creatureTraits[trait]);
-        return `<li>${label}</li>`;
-    });
+    const whitelist = Object.keys(CONFIG.PF2E.creatureTraits);
+    const traits = R.pipe(
+        [...actor.traits],
+        R.filter((trait) => whitelist.includes(trait)),
+        R.map((trait) => {
+            const label = game.i18n.localize(CONFIG.PF2E.creatureTraits[trait]);
+            return `<li>${label}</li>`;
+        })
+    );
 
     if (traits.length) {
         return `<h4>${game.i18n.localize("PF2E.Traits")}</h4><ul>${traits.join("")}</ul>`;
