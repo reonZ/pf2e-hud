@@ -1,422 +1,485 @@
 {
-    "pf2e-hud": {
-        "keybindings": {
-            "persistent": {
-                "setActor": {
-                    "name": "Ustawienie stałego aktora",
-                    "hint": "Ustawia aktora wybranego tokena jako stałego."
-                }
-            },
-            "sidebar": {
-                "filter": {
-                    "name": "Użyj filtra paska bocznego",
-                    "hint": "Umożliwia filtrowanie bieżącej zawartości paska bocznego."
-                }
-            },
-            "tracker": {
-                "alternate": {
-                    "name": "Sterowanie alternatywne",
-                    "hint": "Przełącz sterowanie śledzenia walki, aby wyświetlić dodatkowe opcje."
-                }
-            }
-        },
-        "settings": {
-            "menus": {
-                "healthStatusMenu": {
-                    "name": "Stan zdrowia",
-                    "label": "Konfiguracja stanu zdrowia",
-                    "hint": "Skonfiguruj podziały stanu zdrowia do wyświetlania w interfejsie HUD."
-                }
-            },
-            "enabled": {
-                "name": "Włączone",
-                "hint": "Włącza ten element HUD na kliencie."
-            },
-            "dice": {
-                "title": "Panel kości"
-            },
-            "foundrySidebar": {
-                "title": "Pasek boczny Foundry",
-                "expand": {
-                    "name": "Automatyczne rozszerzanie po załadowaniu",
-                    "hint": "Wymusza rozwijanie paska bocznego Foundry przy ładowaniu strony."
-                }
-            },
-            "global": {
-                "highestSpeed": {
-                    "name": "Pokaż najwyższą szybkość",
-                    "hint": "Jeśli żadna szybkość nie została wybrana ręcznie, najwyższa z nich będzie zawsze wyświetlana domyślnie, nawet jeśli szybkość na lądzie nie wynosi 0."
-                },
-                "useModifiers": {
-                    "name": "Użycie modyfikatorów",
-                    "hint": "Wyświetlanie modyfikatorów zamiast wartości poziomu trudności w różnych elementach HUD."
-                }
-            },
-            "advanced": {
-                "alliance": {
-                    "name": "Przycisk sojuszu",
-                    "hint": "Pokaż przycisk sojuszu/nastawienia w HUD."
-                }
-            },
-            "persistent": {
-                "title": "Stały HUD",
-                "autoFill": {
-                    "name": "Autouzupełnianie Postaci Niezależnych",
-                    "hint": "Jeśli nie wprowadzono żadnych ręcznych zmian, miejsca na skróty zostaną automatycznie wypełnione."
-                },
-                "display": {
-                    "name": "Pozycja wyświetlania",
-                    "hint": "Gdzie powinien być wyświetlany interfejs użytkownika.",
-                    "choices": {
-                        "disabled": "Wyłączone",
-                        "left": "Lewa część",
-                        "middle": "Środkowa część"
-                    }
-                },
-                "selection": {
-                    "name": "Tryb wyboru",
-                    "hint": "Tryb wyboru stałego aktora.",
-                    "choices": {
-                        "manual": "Ręczny wybór",
-                        "select": "Zaznaczony token",
-                        "combat": "Bieżący uczestnik walki"
-                    }
-                }
-            },
-            "sidebar": {
-                "title": "Pasek boczny"
-            },
-            "time": {
-                "title": "Śledzenie czasu",
-                "enabled": {
-                    "hint": "Włącza ten element HUD na kliencie. Jest to nadpisywane, gdy ustawienie systemowego zegara światowego „Dostęp gracza” jest wyłączone."
-                }
-            },
-            "token": {
-                "title": "HUD tokena",
-                "mode": {
-                    "name": "Tryb wyświetlania",
-                    "hint": "Wybierz tryb wyświetlania HUD tokena.",
-                    "choices": {
-                        "exploded": "Rozłożony",
-                        "left": "Zgrupowany (po lewej)",
-                        "right": "Zgrupowany (po prawej)"
-                    }
-                }
-            },
-            "tooltip": {
-                "title": "Podpowiedzi tokena",
-                "delay": {
-                    "name": "Opóźnienie podpowiedzi",
-                    "hint": "Opóźnienie w milisekundach przed wyświetleniem podpowiedzi na ekranie."
-                },
-                "distance": {
-                    "name": "Wyświetlanie odległości",
-                    "hint": "Wyświetla odległość między najechanym tokenem a tokenem, który jest wnioskowany automatycznie.",
-                    "choices": {
-                        "never": "Nigdy",
-                        "idiot": "W stopach",
-                        "smart": "W metrach",
-                        "weird": "W kwadratach"
-                    }
-                },
-                "draw": {
-                    "name": "Rysowanie odległości",
-                    "hint": "Narysuj linię o tej grubości między zaznaczonym tokenem a \"odległym\" celem."
-                },
-                "status": {
-                    "name": "Wyświetl stan zdrowia",
-                    "hint": "Jeśli opcja jest włączona w Twoim świecie, stan zdrowia powinien być wyświetlany w podpowiedzi."
-                }
-            },
-            "tracker": {
-                "title": "Śledzenie walki",
-                "partyAsObserved": {
-                    "name": "Drużyna sojuszników jako Obserwowani",
-                    "hint": "Aktorzy we wspólnej „Drużynie” powinni mieć uprawnienia obserwowany przez graczy w celu pokazania szczegółów dotyczących zdrowia. Nie mylić z aktorem „Drużyna”."
-                },
-                "started": {
-                    "name": "Tylko po rozpoczęciu",
-                    "hint": "Śledzenie będzie widoczne dla graczy tylko wtedy, gdy walka faktycznie się rozpoczęła (oprócz konieczności udziału walczącego)."
-                },
-                "textureScaling": {
-                    "name": "Skalowanie tekstur",
-                    "hint": "Odwraca skalowanie obrazu walczącego w oparciu o skalowanie tekstury tokena."
-                }
-            }
-        },
-        "actions": {
-            "borrowArcaneSpell": "Pożyczanie Tajemnego Zaklęcia",
-            "drive": {
-                "drive1": "Prowadzenie <span class=\"action-glyph\">1</span>",
-                "drive2": "Prowadzenie <span class=\"action-glyph\">2</span>",
-                "drive3": "Prowadzenie <span class=\"action-glyph\">3</span>"
-            }
-        },
-        "actor-hud": {
-            "alliance": "Sojusz: {value}",
-            "temp": "Tymczasowe Punkty Wytrzymałości",
-            "resolve": "Użyj Punkt Determinacji"
-        },
-        "avatar-editor": {
-            "title": "Edytuj awatar - {name}",
-            "cancel": "Anuluj",
-            "color": {
-                "background": "Kolor tła",
-                "enabled": "Włącz kolor tła"
-            },
-            "contain": "Zawartość",
-            "reset": "Reset",
-            "save": "Zapisz",
-            "src": {
-                "actor": "Użyj obrazu aktora",
-                "token": "Użyj obrazu tokena",
-                "none": "Nie można znaleźć prawidłowego źródła obrazu",
-                "video": "Ta funkcja nie obsługuje filmów wideo"
-            }
-        },
-        "dialogs": {
-            "alternates": {
-                "dc": "Klasa Trudności",
-                "drag": "Przeciągnij, aby utworzyć skrót",
-                "statistic": "Statystyka",
-                "title": "Warianty akcji - {label}",
-                "yes": "Użyj wariantów"
-            },
-            "resolve": {
-                "title": "Użyj Punktu Determinacji",
-                "full": "{name} ma pełną staminę i nie potrzebuje odpoczynku.",
-                "breather": {
-                    "label": "Złap Oddech",
-                    "hint": "Odpocznij przez 10 minut, wydaj punkt determinacji i odzyskaj całą staminę."
-                },
-                "steel": {
-                    "hint": "Użyj akcji, wydaj punkt determinacji i odzyskaj połowę staminy."
-                },
-                "yes": "Użyj Determinacji"
-            }
-        },
-        "edit-shortcut": {
-            "image": "Ścieżka obrazu",
-            "name": "Nazwa skrótu",
-            "yes": "Zapisz"
-        },
-        "health-status": {
-            "title": "Stan zdrowia",
-            "enabled": "Włączone",
-            "add": "Dodaj znacznik",
-            "delete": "Usuń znacznik",
-            "save": "Zapisz",
-            "cancel": "Anuluj",
-            "import": {
-                "title": "Importuj stan zdrowia",
-                "yes": "Importuj",
-                "no": "Anuluj",
-                "error": "Podane dane są nieprawidłowe."
-            },
-            "export": {
-                "title": "Eksportuj stan zdrowia",
-                "confirm": "Stan zdrowia został skopiowany do schowka."
-            },
-            "default": "Martwy, Bliski śmierci, Ciężko ranny, Ranny, Lekko ranny, Bez obrażeń"
-        },
-        "leftClick": "[Kliknij lewym]",
-        "persistent": {
-            "effects": {
-                "shift": "Zmiana",
-                "toggle": "Przełącz efekty"
-            },
-            "error": {
-                "selectOne": "Wybierz pojedynczy token NPC/postaci, aby ustawić go jako stałego aktora."
-            },
-            "menu": {
-                "clean": {
-                    "always": "Zawsze wyświetlaj UI w orientacji pionowej",
-                    "hover": "Wyświetlanie UI tylko po najechaniu na portret"
-                },
-                "editAvatar": "Edytuj awatar",
-                "setActor": {
-                    "set": "Ustawienie wybranego tokena jako stałego aktora",
-                    "unset": "Usuń ustawionego stałego aktora"
-                }
-            },
-            "shortcuts": {
-                "clear": {
-                    "title": "Wyczyść skróty",
-                    "all": "Wszystkie zestawy skrótów",
-                    "hint": "Czy na pewno chcesz usunąć następujące skróty?",
-                    "set": "Tylko bieżący zestaw",
-                    "yes": "Usuń"
-                },
-                "copy": {
-                    "title": "Kopiuj skróty użytkownika",
-                    "hint": "Wybierz użytkownika, od którego chcesz skopiować skróty.",
-                    "label": "Własność użytkownika",
-                    "none": "Ten aktor nie ma innego właściciela.",
-                    "yes": "Kopiuj"
-                },
-                "fill": {
-                    "title": "Autouzupełnianie skrótów",
-                    "content": "Czy na pewno chcesz automatycznie wypełniać skróty?",
-                    "yes": "Autouzupełnianie"
-                },
-                "tab": "Zmień zestaw skrótów"
-            }
-        },
-        "popup": {
-            "shortcut": {
-                "config": "Dostosuj skrót"
-            }
-        },
-        "recall-knowledge": {
-            "result": "Wynik",
-            "modifier": "Mod.",
-            "target": "Cel",
-            "first": "1.",
-            "second": "2.",
-            "third": "3.",
-            "fourth": "4.",
-            "fifth": "5.",
-            "sixth": "6.",
-            "dc": "ST",
-            "unspecific": "Nieokreślony",
-            "specific": "Określony",
-            "skill": "Umiejętność",
-            "lore": "Umiejętność wiedzy",
-            "proficiency": "Biegłość"
-        },
-        "rightClick": "[Kliknij prawym]",
-        "shortcuts": {
-            "blast": {
-                "cost": {
-                    "label": "Koszt Żywiołowego Podmuchu"
-                }
-            },
-            "error": {
-                "locked": "Skróty są zablokowane na pasku skrótów",
-                "wrongActor": "Skróty można tworzyć tylko od tego samego stałego aktora.",
-                "wrongType": "Nie można utworzyć skrótu tego typu."
-            },
-            "tooltip": {
-                "active": "Aktywny",
-                "altUse": {
-                    "blast": "Okno Podmuchu",
-                    "skillAction": "Warianty menu",
-                    "strike": "Okno Ataku",
-                    "toggle": "Wybierz opcję podrzędną"
-                },
-                "click": {
-                    "control": "[Kliknij prawym + Ctrl]",
-                    "middle": "[Środkowy przycisk myszy] Usuń skrót",
-                    "popup": "Skrót menu podręcznego"
-                },
-                "disabled": "Wyłączone",
-                "enabled": "Włączone",
-                "inactive": "Nieaktywny",
-                "subtitle": {
-                    "blast": "Żywiołowy Podmuch",
-                    "extraAction": "Akcja dodatkowa",
-                    "macro": "Makro wykonywane samoczynnie",
-                    "spell": "Rzucanie zaklęć",
-                    "strike": "Atak",
-                    "toggle": "Opcje rzutu"
-                },
-                "reason": {
-                    "available": "Aktualnie niedostępne",
-                    "broken": "Osierocone zaklęcie",
-                    "charges": "Nie pozostało żadnych ładunków",
-                    "combat": "Nie w walce",
-                    "dropped": "Przedmiot nie przeniesiony",
-                    "equip": "Niewyposażono",
-                    "expended": "Wykorzystane zaklęcie",
-                    "focus": "Pusta Pula Skupienia",
-                    "match": "Brak pasującego przedmiotu",
-                    "prepared": "Nieprzygotowane zaklęcie",
-                    "quantity": "Ilość wynosi zero",
-                    "rank": "Nie można rzucić tej rangi",
-                    "uses": "Brak pozostałych użyć",
-                    "vessel": "Nie jest to naczynie główne"
-                }
-            },
-            "use": {
-                "toggle": "Ten przełącznik jest zawsze włączony"
-            }
-        },
-        "sidebar": {
-            "filter": "Filtr paska bocznego",
-            "actions": {
-                "blasts": "Żywiołowe Podmuchy",
-                "ranged": "Dystans {max} stóp",
-                "rangedWithIncrement": "Dystans {increment}/{max} stóp",
-                "reach": "Zasięg {reach} stóp",
-                "reset": "Resetowanie użycia",
-                "shields": {
-                    "shown": "Tarcze są wyświetlane",
-                    "hidden": "Tarcze są ukryte"
-                },
-                "stances": "Postawy",
-                "stowedWeapons": {
-                    "shown": "Schowane przedmioty są wyświetlane",
-                    "hidden": "Schowane przedmioty są ukryte"
-                },
-                "thrown": "Rzut {increment}/{max} stóp"
-            },
-            "extras": {
-                "delete": {
-                    "title": "Usuń makro",
-                    "content": "Czy na pewno chcesz usunąć to makro?"
-                },
-                "edit": "Edytuj makro",
-                "noMacro": "Upuść makra tutaj",
-                "use": "Uruchom makro"
-            },
-            "removeEffect": "Usuń efekt",
-            "skills": {
-                "alternate": "Menu wariantów [prawy przycisk myszy]",
-                "hideUntrained": "Ukryj niewytrenowane",
-                "proficient": "Biegłość"
-            },
-            "spells": {
-                "broken": "Przerwane zaklęcie",
-                "cast": "Rzuć zaklęcie"
-            }
-        },
-        "sidebars": {
-            "actions": "Akcje",
-            "items": "Ekwipunek",
-            "spells": "Rzucanie zaklęć",
-            "skills": "Umiejętności",
-            "extras": "Dodatki"
-        },
-        "spellcasting": {
-            "charges": "Ładunki",
-            "staff": "Kostur"
-        },
-        "tooltip": {
-            "distance": {
-                "feet": "stóp",
-                "meter": "m",
-                "square": "kwadrat"
-            }
-        },
-        "tracker": {
-            "award": "Nagroda: {xp} PD",
-            "collapsed": "Zwinięte, kliknij, aby rozwinąć",
-            "delay": "Opóźnienie tury",
-            "expanded": "Rozwinięte, kliknij, aby zwinąć",
-            "fake": {
-                "nothing": "Spotkanie nie zostało rozpoczęte",
-                "secret": "Dzieje się coś tajemniczego"
-            },
-            "force-turn": "Wymuś turę walki",
-            "join": "Dołącz do tury",
-            "unknown": "Nieznany"
-        },
-        "use-resolve": {
-            "full": "{name} ma pełną staminę i nie potrzebuje odpoczynku.",
-            "breather": {
-                "used": "{name} ma {ratio} PS i wydaje punkt determinacji, odpoczywając przez 10 minut. Stamina jest odświeżona."
-            }
+  "pf2e-hud": {
+    "keybindings": {
+      "persistent": {
+        "setActor": {
+          "name": "Ustawienie stałego aktora",
+          "hint": "Ustawia aktora wybranego tokena jako stałego."
         }
+      },
+      "sidebar": {
+        "filter": {
+          "name": "Użyj filtra paska bocznego",
+          "hint": "Umożliwia filtrowanie bieżącej zawartości paska bocznego."
+        }
+      },
+      "tracker": {
+        "alternate": {
+          "name": "Sterowanie alternatywne",
+          "hint": "Przełącz sterowanie śledzenia walki, aby wyświetlić dodatkowe opcje."
+        }
+      }
+    },
+    "settings": {
+      "menus": {
+        "healthStatusMenu": {
+          "name": "Stan zdrowia",
+          "label": "Konfiguracja stanu zdrowia",
+          "hint": "Skonfiguruj podziały stanu zdrowia do wyświetlania w interfejsie HUD."
+        }
+      },
+      "enabled": {
+        "name": "Włączone",
+        "hint": "Włącza ten element HUD na kliencie."
+      },
+      "dice": {
+        "title": "Panel kości"
+      },
+      "foundrySidebar": {
+        "title": "Pasek boczny Foundry",
+        "expand": {
+          "name": "Automatyczne rozszerzanie po załadowaniu",
+          "hint": "Wymusza rozwijanie paska bocznego Foundry przy ładowaniu strony."
+        },
+        "noRollMode": {
+          "name": "Ukryj tryb rzutu",
+          "hint": "Przyciski trybu rzutu zostaną usunięte z czatu."
+        }
+      },
+      "global": {
+        "highestSpeed": {
+          "name": "Pokaż najwyższą szybkość",
+          "hint": "Jeśli żadna szybkość nie została wybrana ręcznie, najwyższa z nich będzie zawsze wyświetlana domyślnie, nawet jeśli szybkość na lądzie nie wynosi 0."
+        },
+        "useModifiers": {
+          "name": "Użycie modyfikatorów",
+          "hint": "Wyświetlanie modyfikatorów zamiast wartości poziomu trudności w różnych elementach HUD."
+        }
+      },
+      "advanced": {
+        "alliance": {
+          "name": "Przycisk sojuszu",
+          "hint": "Pokaż przycisk sojuszu/nastawienia w HUD."
+        }
+      },
+      "persistent": {
+        "title": "Stały HUD",
+        "autoFill": {
+          "name": "Autouzupełnianie Postaci Niezależnych",
+          "hint": "Jeśli nie wprowadzono żadnych ręcznych zmian, miejsca na skróty zostaną automatycznie wypełnione."
+        },
+        "display": {
+          "name": "Pozycja wyświetlania",
+          "hint": "Gdzie powinien być wyświetlany interfejs użytkownika.",
+          "choices": {
+            "disabled": "Wyłączone",
+            "left": "Lewa część",
+            "middle": "Środkowa część"
+          }
+        },
+        "selection": {
+          "name": "Tryb wyboru",
+          "hint": "Tryb wyboru stałego aktora.",
+          "choices": {
+            "manual": "Ręczny wybór",
+            "select": "Zaznaczony token",
+            "combat": "Bieżący uczestnik walki"
+          }
+        },
+        "shiftEffect": {
+          "name": "Przytrzymanie Shift dla efektów",
+          "hint": "Po włączeniu tej funkcji należy przytrzymać klawisz „Shift”, aby wejść w interakcję z ikonami efektów HUD."
+        }
+      },
+      "sidebar": {
+        "title": "Pasek boczny"
+      },
+      "time": {
+        "title": "Śledzenie czasu",
+        "enabled": {
+          "hint": "Włącza ten element HUD na kliencie. Jest to nadpisywane, gdy ustawienie systemowego zegara światowego „Dostęp gracza” jest wyłączone."
+        }
+      },
+      "token": {
+        "title": "HUD tokena",
+        "activation": {
+          "name": "Tryb aktywacji",
+          "hint": "Wybierz tryb, aby aktywować HUD tokenów.",
+          "choices": {
+            "disabled": "Wyłączone",
+            "first": "Przy pierwszym kliknięciu",
+            "second": "Przy drugim kliknięciu"
+          }
+        },
+        "mode": {
+          "name": "Tryb wyświetlania",
+          "hint": "Wybierz tryb wyświetlania HUD tokena.",
+          "choices": {
+            "exploded": "Rozłożony",
+            "left": "Zgrupowany (po lewej)",
+            "right": "Zgrupowany (po prawej)"
+          }
+        }
+      },
+      "tooltip": {
+        "title": "Podpowiedzi tokena",
+        "delay": {
+          "name": "Opóźnienie podpowiedzi",
+          "hint": "Opóźnienie w milisekundach przed wyświetleniem podpowiedzi na ekranie."
+        },
+        "distance": {
+          "name": "Wyświetlanie odległości",
+          "hint": "Wyświetla odległość między najechanym tokenem a tokenem, który jest wnioskowany automatycznie.",
+          "choices": {
+            "never": "Nigdy",
+            "idiot": "W stopach",
+            "smart": "W metrach",
+            "weird": "W kwadratach"
+          }
+        },
+        "draw": {
+          "name": "Rysowanie odległości",
+          "hint": "Narysuj linię o tej grubości między zaznaczonym tokenem a \"odległym\" celem."
+        },
+        "status": {
+          "name": "Wyświetl stan zdrowia",
+          "hint": "Jeśli opcja jest włączona w Twoim świecie, stan zdrowia powinien być wyświetlany w podpowiedzi."
+        }
+      },
+      "tracker": {
+        "title": "Śledzenie walki",
+        "partyAsObserved": {
+          "name": "Drużyna sojuszników jako Obserwowani",
+          "hint": "Aktorzy we wspólnej „Drużynie” powinni mieć uprawnienia obserwowany przez graczy w celu pokazania szczegółów dotyczących zdrowia. Nie mylić z aktorem „Drużyna”."
+        },
+        "started": {
+          "name": "Tylko po rozpoczęciu",
+          "hint": "Śledzenie będzie widoczne dla graczy tylko wtedy, gdy walka faktycznie się rozpoczęła (oprócz konieczności udziału walczącego)."
+        },
+        "textureScaling": {
+          "name": "Skalowanie tekstur",
+          "hint": "Odwraca skalowanie obrazu walczącego w oparciu o skalowanie tekstury tokena."
+        }
+      }
+    },
+    "actions": {
+      "borrowArcaneSpell": "Pożyczanie Tajemnego Zaklęcia",
+      "drive": {
+        "drive1": "Prowadzenie <span class=\"action-glyph\">1</span>",
+        "drive2": "Prowadzenie <span class=\"action-glyph\">2</span>",
+        "drive3": "Prowadzenie <span class=\"action-glyph\">3</span>"
+      },
+      "operateDevice": "Obsługa urządzenia"
+    },
+    "actor-hud": {
+      "alliance": "Sojusz: {value}",
+      "temp": "Tymczasowe Punkty Wytrzymałości",
+      "resolve": "Użyj Punkt Determinacji"
+    },
+    "avatar-editor": {
+      "title": "Edytuj awatar - {name}",
+      "cancel": "Anuluj",
+      "color": {
+        "background": "Kolor tła",
+        "enabled": "Włącz kolor tła"
+      },
+      "contain": "Zawartość",
+      "reset": "Reset",
+      "save": "Zapisz",
+      "src": {
+        "actor": "Użyj obrazu aktora",
+        "token": "Użyj obrazu tokena",
+        "none": "Nie można znaleźć prawidłowego źródła obrazu",
+        "video": "Ta funkcja nie obsługuje filmów wideo"
+      }
+    },
+    "dialogs": {
+      "alternates": {
+        "dc": "Klasa Trudności",
+        "drag": "Przeciągnij, aby utworzyć skrót",
+        "statistic": "Statystyka",
+        "title": "Warianty akcji - {label}",
+        "yes": "Użyj wariantów"
+      },
+      "resolve": {
+        "title": "Użyj Punktu Determinacji",
+        "full": "{name} ma pełną staminę i nie potrzebuje odpoczynku.",
+        "breather": {
+          "label": "Złap Oddech",
+          "hint": "Odpocznij przez 10 minut, wydaj punkt determinacji i odzyskaj całą staminę."
+        },
+        "steel": {
+          "hint": "Użyj akcji, wydaj punkt determinacji i odzyskaj połowę staminy."
+        },
+        "yes": "Użyj Determinacji"
+      }
+    },
+    "edit-shortcut": {
+      "image": "Ścieżka obrazu",
+      "name": "Nazwa skrótu",
+      "yes": "Zapisz"
+    },
+    "group-perception": {
+      "title": "Grupowe testy Percepcji",
+      "search": "Aktywnie Przeszukuje"
+    },
+    "health-status": {
+      "title": "Stan zdrowia",
+      "enabled": "Włączone",
+      "add": "Dodaj znacznik",
+      "delete": "Usuń znacznik",
+      "save": "Zapisz",
+      "cancel": "Anuluj",
+      "import": {
+        "title": "Importuj stan zdrowia",
+        "yes": "Importuj",
+        "no": "Anuluj",
+        "error": "Podane dane są nieprawidłowe."
+      },
+      "export": {
+        "title": "Eksportuj stan zdrowia",
+        "confirm": "Stan zdrowia został skopiowany do schowka."
+      },
+      "default": "Martwy, Bliski śmierci, Ciężko ranny, Ranny, Lekko ranny, Bez obrażeń"
+    },
+    "leftClick": "[Kliknij lewym]",
+    "no-selection": "Musisz wybrać co najmniej jedną prawidłową istotę.",
+    "persistent": {
+      "effects": {
+        "shift": "Zmiana",
+        "toggle": "Przełącz efekty"
+      },
+      "error": {
+        "selectOne": "Wybierz pojedynczy token NPC/postaci, aby ustawić go jako stałego aktora."
+      },
+      "menu": {
+        "clean": {
+          "always": "Zawsze wyświetlaj UI w orientacji pionowej",
+          "hover": "Wyświetlanie UI tylko po najechaniu na portret"
+        },
+        "editAvatar": "Edytuj awatar",
+        "pin": "Przypnij aktora",
+        "setActor": {
+          "set": "Ustawienie wybranego tokena jako stałego aktora",
+          "unset": "Usuń ustawionego stałego aktora"
+        }
+      },
+      "ownedActor": {
+        "drag": {
+          "exist": "Ta scena zawiera już token dla tego aktora."
+        },
+        "unpin": "Odepnij aktora"
+      },
+      "pan": {
+        "none": "Ten aktor nie ma żadnego aktywnego tokenu w bieżącej scenie."
+      },
+      "patch": {
+        "browser": "Otwórz Przeglądarkę Kompendium",
+        "check-prompt": "Generowanie Komunikatu Rzutu",
+        "gm-screen": "Otwórz ekran MG",
+        "group-perception": "Rzut na grupową Percepcję",
+        "identify-menu": "Otwórz menu identyfikacji",
+        "player-screen": "Otwórz ekran gracza",
+        "random-pick": "Wybierz losowy cel",
+        "select-all": "Wybierz tokeny graczy",
+        "set-journal": "Wybierz wpis w dzienniku",
+        "travel-sheet": "Oblicz czas trwania podróży"
+      },
+      "shortcuts": {
+        "clear": {
+          "title": "Wyczyść skróty",
+          "all": "Wszystkie zestawy skrótów",
+          "hint": "Czy na pewno chcesz usunąć następujące skróty?",
+          "set": "Tylko bieżący zestaw",
+          "yes": "Usuń"
+        },
+        "copy": {
+          "title": "Kopiuj skróty użytkownika",
+          "hint": "Wybierz użytkownika, od którego chcesz skopiować skróty.",
+          "label": "Własność użytkownika",
+          "none": "Ten aktor nie ma innego właściciela.",
+          "yes": "Kopiuj"
+        },
+        "fill": {
+          "title": "Autouzupełnianie skrótów",
+          "content": "Czy na pewno chcesz automatycznie wypełniać skróty?",
+          "yes": "Autouzupełnianie"
+        },
+        "tab": "Zmień zestaw skrótów"
+      }
+    },
+    "pin-token": {
+      "notify": "Wybierz token, który chcesz dodać do ulubionych."
+    },
+    "popup": {
+      "shortcut": {
+        "config": "Dostosuj skrót"
+      }
+    },
+    "random-pick": {
+      "title": "Entliczek pentliczek"
+    },
+    "recall-knowledge": {
+      "result": "Wynik",
+      "modifier": "Mod.",
+      "target": "Cel",
+      "first": "1.",
+      "second": "2.",
+      "third": "3.",
+      "fourth": "4.",
+      "fifth": "5.",
+      "sixth": "6.",
+      "dc": "ST",
+      "unspecific": "Nieokreślony",
+      "specific": "Określony",
+      "skill": "Umiejętność",
+      "lore": "Umiejętność wiedzy",
+      "proficiency": "Biegłość"
+    },
+    "rightClick": "[Kliknij prawym]",
+    "set-journal": {
+      "uuid": {
+        "label": "UUID dziennika"
+      },
+      "world": {
+        "label": "Dziennik ogólny"
+      },
+      "yes": "Ustaw dziennik"
+    },
+    "shortcuts": {
+      "blast": {
+        "cost": {
+          "label": "Koszt Żywiołowego Podmuchu"
+        }
+      },
+      "error": {
+        "locked": "Skróty są zablokowane na pasku skrótów",
+        "wrongActor": "Skróty można tworzyć tylko od tego samego stałego aktora.",
+        "wrongType": "Nie można utworzyć skrótu tego typu."
+      },
+      "tooltip": {
+        "active": "Aktywny",
+        "altUse": {
+          "blast": "Okno Podmuchu",
+          "skillAction": "Warianty menu",
+          "strike": "Okno Ataku",
+          "toggle": "Wybierz opcję podrzędną"
+        },
+        "click": {
+          "control": "[Kliknij prawym + Ctrl]",
+          "middle": "[Środkowy przycisk myszy] Usuń skrót",
+          "popup": "Skrót menu podręcznego"
+        },
+        "disabled": "Wyłączone",
+        "enabled": "Włączone",
+        "inactive": "Nieaktywny",
+        "subtitle": {
+          "blast": "Żywiołowy Podmuch",
+          "extraAction": "Akcja dodatkowa",
+          "macro": "Makro wykonywane samoczynnie",
+          "spell": "Rzucanie zaklęć",
+          "skillAction": "Akcja Umiejętności",
+          "strike": "Atak",
+          "toggle": "Opcje rzutu"
+        },
+        "reason": {
+          "available": "Aktualnie niedostępne",
+          "broken": "Osierocone zaklęcie",
+          "charges": "Nie pozostało żadnych ładunków",
+          "combat": "Nie w walce",
+          "dropped": "Przedmiot nie przeniesiony",
+          "equip": "Niewyposażono",
+          "expended": "Wykorzystane zaklęcie",
+          "focus": "Pusta Pula Skupienia",
+          "macro": "Brak pasującego makra",
+          "match": "Brak pasującego przedmiotu",
+          "prepared": "Nieprzygotowane zaklęcie",
+          "quantity": "Ilość wynosi zero",
+          "rank": "Nie można rzucić tej rangi",
+          "tactic": "Nie jest to przygotowana taktyka",
+          "uses": "Brak pozostałych użyć",
+          "vessel": "Nie jest to naczynie główne"
+        }
+      },
+      "use": {
+        "toggle": "Ten przełącznik jest zawsze włączony"
+      }
+    },
+    "sidebar": {
+      "filter": "Filtr paska bocznego",
+      "actions": {
+        "blasts": "Żywiołowe Podmuchy",
+        "ranged": "Dystans {max} stóp",
+        "rangedWithIncrement": "Dystans {increment}/{max} stóp",
+        "reach": "Zasięg {reach} stóp",
+        "reset": "Resetowanie użycia",
+        "shields": {
+          "shown": "Tarcze są wyświetlane",
+          "hidden": "Tarcze są ukryte"
+        },
+        "stances": "Postawy",
+        "stowedWeapons": {
+          "shown": "Schowane przedmioty są wyświetlane",
+          "hidden": "Schowane przedmioty są ukryte"
+        },
+        "thrown": "Rzut {increment}/{max} stóp"
+      },
+      "extras": {
+        "delete": {
+          "title": "Usuń makro",
+          "content": "Czy na pewno chcesz usunąć to makro?"
+        },
+        "edit": "Edytuj makro",
+        "noMacro": "Upuść makra tutaj",
+        "use": "Uruchom makro"
+      },
+      "removeEffect": "Usuń efekt",
+      "skills": {
+        "alternate": "Menu wariantów [prawy przycisk myszy]",
+        "hideUntrained": "Ukryj niewytrenowane",
+        "proficient": "Biegłość"
+      },
+      "spells": {
+        "broken": "Przerwane zaklęcie",
+        "cast": "Rzuć zaklęcie"
+      }
+    },
+    "sidebars": {
+      "actions": "Akcje",
+      "items": "Ekwipunek",
+      "spells": "Rzucanie zaklęć",
+      "skills": "Umiejętności",
+      "extras": "Dodatki"
+    },
+    "spellcasting": {
+      "charges": "Ładunki",
+      "staff": "Kostur"
+    },
+    "tooltip": {
+      "distance": {
+        "feet": "stóp",
+        "meter": "m",
+        "square": "kwadrat"
+      }
+    },
+    "tracker": {
+      "award": "Nagroda: {xp} PD",
+      "collapsed": "Zwinięte, kliknij, aby rozwinąć",
+      "delay": "Opóźnienie tury",
+      "expanded": "Rozwinięte, kliknij, aby zwinąć",
+      "fake": {
+        "nothing": "Spotkanie nie zostało rozpoczęte",
+        "secret": "Dzieje się coś tajemniczego"
+      },
+      "force-turn": "Wymuś turę walki",
+      "join": "Dołącz do tury",
+      "unknown": "Nieznany"
+    },
+    "use-resolve": {
+      "full": "{name} ma pełną staminę i nie potrzebuje odpoczynku.",
+      "breather": {
+        "used": "{name} ma {ratio} PS i wydaje punkt determinacji, odpoczywając przez 10 minut. Stamina jest odświeżona."
+      }
     }
+  }
 }
