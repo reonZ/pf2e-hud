@@ -1,6 +1,6 @@
 import { imagePath, MeleePF2e, WeaponPF2e } from "module-helpers";
 
-const DEFAULT_NPC_STRIKE_ICON = "systems/pf2e/icons/default-icons/melee.svg";
+const DEFAULT_NPC_STRIKE_ICON = "icons/default-icons/melee.svg";
 
 /**
  * thanks to https://github.com/shemetz for the compiled list
