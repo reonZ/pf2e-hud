@@ -1,3 +1,10 @@
+# 2.32.1
+
+-   `Persistent HUD`:
+    -   allow the `Pick Random Target` message to be hidden from players when holding the `Ctrl` key
+-   `Persistent Shortcuts`:
+    -   fix NPC strikes not using the module custom images when the world is hosted in some remote servers
+
 # 2.32.0
 
 -   add the `Arrest A Fall` and `Grab An Edge` extra actions:
@@ -11,7 +18,6 @@
     -   add the `Select Journal entry` button to the players menu so they can add a custom journal if they want
 -   `Roll Option Shortcut`:
     -   will now show the `Not Currently Available` message in the tooltip instead of the `No Matching Item`
-        -   this will almost always be the more appropriate reason as there is technically no way to know which should be used
 -   fix pre-remaster traits showing up (as `undefined`) in the NPC tags tooltip
 
 # 2.31.0
