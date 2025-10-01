@@ -11,7 +11,7 @@ import {
     warning,
 } from "module-helpers";
 
-async function randomPick() {
+async function randomPick(event?: PointerEvent) {
     if (!game.user.isGM) return;
 
     const members = game.actors.party?.members ?? [];
@@ -59,6 +59,7 @@ async function randomPick() {
     ChatMessagePF2e.create({
         flavor: localize("random-pick.title"),
         content: await render("random-pick", data),
+        whisper: event?.ctrlKey ? ChatMessage.getWhisperRecipients("GM") : [],
     });
 }
 

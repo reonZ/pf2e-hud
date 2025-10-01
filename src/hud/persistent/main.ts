@@ -831,7 +831,7 @@ class PersistentPF2eHUD
             case "pin-token":
                 return this.#pinToken();
             case "random-pick":
-                return randomPick();
+                return randomPick(event);
             case "select-all": {
                 const scene = canvas.scene;
                 const tokens = scene?.tokens.filter((token) => !!token.actor?.hasPlayerOwner);
