@@ -250,7 +250,7 @@ const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
 };
 
 function getNpcStrikeImage(strike: { item: WeaponPF2e | MeleePF2e; slug: string }): ImageFilePath {
-    if (strike.item.img !== DEFAULT_NPC_STRIKE_ICON) {
+    if (!strike.item.img.endsWith(DEFAULT_NPC_STRIKE_ICON)) {
         return strike.item.img;
     }
 
