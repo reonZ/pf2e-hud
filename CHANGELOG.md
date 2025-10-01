@@ -1,3 +1,8 @@
+# 2.32.2
+
+-   `Persistent Shortcuts`:
+    -   fix NPC strikes not using the module custom images when the world is hosted in some remote servers (second attempt)
+
 # 2.32.1
 
 -   `Persistent HUD`:
