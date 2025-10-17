@@ -250,11 +250,27 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
     }
 
     shouldDisplay(combat: Maybe<EncounterPF2e> = this.viewed): boolean {
-        return (
-            !!combat &&
-            (game.user.isGM || combat.started || !this.settings.started) &&
-            combat.turns.some((combatant) => combatant.isOwner)
-        );
+        if (!combat?.turns.length) return false;
+        if (game.user.isGM) return true;
+
+        const started = combat.started;
+        if (!started && this.settings.started) return false;
+
+        // we only show if they own an actor when the encounter hasn't started yet so they can roll init
+        if (!started) {
+            return combat.turns.some((combatant) => combatant.isOwner);
+        }
+
+        const partyAsObserved = this.settings.partyAsObserved;
+
+        return combat.turns.some((combatant) => {
+            const actor = combatant.actor;
+            return actor && this.canObserveActor(actor, partyAsObserved);
+        });
+    }
+
+    canObserveActor(actor: ActorPF2e, partyAsObserved: boolean = this.settings.partyAsObserved) {
+        return canObserveActor(actor, true) || (partyAsObserved && belongToPartyAlliance(actor));
     }
 
     _configureRenderOptions(options: TrackerRenderOptions) {
@@ -280,12 +296,6 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
 
         const healthStatus = getHealthStatusData();
         const defaultLabels = getDefaultLabels();
-
-        const userCanObserveActor = (actor: ActorPF2e) => {
-            return (
-                canObserveActor(actor, true) || (partyAsObserved && belongToPartyAlliance(actor))
-            );
-        };
 
         const tempHeader = game.i18n.localize("PF2E.TempHitPointsShortLabel");
         const healthHeader = game.i18n.localize("PF2E.HitPointsHeader");
@@ -315,7 +325,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             const hasRolled = initiative !== null;
             const hasPlayerOwner = !!actor?.hasPlayerOwner;
             const playersCanSeeName = !tokenSetsNameVisibility || combatant.playersCanSeeName;
-            const canObserve = !!actor && userCanObserveActor(actor);
+            const canObserve = !!actor && this.canObserveActor(actor, partyAsObserved);
             const canRollThis = isOwner && !hasRolled;
 
             const texture: TrackerTexture = {
