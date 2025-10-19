@@ -48,6 +48,7 @@ class SpellcastingEntryIdField<
 class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<CreaturePF2e>> {
     #disabled: [boolean, reason: string | undefined] = [false, undefined];
     #entryData?: SpellEntryData | null;
+    #group?: SpellcastingEntryGroup;
     #uses?: ValueAndMaybeMax;
 
     static defineSchema(): SpellShortcutSchema {
@@ -173,11 +174,9 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         const actor = this.actor;
         const entryId = this.entryId;
 
-        const entryData = await this.cached("shortcutSpellData", entryId, () => {
+        const entryData = (this.#entryData = await this.cached("shortcutSpellData", entryId, () => {
             return this.#getEntryData.call(this);
-        });
-
-        this.#entryData = entryData;
+        }));
 
         if (!spell || !entryData || entryData.notPrimaryVessel) {
             return returnDisabled(true, !spell || !entryData ? "match" : "vessel");
@@ -193,7 +192,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         const slotId = this.slotId;
         const groupId = this.groupId || "cantrip";
         const castRank = this.castRank;
-        const group = entryData.groups.find((x) => x.id === groupId);
+        const group = (this.#group = entryData.groups.find((x) => x.id === groupId));
 
         const groupUses =
             typeof group?.uses?.value === "number" ? (group.uses as ValueAndMax) : undefined;
@@ -246,18 +245,24 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
             return returnDisabled(uses.value === 0, entryData.isFocus ? "focus" : "uses");
         }
 
-        const active = entryData.isConsumable
-            ? group?.active[0]
+        const actives = entryData.isConsumable
+            ? [group?.active[0]].filter(R.isTruthy)
             : slotId != null
-            ? group?.active[this.slotId]
+            ? group?.active.filter((x) => x?.spell.id === spell.id)
             : undefined;
 
         // no longer prepared
-        if (!active || active.spell.id !== spell.id) {
+        if (!actives?.length) {
             return returnDisabled(true, "prepared");
         }
 
-        returnDisabled(!!active.expended, "expended");
+        // we count all identical prepared slots as "charges"
+        this.#uses = {
+            value: actives.filter((x) => x && !x.expended).length,
+            max: actives.length,
+        };
+
+        returnDisabled(this.#uses.value === 0, "expended");
     }
 
     get canUse(): boolean {
@@ -303,13 +308,30 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         return this.spellcastinEntry?.name ?? localize("shortcuts.tooltip.subtitle", this.type);
     }
 
-    use(event: MouseEvent): void {
+    use(event: MouseEvent) {
         const item = this.item;
         if (!item?.isOfType("spell")) return;
 
         if (item.parentItem) {
-            item.parentItem.consume();
-        } else if (this.castRank.between(1, 10)) {
+            return item.parentItem.consume();
+        }
+
+        if (!this.castRank.between(1, 10)) return;
+
+        // for prepared, we look for any slot that isn't expended if the exact one is
+        if (this.category === "prepared") {
+            const exact = this.#group?.active[this.slotId];
+            const slotId =
+                exact && !exact.expended
+                    ? this.slotId
+                    : this.#group?.active.findIndex(
+                          (x) => x?.spell.id === this.itemId && !x.expended
+                      );
+
+            if (R.isNumber(slotId)) {
+                this.spellcastinEntry?.cast(item, { rank: this.castRank, slotId });
+            }
+        } else {
             this.spellcastinEntry?.cast(item, { rank: this.castRank, slotId: this.slotId });
         }
     }
@@ -396,6 +418,8 @@ type SpellShortcutSchema = BaseShortcutSchema & {
     slotId: fields.NumberField<number, number, true, false, false>;
     slug: fields.StringField<string, string, true, false, false>;
 };
+
+type SpellcastingEntryGroup = CustomSpellcastingEntry["groups"][number];
 
 type SpellShortcutData = ShortcutSource<SpellShortcutSchema> & {
     type: "spell";
