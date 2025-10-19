@@ -249,7 +249,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         const active = entryData.isConsumable
             ? group?.active[0]
             : slotId != null
-            ? group?.active.find((x) => x?.spell.id === spell.id)
+            ? group?.active[this.slotId]
             : undefined;
 
         // no longer prepared
