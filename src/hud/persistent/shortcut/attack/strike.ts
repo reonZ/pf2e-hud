@@ -37,6 +37,7 @@ class StrikeShortcut extends AttackShortcut<
     #drawAuxiliaries!: WeaponAuxiliaryAction[];
     #extraAuxiliaryAction?: { label: string; glyph: string } | null;
     #isEquipped!: boolean;
+    #actorIsNPC!: boolean;
     #item: Maybe<StrikeItem>;
     #uses!: ValueAndMaybeMax | null;
 
@@ -58,6 +59,7 @@ class StrikeShortcut extends AttackShortcut<
     async _initShortcut(): Promise<void> {
         await super._initShortcut();
 
+        this.#actorIsNPC = this.actor.isOfType("npc");
         this.#item = this.#getItem();
 
         const ammo = (this.#ammo = this.item && "ammo" in this.item ? this.item.ammo : null);
@@ -80,6 +82,10 @@ class StrikeShortcut extends AttackShortcut<
         return getStrikeActions(this.actor, { id: this.itemId, slug: this.slug })[0];
     }
 
+    get actorIsNPC(): boolean {
+        return this.#actorIsNPC;
+    }
+
     get extraAuxiliaryAction(): { label: string; glyph: string } | null {
         return (this.#extraAuxiliaryAction ??=
             game.modules.get("sf2e-anachronism")?.active && this.item?.isOfType("weapon")
@@ -92,7 +98,7 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get canUse(): boolean {
-        if (this.actor.isOfType("npc")) {
+        if (this.actorIsNPC) {
             return !!this.item;
         }
 
@@ -115,16 +121,19 @@ class StrikeShortcut extends AttackShortcut<
             return this.img;
         }
 
-        return (
-            (this.actor.isOfType("npc") && getNpcStrikeImage({ item, slug: this.slug })) ||
-            this.item.img
-        );
+        return (this.actorIsNPC && getNpcStrikeImage({ item, slug: this.slug })) || this.item.img;
     }
 
     get cost(): ShortcutCost | null {
-        return this.attackData
-            ? { value: this.isEquipped ? 1 : this.#drawAuxiliaries.at(0)?.actions ?? 1 }
-            : null;
+        if (!this.attackData) return null;
+
+        return {
+            value: this.isEquipped
+                ? this.isNpcSubAttack
+                    ? this.attackData.glyph
+                    : 1
+                : this.#drawAuxiliaries.at(0)?.actions ?? 1,
+        };
     }
 
     get label(): ShortcutLabel | null {
@@ -132,9 +141,11 @@ class StrikeShortcut extends AttackShortcut<
 
         const variant0Label = this.actor.isOfType("character")
             ? this.attackData.variants[0].label
-            : this.attackData.variants[0].label.split(" ")[1];
+            : this.attackData.canStrike
+            ? this.attackData.variants[0].label.split(" ")[1]
+            : null;
 
-        return this.attackData ? { value: variant0Label, class: "attack" } : null;
+        return variant0Label ? { value: variant0Label, class: "attack" } : null;
     }
 
     get ammo(): ConsumablePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e> | null {
@@ -155,7 +166,7 @@ class StrikeShortcut extends AttackShortcut<
         }
 
         const attackData = this.attackData as Maybe<CharacterStrike>;
-        if (!attackData || !this.actor.isOfType("character")) {
+        if (!attackData || this.actorIsNPC) {
             return (this.#damageType = null);
         }
 
@@ -180,6 +191,10 @@ class StrikeShortcut extends AttackShortcut<
             return this.#drawAuxiliaries.map((aux) => aux.label).join(" / ");
         }
 
+        if (this.isNpcSubAttack) {
+            return this.attackData!.variants[0].label;
+        }
+
         const label = this.ammo?.name ?? this.damageType ?? super.subtitle;
         const range = this.item ? getActionCategory(this.actor, this.item)?.tooltip : null;
 
@@ -187,6 +202,10 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get unusableReason(): string | undefined {
+        if (this.actorIsNPC) {
+            return !this.item ? "match" : undefined;
+        }
+
         return !this.item
             ? "match"
             : !this.attackData?.canStrike
@@ -202,9 +221,18 @@ class StrikeShortcut extends AttackShortcut<
         return this.#drawAuxiliaries.length > 0 && !this.isEquipped;
     }
 
-    use(event: MouseEvent): void {
+    get isNpcSubAttack(): boolean {
+        return this.actorIsNPC && !!this.attackData && !this.attackData.canStrike;
+    }
+
+    use(event: MouseEvent) {
         const attackData = this.attackData;
         if (!attackData) return;
+
+        if (this.isNpcSubAttack) {
+            attackData.variants[0].roll({ event });
+            return;
+        }
 
         if (this.mustBeDrawn) {
             if (this.#drawAuxiliaries.length === 1) {
