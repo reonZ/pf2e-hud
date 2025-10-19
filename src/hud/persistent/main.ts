@@ -22,6 +22,7 @@ import {
     htmlClosest,
     htmlQuery,
     localize,
+    localizePath,
     NPCPF2e,
     panToToken,
     PARTY_ACTOR_ID,
@@ -69,17 +70,33 @@ class PersistentPF2eHUD
     static #nbOwnedActors = 8;
 
     static MENU_TOGGLES = {
+        clean: {
+            icon: "fa-solid fa-chart-bar",
+            state(this: PersistentPF2eHUD) {
+                return !this.settings.cleanPortrait;
+            },
+            tooltip(this: PersistentPF2eHUD, state: boolean) {
+                this.element.classList.toggle("cleaned", !state);
+                return localizePath(`persistent.menu.clean.${state ? "always" : "hover"}`);
+            },
+        },
         lock: {
             icon: "fa-solid fa-lock",
-            on: "HOTBAR.UNLOCK",
-            off: "HOTBAR.LOCK",
-            state: () => ui.hotbar.locked,
+            state() {
+                return ui.hotbar.locked;
+            },
+            tooltip(state: boolean) {
+                return state ? "HOTBAR.UNLOCK" : "HOTBAR.LOCK";
+            },
         },
         mute: {
             icon: "fa-solid fa-volume",
-            on: "HOTBAR.UNMUTE",
-            off: "HOTBAR.MUTE",
-            state: () => game.audio.globalMute,
+            state() {
+                return game.audio.globalMute;
+            },
+            tooltip(state: boolean) {
+                return state ? "HOTBAR.UNMUTE" : "HOTBAR.MUTE";
+            },
         },
     };
 
@@ -214,9 +231,9 @@ class PersistentPF2eHUD
                 default: false,
                 scope: "user",
                 config: false,
-                onChange: (value) => {
+                onChange: () => {
                     if (this.rendered) {
-                        this.element.classList.toggle("cleaned", value);
+                        this.toggleMenuBtn("clean");
                     }
                 },
             },
@@ -868,9 +885,11 @@ class PersistentPF2eHUD
         }
     }
 
-    toggleMenuBtn(key: "lock" | "mute") {
+    toggleMenuBtn(key: MenuToggleKey) {
         const menu = PersistentPF2eHUD.MENU_TOGGLES[key];
-        const toggled = menu.state();
+        if (!menu) return;
+
+        const toggled = menu.state.call(this);
         const previous = htmlQuery(
             this.element,
             `[data-panel="menu"] [data-action="toggle-${key}"]`
@@ -880,7 +899,7 @@ class PersistentPF2eHUD
             content: `<i class="${menu.icon}"></i>`,
             dataset: {
                 action: `toggle-${key}`,
-                tooltip: menu[toggled ? "on" : "off"],
+                tooltip: menu.tooltip.call(this, toggled),
             },
         });
 
@@ -1398,5 +1417,7 @@ type PersistentSettings = {
     shiftEffect: boolean;
     showEffects: boolean;
 };
+
+type MenuToggleKey = keyof typeof PersistentPF2eHUD.MENU_TOGGLES;
 
 export { PersistentPF2eHUD };

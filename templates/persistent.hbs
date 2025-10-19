@@ -20,12 +20,7 @@
             <i class="fa-regular fa-image-user"></i>
         </a>
         {{!-- stats on hover --}}
-        <a class="cleaned" data-action="toggle-clean" {{{@root.i18n.tooltip 'menu.clean.hover' }}}>
-            <i class="fa-thin fa-chart-bar"></i>
-        </a>
-        <a data-action="toggle-clean" {{{@root.i18n.tooltip 'menu.clean.always' }}}>
-            <i class="fa-solid fa-chart-bar"></i>
-        </a>
+        <a data-action="toggle-clean"></a>
         {{/if}}
         {{#if canPin}}
         <a data-action="pin-token" {{{@root.i18n.tooltip 'menu.pin' }}}>
