@@ -320,13 +320,9 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
 
         // for prepared, we look for any slot that isn't expended if the exact one is
         if (this.category === "prepared") {
-            const exact = this.#group?.active[this.slotId];
-            const slotId =
-                exact && !exact.expended
-                    ? this.slotId
-                    : this.#group?.active.findIndex(
-                          (x) => x?.spell.id === this.itemId && !x.expended
-                      );
+            const slotId = this.#group?.active.findIndex(
+                (x) => x?.spell.id === this.itemId && !x.expended
+            );
 
             if (R.isNumber(slotId)) {
                 this.spellcastinEntry?.cast(item, { rank: this.castRank, slotId });
