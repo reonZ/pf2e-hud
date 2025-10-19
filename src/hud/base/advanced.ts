@@ -401,10 +401,13 @@ function getMythicOrHeroPoints(
 
 function getResources(actor: CharacterPF2e): HudResources {
     const mythic = actor.system.resources.mythicPoints;
+    const hero = mythic.max
+        ? { ...createSlider("mythic", mythic), mythic: true }
+        : createSlider("hero", actor.heroPoints);
 
     return {
         dying: createSlider("dying", actor.attributes.dying),
-        hero: mythic.max ? createSlider("mythic", mythic) : createSlider("hero", actor.heroPoints),
+        hero,
         wounded: createSlider("wounded", actor.attributes.wounded),
     };
 }
@@ -547,7 +550,7 @@ type AdvancedHudContext = {
 
 type HudResources = {
     dying: SliderData;
-    hero: SliderData;
+    hero: SliderData & { mythic?: boolean };
     wounded: SliderData;
 };
 

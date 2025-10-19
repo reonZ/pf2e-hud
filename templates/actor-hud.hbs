@@ -253,7 +253,7 @@
 {{/inline}}
 
 {{#*inline 'resources'}}
-{{#if (eq resources.hero.mythic 'mythic')}}
+{{#if resources.hero.mythic}}
 <div data-section="mythic-points" data-tooltip="PF2E.Actor.Resource.MythicPoints">
     <i class="fa-solid fa-circle-m"></i>
     {{> (@root.partial 'slider') resources.hero}}
