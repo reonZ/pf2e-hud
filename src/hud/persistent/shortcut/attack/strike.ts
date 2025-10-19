@@ -92,9 +92,14 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get canUse(): boolean {
+        if (this.actor.isOfType("npc")) {
+            return !!this.item;
+        }
+
         return (
             !!this.item &&
             !!this.attackData?.canStrike &&
+            this.attackData.ready &&
             (!("quantity" in this.item) || this.item.quantity > 0)
         );
     }
@@ -186,6 +191,8 @@ class StrikeShortcut extends AttackShortcut<
             ? "match"
             : !this.attackData?.canStrike
             ? "available"
+            : !this.attackData?.ready
+            ? "hands"
             : this.item && "quantity" in this.item && this.item.quantity <= 0
             ? "quantity"
             : undefined;

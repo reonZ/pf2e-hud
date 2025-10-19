@@ -398,6 +398,7 @@
                     "equip": "Not Equipped",
                     "expended": "Expended Spell",
                     "focus": "Focus Pool Empty",
+                    "hands": "No Free Hand",
                     "macro": "No Matching Macro",
                     "match": "No Matching Item",
                     "prepared": "Spell Not Prepared",
