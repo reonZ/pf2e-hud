@@ -8,6 +8,7 @@ import {
     belongToPartyAlliance,
     canObserveActor,
     createHook,
+    createToggleableWrapper,
     createToggleKeybind,
     EffectsPanel,
     EncounterPF2e,
@@ -69,6 +70,13 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             this.alternateControls(false);
         },
     });
+
+    #notifyWrapper = createToggleableWrapper(
+        "OVERRIDE",
+        "foundry.applications.sidebar.tabs.ChatLog.prototype._shouldShowNotifications",
+        this.#shouldShowNotifications,
+        { context: this }
+    );
 
     #activeHooks = [
         createHook("hoverToken", this.#onHoverToken.bind(this)),
@@ -474,6 +482,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         this.interfaceElement?.classList.add(this.id);
         this.parentElement?.appendChild(element);
 
+        this.#notifyWrapper.activate();
         this.#combatTrackerHeightObserver.observe(element);
 
         return element;
@@ -504,6 +513,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         this.effectsPanel?.style.removeProperty("max-height");
         this.interfaceElement?.classList.remove("pf2e-hud-tracker-tall");
 
+        this.#notifyWrapper.disable();
         this.#combatTrackerHeightObserver.disconnect();
         this.interfaceElement?.classList.remove(this.id);
 
@@ -773,6 +783,10 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         if (!result) return;
 
         rollInitiative(event, actor, result.statistic);
+    }
+
+    #shouldShowNotifications(): boolean {
+        return false;
     }
 
     #activateListeners(html: HTMLElement, options: TrackerRenderOptions) {
