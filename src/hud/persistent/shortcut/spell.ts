@@ -253,7 +253,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
             : undefined;
 
         // no longer prepared
-        if (!active) {
+        if (!active || active.spell.id !== spell.id) {
             return returnDisabled(true, "prepared");
         }
 
