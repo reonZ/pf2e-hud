@@ -29,6 +29,7 @@ import {
     pingToken,
     R,
     render,
+    ResourceData,
     selectTokens,
     success,
     toggleHooksAndWrappers,
@@ -705,10 +706,12 @@ class PersistentPF2eHUD
                 [...favorites, ...ownedActors],
                 R.filter(R.isTruthy),
                 R.map(({ actor, favorite }): OwnedActorContext => {
+                    const mythic = actor.getResource("mythicPoints");
+
                     return {
                         ac: actor.attributes.ac.value,
                         favorite,
-                        heroPoints: (actor as CharacterPF2e).heroPoints?.value,
+                        hero: mythic?.max ? mythic : actor.getResource("heroPoints"),
                         hp: calculateActorHealth(actor),
                         id: actor.id,
                         img: actor.img,
@@ -1413,7 +1416,7 @@ type EmptyPersistentContext = PersistentContextBase & {
 type OwnedActorContext = {
     ac: number;
     favorite: boolean;
-    heroPoints: number | undefined;
+    hero: ResourceData | null;
     hp: HealthData | undefined;
     id: string;
     img: ImageFilePath;

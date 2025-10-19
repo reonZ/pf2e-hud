@@ -97,9 +97,13 @@
         </div>
         <div class="statistics">
             <div class="statistic heroPoints">
-                {{#if actor.heroPoints includeZero=true}}
+                {{#if actor.hero }}
+                {{#if (eq actor.hero.slug 'mythic-points')}}
+                <i class="fa-solid fa-circle-m"></i>
+                {{else}}
                 <i class="fa-solid fa-circle-h"></i>
-                <div class="value">{{heroPoints}}</div>
+                {{/if}}
+                <div class="value">{{actor.hero.value}}</div>
                 {{/if}}
             </div>
             <div class="statistic speed">
