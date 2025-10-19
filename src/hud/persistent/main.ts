@@ -76,6 +76,7 @@ class PersistentPF2eHUD
                 return !this.settings.cleanPortrait;
             },
             tooltip(this: PersistentPF2eHUD, state: boolean) {
+                // pretty weird one but whatever
                 this.element.classList.toggle("cleaned", !state);
                 return localizePath(`persistent.menu.clean.${state ? "always" : "hover"}`);
             },
@@ -87,6 +88,15 @@ class PersistentPF2eHUD
             },
             tooltip(state: boolean) {
                 return state ? "HOTBAR.UNLOCK" : "HOTBAR.LOCK";
+            },
+        },
+        lockown: {
+            icon: "fa-solid fa-user-lock",
+            state(this: PersistentPF2eHUD) {
+                return this.settings.lockOwned;
+            },
+            tooltip(this: PersistentPF2eHUD, state: boolean) {
+                return localizePath(`persistent.menu.lockOwned.${state ? "unlock" : "lock"}`);
             },
         },
         mute: {
@@ -243,8 +253,20 @@ class PersistentPF2eHUD
                 default: "",
                 scope: "user",
                 config: false,
-                onChange: (value: string) => {
+                onChange: () => {
                     this.render();
+                },
+            },
+            {
+                key: "lockOwned",
+                type: Boolean,
+                default: false,
+                scope: "user",
+                config: false,
+                onChange: () => {
+                    if (this.rendered) {
+                        this.toggleMenuBtn("lockown");
+                    }
                 },
             },
             {
@@ -253,7 +275,7 @@ class PersistentPF2eHUD
                 default: true,
                 scope: "user",
                 config: false,
-                onChange: (value) => {
+                onChange: () => {
                     this.effectsPanel.refresh();
                 },
             },
@@ -269,7 +291,7 @@ class PersistentPF2eHUD
                 default: [],
                 scope: "user",
                 config: false,
-                onChange: (value: string) => {
+                onChange: () => {
                     this.render();
                 },
             },
@@ -874,6 +896,8 @@ class PersistentPF2eHUD
                 toggleFoundryBtn("lock");
                 return this.toggleMenuBtn("lock");
             }
+            case "toggle-lockown":
+                return (this.settings.lockOwned = !this.settings.lockOwned);
             case "toggle-mute": {
                 toggleFoundryBtn("mute");
                 return this.toggleMenuBtn("mute");
@@ -1064,6 +1088,8 @@ class PersistentPF2eHUD
         }
 
         const mode = this.settings.selection;
+
+        if (this.settings.lockOwned) return;
 
         if (mode === "manual") {
             this.setActor(actor);
@@ -1341,6 +1367,7 @@ type MenuEventAction =
     | "toggle-clean"
     | "toggle-effects"
     | "toggle-lock"
+    | "toggle-lockown"
     | "toggle-mute";
 
 type EventAction =
@@ -1412,6 +1439,7 @@ type PersistentSettings = {
     display: (typeof ENABLED_MODES)[number];
     favorites: ActorUUID[];
     journal: string;
+    lockOwned: boolean;
     savedActor: string;
     selection: (typeof SELECTION_MODES)[number];
     shiftEffect: boolean;

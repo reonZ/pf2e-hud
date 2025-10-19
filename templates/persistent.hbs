@@ -26,6 +26,9 @@
         <a data-action="pin-token" {{{@root.i18n.tooltip 'menu.pin' }}}>
             <i class="fa-solid fa-thumbtack"></i>
         </a>
+        {{#if isGM}}
+        <a data-action="toggle-lockown"></a>
+        {{/if}}
         {{/if}}
     </div>
     {{/if}}

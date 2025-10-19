@@ -258,6 +258,10 @@
                     "hover": "Only show UI when hovering the portrait"
                 },
                 "editAvatar": "Edit Avatar",
+                "lockOwned": {
+                    "lock": "Lock owned actors selection",
+                    "unlock": "Unlock owned actors selection"
+                },
                 "pin": "Pin Actor",
                 "setActor": {
                     "set": "Set selected token as persistent actor",
