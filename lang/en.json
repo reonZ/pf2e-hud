@@ -259,8 +259,8 @@
                 },
                 "editAvatar": "Edit Avatar",
                 "lockOwned": {
-                    "lock": "Lock owned actors selection",
-                    "unlock": "Unlock owned actors selection"
+                    "lock": "Prevent owned actors selection",
+                    "unlock": "Allow owned actors selection"
                 },
                 "pin": "Pin Actor",
                 "setActor": {
