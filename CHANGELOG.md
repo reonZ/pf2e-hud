@@ -1,7 +1,7 @@
 # 2.33.1
 
 -   `Spell Shortcut`:
-    -   fix shortcut `disabled` state being wrong when multiple instance of the same spell are prepared for the same rank
+    -   fix shortcut `disabled` state being wrong when multiple instances of the same spell are prepared for the same rank
 
 # 2.33.0
 
