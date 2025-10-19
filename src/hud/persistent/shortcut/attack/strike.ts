@@ -110,6 +110,10 @@ class StrikeShortcut extends AttackShortcut<
         );
     }
 
+    get canOpenPopup(): boolean {
+        return !!this.item && !this.isNpcSubAttack;
+    }
+
     get item(): Maybe<MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>> {
         return this.#item;
     }

@@ -467,15 +467,15 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             });
 
             target.addEventListener("contextmenu", (event) => {
-                game.tooltip.deactivate();
-
                 if (event.ctrlKey || !shortcut.canAltUse) {
-                    if (this.actor && shortcut.item) {
+                    if (this.actor && shortcut.canOpenPopup) {
+                        game.tooltip.deactivate();
                         new ShortcutPopup(this.actor, shortcut, this.save.bind(this), event).render(
                             true
                         );
                     }
                 } else {
+                    game.tooltip.deactivate();
                     shortcut.item && shortcut.altUse(event);
                 }
             });

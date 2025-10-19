@@ -31,7 +31,7 @@
     {{#if canAltUse}}
     <div>{{@root.i18n.root 'rightClick'}} {{altUseLabel}}</div>
     <div>{{@root.i18n 'click.control'}} {{@root.i18n 'click.popup'}}</div>
-    {{else if item}}
+    {{else if canOpenPopup}}
     <div>{{@root.i18n.root 'rightClick'}} {{@root.i18n 'click.popup'}}</div>
     {{/if}}
     {{/unless}}

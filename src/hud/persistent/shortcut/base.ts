@@ -116,6 +116,10 @@ abstract class PersistentShortcut<
         return !!this.item;
     }
 
+    get canOpenPopup(): boolean {
+        return !!this.item;
+    }
+
     get canAltUse(): boolean {
         return false;
     }
