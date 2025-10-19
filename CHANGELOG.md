@@ -1,3 +1,12 @@
+# 2.34.0
+
+-   `Spell Shortcut`:
+    -   change how prepared shortcuts work
+        -   a single prepared shortcut will now be able to cast all the identical spell slots of a same rank
+        -   it will always expend the first matching slot in order
+        -   the shortcut will now display "uses" where the `max` is the amount of identical slots in the rank and `current` is how many are yet to be expended
+        -   you don't have to re-create any shortcut (though you might want to remove the duplicates)
+
 # 2.33.1
 
 -   `Spell Shortcut`:
