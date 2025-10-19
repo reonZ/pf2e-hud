@@ -76,6 +76,10 @@
             &.single {
                 padding-block: calc(var(--panel-gap) + 1px);
             }
+
+            a.greyed {
+                opacity: var(--disabled-opacity);
+            }
         }
 
         &:has(.group.bottom:only-child) {
@@ -305,30 +309,6 @@
 
         [data-panel="stats"] {
             display: grid;
-        }
-    }
-
-    &.locked {
-        [data-action="toggle-hotbar-lock"]:not(.locked) {
-            display: none;
-        }
-    }
-
-    &:not(.locked) {
-        [data-action="toggle-hotbar-lock"].locked {
-            display: none;
-        }
-    }
-
-    &.muted {
-        [data-action="mute-sound"]:not(.muted) {
-            display: none;
-        }
-    }
-
-    &:not(.muted) {
-        [data-action="mute-sound"].muted {
-            display: none;
         }
     }
 }

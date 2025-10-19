@@ -12,6 +12,7 @@ import {
     confirmDialog,
     CreateFormGroupParams,
     createHook,
+    createHTMLElement,
     createToggleKeybind,
     CreaturePF2e,
     EncounterPF2e,
@@ -66,6 +67,21 @@ class PersistentPF2eHUD
     implements IAdvancedPF2eHUD
 {
     static #nbOwnedActors = 8;
+
+    static MENU_TOGGLES = {
+        lock: {
+            icon: "fa-solid fa-lock",
+            on: "HOTBAR.UNLOCK",
+            off: "HOTBAR.LOCK",
+            state: () => ui.hotbar.locked,
+        },
+        mute: {
+            icon: "fa-solid fa-volume",
+            on: "HOTBAR.UNMUTE",
+            off: "HOTBAR.MUTE",
+            state: () => game.audio.globalMute,
+        },
+    };
 
     #actor: ActorPF2e | null = null;
     #controlled: ActorPF2e | null | undefined;
@@ -714,8 +730,6 @@ class PersistentPF2eHUD
 
         content.innerHTML = result;
         content.classList.toggle("cleaned", this.settings.cleanPortrait);
-        content.classList.toggle("locked", ui.hotbar.locked);
-        content.classList.toggle("muted", game.audio.globalMute);
 
         if (hotbar) {
             content.appendChild(hotbar);
@@ -824,10 +838,6 @@ class PersistentPF2eHUD
                 return rollGroupPerception();
             case "identify-menu":
                 return game.toolbelt?.api.identify.openTracker();
-            case "mute-sound": {
-                toggleFoundryBtn("hotbar-controls-left", "mute");
-                return this.element.classList.toggle("muted", game.audio.globalMute);
-            }
             case "pin-token":
                 return this.#pinToken();
             case "random-pick":
@@ -843,15 +853,38 @@ class PersistentPF2eHUD
                 return (this.settings.cleanPortrait = !this.settings.cleanPortrait);
             case "toggle-effects":
                 return (this.settings.showEffects = !this.settings.showEffects);
-            case "toggle-hotbar-lock": {
-                toggleFoundryBtn("hotbar-controls-right", "lock");
-                return this.element.classList.toggle("locked", ui.hotbar.locked);
+            case "toggle-lock": {
+                toggleFoundryBtn("lock");
+                return this.toggleMenuBtn("lock");
+            }
+            case "toggle-mute": {
+                toggleFoundryBtn("mute");
+                return this.toggleMenuBtn("mute");
             }
             case "travel-sheet":
                 return this.#launchTravelSheet();
             case "unpin-owned-actor":
                 return this.#unpinOwnedActor(event);
         }
+    }
+
+    toggleMenuBtn(key: "lock" | "mute") {
+        const menu = PersistentPF2eHUD.MENU_TOGGLES[key];
+        const toggled = menu.state();
+        const previous = htmlQuery(
+            this.element,
+            `[data-panel="menu"] [data-action="toggle-${key}"]`
+        );
+        const btn = createHTMLElement("a", {
+            classes: toggled ? [] : ["greyed"],
+            content: `<i class="${menu.icon}"></i>`,
+            dataset: {
+                action: `toggle-${key}`,
+                tooltip: menu[toggled ? "on" : "off"],
+            },
+        });
+
+        previous?.replaceWith(btn);
     }
 
     _onSlider(action: "shortcuts-tab", direction: 1 | -1): void {
@@ -1227,6 +1260,10 @@ class PersistentPF2eHUD
                 el.addEventListener("drop", this.#onOwnedActorDrop.bind(this));
             }
         }
+
+        for (const key of R.keys(PersistentPF2eHUD.MENU_TOGGLES)) {
+            this.toggleMenuBtn(key);
+        }
     }
 }
 
@@ -1249,8 +1286,8 @@ function isValidJournal(journal: unknown): journal is JournalEntry {
     return journal instanceof JournalEntry && journal.testUserPermission(game.user, "OBSERVER");
 }
 
-function toggleFoundryBtn(id: string, action: string) {
-    document.querySelector<HTMLButtonElement>(`#${id} [data-action="${action}"]`)?.click();
+function toggleFoundryBtn(action: "lock" | "mute") {
+    document.querySelector<HTMLButtonElement>(`#hotbar [data-action="${action}"]`)?.click();
 }
 
 function getTokenImage(actor: ActorPF2e): ImageFilePath | VideoFilePath {
@@ -1280,12 +1317,12 @@ type ShortcutsEventAction = "clear-shortcuts" | "copy-shortcuts" | "fill-shortcu
 type MenuEventAction =
     | "clear-hotbar"
     | "edit-avatar"
-    | "mute-sound"
     | "pin-token"
     | "set-actor"
     | "toggle-clean"
     | "toggle-effects"
-    | "toggle-hotbar-lock";
+    | "toggle-lock"
+    | "toggle-mute";
 
 type EventAction =
     | MenuEventAction

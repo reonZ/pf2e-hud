@@ -36,19 +36,9 @@
     {{/if}}
     <div class="group bottom">
         {{!-- lock button --}}
-        <a class="locked" data-action="toggle-hotbar-lock" data-tooltip="HOTBAR.UNLOCK">
-            <i class="fa-solid fa-lock"></i>
-        </a>
-        <a data-action="toggle-hotbar-lock" data-tooltip="HOTBAR.LOCK">
-            <i class="fa-solid fa-unlock"></i>
-        </a>
+        <a data-action="toggle-lock"></a>
         {{!-- mute button --}}
-        <a class="muted" data-action="mute-sound" data-tooltip="HOTBAR.UNMUTE">
-            <i class="fa-solid fa-volume-xmark"></i>
-        </a>
-        <a data-action="mute-sound" data-tooltip="HOTBAR.MUTE">
-            <i class="fa-solid fa-volume"></i>
-        </a>
+        <a data-action="toggle-mute"></a>
         {{!-- clear button --}}
         <a data-action="clear-hotbar" data-tooltip="HOTBAR.CLEAR">
             <i class="fa-solid fa-trash"></i>

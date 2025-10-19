@@ -43,6 +43,7 @@
 
     --sidebar-external-padding: 10px;
 
+    --disabled-opacity: 0.4;
     --hud-font-size: var(--font-size-15);
     --other-side: calc(100% + var(--outer-padding));
 
@@ -131,7 +132,7 @@
 
     [data-sidebar] {
         &.disabled {
-            opacity: 0.4;
+            opacity: var(--disabled-opacity);
         }
 
         &.active {

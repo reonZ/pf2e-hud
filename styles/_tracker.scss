@@ -382,7 +382,7 @@
             }
 
             .avatar img {
-                opacity: 0.4;
+                opacity: var(--disabled-opacity);
             }
         }
 

@@ -82,7 +82,7 @@
         grid-template-columns: repeat(5, 1fr);
 
         .info.disabled {
-            opacity: 0.4;
+            opacity: var(--disabled-opacity);
         }
     }
 }
