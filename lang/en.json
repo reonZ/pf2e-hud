@@ -354,7 +354,10 @@
             },
             "error": {
                 "locked": "The Shortcuts are locked with the Hotbar",
+                "notHUD": "You need to drag elements from the HUD itself to create shortcuts.",
+                "notScript": "Only script macros can be added to shortcuts.",
                 "wrongActor": "You can only create shortcuts from the same persistent actor.",
+                "wrongData": "The data provided isn't valid.",
                 "wrongType": "You cannot create a shortcut of that type."
             },
             "tooltip": {

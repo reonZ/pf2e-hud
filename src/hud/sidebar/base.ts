@@ -646,7 +646,7 @@ abstract class SidebarPF2eHUD<
 }
 
 type SidebarDragData = FoundryDragData & {
-    fromSidebar: ShortcutData | undefined;
+    fromSidebar: ShortcutData;
 };
 
 type SidebarHudRenderElements = {

@@ -24,6 +24,7 @@ import {
     MacroPF2e,
     MODULE,
     NPCPF2e,
+    objectIsIn,
     OneToTen,
     R,
     render,
@@ -418,7 +419,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                 >(event);
 
                 if (!R.isPlainObject(dragData)) {
-                    return warning("shortcuts.error.wrongType");
+                    return warning("shortcuts.error.wrongData");
                 }
 
                 const isMacro = isMacroDragData(dragData);
@@ -432,16 +433,13 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 
                 const macroData = isMacro ? getMacroShortcutData(dragData.uuid) : null;
                 if (isMacro && !macroData) {
-                    return warning("shortcuts.error.wrongType");
+                    return warning("shortcuts.error.notScript");
                 }
 
-                if (
-                    isMacro ||
-                    ("fromSidebar" in dragData && R.isPlainObject(dragData.fromSidebar))
-                ) {
+                if (isMacro || objectIsIn(dragData, "fromSidebar")) {
                     const shortcutData = isMacro
                         ? (macroData as MacroShortcutData)
-                        : (dragData.fromSidebar as ShortcutData);
+                        : dragData.fromSidebar;
 
                     if (!(await this.replace(slot, shortcutData))) {
                         warning("shortcuts.error.wrongType");
@@ -450,12 +448,12 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                     return;
                 }
 
-                if ("fromShortcut" in dragData && R.isPlainObject(dragData.fromShortcut)) {
+                if (objectIsIn(dragData, "fromShortcut")) {
                     this.swap(dragData.fromShortcut.slot, slot);
                     return;
                 }
 
-                warning("shortcuts.error.wrongType");
+                warning("shortcuts.error.notHUD");
             });
 
             const shortcut = this.shortcuts.get(slot);
