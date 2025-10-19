@@ -1,3 +1,18 @@
+# 2.33.0
+
+-   `Combat Tracker`:
+    -   now display a pip notification whenever a chat card notification would occur if the tracker is visible
+    -   now display the tracker to players if they can observe at least one combatant (instead of only when they own one)
+        -   it will still only show the tracker if they have one owned combatant in it if the encounter hasn't started yet
+-   `Persistent HUD`:
+    -   rework how menu toggle buttons work
+        -   no longer use 2 different icons for `Toggle Mute` and `Toggle Locked`
+    -   add new `Prevent owned actors selection` menu button for GMs
+        -   this will disable the `[Left Click]` on owned actor cards preventing any actor selection from them
+        -   other means of selection will still work
+-   `Persistent Shortcuts`:
+    -   add more error specific messages for shortcuts creation
+
 # 2.32.2
 
 -   `Persistent Shortcuts`:
@@ -34,6 +49,7 @@
 
 # 2.30.2
 
+-   remove german localization (https://github.com/reonZ/pf2e-hud/pull/181#event-19711732528)
 -   `Strike Shortcut`:
     -   fix weapon attachment shortcuts showing as `No Matching Item` when attached to a weapon no currently equipped
         -   this requires you to re-create the weapon attachment shortcut
