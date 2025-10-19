@@ -63,6 +63,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
             blasts: isCharacter && (await getSidebarBlastsData.call(this)),
             heroActions: isCharacter && getHeroActionsData(actor),
             isCharacter,
+            isNPC: !isCharacter,
             stances: isCharacter && getSidebarStancesData.call(this),
             strikes: await getSidebarStrikeData.call(this),
             variantLabel: (str: string) => {
@@ -206,6 +207,7 @@ type ActionsSidebarContext = {
     blasts: MaybeFalsy<BlastsContext>;
     heroActions: MaybeFalsy<HeroActionData>;
     isCharacter: boolean;
+    isNPC: boolean;
     stances: MaybeFalsy<StancesContext>;
     strikes: StrikesContext | undefined;
     variantLabel: (str: string) => string;
