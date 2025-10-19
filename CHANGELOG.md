@@ -1,3 +1,7 @@
+# 2.34.1
+
+-   fix HUDs showing the hero-point icon for mythic characters
+
 # 2.34.0
 
 -   `Spell Shortcut`:
