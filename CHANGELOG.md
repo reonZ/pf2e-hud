@@ -1,3 +1,12 @@
+# 2.35.0
+
+-   this is a system `7.6.3` release
+-   make the necessary changes to support NPC `Area Fire` and `Auto Fire` strikes
+-   `Persistent HUD`:
+    -   fix owned actor cards showing hero-point icon & value for mythic characters
+-   `Strike Shortcut`:
+    -   fix shortcut not being disabled when strike requires a hand to be used and no hands are free
+
 # 2.34.1
 
 -   fix HUDs showing the hero-point icon for mythic characters
