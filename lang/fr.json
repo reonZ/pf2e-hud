@@ -258,6 +258,10 @@
           "hover": "Afficher l'IU lorsque vous survolez le portrait"
         },
         "editAvatar": "Éditer l'avatar",
+        "lockOwned": {
+          "lock": "Empêcher la sélection des acteurs possédés",
+          "unlock": "Autoriser la sélection des acteurs possédés"
+        },
         "pin": "Épingler l'acteur",
         "setActor": {
           "set": "Déterminer le jeton sélectionné en tant qu'acteur persistant",
@@ -354,7 +358,10 @@
       },
       "error": {
         "locked": "Les raccourcis sont verrouillés avec la Barre d'outils",
+        "notHUD": "Vous devez faire glisser des éléments depuis le HUD lui-même pour créer des raccourcis.",
+        "notScript": "Seules les macros de script peuvent être ajoutées aux raccourcis.",
         "wrongActor": "Vous ne pouvez que créer des raccourcis provenant du même acteur persistant.",
+        "wrongData": "Les données fournies ne sont pas valides.",
         "wrongType": "Vous ne pouvez créer un raccourci de ce type."
       },
       "tooltip": {
@@ -391,6 +398,7 @@
           "equip": "Pas équipé",
           "expended": "Sort dépensé",
           "focus": "Réserve de focalisation vide",
+          "hands": "Pas de main libre",
           "macro": "Pas de macro correspondante",
           "match": "Pas d'objet correspondant",
           "prepared": "Sort non préparé",
