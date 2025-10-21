@@ -1,3 +1,8 @@
+# 2.35.1
+
+-   `Spell Shortcut`:
+    -   fix not being able to use prepared cantrip shortcuts
+
 # 2.35.0
 
 -   this is a system `7.6.3` release
