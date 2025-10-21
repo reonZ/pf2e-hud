@@ -256,13 +256,15 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
             return returnDisabled(true, "prepared");
         }
 
-        // we count all identical prepared slots as "charges"
-        this.#uses = {
-            value: actives.filter((x) => x && !x.expended).length,
-            max: actives.length,
-        };
+        if (!isCantrip) {
+            // we count all identical prepared slots as "charges"
+            this.#uses = {
+                value: actives.filter((x) => x && !x.expended).length,
+                max: actives.length,
+            };
+        }
 
-        returnDisabled(this.#uses.value === 0, "expended");
+        returnDisabled(this.#uses?.value === 0, "expended");
     }
 
     get canUse(): boolean {
@@ -286,6 +288,10 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         return R.isNonNullish(value)
             ? { value, combo: isNaN(Number(value)) && value !== "reaction" }
             : null;
+    }
+
+    get isCantrip(): boolean {
+        return this.groupId === 0;
     }
 
     get uses(): ValueAndMaybeMax | null {
@@ -319,7 +325,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         if (!this.castRank.between(1, 10)) return;
 
         // for prepared, we look for any slot that isn't expended if the exact one is
-        if (this.category === "prepared") {
+        if (this.category === "prepared" && !this.isCantrip) {
             const slotId = this.#group?.active.findIndex(
                 (x) => x?.spell.id === this.itemId && !x.expended
             );
