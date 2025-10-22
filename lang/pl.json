@@ -258,6 +258,10 @@
           "hover": "Wyświetlanie UI tylko po najechaniu na portret"
         },
         "editAvatar": "Edytuj awatar",
+        "lockOwned": {
+          "lock": "Zapobiegaj wyborowi własnych aktorów",
+          "unlock": "Zezwól na wybór posiadanych aktorów"
+        },
         "pin": "Przypnij aktora",
         "setActor": {
           "set": "Ustawienie wybranego tokena jako stałego aktora",
@@ -354,7 +358,10 @@
       },
       "error": {
         "locked": "Skróty są zablokowane na pasku skrótów",
+        "notHUD": "Aby utworzyć skróty, należy przeciągnąć elementy z samego HUD",
+        "notScript": "Do skrótów można dodawać tylko makra skryptów.",
         "wrongActor": "Skróty można tworzyć tylko od tego samego stałego aktora.",
+        "wrongData": "Podane dane są nieprawidłowe.",
         "wrongType": "Nie można utworzyć skrótu tego typu."
       },
       "tooltip": {
@@ -391,6 +398,7 @@
           "equip": "Niewyposażono",
           "expended": "Wykorzystane zaklęcie",
           "focus": "Pusta Pula Skupienia",
+          "hands": "Brak Wolnej ręki",
           "macro": "Brak pasującego makra",
           "match": "Brak pasującego przedmiotu",
           "prepared": "Nieprzygotowane zaklęcie",
