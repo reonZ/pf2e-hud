@@ -4,7 +4,7 @@ import {
     ApplicationClosingOptions,
     ApplicationConfiguration,
     ApplicationRenderOptions,
-    createHook,
+    createToggleableHook,
     getShortDateTime,
     getTimeWithSeconds,
     htmlQuery,
@@ -13,7 +13,7 @@ import {
 import { FoundrySidebarPF2eHUD, HUDSettingsList } from "./base";
 
 class TimePF2eHUD extends FoundrySidebarPF2eHUD<TimeSettings> {
-    #worldTimeHook = createHook("updateWorldTime", () => {
+    #worldTimeHook = createToggleableHook("updateWorldTime", () => {
         this.render();
     });
 

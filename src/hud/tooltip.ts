@@ -6,7 +6,7 @@ import {
     ApplicationPosition,
     ApplicationRenderContext,
     ApplicationRenderOptions,
-    createHook,
+    createToggleableHook,
     createTimeout,
     createToggleableEvent,
     createToggleableWrapper,
@@ -65,9 +65,9 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
 
     #mouseDownEvent = createToggleableEvent("mousedown", null, this._onMouseDown.bind(this));
 
-    #canvasPanHook = createHook("canvasPan", this.#onCanvasPan.bind(this));
-    #hoverTokenHook = createHook("hoverToken", this.#onHoverToken.bind(this));
-    #canvasTearDownHook = createHook("canvasTearDown", this.#onCanvasTearDown.bind(this));
+    #canvasPanHook = createToggleableHook("canvasPan", this.#onCanvasPan.bind(this));
+    #hoverTokenHook = createToggleableHook("hoverToken", this.#onHoverToken.bind(this));
+    #canvasTearDownHook = createToggleableHook("canvasTearDown", this.#onCanvasTearDown.bind(this));
 
     #tokenRefreshWrapper = createToggleableWrapper(
         "WRAPPER",

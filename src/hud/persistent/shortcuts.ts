@@ -13,7 +13,7 @@ import {
     ApplicationRenderOptions,
     CombatantPF2e,
     ConsumablePF2e,
-    createHook,
+    createToggleableHook,
     CreaturePF2e,
     dataToDatasetString,
     getDragEventData,
@@ -93,7 +93,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     #shortcuts: Shortcuts = new Shortcuts();
     #shortcutsCache: ShortcutCache = createShortcutCache();
 
-    #combatantHooks = createHook(
+    #combatantHooks = createToggleableHook(
         ["createCombatant", "deleteCombatant"],
         this.#onCombatantUpdate.bind(this)
     );

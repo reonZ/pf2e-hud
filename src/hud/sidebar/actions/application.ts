@@ -4,7 +4,7 @@ import {
     ApplicationRenderOptions,
     CharacterPF2e,
     CombatantPF2e,
-    createHook,
+    createToggleableHook,
     getFlag,
     htmlClosest,
     ItemPF2e,
@@ -41,7 +41,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
     | ActionsSidebarStrike
     | ActionsStance
 > {
-    #combatantHooks = createHook(
+    #combatantHooks = createToggleableHook(
         ["createCombatant", "deleteCombatant"],
         this.#onCombatant.bind(this)
     );

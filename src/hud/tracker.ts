@@ -7,7 +7,7 @@ import {
     ApplicationRenderOptions,
     belongToPartyAlliance,
     canObserveActor,
-    createHook,
+    createToggleableHook,
     createToggleableWrapper,
     createToggleKeybind,
     EffectsPanel,
@@ -79,15 +79,18 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
     );
 
     #activeHooks = [
-        createHook("hoverToken", this.#onHoverToken.bind(this)),
-        createHook("renderEffectsPanel", (panel: EffectsPanel, html: HTMLElement) => {
+        createToggleableHook("hoverToken", this.#onHoverToken.bind(this)),
+        createToggleableHook("renderEffectsPanel", (panel: EffectsPanel, html: HTMLElement) => {
             this.#updateEffectsPanel(html);
         }),
-        createHook("targetToken", (user, token) => {
+        createToggleableHook("targetToken", (user, token) => {
             this.#refreshTargetDisplay(token);
         }),
     ];
-    #combatHook = createHook("renderCombatTracker", this.#onRenderCombatTracker.bind(this));
+    #combatHook = createToggleableHook(
+        "renderCombatTracker",
+        this.#onRenderCombatTracker.bind(this)
+    );
 
     #combatTrackerHeightObserver = new ResizeObserver((entries) => {
         const trackerEvent = entries.find((entry) => entry.target === this.element);

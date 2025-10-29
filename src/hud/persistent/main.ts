@@ -11,7 +11,7 @@ import {
     CombatantPF2e,
     confirmDialog,
     CreateFormGroupParams,
-    createHook,
+    createToggleableHook,
     createHTMLElement,
     createToggleKeybind,
     CreaturePF2e,
@@ -126,17 +126,17 @@ class PersistentPF2eHUD
         max: 3,
     };
 
-    #deleteActorHook = createHook("deleteActor", (actor: ActorPF2e) => {
+    #deleteActorHook = createToggleableHook("deleteActor", (actor: ActorPF2e) => {
         if (this.isCurrentActor(actor) || this.#ownedActors?.includes(actor.id)) {
             this.render();
         }
     });
 
-    #updateActorHook = createHook("updateActor", this.#onUpdateActor.bind(this));
+    #updateActorHook = createToggleableHook("updateActor", this.#onUpdateActor.bind(this));
 
-    #deleteTokenHook = createHook("deleteToken", this.#onDeleteToken.bind(this));
+    #deleteTokenHook = createToggleableHook("deleteToken", this.#onDeleteToken.bind(this));
 
-    #controlTokenHook = createHook(
+    #controlTokenHook = createToggleableHook(
         "controlToken",
         foundry.utils.debounce((token: TokenPF2e, controlled: boolean) => {
             if (!controlled) {
@@ -147,16 +147,16 @@ class PersistentPF2eHUD
     );
 
     #combatHooks = [
-        createHook("combatStart", (combat: EncounterPF2e) => {
+        createToggleableHook("combatStart", (combat: EncounterPF2e) => {
             const hook = combat.combatants.size ? "updateCombat" : "createCombatant";
             Hooks.once(hook, () => {
                 this.render();
             });
         }),
-        createHook("deleteCombat", (combat: EncounterPF2e) => {
+        createToggleableHook("deleteCombat", (combat: EncounterPF2e) => {
             this.render();
         }),
-        createHook("deleteCombatant", (combatant: CombatantPF2e) => {
+        createToggleableHook("deleteCombatant", (combatant: CombatantPF2e) => {
             if (combatant.encounter?.combatants.size === 0) {
                 Hooks.once("combatTurnChange", (combat: EncounterPF2e) => {
                     this.render();

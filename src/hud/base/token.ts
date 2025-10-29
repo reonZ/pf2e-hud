@@ -5,7 +5,7 @@ import {
     ApplicationConfiguration,
     ApplicationPosition,
     assignStyle,
-    createHook,
+    createToggleableHook,
     disableHooksAndWrappers,
     TokenDocumentPF2e,
     TokenPF2e,
@@ -19,9 +19,9 @@ abstract class BaseTokenPF2eHUD<
     #token: TokenPF2e | null = null;
 
     #hooks = [
-        createHook("deleteToken", this.#onDeleteToken.bind(this)),
-        createHook("updateToken", this.#onUpdateToken.bind(this)),
-        createHook(["renderTokenHUD", "tearDownTokenLayer"], () => this.close()),
+        createToggleableHook("deleteToken", this.#onDeleteToken.bind(this)),
+        createToggleableHook("updateToken", this.#onUpdateToken.bind(this)),
+        createToggleableHook(["renderTokenHUD", "tearDownTokenLayer"], () => this.close()),
     ];
 
     static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {

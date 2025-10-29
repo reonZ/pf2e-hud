@@ -8,7 +8,7 @@ import {
     ApplicationConfiguration,
     ApplicationPosition,
     ApplicationRenderOptions,
-    createHook,
+    createToggleableHook,
     createToggleableEvent,
     createToggleableWrapper,
     LootPF2e,
@@ -39,9 +39,12 @@ class TokenPF2eHUD
     #controlled: TokenPF2e | null = null;
     #tokenClickAction: (token: TokenPF2e) => void = () => {};
 
-    #canvasPanHook = createHook("canvasPan", this.#onCanvasPan.bind(this));
-    #canvasTearDownHook = createHook("canvasTearDown", () => this.setToken(null));
-    #renderActorSheetHook = createHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
+    #canvasPanHook = createToggleableHook("canvasPan", this.#onCanvasPan.bind(this));
+    #canvasTearDownHook = createToggleableHook("canvasTearDown", () => this.setToken(null));
+    #renderActorSheetHook = createToggleableHook(
+        "renderActorSheet",
+        this.#onRenderActorSheet.bind(this)
+    );
 
     #mouseDownEvent = createToggleableEvent("mousedown", "#board", this.#onMouseDown.bind(this));
 

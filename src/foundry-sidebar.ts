@@ -1,11 +1,15 @@
 import { FakePF2eHUD, HUDSettingsList } from "hud";
-import { createHook, htmlQuery } from "module-helpers";
+import { createToggleableHook, htmlQuery } from "module-helpers";
 
 class FoundrySidebarPF2eNotHUD extends FakePF2eHUD<SidebarSettings> {
-    #renderChatInputHook = createHook("renderChatInput", () => this.#updateChatControls(), {
-        onActivate: () => this.#updateChatControls(),
-        onDisable: () => this.#cleanupChatControls(),
-    });
+    #renderChatInputHook = createToggleableHook(
+        "renderChatInput",
+        () => this.#updateChatControls(),
+        {
+            onActivate: () => this.#updateChatControls(),
+            onDisable: () => this.#cleanupChatControls(),
+        }
+    );
 
     get key(): "foundrySidebar" {
         return "foundrySidebar";
