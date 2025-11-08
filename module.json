@@ -33,7 +33,7 @@
                 "type": "system",
                 "manifest": "https://raw.githubusercontent.com/foundryvtt/pf2e/master/system.json",
                 "compatibility": {
-                    "minimum": "7.6.3"
+                    "minimum": "7.7.0"
                 }
             }
         ],
