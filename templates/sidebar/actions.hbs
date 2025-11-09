@@ -123,7 +123,7 @@
     {{#if (and strike.ready strike.ammunition.requiresReload)}}
     <div class="variants reload">
         {{#each strike.ammunition.loaded as |ammo|}}
-        <div class="variant loaded {{#if (eq ammo.id strike.ammunition.selected.id)}}disabled{{/if}}"
+        <div class="variant loaded {{#if (eq ammo.id strike.ammunition.selected.id)}}active{{/if}}"
             data-ammo-id="{{ammo.id}}">
             <img src="{{ammo.img}}" />
             <a class="ammo-name" data-action="select-ammo">{{ammo.name}}</a>

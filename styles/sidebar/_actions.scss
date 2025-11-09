@@ -148,13 +148,13 @@
                         line-height: 1;
                     }
 
-                    &.disabled {
-                        a {
+                    &.active {
+                        .ammo-name {
                             pointer-events: none;
                         }
                     }
 
-                    &:not(.disabled) {
+                    &:not(.active) {
                         opacity: 0.6;
                         filter: grayscale(1);
                     }
