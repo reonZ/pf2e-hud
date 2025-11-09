@@ -36,6 +36,7 @@
 <div class="item attack ready" data-filter-value="{{blast.filterValue}}"
     data-item-id="{{blast.blastId}}" draggable="true">
     <div class="name">
+        <img src="{{blast.img}}">
         <a data-action="item-description">{{localize blast.label}}</a>
     </div>
     {{!-- attack/damage --}}
@@ -53,7 +54,6 @@
         {{/each}}
     </div>
     {{/if}}
-    <img src="{{blast.img}}" class="drag-img">
 </div>
 {{/each}}
 {{!-- strikes --}}
@@ -84,6 +84,7 @@
     data-filter-value="{{strike.filterValue}}" draggable="true">
     {{!-- name --}}
     <div class="name">
+        <img src="{{strike.img}}">
         <a data-action="item-description">{{strike.label}}</a>
     </div>
     {{!-- npc traits --}}
@@ -181,8 +182,6 @@
         {{/if}}
     </div>
     {{/if}}
-    {{!-- drag img --}}
-    <img src="{{strike.img}}" class="drag-img">
 </div>
 {{/each}}
 {{!-- hero actions --}}

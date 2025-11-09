@@ -210,6 +210,19 @@
 
         &.attack {
             flex-direction: column;
+
+            .name {
+                display: flex;
+                align-items: center;
+                gap: 0.3em;
+                padding-left: 0;
+                border-radius: 2px;
+                border: 1px solid #0000008f;
+
+                img {
+                    height: var(--action-image-height);
+                }
+            }
         }
 
         &.action {
