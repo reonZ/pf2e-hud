@@ -104,7 +104,7 @@
     {{/unless}}
     {{!-- attack/damage --}}
     {{#if strike.ready}}
-    {{#if (or @root.isNPC strike.canStrike)}}
+    {{#if (or @root.isNPC strike.canAttack)}}
     {{> 'strike-row' strike}}
     {{/if}}
     {{else if (not strike.handsAvailable)}}

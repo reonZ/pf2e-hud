@@ -104,7 +104,7 @@ class StrikeShortcut extends AttackShortcut<
 
         return (
             !!this.item &&
-            !!this.attackData?.canStrike &&
+            !!this.attackData?.canAttack &&
             this.attackData.ready &&
             (!("quantity" in this.item) || this.item.quantity > 0)
         );
@@ -145,7 +145,7 @@ class StrikeShortcut extends AttackShortcut<
 
         const variant0Label = this.actor.isOfType("character")
             ? this.attackData.variants[0].label
-            : this.attackData.canStrike
+            : this.attackData.canAttack
             ? this.attackData.variants[0].label.split(" ")[1]
             : null;
 
@@ -212,7 +212,7 @@ class StrikeShortcut extends AttackShortcut<
 
         return !this.item
             ? "match"
-            : !this.attackData?.canStrike
+            : !this.attackData?.canAttack
             ? "available"
             : !this.attackData?.ready
             ? "hands"
@@ -226,7 +226,7 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get isNpcSubAttack(): boolean {
-        return this.actorIsNPC && !!this.attackData && !this.attackData.canStrike;
+        return this.actorIsNPC && !!this.attackData && !this.attackData.canAttack;
     }
 
     use(event: MouseEvent) {
