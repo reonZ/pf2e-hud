@@ -89,6 +89,11 @@
             .fa-solid.fa-play {
                 font-size: 1.1em;
             }
+
+            .fa-reply-all {
+                transform: rotateY(180deg);
+                left: 0;
+            }
         }
 
         .checkbox {

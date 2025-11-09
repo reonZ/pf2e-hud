@@ -130,12 +130,15 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get label(): ShortcutLabel | null {
-        if (!this.attackData) return null;
+        const attackData = this.attackData;
+        if (!attackData) return null;
 
         const variant0Label = this.actor.isOfType("character")
-            ? this.attackData.variants[0].label
-            : this.attackData.canAttack
-            ? this.attackData.variants[0].label.split(" ")[1]
+            ? this.isAreaOrAutoFire
+                ? null
+                : attackData.variants[0].label
+            : attackData.canAttack
+            ? attackData.variants[0].label.split(" ")[1]
             : null;
 
         return variant0Label ? { value: variant0Label, class: "attack" } : null;
@@ -150,7 +153,15 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get icon(): string {
-        return this.item?.isRanged ? "fa-solid fa-bow-arrow" : "fa-solid fa-sword";
+        return this.item?.isThrown
+            ? "fa-solid fa-reply-all"
+            : this.item?.isRanged
+            ? "fa-solid fa-bow-arrow"
+            : "fa-solid fa-sword";
+    }
+
+    get isAreaOrAutoFire(): boolean {
+        return R.isIncludedIn(this.attackData?.type, ["area-fire", "auto-fire"]);
     }
 
     get damageType(): string | null {
@@ -163,10 +174,10 @@ class StrikeShortcut extends AttackShortcut<
             return (this.#damageType = null);
         }
 
-        const versatile = attackData?.versatileOptions.find((option) => option.selected);
+        const versatile = attackData?.versatileOptions?.find((option) => option.selected);
 
         if (versatile) {
-            return game.i18n.localize(versatile.label);
+            return (this.#damageType = game.i18n.localize(versatile.label));
         }
 
         const auxiliary = attackData.auxiliaryActions.find((auxiliary) => auxiliary.options);
@@ -180,15 +191,20 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get subtitle(): string {
+        const attackData = this.attackData;
+        if (!attackData) return "";
+
         if (this.mustBeDrawn) {
             return this.#drawAuxiliaries.map((aux) => aux.label).join(" / ");
         }
 
         if (this.isNpcSubAttack) {
-            return this.attackData!.variants[0].label;
+            return attackData.variants[0].label;
         }
 
-        const label = this.ammo?.name ?? this.damageType ?? super.subtitle;
+        const label = this.isAreaOrAutoFire
+            ? attackData.variants[0].label.replace(/[\(\)]/g, "")
+            : this.ammo?.name ?? this.damageType ?? super.subtitle;
         const range = this.item ? getActionCategory(this.actor, this.item)?.tooltip : null;
 
         return range ? `${label} (${range})` : label;
@@ -251,6 +267,10 @@ class StrikeShortcut extends AttackShortcut<
             );
 
             return;
+        }
+
+        if (this.isAreaOrAutoFire) {
+            return attackData.variants[0].roll({ event });
         }
 
         this.radialMenu(
