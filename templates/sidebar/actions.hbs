@@ -268,25 +268,41 @@
 {{/each}}
 
 
-
+{{#*inline 'attack-category'}}
+<span class="category">
+    {{#if (eq type 'blast')}}
+    <i class="fa-regular fa-meteor fa-rotate-180 alt-usage-icon" data-tooltip="{{tooltip}}"></i>
+    {{else if (eq type 'melee')}}
+    <img class="alt-usage-icon" src="systems/pf2e/icons/mdi/sword.svg" data-tooltip="{{tooltip}}">
+    {{else if (eq type 'thrown')}}
+    <img class="alt-usage-icon" src="systems/pf2e/icons/mdi/thrown.svg" data-tooltip="{{tooltip}}">
+    {{else }}
+    <i class="fa-regular fa-bow-arrow" data-tooltip="{{tooltip}}"></i>
+    {{/if}}
+</span>
+{{/inline}}
 
 
 {{#*inline 'strike-row'}}
 <div class="variants">
     {{!-- category --}}
     {{#if @root.isCharacter}}
-    {{> (@root.partial 'attack-category') category}}
+    {{> 'attack-category' category}}
     {{/if}}
     {{!-- attacks --}}
     {{#each variants as |variant index|}}
     <div class="variant attack" data-action="strike-attack" data-variant-index="{{index}}" {{#if
-        ../isAltUsage}} data-alt-usage="{{../altUsage}}" {{/if}} {{#if (eq ../quantity 0)}}
+        ../isAltUsage}} data-alt-usage="{{../altIndex}}" {{/if}} {{#if (eq ../quantity 0)}}
         data-disabled="true" data-tooltip="{{localize 'PF2E.ErrorMessage.WeaponQuantityZero'}}"
         {{/if}}>
         {{!-- first attack --}}
         {{#if (eq index 0)}}
         {{#if @root.isCharacter}}
+        {{#if (or (eq ../type 'auto-fire') (eq ../type 'area-fire'))}}
+        <span class="action-glyph">{{../glyph}}</span>
+        {{else}}
         {{localize 'PF2E.WeaponStrikeLabel'}}
+        {{/if}}
         {{/if}}
         {{variant.label}}
         {{!-- other map --}}
@@ -304,7 +320,7 @@
     {{/unless}}
     {{!-- back to damage --}}
     <div class="variant damage" data-action="strike-damage" {{#if
-        isAltUsage}}data-alt-usage="{{altUsage}}" {{/if}} {{#if
+        isAltUsage}}data-alt-usage="{{altIndex}}" {{/if}} {{#if
         @root.isCharacter}}data-tooltip="{{formula.damage}}" {{/if}}>
         {{#if @root.isCharacter}}
         {{localize "PF2E.DamageLabel"}}
@@ -314,7 +330,7 @@
     </div>
     {{!-- critical --}}
     <div class="variant damage" data-action="strike-critical" {{#if
-        isAltUsage}}data-alt-usage="{{altUsage}}" {{/if}} data-tooltip="{{formula.critical}}">
+        isAltUsage}}data-alt-usage="{{altIndex}}" {{/if}} data-tooltip="{{formula.critical}}">
         {{localize "PF2E.CriticalDamageLabel"}}
     </div>
     {{/if}}
@@ -335,7 +351,7 @@
     {{#each versatileOptions as |option|}}
     <div class="variant{{#if option.selected}} selected{{/if}}" {{#unless option.selected}}
         data-value="{{option.value}}" data-action="toggle-weapon-trait" data-trait="versatile"
-        {{/unless}} {{#if ../isAltUsage}} data-alt-usage="{{../altUsage}}" {{/if}}
+        {{/unless}} {{#if ../isAltUsage}} data-alt-usage="{{../altIndex}}" {{/if}}
         data-tooltip="{{localize option.label}}">
         <i class="fa-solid fa-{{option.glyph}} fa-fw icon"></i>
     </div>
@@ -351,9 +367,9 @@
 <div class="variants">
     {{!-- category --}}
     {{#if melee}}
-    {{> (@root.partial 'attack-category') type='melee' tooltip=blast.reach}}
+    {{> 'attack-category' type='melee' tooltip=blast.reach}}
     {{else}}
-    {{> (@root.partial 'attack-category') type='blast' tooltip=blast.range.label}}
+    {{> 'attack-category' type='blast' tooltip=blast.range.label}}
     {{/if}}
     {{!-- attacks --}}
     <div class="variant attack" data-action="blast-attack" data-melee="{{melee}}"

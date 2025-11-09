@@ -47,7 +47,7 @@ Hooks.once("init", () => {
 
     const templates = [
         ["actions", "extras", "items", "skills", "spells"].map((x) => templatePath("sidebar", x)),
-        ["attack-category", "item-image", "sidebars", "slider", "statistic-action"].map((x) =>
+        ["item-image", "sidebars", "slider", "statistic-action"].map((x) =>
             templatePath("partials", x)
         ),
         ["actor-hud", "tooltip"].map((x) => templatePath(x)),

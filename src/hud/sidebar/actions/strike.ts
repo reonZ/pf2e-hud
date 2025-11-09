@@ -54,25 +54,15 @@ class ActionsSidebarStrike extends BaseSidebarItem<
     }
 
     get isAltUsage(): boolean {
-        return !!this.#options.isAltUsage;
+        return R.isNumber(this.#options.altIndex);
     }
 
-    get altUsage(): NonNullable<StrikeAltUsage> {
-        return this.item.isThrown ? "thrown" : "melee";
+    get altIndex(): number | undefined {
+        return this.#options.altIndex;
     }
 
     get img(): ImageFilePath {
         return (this.#img ??= this.actor.isOfType("npc") ? getNpcStrikeImage(this) : this.item.img);
-    }
-
-    getStrike(altUsage: StrikeAltUsage, readyOnly = false): ActionsSidebarStrike | null {
-        const strike = altUsage
-            ? this.altStrikes?.find((s) =>
-                  altUsage === "thrown" ? s.item.isThrown : s.item.isMelee
-              ) ?? null
-            : this;
-
-        return strike?.ready || !readyOnly ? strike : null;
     }
 
     /**
@@ -144,9 +134,9 @@ async function getSidebarStrikeData(
         const strikeFormula = await getFormula(strike);
 
         const altStrikes = await Promise.all(
-            (strike.altUsages ?? [])?.map(async (usage) => {
+            (strike.altUsages ?? [])?.map(async (usage, altIndex) => {
                 const usageFormula = await getFormula(usage);
-                return new ActionsSidebarStrike(usage, usageFormula, { isAltUsage: true });
+                return new ActionsSidebarStrike(usage, usageFormula, { altIndex });
             })
         );
 
@@ -291,12 +281,16 @@ function onStrikeClickAction(
     action: Stringptionel<StrikeEventAction>,
     target: HTMLElement
 ) {
+    const altUsageIndex = "altUsage" in target.dataset ? Number(target.dataset.altUsage) : null;
+    const foundStrike = R.isNumber(altUsageIndex)
+        ? sidebarItem.altStrikes.at(altUsageIndex) ?? null
+        : sidebarItem;
+    const strike = foundStrike?.ready || action !== "strike-attack" ? foundStrike : null;
+    if (!strike) return;
+
     const altUsage = tupleHasValue(["thrown", "melee"] as const, target.dataset.altUsage)
         ? target.dataset.altUsage
         : null;
-
-    const strike = sidebarItem.getStrike(altUsage, action === "strike-attack");
-    if (!strike) return;
 
     switch (action) {
         case "auxiliary-action": {
@@ -313,7 +307,7 @@ function onStrikeClickAction(
         case "strike-critical":
         case "strike-damage": {
             const type = action === "strike-damage" ? "damage" : "critical";
-            return strike[type]?.({ event });
+            return strike[type]?.({ event, altUsage });
         }
 
         case "toggle-weapon-trait": {
@@ -335,8 +329,6 @@ type StrikeActionOptions = {
     slug: string;
 };
 
-type StrikeAltUsage = "melee" | "thrown" | null;
-
 type StrikeActionCategory = {
     type: "melee" | "thrown" | "ranged";
     value: string;
@@ -351,7 +343,7 @@ type StrikeFormulas = {
 type ActionsSidebarStrikeOptions = {
     altStrikes?: ActionsSidebarStrike[];
     index?: number;
-    isAltUsage?: boolean;
+    altIndex?: number;
 };
 
 type ActionsSidebarStrikeArgs = [
