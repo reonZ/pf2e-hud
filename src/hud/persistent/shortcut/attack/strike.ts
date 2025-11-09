@@ -1,12 +1,9 @@
 import { getActionCategory, getNpcStrikeImage, getStrikeActions } from "hud";
 import {
     ActorPF2e,
-    CharacterPF2e,
     CharacterStrike,
     ConsumablePF2e,
-    createAreaFireMessage,
     CreaturePF2e,
-    getExtraAuxiliaryAction,
     MeleePF2e,
     R,
     StrikeData,
@@ -35,7 +32,6 @@ class StrikeShortcut extends AttackShortcut<
     #ammo!: ConsumablePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e> | null;
     #damageType?: string | null;
     #drawAuxiliaries!: WeaponAuxiliaryAction[];
-    #extraAuxiliaryAction?: { label: string; glyph: string } | null;
     #isEquipped!: boolean;
     #actorIsNPC!: boolean;
     #item: Maybe<StrikeItem>;
@@ -84,13 +80,6 @@ class StrikeShortcut extends AttackShortcut<
 
     get actorIsNPC(): boolean {
         return this.#actorIsNPC;
-    }
-
-    get extraAuxiliaryAction(): { label: string; glyph: string } | null {
-        return (this.#extraAuxiliaryAction ??=
-            game.modules.get("sf2e-anachronism")?.active && this.item?.isOfType("weapon")
-                ? getExtraAuxiliaryAction(this.item) ?? null
-                : null);
     }
 
     get isEquipped(): boolean {
@@ -283,16 +272,6 @@ class StrikeShortcut extends AttackShortcut<
                         { value: `${index}-2`, label: variants[2].label },
                     ];
 
-                    const extraAuxiliaryAction = this.extraAuxiliaryAction;
-                    if (extraAuxiliaryAction) {
-                        const glyph = Handlebars.helpers.actionGlyph(extraAuxiliaryAction.glyph);
-
-                        options.push({
-                            value: "extra-auxiliary",
-                            label: `${extraAuxiliaryAction.label} ${glyph}`,
-                        });
-                    }
-
                     return {
                         title: item.isMelee
                             ? "PF2E.WeaponRangeMelee"
@@ -304,10 +283,6 @@ class StrikeShortcut extends AttackShortcut<
                 });
             },
             (event, value) => {
-                if (value === "extra-auxiliary") {
-                    return createAreaFireMessage(this.item as WeaponPF2e<CharacterPF2e>);
-                }
-
                 const [index, map] = value.split("-").map(Number) as [number, ZeroToTwo];
                 const attack = index === 0 ? attackData : attackData.altUsages?.at(index - 1);
 

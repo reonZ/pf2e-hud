@@ -136,15 +136,6 @@
         {{/if}}
         {{!-- auxiliaries --}}
         {{#if strike.handsAvailable}}
-        {{!-- extra auxiliary for sf2e --}}
-        {{#if strike.ready}}
-        {{#with strike.extraAuxiliaryAction as |aux|}}
-        <div class="variant auxiliary" data-action="extra-auxiliary-action">
-            <span>{{aux.label}}</span>
-            <span class="action-glyph">{{aux.glyph}}</span>
-        </div>
-        {{/with}}
-        {{/if}}
         {{!-- regular auxiliaries --}}
         {{#each strike.auxiliaryActions as |aux index|}}
         <div class="variant auxiliary" data-action="auxiliary-action"

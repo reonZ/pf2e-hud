@@ -2,10 +2,7 @@ import { FilterValue, getNpcStrikeImage, StrikeShortcutData } from "hud";
 import {
     ActorPF2e,
     addListenerAll,
-    CharacterPF2e,
-    createAreaFireMessage,
     ErrorPF2e,
-    getExtraAuxiliaryAction,
     getFlag,
     htmlQuery,
     localize,
@@ -66,11 +63,6 @@ class ActionsSidebarStrike extends BaseSidebarItem<
 
     get img(): ImageFilePath {
         return (this.#img ??= this.actor.isOfType("npc") ? getNpcStrikeImage(this) : this.item.img);
-    }
-
-    // we handle sf2e auxiliary here
-    get extraAuxiliaryAction(): { label: string; glyph: string } | undefined {
-        return this.item.isOfType("weapon") ? getExtraAuxiliaryAction(this.item) : undefined;
     }
 
     getStrike(altUsage: StrikeAltUsage, readyOnly = false): ActionsSidebarStrike | null {
@@ -306,28 +298,33 @@ function onStrikeClickAction(
     const strike = sidebarItem.getStrike(altUsage, action === "strike-attack");
     if (!strike) return;
 
-    if (action === "auxiliary-action") {
-        const index = Number(target.dataset.auxiliaryActionIndex);
-        const selected = htmlQuery(target, "select")?.value;
-        sidebarItem.executeAuxiliaryAction(index, selected);
-    } else if (action === "extra-auxiliary-action") {
-        const item = sidebarItem.item as WeaponPF2e<CharacterPF2e>;
-        createAreaFireMessage(item);
-    } else if (action === "strike-attack") {
-        const variantIndex = Number(target.dataset.variantIndex);
-        strike.variants[variantIndex]?.roll({ event, altUsage });
-    } else if (R.isIncludedIn(action, ["strike-critical", "strike-damage"])) {
-        const type = action === "strike-damage" ? "damage" : "critical";
-        strike[type]?.({ event });
-    } else if (action === "toggle-weapon-trait") {
-        const { trait, value } = target.dataset;
-        trait && strike.toggleWeaponTrait(trait, value);
+    switch (action) {
+        case "auxiliary-action": {
+            const index = Number(target.dataset.auxiliaryActionIndex);
+            const selected = htmlQuery(target, "select")?.value;
+            return sidebarItem.executeAuxiliaryAction(index, selected);
+        }
+
+        case "strike-attack": {
+            const variantIndex = Number(target.dataset.variantIndex);
+            return strike.variants[variantIndex]?.roll({ event, altUsage });
+        }
+
+        case "strike-critical":
+        case "strike-damage": {
+            const type = action === "strike-damage" ? "damage" : "critical";
+            return strike[type]?.({ event });
+        }
+
+        case "toggle-weapon-trait": {
+            const { trait, value } = target.dataset;
+            return trait && strike.toggleWeaponTrait(trait, value);
+        }
     }
 }
 
 type StrikeEventAction =
     | "auxiliary-action"
-    | "extra-auxiliary-action"
     | "strike-attack"
     | "strike-critical"
     | "strike-damage"
