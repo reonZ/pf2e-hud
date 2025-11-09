@@ -34,7 +34,7 @@ class StrikeShortcut extends AttackShortcut<
     #drawAuxiliaries!: WeaponAuxiliaryAction[];
     #isEquipped!: boolean;
     #actorIsNPC!: boolean;
-    #item: Maybe<StrikeItem>;
+    #strikeItem: Maybe<StrikeItem>;
     #uses!: ValueAndMaybeMax | null;
 
     static defineSchema(): StrikeShortcutSchema {
@@ -56,12 +56,12 @@ class StrikeShortcut extends AttackShortcut<
         await super._initShortcut();
 
         this.#actorIsNPC = this.actor.isOfType("npc");
-        this.#item = this.#getItem();
+        this.#strikeItem = this.#getItem();
 
         const ammo = (this.#ammo = this.item && "ammo" in this.item ? this.item.ammo : null);
 
         this.#uses =
-            (ammo?.isOfType("consumable") && ammo.uses.max > 1 && ammo.uses) ||
+            (ammo?.isOfType("ammo") && ammo.uses.max > 1 && ammo.uses) ||
             (ammo ? { value: ammo.quantity } : null);
 
         this.#isEquipped = !!this.item && (!("isEquipped" in this.item) || this.item.isEquipped);
@@ -104,7 +104,7 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get item(): Maybe<MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>> {
-        return this.#item;
+        return this.#strikeItem;
     }
 
     get usedImage(): ImageFilePath {
@@ -278,29 +278,36 @@ class StrikeShortcut extends AttackShortcut<
                 const isCharacter = this.actor.isOfType("character");
                 const strikeLabel = getStrikeLabel();
 
-                return [
-                    [0, attackData] as const,
-                    ...(attackData.altUsages ?? []).map((data, i) => [i + 1, data] as const),
-                ].map(([index, { item, variants }]): ShortcutRadialSection => {
-                    const variant0Label = isCharacter
-                        ? variants[0].label
-                        : variants[0].label.split(" ")[1];
+                return R.pipe(
+                    [
+                        [0, attackData],
+                        ...R.pipe(
+                            attackData.altUsages ?? [],
+                            R.map((data, i) => [i + 1, data] as const),
+                            R.filter(([i, data]) => data.variants.length > 1)
+                        ),
+                    ] as const,
+                    R.map(([index, { item, variants }]): ShortcutRadialSection => {
+                        const variant0Label = isCharacter
+                            ? variants[0].label
+                            : variants[0].label.split(" ")[1];
 
-                    const options: ShortcutRadialOption[] = [
-                        { value: `${index}-0`, label: `${strikeLabel} ${variant0Label}` },
-                        { value: `${index}-1`, label: variants[1].label },
-                        { value: `${index}-2`, label: variants[2].label },
-                    ];
+                        const options: ShortcutRadialOption[] = [
+                            { value: `${index}-0`, label: `${strikeLabel} ${variant0Label}` },
+                            { value: `${index}-1`, label: variants[1].label },
+                            { value: `${index}-2`, label: variants[2].label },
+                        ];
 
-                    return {
-                        title: item.isMelee
-                            ? "PF2E.WeaponRangeMelee"
-                            : item.isThrown
-                            ? "PF2E.TraitThrown"
-                            : "PF2E.NPCAttackRanged",
-                        options,
-                    };
-                });
+                        return {
+                            title: item.isMelee
+                                ? "PF2E.WeaponRangeMelee"
+                                : item.isThrown
+                                ? "PF2E.TraitThrown"
+                                : "PF2E.NPCAttackRanged",
+                            options,
+                        };
+                    })
+                );
             },
             (event, value) => {
                 const [index, map] = value.split("-").map(Number) as [number, ZeroToTwo];
