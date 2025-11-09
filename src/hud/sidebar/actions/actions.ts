@@ -175,7 +175,7 @@ async function getSidebarActionsData(
         };
 
         const untrainedTacticBtn =
-            tactics && game.dailies?.api.isTacticAbility(item) && !tactics.includes(itemId)
+            tactics?.length && game.dailies?.api.isTacticAbility(item) && !tactics.includes(itemId)
                 ? game.dailies?.api.createRetrainBtn(actor, itemId, "tactic")
                 : undefined;
 
