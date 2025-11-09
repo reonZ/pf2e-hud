@@ -14,6 +14,7 @@
 
     --variant-font-size: var(--font-size-11);
     --variant-background: #372e20;
+    --variant-light-background: #372e2042;
 
     --strike-name-font-size: var(--font-size-15);
 
@@ -106,8 +107,58 @@
 
         .variants {
             &.controls,
-            &.versatiles {
+            &.versatiles,
+            &.reload {
                 margin-left: calc(var(--category-width) + var(--variant-gap));
+            }
+
+            &.controls {
+                .ammo {
+                    padding: 0;
+                }
+
+                .reload {
+                    gap: 0.5em;
+                }
+            }
+
+            &.reload {
+                .variant {
+                    --variant-background: var(--variant-light-background);
+
+                    flex: 1 100%;
+                    width: 100%;
+                    padding: 0;
+
+                    img {
+                        border: none;
+                        width: 1.25rem;
+                        height: 1.25rem;
+                        object-fit: cover;
+                    }
+
+                    .ammo-name {
+                        flex: 1;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        font-size: 0.9em;
+                    }
+
+                    input {
+                        line-height: 1;
+                    }
+
+                    &.disabled {
+                        a {
+                            pointer-events: none;
+                        }
+                    }
+
+                    &:not(.disabled) {
+                        opacity: 0.6;
+                        filter: grayscale(1);
+                    }
+                }
             }
         }
 
@@ -119,32 +170,6 @@
 
                 @supports (-moz-appearance: none) {
                     padding-inline: 3px;
-                }
-            }
-
-            &.ammo {
-                padding: 0;
-
-                .magazine {
-                    display: flex;
-                    align-items: center;
-                    gap: var(--variant-gap);
-                    font-size: 1.2em;
-
-                    .icon {
-                        display: inline-block;
-                        width: 0.9rem;
-                        height: 0.9rem;
-                        background-image: url(../../../systems/pf2e/assets/icons/heavy-bullets.svg);
-                        filter: invert(0.8);
-                        background-repeat: no-repeat;
-                        background-position-y: 1px;
-                        background-size: cover;
-                    }
-                }
-
-                &:has(.magazine) {
-                    padding: 0 3px 0 0;
                 }
             }
 

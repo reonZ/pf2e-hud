@@ -272,15 +272,23 @@ function onActionClickAction(
     action: Stringptionel<ActionEventAction>,
     target: HTMLElement
 ) {
-    if (action === "remove-effect") {
-        sidebarItem.removeEffect();
-    } else if (action === "toggle-exploration") {
-        sidebarItem.toggleExporation();
-    } else if (action === "toggle-trait") {
-        const trait = target.dataset.trait as string;
-        sidebarItem.toggleTrait(trait);
-    } else if (action === "use-action") {
-        sidebarItem.use(event);
+    switch (action) {
+        case "remove-effect": {
+            return sidebarItem.removeEffect();
+        }
+
+        case "toggle-exploration": {
+            return sidebarItem.toggleExporation();
+        }
+
+        case "toggle-trait": {
+            const trait = target.dataset.trait as string;
+            return sidebarItem.toggleTrait(trait);
+        }
+
+        case "use-action": {
+            return sidebarItem.use(event);
+        }
     }
 }
 

@@ -80,7 +80,8 @@
 {{/if}}
 {{#each strikes.actions as |strike|}}
 <div class="item attack{{#if strike.ready}} ready{{/if}}" data-item-id="{{strike.id}}"
-    data-index="{{strike.index}}" data-filter-value="{{strike.filterValue}}" draggable="true">
+    data-index="{{strike.index}}" data-action-index="{{strike.index}}"
+    data-filter-value="{{strike.filterValue}}" draggable="true">
     {{!-- name --}}
     <div class="name">
         <a data-action="item-description">{{strike.label}}</a>
@@ -118,21 +119,45 @@
     {{/if}}
     {{!-- controls --}}
     {{#if @root.isCharacter}}
+    {{!-- reload --}}
+    {{#if (and strike.ready strike.ammunition.requiresReload)}}
+    <div class="variants reload">
+        {{#each strike.ammunition.loaded as |ammo|}}
+        <div class="variant loaded {{#if (eq ammo.id strike.ammunition.selected.id)}}disabled{{/if}}"
+            data-ammo-id="{{ammo.id}}">
+            <img src="{{ammo.img}}" />
+            <a class="ammo-name" data-action="select-ammo">{{ammo.name}}</a>
+            <input type="number" data-action="change-ammo-quantity" value="{{ammo.quantity}}"
+                min="0" max="{{ammo.max}}" />
+            <a data-action="unload">
+                <i class="fa-solid fa-eject"></i>
+            </a>
+        </div>
+        {{/each}}
+    </div>
+    {{/if}}
+    {{!-- controls --}}
     <div class="variants controls">
         {{!-- ammo --}}
-        {{#if (and strike.ammunition strike.ready)}}
+        {{#if (and strike.ready strike.ammunition)}}
+        {{#if strike.ammunition.remaining}}
+        <div class="variant reload">
+            <a data-action="reload">
+                {{localize "PF2E.Actions.Reload.ShortTitle"}}
+                <span class="action-glyph">{{strike.ammunition.reloadGlyph}}</span>
+            </a>
+            {{#if (gt strike.ammunition.capacity 1)}}
+            <span>({{strike.ammunition.remaining}})</span>
+            {{/if}}
+        </div>
+        {{else if (not strike.ammunition.requiresReload)}}
         <div class="variant ammo">
-            <select class="linked" data-action="link-ammo" {{#if strike.ammunition.selected}}
-                data-compatible="{{strike.ammunition.selected.compatible}}" {{/if}}>
+            <select class="linked" data-action="link-ammo">
                 {{selectOptions strike.ammunition.compatible selected=strike.ammunition.selected.id
                 valueAttr="id" blank="PF2E.NoAmmoLabel" localize=true}}
             </select>
-            {{#if (gt strike.item.ammo.uses.max 1)}}
-            <span class="magazine" data-item-id="{{strike.item.id}}">
-                <span class="remaining"><i class="icon"></i> {{strike.item.ammo.uses.value}}</span>
-            </span>
-            {{/if}}
         </div>
+        {{/if}}
         {{/if}}
         {{!-- auxiliaries --}}
         {{#if strike.handsAvailable}}

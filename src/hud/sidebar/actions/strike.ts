@@ -2,8 +2,11 @@ import { FilterValue, getNpcStrikeImage, StrikeShortcutData } from "hud";
 import {
     ActorPF2e,
     addListenerAll,
+    CharacterPF2e,
+    CharacterSheetPF2e,
     ErrorPF2e,
     getFlag,
+    htmlClosest,
     htmlQuery,
     localize,
     MeleePF2e,
@@ -273,6 +276,40 @@ function activateActionsListeners(this: ActionsSidebarPF2eHUD, html: HTMLElement
     addListenerAll(html, `[data-action="auxiliary-action"]`, "change", (el, event) => {
         event.stopImmediatePropagation();
     });
+
+    const actor = this.actor;
+    if (!actor.isOfType("character")) return;
+
+    addListenerAll(
+        html,
+        `[data-action="change-ammo-quantity"]`,
+        "change",
+        (el: HTMLInputElement) => {
+            const strike = this.getSidebarItemFromElement(el);
+            const weapon = strike instanceof ActionsSidebarStrike ? strike.item : null;
+            if (!itemIsWeapon(weapon)) return;
+
+            const ammoId = htmlClosest(el, "[data-ammo-id]")?.dataset.ammoId;
+            const item = weapon.subitems.get(ammoId, { strict: true });
+            if (!item.isOfType("ammo", "weapon")) return;
+
+            const value = el.valueAsNumber;
+            if (value === 0) {
+                item.delete();
+            } else if (item.isOfType("ammo") && item.system.uses.max > 1) {
+                item.update({ "system.uses.value": value });
+            } else {
+                item.update({ "system.quantity": value });
+            }
+        }
+    );
+
+    // TODO remove that when the system exposes it
+    const sheet = actor.sheet as CharacterSheetPF2e<CharacterPF2e>;
+    const reloadButtons = html.querySelectorAll<HTMLElement>(`[data-action="reload"]`);
+    for (const el of reloadButtons) {
+        sheet["activateClickListener"](el);
+    }
 }
 
 function onStrikeClickAction(
@@ -281,6 +318,11 @@ function onStrikeClickAction(
     action: Stringptionel<StrikeEventAction>,
     target: HTMLElement
 ) {
+    // TODO remove that when the system exposes it
+    if (action === "reload") {
+        return;
+    }
+
     const altUsageIndex = "altUsage" in target.dataset ? Number(target.dataset.altUsage) : null;
     const foundStrike = R.isNumber(altUsageIndex)
         ? sidebarItem.altStrikes.at(altUsageIndex) ?? null
@@ -299,6 +341,37 @@ function onStrikeClickAction(
             return sidebarItem.executeAuxiliaryAction(index, selected);
         }
 
+        /**
+         * https://github.com/foundryvtt/pf2e/blob/002ba0bf6d15dfc0d87a96009f02fb0743fb000b/src/module/actor/character/sheet.ts#L925
+         */
+        case "select-ammo": {
+            const weapon = strike.item;
+            const ammoId = htmlClosest(target, "[data-ammo-id]")?.dataset.ammoId;
+            if (!itemIsWeapon(weapon) || !ammoId || !weapon.subitems?.size) return;
+
+            // Sort the selected ammo to the top, and remove any 0 quantity ammo while we're at it (they may be out)
+            // The sorted sources have the same references, but we persist the original to maintain ordering
+            const ammoSubItems = weapon.subitems.filter(
+                (i) => i.isOfType("ammo", "weapon") && i.isAmmoFor(weapon)
+            );
+            const purgedItems = ammoSubItems.filter((i) => !i.quantity).map((i) => i.id);
+            const sources = R.sortBy(
+                foundry.utils.deepClone(weapon._source.system.subitems),
+                (s) => s.sort
+            ).filter((i) => !purgedItems.includes(i._id ?? ""));
+            const sourcesSorted = R.pipe(
+                sources,
+                R.sortBy((i) => i.sort),
+                R.sortBy((i) =>
+                    !ammoSubItems.some((a) => a.id === i._id) ? 0 : i._id === ammoId ? 1 : 2
+                )
+            );
+            for (const [idx, item] of sourcesSorted.entries()) {
+                item.sort = idx;
+            }
+            return weapon.update({ "system.subitems": sources });
+        }
+
         case "strike-attack": {
             const variantIndex = Number(target.dataset.variantIndex);
             return strike.variants[variantIndex]?.roll({ event, altUsage });
@@ -314,15 +387,30 @@ function onStrikeClickAction(
             const { trait, value } = target.dataset;
             return trait && strike.toggleWeaponTrait(trait, value);
         }
+
+        case "unload": {
+            const weapon = strike.item;
+            if (!itemIsWeapon(weapon)) return;
+
+            const ammoId = htmlClosest(target, "[data-ammo-id]")?.dataset.ammoId;
+            return weapon.subitems.get(ammoId, { strict: true }).detach();
+        }
     }
+}
+
+function itemIsWeapon(item: MeleePF2e | WeaponPF2e | null): item is WeaponPF2e {
+    return item instanceof Item && item.isOfType("weapon");
 }
 
 type StrikeEventAction =
     | "auxiliary-action"
+    | "reload"
+    | "select-ammo"
     | "strike-attack"
     | "strike-critical"
     | "strike-damage"
-    | "toggle-weapon-trait";
+    | "toggle-weapon-trait"
+    | "unload";
 
 type StrikeActionOptions = {
     id: string;
