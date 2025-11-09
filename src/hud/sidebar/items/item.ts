@@ -7,7 +7,6 @@ import {
     IdentifyItemPopup,
     InventoryItem,
     ITEM_CARRY_TYPES,
-    localizer,
     PhysicalItemPF2e,
     tupleHasValue,
     usePhysicalItem,
@@ -30,50 +29,6 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
     delete(event: MouseEvent) {
         const item = this.item;
         item.actor.sheet["deleteItem"](item, event);
-    }
-
-    /**
-     * https://github.com/foundryvtt/pf2e/blob/0191f1fdac24c3903a939757a315043d1fcbfa59/src/module/item/physical/helpers.ts#L224
-     */
-    async detachSubitem(skipConfirm: boolean) {
-        const subitem = this.item;
-        const parentItem = subitem.parentItem;
-        if (!parentItem) throw ErrorPF2e("Subitem has no parent item");
-
-        const localize = localizer("PF2E.Item.Physical.Attach.Detach");
-        const confirmed =
-            skipConfirm ||
-            (await applications.api.DialogV2.confirm({
-                window: { title: localize("Label") },
-                content: createHTMLElement("p", {
-                    content: [localize("Prompt", { attachable: subitem.name })],
-                }).outerHTML,
-                yes: { default: true },
-            }));
-
-        if (confirmed) {
-            const deletePromise = subitem.delete();
-            const createPromise = (async (): Promise<unknown> => {
-                // Find a stack match, cloning the subitem as worn so the search won't fail due to it being equipped
-                const stack = subitem.isOfType("consumable")
-                    ? parentItem.actor?.inventory.findStackableItem(
-                          subitem.clone({ "system.equipped.carryType": "worn" })
-                      )
-                    : null;
-                const keepId = !!parentItem.actor && !parentItem.actor.items.has(subitem.id);
-                return (
-                    stack?.update({ "system.quantity": stack.quantity + 1 }) ??
-                    Item.implementation.create(
-                        foundry.utils.mergeObject(subitem.toObject(), {
-                            "system.containerId": parentItem.system.containerId,
-                        }),
-                        { parent: parentItem.actor, keepId }
-                    )
-                );
-            })();
-
-            await Promise.all([deletePromise, createPromise]);
-        }
     }
 
     /**

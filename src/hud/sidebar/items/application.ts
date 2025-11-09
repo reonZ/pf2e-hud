@@ -3,6 +3,7 @@ import {
     ActorPF2e,
     ApplicationRenderOptions,
     isCastConsumable,
+    isControlDown,
     PhysicalItemPF2e,
     R,
     SheetInventory,
@@ -110,7 +111,7 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
         if (action === "delete-item") {
             sidebarItem.delete(event);
         } else if (action === "detach-subitem") {
-            sidebarItem.detachSubitem(event.ctrlKey);
+            sidebarItem.item.detach({ skipConfirm: isControlDown(event) });
         } else if (action === "edit-item") {
             sidebarItem.openSheet();
         } else if (action === "open-carry-type-menu") {
