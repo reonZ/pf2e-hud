@@ -79,7 +79,10 @@
     </div>
     {{!-- shield --}}
     {{#if isCombatant}}
-    <div class="double" data-section="shield">
+    {{log shield}}
+    <div class="double" data-section="shield" {{#if shield.itemId}}
+        data-tooltip="{{shield.name}}<br>{{localize 'PF2E.Actor.Creature.Shield.HitPoints.Value'}}: {{shield.hp.value}} / {{shield.hp.max}}"
+        {{/if}}>
         <a {{#if (eq shield.itemId null)}}class="disabled" {{/if}} data-action="raise-shield"
             data-tooltip="PF2E.Actions.RaiseAShield.SingleActionTitle">
             {{#if shield.broken}}
@@ -95,8 +98,7 @@
         <span>({{shield.hardness}})</span>
         {{#if shield.itemId}}
         <input type="number" class="shield" name="system.attributes.shield.hp"
-            value="{{shield.hp.value}}" min="0" max="{{shield.hp.max}}"
-            data-tooltip="PF2E.Actor.Creature.Shield.HitPoints.Value">
+            value="{{shield.hp.value}}" min="0" max="{{shield.hp.max}}">
         {{else}}
         <span class="nan">——&nbsp;&nbsp;</span>
         {{/if}}
