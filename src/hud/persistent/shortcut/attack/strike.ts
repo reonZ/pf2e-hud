@@ -110,11 +110,13 @@ class StrikeShortcut extends AttackShortcut<
     get usedImage(): ImageFilePath {
         const item = this.item;
 
-        if (!item) {
-            return this.img;
-        }
+        if (!item) return this.img;
+        if (!this.actorIsNPC) return this.item.img;
 
-        return (this.actorIsNPC && getNpcStrikeImage({ item, slug: this.slug })) || this.item.img;
+        return (
+            getNpcStrikeImage({ item, slug: this.slug, type: this.attackData!.type }) ||
+            this.item.img
+        );
     }
 
     get cost(): ShortcutCost | null {

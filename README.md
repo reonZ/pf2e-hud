@@ -24,9 +24,11 @@ The following icons are provided by [Skoll](https://game-icons.net/) under the [
 -   https://game-icons.net/1x1/skoll/d4.html
 -   https://game-icons.net/1x1/skoll/d10.html
 -   https://game-icons.net/1x1/skoll/d12.html
+-   https://game-icons.net/1x1/lorc/mine-explosion.html
 
 The following icons are provided by [Delapouite](https://delapouite.com/) under the [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) license
 
 -   https://game-icons.net/1x1/delapouite/dice-six-faces-six.html
 -   https://game-icons.net/1x1/delapouite/dice-eight-faces-eight.html
 -   https://game-icons.net/1x1/delapouite/dice-twenty-faces-twenty.html
+-   https://game-icons.net/1x1/delapouite/machine-gun-magazine.html

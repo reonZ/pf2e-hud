@@ -1,4 +1,4 @@
-import { imagePath, MeleePF2e, WeaponPF2e } from "module-helpers";
+import { imagePath, isAreaOrAutoFireType, MeleePF2e, WeaponPF2e } from "module-helpers";
 
 const DEFAULT_NPC_STRIKE_ICON = "icons/default-icons/melee.svg";
 
@@ -249,15 +249,27 @@ const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
     antlers: "icons/creatures/mammals/deer-antlers-blue.webp",
 };
 
-function getNpcStrikeImage(strike: { item: WeaponPF2e | MeleePF2e; slug: string }): ImageFilePath {
-    if (!strike.item.img.endsWith(DEFAULT_NPC_STRIKE_ICON)) {
-        return strike.item.img;
+function getNpcStrikeImage({
+    item,
+    slug,
+    type,
+}: {
+    item: WeaponPF2e | MeleePF2e;
+    slug: string;
+    type: string;
+}): ImageFilePath {
+    if (!item.img.endsWith(DEFAULT_NPC_STRIKE_ICON)) {
+        return item.img;
     }
 
-    return (
-        NPC_STRIKE_ICONS[strike.slug] ??
-        (strike.item.range ? imagePath("npc-range", "svg") : strike.item.img)
-    );
+    const match = NPC_STRIKE_ICONS[slug];
+    if (match) return match;
+
+    return isAreaOrAutoFireType(type)
+        ? imagePath(type, "svg")
+        : item.range
+        ? imagePath("npc-range", "svg")
+        : item.img;
 }
 
 export { getNpcStrikeImage };
