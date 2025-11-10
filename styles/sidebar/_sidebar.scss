@@ -316,13 +316,22 @@
                     width: unset;
                 }
 
+                &.flagged,
                 &.temporary {
-                    bottom: 0.1em;
-                    right: -0.1em;
-                    color: rgb(var(--temporary-color));
+                    color: rgb(var(--temporary-color), 0.7);
                     text-shadow: 0.05em 0 black, 0 0.05em black, -0.05em 0 black, 0 -0.05em black,
                         -0.05em -0.05em black, -0.05em 0.05em black, 0.05em -0.05em black,
                         0.05em 0.05em black;
+                }
+
+                &.flagged {
+                    bottom: 0;
+                    right: -0.3em;
+                }
+
+                &.temporary {
+                    bottom: 0;
+                    left: -0.3em;
                 }
             }
 

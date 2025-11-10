@@ -36,6 +36,7 @@ import {
     MODULE,
     postSyncElement,
     preSyncElement,
+    R,
     render,
     templatePath,
 } from "module-helpers";
@@ -387,10 +388,16 @@ abstract class SidebarPF2eHUD<
     }
 
     protected async _renderHTML(
-        context: ApplicationRenderContext & { partial: (key: string) => string },
+        context: SidebarRenderContext,
         options: ApplicationRenderOptions
     ): Promise<SidebarHudRenderElements> {
+        const actor = this.actor;
+        const flaggedItems = actor.isOfType("character")
+            ? Object.keys(actor.flags["pf2e-dailies"]?.flaggedItems ?? {})
+            : [];
+
         context.partial = (key: string) => templatePath("partials", key);
+        context.flagged = ({ id } = {}) => R.isString(id) && flaggedItems.includes(id);
 
         const listElement = createHTMLElement("div", {
             classes: ["item-list"],
@@ -656,6 +663,11 @@ type SidebarHudRenderElements = {
 };
 
 type UpdatedSidebarCoords = SidebarCoords & { bounds: DOMRect; uiScale: number };
+
+type SidebarRenderContext = ApplicationRenderContext & {
+    partial: (key: string) => string;
+    flagged: (item?: { id?: string }) => boolean;
+};
 
 MODULE.devExpose({ SidebarPF2eHUD });
 

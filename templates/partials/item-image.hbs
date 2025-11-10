@@ -2,6 +2,9 @@
     <img src="{{img}}">
     <i class="fa-solid fa-message chat"></i>
     {{#if isTemporary}}
-    <i class="fa-solid fa-clock temporary"></i>
+    <i class="temporary fa-solid fa-clock"></i>
+    {{/if}}
+    {{#if (@root.flagged this)}}
+    <i class="flagged fa-solid fa-flag-pennant"></i>
     {{/if}}
 </div>
