@@ -399,7 +399,7 @@ function simulateReload(
         actor,
         ammunition,
     }: {
-        ammunition?: AttackAmmunitionData | null | undefined;
+        ammunition?: AttackAmmunitionData | null;
         index?: number;
         item: Maybe<WeaponPF2e | MeleePF2e>;
         actor: Maybe<ActorPF2e>;

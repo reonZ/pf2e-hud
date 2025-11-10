@@ -100,7 +100,7 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get canOpenPopup(): boolean {
-        return !!this.item && !this.isNpcSubAttack;
+        return !!this.item && (!this.actorIsNPC || !this.isAreaOrAutoFire);
     }
 
     get item(): Maybe<MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>> {
@@ -122,23 +122,19 @@ class StrikeShortcut extends AttackShortcut<
 
         return {
             value: this.isEquipped
-                ? this.isNpcSubAttack
-                    ? this.attackData.glyph
-                    : 1
+                ? this.attackData.glyph
                 : this.#drawAuxiliaries.at(0)?.actions ?? 1,
         };
     }
 
     get label(): ShortcutLabel | null {
         const attackData = this.attackData;
-        if (!attackData) return null;
+        if (!attackData || this.isAreaOrAutoFire) return null;
 
         const variant0Label = this.actor.isOfType("character")
-            ? this.isAreaOrAutoFire
-                ? null
-                : attackData.variants[0].label
-            : attackData.canAttack
-            ? attackData.variants[0].label.split(" ")[1]
+            ? this.attackData.variants[0].label
+            : this.attackData.canAttack
+            ? this.attackData.variants[0].label.split(" ")[1]
             : null;
 
         return variant0Label ? { value: variant0Label, class: "attack" } : null;
@@ -198,10 +194,6 @@ class StrikeShortcut extends AttackShortcut<
             return this.#drawAuxiliaries.map((aux) => aux.label).join(" / ");
         }
 
-        if (this.isNpcSubAttack) {
-            return attackData.variants[0].label;
-        }
-
         const label = this.isAreaOrAutoFire
             ? attackData.variants[0].label.replace(/[\(\)]/g, "")
             : this.ammo?.name ?? this.damageType ?? super.subtitle;
@@ -230,18 +222,9 @@ class StrikeShortcut extends AttackShortcut<
         return this.#drawAuxiliaries.length > 0 && !this.isEquipped;
     }
 
-    get isNpcSubAttack(): boolean {
-        return this.actorIsNPC && !!this.attackData && !this.attackData.canAttack;
-    }
-
     use(event: MouseEvent) {
         const attackData = this.attackData;
         if (!attackData) return;
-
-        if (this.isNpcSubAttack) {
-            attackData.variants[0].roll({ event });
-            return;
-        }
 
         if (this.mustBeDrawn) {
             if (this.#drawAuxiliaries.length === 1) {
