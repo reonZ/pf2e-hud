@@ -2,8 +2,9 @@ import { FilterValue, getNpcStrikeImage, StrikeShortcutData } from "hud";
 import {
     ActorPF2e,
     addListenerAll,
-    CharacterPF2e,
-    CharacterSheetPF2e,
+    AttackAction,
+    AttackAmmunitionData,
+    createButtonElement,
     ErrorPF2e,
     getFlag,
     htmlClosest,
@@ -22,13 +23,13 @@ import { BaseSidebarItem } from "..";
 
 class ActionsSidebarStrike extends BaseSidebarItem<
     MeleePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e>,
-    StrikeData
+    AttackAction
 > {
     #options: ActionsSidebarStrikeOptions;
     #formula: StrikeFormulas;
     #img?: ImageFilePath;
 
-    constructor(data: StrikeData, formula: StrikeFormulas, options: ActionsSidebarStrikeOptions) {
+    constructor(data: AttackAction, formula: StrikeFormulas, options: ActionsSidebarStrikeOptions) {
         super(data);
 
         this.#options = options;
@@ -119,7 +120,7 @@ class ActionsSidebarStrike extends BaseSidebarItem<
 }
 interface ActionsSidebarStrike extends Readonly<StrikeData> {}
 
-async function getFormula(strike: StrikeData): Promise<StrikeFormulas> {
+async function getFormula(strike: AttackAction): Promise<StrikeFormulas> {
     return {
         damage: String(await strike.damage?.({ getFormula: true })),
         critical: String(await strike.critical?.({ getFormula: true })),
@@ -303,13 +304,6 @@ function activateActionsListeners(this: ActionsSidebarPF2eHUD, html: HTMLElement
             }
         }
     );
-
-    // TODO remove that when the system exposes it
-    const sheet = actor.sheet as CharacterSheetPF2e<CharacterPF2e>;
-    const reloadButtons = html.querySelectorAll<HTMLElement>(`[data-action="reload"]`);
-    for (const el of reloadButtons) {
-        sheet["activateClickListener"](el);
-    }
 }
 
 function onStrikeClickAction(
@@ -318,11 +312,6 @@ function onStrikeClickAction(
     action: Stringptionel<StrikeEventAction>,
     target: HTMLElement
 ) {
-    // TODO remove that when the system exposes it
-    if (action === "reload") {
-        return;
-    }
-
     const altUsageIndex = "altUsage" in target.dataset ? Number(target.dataset.altUsage) : null;
     const foundStrike = R.isNumber(altUsageIndex)
         ? sidebarItem.altStrikes.at(altUsageIndex) ?? null
@@ -339,6 +328,11 @@ function onStrikeClickAction(
             const index = Number(target.dataset.auxiliaryActionIndex);
             const selected = htmlQuery(target, "select")?.value;
             return sidebarItem.executeAuxiliaryAction(index, selected);
+        }
+
+        case "reload": {
+            strike.ammunition;
+            return simulateReload(strike, target);
         }
 
         /**
@@ -396,6 +390,53 @@ function onStrikeClickAction(
             return weapon.subitems.get(ammoId, { strict: true }).detach();
         }
     }
+}
+
+function simulateReload(
+    {
+        index,
+        item,
+        actor,
+        ammunition,
+    }: {
+        ammunition?: AttackAmmunitionData | null | undefined;
+        index?: number;
+        item: Maybe<WeaponPF2e | MeleePF2e>;
+        actor: Maybe<ActorPF2e>;
+    },
+    target: Maybe<HTMLElement>
+) {
+    if (!R.isNumber(index) || !item || !actor || !target || !ammunition?.remaining) return;
+
+    const nbCompatible = ammunition.compatible.length;
+    console.log(nbCompatible);
+    const { left, top, width, height } = target.getBoundingClientRect();
+    const btn = createButtonElement({
+        dataset: {
+            action: "reload",
+            actionIndex: index,
+            anchorId: `${item.uuid}-actions`,
+        },
+        label: "",
+        style: {
+            position: "absolute",
+            left: `${left - 150}px`,
+            top: `${top - height / 2 - nbCompatible * 22}px`,
+            minHeight: "0",
+            height: `${height}px`,
+            width: `${width}px`,
+            opacity: "0",
+            visibility: "hidden",
+        },
+    });
+
+    document.body.appendChild(btn);
+    actor.sheet["activateClickListener"](btn);
+    btn.click();
+
+    requestAnimationFrame(() => {
+        btn.remove();
+    });
 }
 
 function itemIsWeapon(item: MeleePF2e | WeaponPF2e | null): item is WeaponPF2e {
@@ -456,5 +497,6 @@ export {
     getSidebarStrikeData,
     getStrikeActions,
     onStrikeClickAction,
+    simulateReload,
 };
 export type { StrikesContext };

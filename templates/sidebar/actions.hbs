@@ -80,8 +80,7 @@
 {{/if}}
 {{#each strikes.actions as |strike|}}
 <div class="item attack{{#if strike.ready}} ready{{/if}}" data-item-id="{{strike.id}}"
-    data-index="{{strike.index}}" data-action-index="{{strike.index}}"
-    data-filter-value="{{strike.filterValue}}" draggable="true">
+    data-index="{{strike.index}}" data-filter-value="{{strike.filterValue}}" draggable="true">
     {{!-- name --}}
     <div class="name">
         <img src="{{strike.img}}">
@@ -142,11 +141,11 @@
         {{!-- ammo --}}
         {{#if (and strike.ready strike.ammunition)}}
         {{#if strike.ammunition.remaining}}
-        <div class="variant reload">
-            <a data-action="reload">
+        <div class="variant reload" data-action="reload">
+            <span>
                 {{localize "PF2E.Actions.Reload.ShortTitle"}}
                 <span class="action-glyph">{{strike.ammunition.reloadGlyph}}</span>
-            </a>
+            </span>
             {{#if (gt strike.ammunition.capacity 1)}}
             <span>({{strike.ammunition.remaining}})</span>
             {{/if}}

@@ -1,4 +1,4 @@
-import { getActionCategory, getNpcStrikeImage, getStrikeActions } from "hud";
+import { getActionCategory, getNpcStrikeImage, getStrikeActions, simulateReload } from "hud";
 import {
     ActorPF2e,
     CharacterStrike,
@@ -161,7 +161,7 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get isAreaOrAutoFire(): boolean {
-        return R.isIncludedIn(this.attackData?.type, ["area-fire", "auto-fire"]);
+        return isAreaOrAutoFireType(this.attackData?.type);
     }
 
     get damageType(): string | null {
@@ -278,15 +278,14 @@ class StrikeShortcut extends AttackShortcut<
                 const isCharacter = this.actor.isOfType("character");
                 const strikeLabel = getStrikeLabel();
 
-                return R.pipe(
-                    [
-                        [0, attackData],
-                        ...R.pipe(
-                            attackData.altUsages ?? [],
-                            R.map((data, i) => [i + 1, data] as const),
-                            R.filter(([i, data]) => data.variants.length > 1)
-                        ),
-                    ] as const,
+                const [areaOrAutoFireAlts, otherAlts] = R.pipe(
+                    attackData.altUsages ?? [],
+                    R.map((data, i) => [i + 1, data] as const),
+                    R.partition(([i, data]) => isAreaOrAutoFireType(data.type))
+                );
+
+                const sections = R.pipe(
+                    [[0, attackData], ...otherAlts] as const,
                     R.map(([index, { item, variants }]): ShortcutRadialSection => {
                         const variant0Label = isCharacter
                             ? variants[0].label
@@ -308,8 +307,48 @@ class StrikeShortcut extends AttackShortcut<
                         };
                     })
                 );
+
+                if (areaOrAutoFireAlts.length) {
+                    const entries = areaOrAutoFireAlts.map(
+                        ([index, { glyph, variants }]): ShortcutRadialOption => {
+                            const label = variants[0].label.split(" (")[0];
+                            const icon = Handlebars.helpers.actionGlyph(glyph);
+
+                            return {
+                                value: `${index}-0`,
+                                label: `${label} ${icon}`,
+                            };
+                        }
+                    );
+
+                    sections[0].options.push(...entries);
+                }
+
+                const ammunition = attackData.ammunition;
+                if (ammunition?.requiresReload) {
+                    const label = game.i18n.localize("PF2E.Actions.Reload.ShortTitle");
+                    const icon = Handlebars.helpers.actionGlyph(ammunition.reloadGlyph);
+                    const remaining = ammunition.capacity > 1 ? ` ${ammunition.remaining}` : "";
+
+                    sections[0].options.push({
+                        value: "reload",
+                        label: `${label} ${icon}${remaining}`,
+                    });
+                }
+
+                return sections;
             },
             (event, value) => {
+                if (value === "reload") {
+                    const actor = this.actor;
+                    const index = actor.system.actions?.findIndex((x) => x === attackData);
+
+                    return simulateReload(
+                        { actor, ammunition: attackData.ammunition, item: this.item, index },
+                        this.element
+                    );
+                }
+
                 const [index, map] = value.split("-").map(Number) as [number, ZeroToTwo];
                 const attack = index === 0 ? attackData : attackData.altUsages?.at(index - 1);
 
@@ -350,6 +389,10 @@ function getStrikeLabel() {
 
         return `${label} ${glyph} `;
     })());
+}
+
+function isAreaOrAutoFireType(type: Maybe<string>): type is "area-fire" | "auto-fire" {
+    return R.isIncludedIn(type, ["area-fire", "auto-fire"]);
 }
 
 interface StrikeShortcut extends ModelPropsFromSchema<StrikeShortcutSchema> {
