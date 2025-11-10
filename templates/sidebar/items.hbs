@@ -69,7 +69,7 @@
                 {{!-- quantity --}}
                 {{#unless (or isSubitem isContainer)}}
                 <div class="quantity">
-                    <input type="number" data-item-id="{{item.id}}"
+                    <input type="number" data-action="split-item" data-item-id="{{item.id}}"
                         data-item-property="system.quantity" value="{{item.quantity}}" min="0">
                 </div>
                 {{/unless}}

@@ -101,12 +101,17 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
     }
 
     protected async _onClickAction(event: PointerEvent, target: HTMLElement) {
-        if (event.button !== 0) return;
-
+        const action = target.dataset.action as EventAction;
         const sidebarItem = this.getSidebarItemFromElement(target);
         if (!sidebarItem) return;
 
-        const action = target.dataset.action as EventAction;
+        if (event.button !== 0) {
+            if (action === "split-item") {
+                game.toolbelt?.api.betterInventory.splitItem(sidebarItem.item);
+            }
+
+            return;
+        }
 
         if (action === "delete-item") {
             sidebarItem.delete(event);
@@ -128,6 +133,8 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
             sidebarItem.use(event);
         }
     }
+
+    protected _activateListeners(html: HTMLElement): void {}
 }
 
 const _cached: { investedToggle?: string; investedLabel?: string } = {};
@@ -159,6 +166,7 @@ type EventAction =
     | "edit-item"
     | "open-carry-type-menu"
     | "repair-item"
+    | "split-item"
     | "toggle-container"
     | "toggle-identified"
     | "toggle-invested"
