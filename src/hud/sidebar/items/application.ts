@@ -3,7 +3,6 @@ import {
     ActorPF2e,
     ApplicationRenderOptions,
     isCastConsumable,
-    isControlDown,
     PhysicalItemPF2e,
     R,
     SheetInventory,
@@ -18,8 +17,8 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
 
     protected async _prepareContext(options: ApplicationRenderOptions): Promise<ItemsHudContext> {
         const actor = this.actor;
-        const data = actor.sheet["prepareInventory"]() as ItemsHudContext;
-        const isGM = (data.isGM = game.user.isGM);
+        const sheetData = actor.sheet["prepareInventory"]();
+        const isGM = game.user.isGM;
         const customConsumableUse = game.toolbelt?.getToolSetting("actionable", "use");
         const canUseMacro = game.toolbelt?.getToolSetting("actionable", "item");
 
@@ -35,9 +34,9 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
             return !!macro || (isConsumable && itemData.hasCharges && !item.isAmmo);
         };
 
-        data.sections = await Promise.all(
+        const sections = await Promise.all(
             R.pipe(
-                data.sections,
+                sheetData.sections,
                 R.filter((section): section is SidebarItemList => section.items.length > 0),
                 R.map(async (section) => {
                     section.filterValue = new FilterValue();
@@ -85,52 +84,82 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
             )
         );
 
-        data.canIdentify =
-            isGM ||
-            (!!game.toolbelt?.getToolSetting("identify", "enabled") &&
-                game.toolbelt.getToolSetting("identify", "playerRequest"));
-        data.investedTooltip = getInvestedTooltip(data);
-        data.isCharacter = actor.isOfType("character");
-        data.isNPC = actor.isOfType("npc");
-        data.wealth = {
+        const canPlayerIdentify =
+            !isGM &&
+            !!game.toolbelt?.getToolSetting("identify", "enabled") &&
+            game.toolbelt.getToolSetting("identify", "playerRequest");
+
+        const wealth = {
             coins: actor.inventory.coins.goldValue,
             total: actor.inventory.totalWealth.goldValue,
         };
 
-        return data;
+        return {
+            ...sheetData,
+            canIdentify: isGM || canPlayerIdentify,
+            canMergeItems: game.toolbelt?.localize("betterInventory.sheet.merge"),
+            investedTooltip: getInvestedTooltip(sheetData),
+            isCharacter: actor.isOfType("character"),
+            isGM,
+            isNPC: actor.isOfType("npc"),
+            sections,
+            wealth,
+        } satisfies ItemsHudContext;
     }
 
     protected async _onClickAction(event: PointerEvent, target: HTMLElement) {
         const action = target.dataset.action as EventAction;
+
+        if (action === "merge-items" && event.button === 0) {
+            return game.toolbelt?.api.betterInventory.mergeItems(this.actor);
+        }
+
         const sidebarItem = this.getSidebarItemFromElement(target);
         if (!sidebarItem) return;
 
         if (event.button !== 0) {
             if (action === "split-item") {
-                game.toolbelt?.api.betterInventory.splitItem(sidebarItem.item);
+                sidebarItem.split();
             }
-
             return;
         }
 
-        if (action === "delete-item") {
-            sidebarItem.delete(event);
-        } else if (action === "detach-subitem") {
-            sidebarItem.item.detach({ skipConfirm: isControlDown(event) });
-        } else if (action === "edit-item") {
-            sidebarItem.openSheet();
-        } else if (action === "open-carry-type-menu") {
-            sidebarItem.openCarryTypeMenu(target);
-        } else if (action === "repair-item") {
-            sidebarItem.repair(event);
-        } else if (action === "toggle-container") {
-            sidebarItem.toggleContainer();
-        } else if (action === "toggle-identified") {
-            sidebarItem.toggleIdentified();
-        } else if (action === "toggle-invested") {
-            sidebarItem.toggleInvested();
-        } else if (action === "use-item") {
-            sidebarItem.use(event);
+        switch (action) {
+            case "delete-item": {
+                return sidebarItem.delete(event);
+            }
+
+            case "detach-subitem": {
+                return sidebarItem.detach(event);
+            }
+
+            case "edit-item": {
+                return sidebarItem.openSheet();
+            }
+
+            case "open-carry-type-menu": {
+                return sidebarItem.openCarryTypeMenu(target);
+            }
+
+            case "repair-item": {
+                return sidebarItem.repair(event);
+            }
+
+            case "toggle-container": {
+                return sidebarItem.toggleContainer();
+            }
+
+            case "toggle-identified": {
+                return sidebarItem.toggleIdentified();
+            }
+
+            case "toggle-invested": {
+                return sidebarItem.toggleInvested();
+            }
+
+            case "use-item": {
+                return sidebarItem.use(event);
+            }
         }
     }
 
@@ -138,7 +167,7 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
 }
 
 const _cached: { investedToggle?: string; investedLabel?: string } = {};
-function getInvestedTooltip(data: ItemsHudContext): string {
+function getInvestedTooltip(data: SheetInventory): string {
     const toggle = (_cached.investedToggle ??= game.i18n.localize("PF2E.ui.equipmentInvested"));
     const label = (_cached.investedLabel ??= game.i18n.localize("PF2E.InvestedLabel"));
     const { max, value } = data.invested ?? {};
@@ -164,6 +193,7 @@ type EventAction =
     | "delete-item"
     | "detach-subitem"
     | "edit-item"
+    | "merge-items"
     | "open-carry-type-menu"
     | "repair-item"
     | "split-item"
@@ -174,6 +204,7 @@ type EventAction =
 
 type ItemsHudContext = SheetInventory & {
     canIdentify: boolean;
+    canMergeItems: string | undefined;
     investedTooltip: string;
     isCharacter: boolean;
     isGM: boolean;

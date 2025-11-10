@@ -24,6 +24,11 @@
             {{localize "PF2E.BulkMaxLabel"}}: {{bulk.max}}
         </div>
     </div>
+    {{#if canMergeItems}}
+    <a data-action="merge-items" data-tooltip="{{canMergeItems}}">
+        <i class="fa-solid fa-merge"></i>
+    </a>
+    {{/if}}
 </div>
 {{#each sections as |section|}}
 <header data-filter-value="{{section.filterValue}}">

@@ -6,6 +6,7 @@ import {
     htmlClosest,
     IdentifyItemPopup,
     InventoryItem,
+    isControlDown,
     ITEM_CARRY_TYPES,
     PhysicalItemPF2e,
     tupleHasValue,
@@ -29,6 +30,10 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
     delete(event: MouseEvent) {
         const item = this.item;
         item.actor.sheet["deleteItem"](item, event);
+    }
+
+    detach(event: PointerEvent) {
+        this.item.detach({ skipConfirm: isControlDown(event) });
     }
 
     /**
@@ -83,6 +88,10 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
 
     openSheet() {
         this.item.sheet.render(true);
+    }
+
+    split() {
+        game.toolbelt?.api.betterInventory.splitItem(this.item);
     }
 
     repair(event: Event) {

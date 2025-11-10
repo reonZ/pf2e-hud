@@ -63,6 +63,14 @@
                 white-space: nowrap;
             }
         }
+
+        [data-action="merge-items"] {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1em;
+            margin-left: 0.1em;
+        }
     }
 
     .item {
