@@ -1,3 +1,26 @@
+# 2.36.0
+
+-   this is a system `7.7.0` release
+-   make the necessary changes to have strikes (and their shortcuts) working with the latest version
+    -   variant actions now using index
+    -   `Auto Fire` and `Area Fire` variant actions
+    -   `Reload` auxiliary action
+-   now add a flag icon to items that are flagged by the `PF2e Dailies` module
+-   now display shield details when hovering over the shield related fields in the `Persistent HUD` and `Token HUD`
+-   `Actions Sidebar`:
+    -   add image to strikes and blasts
+    -   fix commander tactics being disabled when having prepared the `Tactics` daily
+-   `Items Sidebar`:
+    -   using `[Right Click]` on an item quantity input field will try to initiate a `Split Item`
+    -   add a `Merge Items` button at the top of the sidebar, next to the bulk bar
+    -   both those changes are directly pulled from the `PF2e Toolbelt` module and need you to update it to the version `3.18.0`
+-   `Persistent Shortcuts`:
+    -   because ammunition are now an item type instead of being consumables, their shortcut will no longer work
+    -   slightly adjust the checkbox position to avoid overlapping
+    -   fix styling issue of context menu options that have an action icon
+-   `Strike Shortcut`:
+    -   add custom default images for NPC `Area Fire` and `Auto Fire` attacks
+
 # 2.35.1
 
 -   `Spell Shortcut`:
