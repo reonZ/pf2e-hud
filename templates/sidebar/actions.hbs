@@ -320,12 +320,10 @@
         {{/if}}>
         {{!-- first attack --}}
         {{#if (eq index 0)}}
-        {{#if @root.isCharacter}}
         {{#if (or (eq ../type 'auto-fire') (eq ../type 'area-fire'))}}
         <span class="action-glyph">{{../glyph}}</span>
-        {{else}}
+        {{else if @root.isCharacter}}
         {{localize 'PF2E.WeaponStrikeLabel'}}
-        {{/if}}
         {{/if}}
         {{variant.label}}
         {{!-- other map --}}

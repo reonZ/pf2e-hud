@@ -409,7 +409,6 @@ function simulateReload(
     if (!R.isNumber(index) || !item || !actor || !target || !ammunition?.remaining) return;
 
     const nbCompatible = ammunition.compatible.length;
-    console.log(nbCompatible);
     const { left, top, width, height } = target.getBoundingClientRect();
     const btn = createButtonElement({
         dataset: {
