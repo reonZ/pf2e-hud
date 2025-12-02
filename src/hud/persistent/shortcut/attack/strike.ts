@@ -94,7 +94,7 @@ class StrikeShortcut extends AttackShortcut<
         return (
             !!this.item &&
             !!this.attackData?.canAttack &&
-            this.attackData.ready &&
+            this.attackData.handsAvailable &&
             (!("quantity" in this.item) || this.item.quantity > 0)
         );
     }
@@ -213,7 +213,7 @@ class StrikeShortcut extends AttackShortcut<
             ? "match"
             : !this.attackData?.canAttack
             ? "available"
-            : !this.attackData?.ready
+            : !this.attackData?.handsAvailable
             ? "hands"
             : this.item && "quantity" in this.item && this.item.quantity <= 0
             ? "quantity"
