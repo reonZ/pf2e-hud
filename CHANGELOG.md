@@ -1,3 +1,8 @@
+# 2.36.2
+
+-   `Strike Shortcut`:
+    -   fix strikes not being intractable when the weapon is sheathed
+
 # 2.36.0
 
 -   this is a system `7.7.0` release
