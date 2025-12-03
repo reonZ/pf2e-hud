@@ -1,3 +1,7 @@
+# 2.36.3
+
+-   fix `Reload` localization of strike actions/shortcuts
+
 # 2.36.2
 
 -   `Strike Shortcut`:
