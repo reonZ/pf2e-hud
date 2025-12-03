@@ -311,7 +311,7 @@ class StrikeShortcut extends AttackShortcut<
 
                 const ammunition = attackData.ammunition;
                 if (ammunition?.requiresReload) {
-                    const label = game.i18n.localize("PF2E.Actions.Reload.ShortTitle");
+                    const label = game.i18n.localize("PF2E.Actions.Interact.Reload.Title");
                     const icon = Handlebars.helpers.actionGlyph(ammunition.reloadGlyph);
                     const remaining = ammunition.capacity > 1 ? ` ${ammunition.remaining}` : "";
 
