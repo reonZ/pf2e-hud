@@ -409,7 +409,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 
         for (const target of shortcuts) {
             const slot = Number(target.dataset.slot);
-            if (isNaN(slot) || slot < 0 || slot > this.nbSlots) return;
+            if (isNaN(slot) || slot < 0 || slot > this.nbSlots) continue;
 
             target.addEventListener("drop", async (event) => {
                 if (isLocked(event)) return;
