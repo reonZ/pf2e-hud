@@ -35,10 +35,9 @@
     --variant-color-selected: var(--color-reversed);
     --variant-gap: 2px;
 
-    --small-img-background: #ffffff7a;
-    --small-image-height: 1.6em;
-
     --input-checkbox-width: 1.7em;
+
+    --action-image-height: 1.8em;
 
     position: absolute;
     padding: var(--sidebar-external-padding);
@@ -362,11 +361,7 @@
             align-items: center;
 
             .image {
-                height: var(--small-image-height);
-
-                img {
-                    background: var(--small-img-background);
-                }
+                height: var(--action-image-height);
             }
 
             .name {
@@ -378,10 +373,6 @@
                 align-items: center;
                 gap: 0.2em;
             }
-        }
-
-        &.action {
-            --item-image-border-color: transparent;
         }
 
         &.statistic {
