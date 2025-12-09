@@ -1,3 +1,12 @@
+# 2.37.0
+
+-   add new `Feats` sidebar:
+    -   the icon to open the sidebar will only appear on the `Persistent HUD`
+    -   children feats will all be merged into a single depth list instead of nesting them deeper and deeper
+        -   the filter will still highlight parents though
+-   add new `Feat Shortcut`:
+    -   simply drag & drop a feat from the `Feats` sidebar to create it
+
 # 2.36.3
 
 -   fix `Reload` localization of strike actions/shortcuts
