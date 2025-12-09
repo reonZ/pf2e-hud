@@ -1,4 +1,4 @@
-import { CharacterPF2e, FeatPF2e, IdField } from "module-helpers";
+import { CharacterPF2e, CreaturePF2e, FeatPF2e, IdField } from "module-helpers";
 import {
     BaseShortcutSchema,
     generateBaseShortcutFields,
@@ -18,7 +18,7 @@ class FeatShortcut extends PersistentShortcut<FeatShortcutSchema> {
     }
 
     static async getItem(
-        actor: CharacterPF2e,
+        actor: CreaturePF2e,
         data: FeatShortcutData
     ): Promise<Maybe<FeatPF2e<CharacterPF2e>>> {
         return actor.items.get<FeatPF2e<CharacterPF2e>>(data.itemId);

@@ -212,6 +212,20 @@ class PersistentPF2eHUD
                 },
             },
             {
+                key: "slots",
+                type: Number,
+                default: 0,
+                scope: "user",
+                range: {
+                    min: 0,
+                    max: 20,
+                    step: 2,
+                },
+                onChange: () => {
+                    this.shortcutsPanel.render({ keepCache: true });
+                },
+            },
+            {
                 key: "autoFill",
                 type: Boolean,
                 default: true,
@@ -1447,6 +1461,7 @@ type PersistentSettings = {
     selection: (typeof SELECTION_MODES)[number];
     shiftEffect: boolean;
     showEffects: boolean;
+    slots: number;
 };
 
 type MenuToggleKey = keyof typeof PersistentPF2eHUD.MENU_TOGGLES;

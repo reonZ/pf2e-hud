@@ -102,7 +102,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     );
 
     get nbSlots(): number {
-        return 18;
+        return 18 + Math.floor(this.parent.settings.slots / 2) * 2;
     }
 
     get tab(): number {

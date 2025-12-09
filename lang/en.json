@@ -89,6 +89,10 @@
                 "shiftEffect": {
                     "name": "Hold Shift for Effects",
                     "hint": "When enabled, you need to hold the 'shift' key to interact with the hud effect icons."
+                },
+                "slots": {
+                    "name": "Extra Shortcut Slots",
+                    "hint": "Number of extra shortcut slots to add to the HUD."
                 }
             },
             "sidebar": {
