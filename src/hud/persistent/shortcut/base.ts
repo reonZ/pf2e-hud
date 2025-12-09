@@ -10,38 +10,6 @@ import {
 import { ShortcutCache, ShortcutSlotId } from "..";
 import fields = foundry.data.fields;
 
-function generateBaseShortcutFields<T extends string>(type: T): BaseShortcutSchema {
-    return {
-        custom: new fields.SchemaField({
-            img: new fields.FilePathField({
-                categories: ["IMAGE"],
-                required: false,
-                nullable: true,
-            }),
-            name: new fields.StringField({
-                required: false,
-                nullable: true,
-            }),
-        }),
-        img: new fields.FilePathField({
-            categories: ["IMAGE"],
-            required: true,
-            nullable: false,
-        }),
-        name: new fields.StringField({
-            required: false,
-            nullable: false,
-        }),
-        type: new fields.StringField({
-            required: true,
-            nullable: false,
-            blank: false,
-            initial: type,
-            choices: [type],
-        }),
-    };
-}
-
 abstract class PersistentShortcut<
     TSchema extends BaseShortcutSchema = BaseShortcutSchema,
     TItem extends ItemPF2e = ItemPF2e
@@ -274,6 +242,38 @@ abstract class PersistentShortcut<
 
 interface PersistentShortcut<TSchema extends BaseShortcutSchema, TItem extends ItemPF2e>
     extends ModelPropsFromSchema<BaseShortcutSchema> {}
+
+function generateBaseShortcutFields<T extends string>(type: T): BaseShortcutSchema {
+    return {
+        custom: new fields.SchemaField({
+            img: new fields.FilePathField({
+                categories: ["IMAGE"],
+                required: false,
+                nullable: true,
+            }),
+            name: new fields.StringField({
+                required: false,
+                nullable: true,
+            }),
+        }),
+        img: new fields.FilePathField({
+            categories: ["IMAGE"],
+            required: true,
+            nullable: false,
+        }),
+        name: new fields.StringField({
+            required: false,
+            nullable: false,
+        }),
+        type: new fields.StringField({
+            required: true,
+            nullable: false,
+            blank: false,
+            initial: type,
+            choices: [type],
+        }),
+    };
+}
 
 type ShortcutRadialSection = {
     title: string | undefined;

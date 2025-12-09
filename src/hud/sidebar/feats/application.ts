@@ -66,13 +66,10 @@ class FeatsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e<ActorPF2e>, FeatsSideb
             R.filter(R.isTruthy)
         );
 
-        return {
-            children,
-            feat: this.addSidebarItem(FeatsSidebarItem, "id", {
-                children,
-                item: slot.feat,
-            }),
-        };
+        const feat = this.addSidebarItem(FeatsSidebarItem, "id", { item: slot.feat });
+        feat.filterValue.add(...children.map(({ feat }) => feat));
+
+        return { children, feat };
     }
 }
 

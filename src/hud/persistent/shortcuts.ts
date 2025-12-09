@@ -43,6 +43,8 @@ import {
     EquipmentShortcutData,
     ExtraActionShortcut,
     ExtraActionShortcutData,
+    FeatShortcut,
+    FeatShortcutData,
     getItemSlug,
     MacroShortcut,
     MacroShortcutData,
@@ -69,6 +71,7 @@ const SHORTCUTS = {
     consumable: ConsumableShortcut,
     equipment: EquipmentShortcut,
     extraAction: ExtraActionShortcut,
+    feat: FeatShortcut,
     macro: MacroShortcut,
     skillAction: SkillActionShortcut,
     spell: SpellShortcut,
@@ -656,6 +659,7 @@ type ShortcutData =
     | ConsumableShortcutData
     | EquipmentShortcutData
     | ExtraActionShortcutData
+    | FeatShortcutData
     | MacroShortcutData
     | SkillActionShortcutData
     | SpellShortcutData

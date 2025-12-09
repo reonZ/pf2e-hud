@@ -162,8 +162,6 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
             }
         }
     }
-
-    protected _activateListeners(html: HTMLElement): void {}
 }
 
 const _cached: { investedToggle?: string; investedLabel?: string } = {};

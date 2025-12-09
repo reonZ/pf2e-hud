@@ -1,6 +1,6 @@
+import { MacroShortcutData } from "hud";
 import { ActorPF2e, getFlag, ItemPF2e, MacroPF2e, setFlag } from "module-helpers";
 import { BaseSidebarItem } from "..";
-import { MacroShortcutData } from "hud/persistent";
 
 class MacroSidebarItem extends BaseSidebarItem<ItemPF2e, ExtraMacroData> {
     get item(): ItemPF2e {

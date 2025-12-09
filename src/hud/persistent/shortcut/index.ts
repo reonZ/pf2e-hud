@@ -2,6 +2,7 @@ export * from "./_utils";
 export * from "./base";
 export * from "./action";
 export * from "./attack";
+export * from "./feat";
 export * from "./item";
 export * from "./macro";
 export * from "./rolloption";
