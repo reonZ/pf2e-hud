@@ -35,8 +35,8 @@
     --variant-color-selected: var(--color-reversed);
     --variant-gap: 2px;
 
-    --action-img-background: #ffffff7a;
-    --action-image-height: 1.6em;
+    --small-img-background: #ffffff7a;
+    --small-image-height: 1.6em;
 
     --input-checkbox-width: 1.7em;
 
@@ -350,21 +350,22 @@
         }
 
         &.action,
+        &.feat,
         &.option-toggle {
             --item-name-background: transparent;
         }
 
-        &.action {
-            --item-image-border-color: transparent;
+        &.action,
+        &.feat {
             --item-chat-icon-size: 1em;
 
             align-items: center;
 
             .image {
-                height: var(--action-image-height);
+                height: var(--small-image-height);
 
                 img {
-                    background: var(--action-img-background);
+                    background: var(--small-img-background);
                 }
             }
 
@@ -377,6 +378,10 @@
                 align-items: center;
                 gap: 0.2em;
             }
+        }
+
+        &.action {
+            --item-image-border-color: transparent;
         }
 
         &.statistic {
@@ -492,6 +497,7 @@
 
 @import "./actions";
 @import "./extras";
+@import "./feats";
 @import "./items";
 @import "./skills";
 @import "./spells";

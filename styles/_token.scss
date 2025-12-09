@@ -24,6 +24,10 @@
     }
 
     [data-panel="info"] {
+        [data-sidebar="feats"] {
+            display: none;
+        }
+
         hr {
             grid-column: 1 / -1;
 

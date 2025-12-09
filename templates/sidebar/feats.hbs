@@ -1,0 +1,24 @@
+{{#each sections as |section|}}
+<header data-filter-value="{{section.filterValue}}" data-section="{{section.id}}">
+    <div class="name">{{localize section.label}}</div>
+</header>
+{{#each section.slots as |slot|}}
+{{> 'feat-slot' feat=slot.feat children=slot.children}}
+{{/each}}
+{{/each}}
+
+
+{{#*inline 'feat-slot'}}
+<div class="item feat{{#if subitem}} subitem{{/if}}" data-item-id="{{feat.id}}" draggable="true"
+    data-filter-value="{{feat.filterValue}}">
+    {{!-- image --}}
+    {{> (@root.partial 'item-image') feat}}
+    {{!-- name --}}
+    <div class="name">
+        <a data-action="item-description">{{feat.label}}</a>
+    </div>
+</div>
+{{#each children as |slot|}}
+{{> 'feat-slot' feat=slot.feat children=slot.children subitem=true}}
+{{/each}}
+{{/inline}}

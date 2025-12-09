@@ -1,0 +1,22 @@
+#pf2e-hud-sidebar[data-type="feats"] {
+    .item.feat {
+        --small-image-height: 1.8em;
+
+        &.subitem {
+            position: relative;
+            padding-left: 1em;
+            margin-top: 0;
+            padding-top: var(--item-spacing);
+
+            &::before {
+                position: absolute;
+                content: "";
+                top: 0;
+                bottom: 0;
+                left: 0.5em;
+                border-left: 1px solid var(--color);
+                opacity: 0.6;
+            }
+        }
+    }
+}

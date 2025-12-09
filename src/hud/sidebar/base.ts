@@ -45,6 +45,7 @@ import {
     BaseSidebarItem,
     createRollOptionsElements,
     ExtrasSidebarPF2eHUD,
+    FeatsSidebarPF2eHUD,
     generateToggleKey,
     ItemsSidebarPF2eHUD,
     SkillsSidebarPF2eHUD,
@@ -94,6 +95,7 @@ abstract class SidebarPF2eHUD<
         return {
             actions: ActionsSidebarPF2eHUD,
             extras: ExtrasSidebarPF2eHUD,
+            feats: FeatsSidebarPF2eHUD,
             items: ItemsSidebarPF2eHUD,
             skills: SkillsSidebarPF2eHUD,
             spells: SpellsSidebarPF2eHUD,

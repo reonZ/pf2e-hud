@@ -38,7 +38,7 @@
         [portrait-end info-start] var(--columns-icon)
         [info-end statistics-start] var(--column-2fr)
         [statistics-end resources-start] var(--column-1fr)
-        [resources-end sidebars-start] 9em
+        [resources-end sidebars-start] 10.434em
         [sidebars-end stretch-start] auto
         [stretch-end full-end];
     grid-template-rows:
@@ -199,7 +199,7 @@
     [data-panel="sidebars"] {
         grid-column: sidebars;
         grid-row: top;
-        grid-template-columns: repeat(5, 1fr);
+        grid-auto-flow: column;
         align-items: center;
 
         [data-sidebar].active {

@@ -38,13 +38,14 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e | AbilityItemPF2e, Sk
     get name(): "skills" {
         return "skills";
     }
+
     getSidebarItemKey({ itemId, itemUuid, statistic }: DOMStringMap): string | undefined {
         return itemUuid && statistic ? `${statistic}-${itemUuid}` : itemUuid ?? itemId;
     }
 
     protected async _prepareContext(
         options: ApplicationRenderOptions
-    ): Promise<SkillSidebarContext> {
+    ): Promise<SkillsSidebarContext> {
         const actor = this.actor;
         const hideUntrained = getGlobalSetting("hideUntrained");
         const lores = actor.itemTypes.lore.map((item) => new LoreSkill(item));
@@ -168,7 +169,7 @@ type EventAction =
     | "roll-statistic-action"
     | "toggle-hide-untrained";
 
-type SkillSidebarContext = {
+type SkillsSidebarContext = {
     follow: FollowTheLeader;
     hideUntrained: boolean;
     isCharacter: boolean;

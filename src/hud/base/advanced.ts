@@ -22,7 +22,6 @@ import {
     addListener,
     ApplicationRenderOptions,
     CharacterPF2e,
-    CreaturePF2e,
     getSkillLabel,
     HeldShieldData,
     localize,
@@ -72,9 +71,9 @@ const INFOS = [
         slug: "languages",
         label: "PF2E.Actor.Creature.Language.Plural",
         icon: "fa-solid fa-message-dots",
-        tooltipEntries: (actor, { isCreature }) => {
-            if (!isCreature) return [];
-            return (actor as CreaturePF2e).system.details.languages.value.map((lang) =>
+        tooltipEntries: (actor) => {
+            if (!actor.isOfType("creature")) return [];
+            return actor.system.details.languages.value.map((lang) =>
                 game.i18n.localize(CONFIG.PF2E.languages[lang])
             );
         },
@@ -83,7 +82,7 @@ const INFOS = [
         slug: "senses",
         label: "PF2E.Actor.Creature.Sense.Plural",
         icon: "fa-solid fa-signal-stream",
-        tooltipEntries: (actor: ActorPF2e) => {
+        tooltipEntries: (actor) => {
             return actor.perception?.senses.map((sense) => sense.label).filter(R.isTruthy) ?? [];
         },
     },
@@ -91,7 +90,7 @@ const INFOS = [
         icon: "fa-solid fa-ankh",
         label: "PF2E.ImmunitiesLabel",
         slug: "immunities",
-        tooltipEntries: (actor: ActorPF2e) => {
+        tooltipEntries: (actor) => {
             return actor.attributes.immunities.map((immunity) => immunity.label);
         },
     },
@@ -99,7 +98,7 @@ const INFOS = [
         icon: "fa-solid fa-shield-virus",
         label: "PF2E.ResistancesLabel",
         slug: "resistances",
-        tooltipEntries: (actor: ActorPF2e) => {
+        tooltipEntries: (actor) => {
             return actor.attributes.resistances.map((resistance) => resistance.label);
         },
     },
@@ -107,7 +106,7 @@ const INFOS = [
         icon: "fa-solid fa-heart-crack",
         label: "PF2E.WeaknessesLabel",
         slug: "weaknesses",
-        tooltipEntries: (actor: ActorPF2e) => {
+        tooltipEntries: (actor) => {
             return actor.attributes.weaknesses.map((weakness) => weakness.label);
         },
     },
@@ -134,17 +133,9 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             const isCharacter = actor.isOfType("character");
             const isCombatant = isCharacter || isNPC;
 
-            const options = {
-                isCharacter,
-                isCreature: actor.isOfType("creature"),
-                isCombatant,
-                isNPC,
-            };
-
             const sidebars = getSidebars(
                 actor,
-                SidebarPF2eHUD.isParent(this) ? SidebarPF2eHUD.current : null,
-                options
+                SidebarPF2eHUD.isParent(this) ? SidebarPF2eHUD.current : null
             );
 
             return {
@@ -153,7 +144,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
                 hasActor: true,
                 hasCover: !!getCoverEffect(actor),
                 health,
-                infoSections: getInfoSections(actor, options),
+                infoSections: getInfoSections(actor),
                 isCharacter,
                 isCombatant,
                 isNPC,
@@ -364,10 +355,10 @@ function getListLoopValue<T>(event: PointerEvent, list: ReadonlyArray<T>, curren
     return list.at((currentIndex + direction) % list.length) as T;
 }
 
-function getInfoSections(actor: ActorPF2e, options: InfoOptions) {
+function getInfoSections(actor: ActorPF2e) {
     return INFOS.map((info): InfoSection => {
         const tooltipData = R.pipe(
-            info.tooltipEntries(actor, options),
+            info.tooltipEntries(actor),
             R.filter(R.isTruthy),
             R.map((row) => `<li>${row}</li>`)
         );
@@ -570,15 +561,11 @@ type AllianceData = {
     tooltip?: string;
 };
 
-type InfoOptions = {
-    isCreature: boolean;
-};
-
 type InfoDetails = {
     icon: string;
     label: string;
     slug: string;
-    tooltipEntries: (actor: ActorPF2e, options: InfoOptions) => string[];
+    tooltipEntries: (actor: ActorPF2e) => string[];
 };
 
 type InfoSlug = (typeof INFOS)[number]["slug"];

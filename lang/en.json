@@ -454,10 +454,11 @@
         },
         "sidebars": {
             "actions": "Actions",
+            "extras": "Extras",
+            "feats": "Feats",
             "items": "Inventory",
-            "spells": "Spellcasting",
             "skills": "Skills",
-            "extras": "Extras"
+            "spells": "Spellcasting"
         },
         "spellcasting": {
             "charges": "Charges",
