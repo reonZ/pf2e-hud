@@ -2,6 +2,7 @@
     <div class="item statistic{{#if isProficient}} proficient{{/if}}" data-item-uuid="{{sourceId}}"
         data-statistic="{{statistic}}" {{#if (and isProficient (not hasVariants))}}draggable="true"
         {{/if}} data-filter-value="{{filterValue}}">
+        {{> (@root.partial 'item-image') this}}
         <div class="name">
             <a data-action="item-description">
                 {{label}} {{{actionGlyph actionCost}}}
@@ -14,9 +15,6 @@
                 <i class="fa-solid fa-dice-d20"></i>
             </a>
             {{/if}}
-            <a data-action="send-to-chat">
-                <i class="fa-solid fa-message"></i>
-            </a>
         </div>
     </div>
     {{#if (and isProficient variants.size)}}
@@ -31,5 +29,4 @@
         {{/each}}
     </div>
     {{/if}}
-    <img src="{{img}}" class="drag-img">
 </div>

@@ -350,12 +350,14 @@
 
         &.action,
         &.feat,
+        &.statistic,
         &.option-toggle {
             --item-name-background: transparent;
         }
 
         &.action,
-        &.feat {
+        &.feat,
+        &.statistic {
             --item-chat-icon-size: 1em;
 
             align-items: center;
@@ -376,12 +378,7 @@
         }
 
         &.statistic {
-            justify-content: space-between;
-            padding-block: 0.2em;
-
             .name {
-                background: none;
-
                 .action-glyph {
                     font-size: 0.9em;
                 }
@@ -394,20 +391,23 @@
             }
 
             &:not(.proficient) {
+                .image {
+                    filter: grayscale(1) contrast(0.7);
+                }
+
                 .name {
                     color: var(--color-disabled);
                 }
             }
         }
-
-        &:not(:first-child) {
-            margin-top: var(--item-spacing);
-        }
     }
 
     .statistic-wrapper {
-        &:not(:first-child) {
-            margin-top: var(--item-spacing);
+        margin-top: var(--item-spacing);
+
+        .variants {
+            margin-top: 0.2em;
+            padding-left: 0.1em;
         }
 
         &:hover {
