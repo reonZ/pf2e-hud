@@ -39,7 +39,7 @@ const SIDEBARS = [
         type: "feats",
         icon: "fa-solid fa-medal",
         disabled: (actor) => {
-            return !actor.isOfType("character");
+            return !actor.isOfType("character") || !actor.itemTypes.feat.length;
         },
     },
     {
