@@ -222,6 +222,11 @@
                 img {
                     height: var(--action-image-height);
                 }
+
+                a {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
             }
         }
 
