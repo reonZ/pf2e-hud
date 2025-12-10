@@ -400,6 +400,10 @@
                 }
             }
         }
+
+        &:not(:first-child) {
+            margin-top: var(--item-spacing);
+        }
     }
 
     .statistic-wrapper {
