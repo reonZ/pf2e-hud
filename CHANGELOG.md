@@ -1,4 +1,4 @@
-# 2.37.0
+# 2.38.0
 
 -   add new `Feats` sidebar:
     -   the icon to open the sidebar will only appear on the `Persistent HUD`
@@ -6,6 +6,19 @@
         -   the filter will still highlight parents though
 -   add new `Feat Shortcut`:
     -   simply drag & drop a feat from the `Feats` sidebar to create it
+-   add new `Sidebar Filter Always Visible` user setting:
+    -   the sidebars filter field will always be displayed instead of needing to use the keybind
+    -   using the keybind will instead give it focus directly
+-   `Actions Sidebar`:
+    -   increase slightly the size of the action images
+-   `Extras Sidebar`:
+    -   add icons to the extra actions
+-   `Persistent Shortcuts`:
+    -   add new `Extra Shortcut Slots` user setting allowing you to go beyond the limit of 18 shortcuts if you wish to
+-   `Skills Sidebar`:
+    -   add icons to the skill actions
+-   `Spell Shortcut`:
+    -   add dc value to the tooltip
 
 # 2.36.3
 
