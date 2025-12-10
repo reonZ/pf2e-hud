@@ -47,6 +47,10 @@
         }
       },
       "global": {
+        "alwaysFilter": {
+          "name": "Filtr paska bocznego zawsze widoczny",
+          "hint": "Filtr pasków bocznych będzie zawsze widoczny, bez konieczności używania skrótu klawiszowego."
+        },
         "highestSpeed": {
           "name": "Pokaż najwyższą szybkość",
           "hint": "Jeśli żadna szybkość nie została wybrana ręcznie, najwyższa z nich będzie zawsze wyświetlana domyślnie, nawet jeśli szybkość na lądzie nie wynosi 0."
@@ -89,6 +93,10 @@
         "shiftEffect": {
           "name": "Przytrzymanie Shift dla efektów",
           "hint": "Po włączeniu tej funkcji należy przytrzymać klawisz „Shift”, aby wejść w interakcję z ikonami efektów HUD."
+        },
+        "slots": {
+          "name": "Dodatkowe miejsca na skróty",
+          "hint": "Liczba dodatkowych skrótów, które można dodać do HUD."
         }
       },
       "sidebar": {
@@ -454,10 +462,11 @@
     },
     "sidebars": {
       "actions": "Akcje",
+      "extras": "Dodatki",
+      "feats": "Atuty\n",
       "items": "Ekwipunek",
-      "spells": "Rzucanie zaklęć",
       "skills": "Umiejętności",
-      "extras": "Dodatki"
+      "spells": "Rzucanie zaklęć"
     },
     "spellcasting": {
       "charges": "Ładunki",
