@@ -48,6 +48,8 @@
       },
       "global": {
         "alwaysFilter": {
+          "name": "Filtro de la barra lateral siempre visible",
+          "hint": "La entrada del filtro de las barras laterales siempre estará visible en lugar de requerir el uso de una combinación de teclas."
         },
         "highestSpeed": {
           "name": "Mostrar la mayor velocidad",
@@ -93,6 +95,8 @@
           "hint": "Cuando esté habilitado, debe mantener presionada la tecla \"shift\" para interactuar con los íconos de efectos del HUD."
         },
         "slots": {
+          "name": "Ranuras de acceso directo adicionales",
+          "hint": "Número de ranuras de acceso directo adicionales para agregar al HUD."
         }
       },
       "sidebar": {
@@ -459,6 +463,7 @@
     "sidebars": {
       "actions": "Acciones",
       "extras": "Extras",
+      "feats": "Dotes",
       "items": "Inventario",
       "skills": "Habilidades",
       "spells": "Lanzamiento de conjuros"
