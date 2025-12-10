@@ -311,7 +311,16 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
     }
 
     get subtitle(): string {
-        return this.spellcastinEntry?.name ?? localize("shortcuts.tooltip.subtitle", this.type);
+        const entry = this.spellcastinEntry;
+
+        if (!entry) {
+            return localize("shortcuts.tooltip.subtitle", this.type);
+        }
+
+        const entryDc = entry.statistic?.dc.value;
+        const dcLabel = entryDc && game.i18n.format("PF2E.DCWithValue", { dc: entryDc, text: "" });
+
+        return dcLabel ? `${dcLabel} - ${entry.name}` : entry.name;
     }
 
     use(event: MouseEvent) {
