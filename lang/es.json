@@ -47,6 +47,8 @@
         }
       },
       "global": {
+        "alwaysFilter": {
+        },
         "highestSpeed": {
           "name": "Mostrar la mayor velocidad",
           "hint": "Si no se especifica una velocidad, la más alta se mostrará incluso si la velocidad en tierra no es 0."
@@ -89,6 +91,8 @@
         "shiftEffect": {
           "name": "Mantenga presionado \"shift\" para ver los efectos",
           "hint": "Cuando esté habilitado, debe mantener presionada la tecla \"shift\" para interactuar con los íconos de efectos del HUD."
+        },
+        "slots": {
         }
       },
       "sidebar": {
@@ -258,6 +262,10 @@
           "hover": "Mostrar la IU únicamente cuando se pasa al ratón por el retrato"
         },
         "editAvatar": "Editar avatar",
+        "lockOwned": {
+          "lock": "Prevenir la selección de actores propios",
+          "unlock": "Permitir la selección de actores propios"
+        },
         "pin": "Fijar actor",
         "setActor": {
           "set": "Elegir el token seleccionado como actor persistente",
@@ -354,7 +362,10 @@
       },
       "error": {
         "locked": "Los atajos están bloqueados en la barra de atajos",
+        "notHUD": "Debes arrastrar elementos desde el propio HUD para crear accesos directos.",
+        "notScript": "Solo se pueden agregar macros de script a los accesos directos.",
         "wrongActor": "Solo puedes crear atajos desde el mismo actor persistente.",
+        "wrongData": "Los datos proporcionados no son válidos.",
         "wrongType": "No puedes crear un atajo de ese tipo."
       },
       "tooltip": {
@@ -391,6 +402,7 @@
           "equip": "Sin equipar",
           "expended": "Conjuro gastado",
           "focus": "Reserva de puntos de foco vacía",
+          "hands": "Sin mano libre",
           "macro": "No hay macro coincidente",
           "match": "No hay coincidencia",
           "prepared": "Conjuro no preparado",
@@ -446,10 +458,10 @@
     },
     "sidebars": {
       "actions": "Acciones",
+      "extras": "Extras",
       "items": "Inventario",
-      "spells": "Lanzamiento de conjuros",
       "skills": "Habilidades",
-      "extras": "Extras"
+      "spells": "Lanzamiento de conjuros"
     },
     "spellcasting": {
       "charges": "Cargas",
