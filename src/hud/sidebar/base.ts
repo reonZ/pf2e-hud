@@ -51,6 +51,7 @@ import {
     SkillsSidebarPF2eHUD,
     SpellsSidebarPF2eHUD,
 } from ".";
+import { getGlobalSetting } from "settings";
 
 const _cached: { filter?: string } = {};
 
@@ -121,7 +122,7 @@ abstract class SidebarPF2eHUD<
             {
                 name: "filter",
                 onUp: () => {
-                    if (this.#filter) {
+                    if (this.#filter && !getGlobalSetting("alwaysFilter")) {
                         this.filter = "";
                     } else {
                         this.openFilter();
@@ -330,7 +331,7 @@ abstract class SidebarPF2eHUD<
 
     protected _activateListeners(html: HTMLElement) {}
 
-    protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
+    protected _onFirstRender(context: object, options: SidebarRenderOptions): void {
         SidebarPF2eHUD.#instance = this;
         SidebarPF2eHUD.#filter = "";
 
@@ -347,7 +348,7 @@ abstract class SidebarPF2eHUD<
         }
     }
 
-    protected _onRender(context: object, options: ApplicationRenderOptions): void {
+    protected _onRender(context: object, options: SidebarRenderOptions): void {
         htmlQuery(this.parent.element, `[data-sidebar="${this.name}"]`)?.classList.add("active");
         this.#setColumns();
 
@@ -383,15 +384,17 @@ abstract class SidebarPF2eHUD<
         this.parent.removeEventListener("render", this.#parentRenderListener);
     }
 
-    protected _configureRenderOptions(options: ApplicationRenderOptions): void {
+    protected _configureRenderOptions(options: SidebarRenderOptions): void {
         super._configureRenderOptions(options);
+
+        options.alwaysFilter = getGlobalSetting("alwaysFilter");
 
         this.sidebarItems.clear();
     }
 
     protected async _renderHTML(
         context: SidebarRenderContext,
-        options: ApplicationRenderOptions
+        options: SidebarRenderOptions
     ): Promise<SidebarHudRenderElements> {
         const actor = this.actor;
         const flaggedItems = actor.isOfType("character")
@@ -421,6 +424,7 @@ abstract class SidebarPF2eHUD<
 
         const filterLabel = (_cached.filter ??= localize("sidebar.filter"));
         const filterElement = createHTMLElement("div", {
+            classes: options.alwaysFilter ? ["visible"] : [],
             content: `<input type="text" id="pf2e-hud-sidebar-filter" placeholder="${filterLabel}">`,
             dataset: { panel: "filter" },
         });
@@ -436,7 +440,7 @@ abstract class SidebarPF2eHUD<
     protected _replaceHTML(
         { filterElement, innerElement, sidebarElement }: SidebarHudRenderElements,
         content: HTMLElement,
-        options: ApplicationRenderOptions
+        options: SidebarRenderOptions
     ): void {
         const previousInner = this.#innerElement;
         const previousFilter = this.#filterElement;
@@ -480,7 +484,7 @@ abstract class SidebarPF2eHUD<
             postSyncElement(innerElement, state);
         }
 
-        this.#activateFilterListener(filterElement);
+        this.#activateFilterListener(filterElement, options);
         this.#activateInnerListeners(innerElement);
         this._activateListeners(innerElement);
     }
@@ -562,12 +566,20 @@ abstract class SidebarPF2eHUD<
         element.style.setProperty("--max-height", `${maxHeight}px`);
     }
 
-    #activateFilterListener(html: HTMLElement) {
-        addListener(html, "input", "keyup", (_, event) => {
-            if (event.key === "Enter") {
+    #activateFilterListener(html: HTMLElement, options: SidebarRenderOptions) {
+        addListener(html, "input", "keyup", (el, event) => {
+            if (!R.isIncludedIn(event.key, ["Enter", "Escape"])) return;
+
+            event.preventDefault();
+
+            if (options.alwaysFilter) {
+                el.blur();
+            } else {
                 SidebarPF2eHUD.closeFilter(false);
-            } else if (event.key === "Escape") {
-                SidebarPF2eHUD.closeFilter(true);
+            }
+
+            if (event.key === "Escape") {
+                el.value = "";
                 SidebarPF2eHUD.filter = "";
             }
         });
@@ -669,6 +681,10 @@ type UpdatedSidebarCoords = SidebarCoords & { bounds: DOMRect; uiScale: number }
 type SidebarRenderContext = ApplicationRenderContext & {
     partial: (key: string) => string;
     flagged: (item?: { id?: string }) => boolean;
+};
+
+type SidebarRenderOptions = ApplicationRenderOptions & {
+    alwaysFilter: boolean;
 };
 
 MODULE.devExpose({ SidebarPF2eHUD });

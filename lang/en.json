@@ -47,6 +47,10 @@
                 }
             },
             "global": {
+                "alwaysFilter": {
+                    "name": "Sidebar Filter Always Visible",
+                    "hint": "The sidebars filter input will always be visible instead of requiring the use of a keybind."
+                },
                 "highestSpeed": {
                     "name": "Show Highest Speed",
                     "hint": "If no speed was manually selected, the highest one will always be shown by default even if the land speed isn't 0."

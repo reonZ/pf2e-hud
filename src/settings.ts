@@ -77,7 +77,6 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
         onChange: (value) => {
             if (SidebarPF2eHUD.current === "skills") {
                 SidebarPF2eHUD.refresh();
-                SidebarPF2eHUD.refresh();
             }
         },
     });
@@ -102,6 +101,15 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
         },
     });
 
+    registerGlobalSetting("alwaysFilter", {
+        type: Boolean,
+        default: false,
+        scope: "user",
+        onChange: () => {
+            SidebarPF2eHUD.refresh();
+        },
+    });
+
     const moduleSettings = R.pipe(
         R.values(huds),
         R.map((hud) => [hud.key, hud._getHudSettings()] as const),
@@ -114,6 +122,7 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
 }
 
 type GlobalSetting = {
+    alwaysFilter: boolean;
     healthStatusData: HealthStatus;
     hideUntrained: boolean;
     highestSpeed: boolean;
