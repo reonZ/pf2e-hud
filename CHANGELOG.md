@@ -1,3 +1,8 @@
+# 2.38.1
+
+-   `Items Sidebar`:
+    -   fix drag & drop data of items from the sidebar not having the `fromInventory` property to perfectly emulate a drag & drop from the actor sheet
+
 # 2.38.0
 
 -   add new `Feats` sidebar:
