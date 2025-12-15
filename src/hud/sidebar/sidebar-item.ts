@@ -41,6 +41,18 @@ abstract class BaseSidebarItem<
     }
 
     abstract toShortcut(event?: Event): ShortcutData;
+
+    createDragData(event?: Event): SidebarItemDragData {
+        return {
+            fromSidebar: this.toShortcut(event),
+        };
+    }
 }
 
+type SidebarItemDragData = {
+    fromInventory?: true;
+    fromSidebar: ShortcutData;
+};
+
 export { BaseSidebarItem };
+export type { SidebarItemDragData };

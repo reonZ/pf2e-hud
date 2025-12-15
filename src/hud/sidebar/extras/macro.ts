@@ -45,7 +45,7 @@ class MacroSidebarItem extends BaseSidebarItem<ItemPF2e, ExtraMacroData> {
         this.macro.execute({ actor: this.actor });
     }
 
-    toShortcut(event?: Event): MacroShortcutData {
+    toShortcut(): MacroShortcutData {
         return {
             img: this.img,
             macroUUID: this.macro.uuid,

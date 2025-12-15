@@ -535,9 +535,13 @@ abstract class SidebarPF2eHUD<
         const sidebarItem = this.getSidebarItemFromElement(target);
         if (!sidebarItem) return;
 
-        createDraggable<SidebarDragData>(event, sidebarItem.img, this.actor, sidebarItem.item, {
-            fromSidebar: sidebarItem.toShortcut(event),
-        });
+        createDraggable<SidebarDragData>(
+            event,
+            sidebarItem.img,
+            this.actor,
+            sidebarItem.item,
+            sidebarItem.createDragData(event)
+        );
     }
 
     #setColumns() {

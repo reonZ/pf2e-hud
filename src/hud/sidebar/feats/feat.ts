@@ -3,7 +3,7 @@ import { ActorPF2e, FeatPF2e } from "module-helpers";
 import { BaseSidebarItem } from "..";
 
 class FeatsSidebarItem extends BaseSidebarItem<FeatPF2e<ActorPF2e>, SidebarFeat> {
-    toShortcut(event?: Event): FeatShortcutData {
+    toShortcut(): FeatShortcutData {
         return {
             img: this.img,
             itemId: this.id,

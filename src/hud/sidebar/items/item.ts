@@ -1,4 +1,10 @@
-import { BaseSidebarItem, ConsumableShortcutData, EquipmentShortcutData, getItemSlug } from "hud";
+import {
+    BaseSidebarItem,
+    ConsumableShortcutData,
+    EquipmentShortcutData,
+    getItemSlug,
+    SidebarItemDragData,
+} from "hud";
 import {
     ActorPF2e,
     createHTMLElement,
@@ -152,6 +158,13 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
             name: this.label,
             slug: getItemSlug(item),
             type: this.item.type as "consumable" | "equipment",
+        };
+    }
+
+    createDragData(): SidebarItemDragData {
+        return {
+            fromInventory: true,
+            fromSidebar: this.toShortcut(),
         };
     }
 }
