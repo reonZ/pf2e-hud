@@ -10,9 +10,8 @@ import {
     CharacterPF2e,
     CombatantPF2e,
     confirmDialog,
-    CreateFormGroupParams,
-    createToggleableHook,
     createHTMLElement,
+    createToggleableHook,
     createToggleKeybind,
     CreaturePF2e,
     EncounterPF2e,
@@ -1014,22 +1013,30 @@ class PersistentPF2eHUD
                 return { value: journal.uuid, label: journal.name };
             });
 
-        const content: CreateFormGroupParams[] = [
-            {
-                type: "text",
-                inputConfig: { name: "uuid" },
-            },
+        const fields = foundry.applications.fields;
+        const inputs: (HTMLInputElement | HTMLSelectElement)[] = [
+            fields.createTextInput({ name: "uuid" }),
         ];
 
         if (worlds.length) {
-            content.unshift({
-                type: "select",
-                inputConfig: {
+            inputs.unshift(
+                fields.createSelectInput({
                     name: "world",
                     options: [{ value: "", label: "" }, ...worlds],
-                },
-            });
+                })
+            );
         }
+
+        const content = R.pipe(
+            inputs,
+            R.map((input) => {
+                return fields.createFormGroup({
+                    label: localize("set-journal", input.name, "label"),
+                    input,
+                }).outerHTML;
+            }),
+            R.join("")
+        );
 
         const result = await waitDialog<{ uuid: DocumentUUID }>({
             content,
