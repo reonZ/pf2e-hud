@@ -170,6 +170,10 @@
                 "shiftEffect": {
                     "name": "长按Shift编辑效果",
                     "hint": "启用时，你需要按住Shift键才能与HUD的效果图标交互。"
+                },
+                "slots": {
+                    "name": "额外快捷坞槽位",
+                    "hint": "添加至受控HUD的额外快捷坞槽位数量。"
                 }
             },
             "enabled": {
@@ -184,6 +188,10 @@
                 "useModifiers": {
                     "name": "使用调整值",
                     "hint": "在不同的HUD元素中显示调整值而非DC。"
+                },
+                "alwaysFilter": {
+                    "name": "侧边栏过滤始终可见",
+                    "hint": "无需使用绑定按键，侧边栏过滤输入框将始终可见。"
                 }
             },
             "advanced": {
@@ -371,7 +379,8 @@
             "items": "库存",
             "spells": "施法",
             "skills": "技能",
-            "extras": "杂项"
+            "extras": "杂项",
+            "feats": "专长"
         },
         "spellcasting": {
             "charges": "充能",
