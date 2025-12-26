@@ -402,7 +402,7 @@ abstract class SidebarPF2eHUD<
             : [];
 
         context.partial = (key: string) => templatePath("partials", key);
-        context.flagged = ({ id } = {}) => R.isString(id) && flaggedItems.includes(id);
+        context.flagged = ({ id } = {}) => R.isIncludedIn(id, flaggedItems);
 
         const listElement = createHTMLElement("div", {
             classes: ["item-list"],

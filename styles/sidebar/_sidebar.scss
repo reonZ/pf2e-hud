@@ -14,7 +14,7 @@
     --item-name-background: rgba(255, 255, 255, 0.09);
     --item-chat-icon-size: 1.6em;
 
-    --temporary-color: 255, 143, 0;
+    --temporary-color: #ff8f00;
 
     --hud-input-color: #433a45;
     --hud-input-checked-color: #cdc9c3;
@@ -317,7 +317,7 @@
 
                 &.flagged,
                 &.temporary {
-                    color: rgb(var(--temporary-color), 0.7);
+                    color: var(--temporary-color);
                     text-shadow: 0.05em 0 black, 0 0.05em black, -0.05em 0 black, 0 -0.05em black,
                         -0.05em -0.05em black, -0.05em 0.05em black, 0.05em -0.05em black,
                         0.05em 0.05em black;
@@ -325,12 +325,12 @@
 
                 &.flagged {
                     bottom: 0;
-                    right: -0.3em;
+                    right: -0.5em;
                 }
 
                 &.temporary {
                     bottom: 0;
-                    left: -0.3em;
+                    left: -0.5em;
                 }
             }
 
