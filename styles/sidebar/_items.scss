@@ -135,11 +135,24 @@
                     > * {
                         display: flex;
                         align-items: center;
+                        width: 1.1rem;
+                        max-width: 1.1rem;
+                        justify-content: center;
                     }
 
                     > a {
+                        span {
+                            i {
+                                width: auto;
+                            }
+                        }
+
                         &.active {
                             color: var(--color-active);
+                        }
+
+                        &:not(.active) {
+                            --fa-inverse: black;
                         }
 
                         &.toggle-invested {
@@ -167,7 +180,7 @@
                             .fa-1,
                             .fa-2 {
                                 position: relative;
-                                left: 0.25em;
+                                left: -0.5px;
                             }
                         }
 
