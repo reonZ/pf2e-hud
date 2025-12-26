@@ -108,11 +108,6 @@
         );
     }
 
-    [data-panel="effects"] {
-        grid-column: full;
-        grid-row: effects;
-    }
-
     [data-panel="stats"] {
         grid-column: portrait;
         grid-row: middle / bottom;

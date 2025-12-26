@@ -1,7 +1,11 @@
-// https://github.com/foundryvtt/pf2e/blob/7baadf276f3d3f13fd77adf411387312ab287042/src/styles/system/_effects-panel.scss
+/**
+ * https://github.com/foundryvtt/pf2e/blob/7baadf276f3d3f13fd77adf411387312ab287042/src/styles/system/_effects-panel.scss
+ * with `pointer-events` changes
+ */
 #pf2e-hud-persistent [data-panel="effects"] {
     --icon-height: 36px;
 
+    pointer-events: none;
     background: none;
     border: none;
     padding: 0;
@@ -10,13 +14,14 @@
         display: flex;
         gap: var(--panel-gap);
         overflow: auto;
-        pointer-events: initial;
+        pointer-events: none;
         scrollbar-gutter: stable;
 
         .effect-item {
             border-radius: 4px;
             display: flex;
             justify-content: end;
+            pointer-events: all;
 
             &[data-badge-type="formula"] .icon {
                 cursor: pointer;
