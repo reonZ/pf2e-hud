@@ -43,9 +43,10 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
     }
 
     /**
-     * https://github.com/foundryvtt/pf2e/blob/0191f1fdac24c3903a939757a315043d1fcbfa59/src/module/actor/creature/sheet.ts#L293
+     * https://github.com/foundryvtt/pf2e/blob/1465f7190b2b8454094c50fa6d06e9902e0a3c41/src/module/actor/creature/sheet.ts#L294
      */
     async openCarryTypeMenu(anchor: HTMLElement) {
+        const SYSTEM_ROOT = `systems/${game.system.id}`;
         const actor = this.item.actor;
         if (!actor.isOfType("character")) return;
 
@@ -58,7 +59,7 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
         const hasStowingContainers = actor.itemTypes.backpack.some(
             (i) => i.system.stowing && !i.isInContainer
         );
-        const templatePath = "systems/pf2e/templates/actors/partials/carry-type.hbs";
+        const templatePath = `${SYSTEM_ROOT}/templates/actors/partials/carry-type.hbs`;
         const templateArgs = { item, hasStowingContainers };
         const template = await applications.handlebars.renderTemplate(templatePath, templateArgs);
         const html = createHTMLElement("ul", { content: template });

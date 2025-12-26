@@ -117,25 +117,27 @@
                 <a class="item-carry-type{{#if item.isEquipped}} active{{/if}} worn{{#if (eq item.system.equipped.carryType 'held')}} held{{/if}}"
                     data-tooltip="PF2E.Actor.Inventory.CarryType.OpenMenu"
                     data-action="open-carry-type-menu">
-                    {{~#if (and (eq item.system.equipped.carryType "held") (eq
-                    item.system.equipped.handsHeld 1))}}
+                    {{#with item.system.equipped as |equipped|}}
+                    {{~#if (and (eq equipped.carryType "held") (eq equipped.handsHeld 1))}}
                     <span class="fa-stack fa-fw fa-2xs">
                         <i class="fa-solid fa-hand-back-fist fa-stack-2x"></i>
                         <i class="fa-solid fa-1 fa-inverse fa-stack-1x"></i>
                     </span>
-                    {{~else if (and (eq item.system.equipped.carryType "held") (eq
-                    item.system.equipped.handsHeld 2))}}
+                    {{~else if (and (eq equipped.carryType "held") (eq equipped.handsHeld 2))}}
                     <span class="fa-stack fa-fw fa-2xs">
                         <i class="fa-solid fa-hand-back-fist fa-stack-2x"></i>
                         <i class="fa-solid fa-2 fa-inverse fa-stack-1x"></i>
                     </span>
-                    {{~else if (eq item.system.equipped.carryType "stowed")}}
+                    {{~else if (eq equipped.carryType "stowed")}}
                     <i class="fa-solid fa-box fa-fw"></i>
-                    {{~else if (eq item.system.equipped.carryType "dropped")}}
+                    {{~else if (eq equipped.carryType "dropped")}}
                     <i class="fa-solid fa-grip-lines fa-fw"></i>
+                    {{~else if (eq equipped.carryType "implanted")}}
+                    <i class="fa-solid fa-plug fa-fw"></i>
                     {{~else}}
                     <i class="fa-solid fa-tshirt fa-fw"></i>
                     {{/if~}}
+                    {{/with}}
                 </a>
                 {{/if}}
                 {{!-- repair --}}
