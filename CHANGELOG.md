@@ -1,3 +1,14 @@
+# 2.39.0
+
+-   `Items Sidebar`:
+    -   fix carry type popup not handling latest system additions
+    -   fix non-active held icon hands number not being visible
+    -   fix held icon slightly shifting the layout
+-   `Persistent Effects Panel`:
+    -   the panel container no longer eats pointer events
+-   `Sidebar`:
+    -   tweak the temporary/flagged icons style
+
 # 2.38.1
 
 -   `Items Sidebar`:
