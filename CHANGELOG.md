@@ -1,3 +1,8 @@
+# 2.40.0
+
+-   `Token Tooltip`:
+    -   `Display Distance` will now instead use the scene units if it is anything other than the default value, not using the selected conversion at all
+
 # 2.39.0
 
 -   `Items Sidebar`:
