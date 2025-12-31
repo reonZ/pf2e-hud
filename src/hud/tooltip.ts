@@ -277,12 +277,21 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
 
             if (!this.#targetToken) return;
 
+            const gridUnits = canvas.grid.units;
+            if (canvas.grid.units !== game.system.grid.units) {
+                return {
+                    icon: `<i class="${icon}"></i>`,
+                    range: token.distanceTo(this.#targetToken).toFixed(0),
+                    unit: gridUnits,
+                };
+            }
+
             const { multiplier, label, decimals } = details;
 
             return {
-                unit: label,
                 icon: `<i class="${icon}"></i>`,
                 range: (token.distanceTo(this.#targetToken) * multiplier).toFixed(decimals),
+                unit: label,
             };
         })();
 

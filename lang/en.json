@@ -137,7 +137,7 @@
                 },
                 "distance": {
                     "name": "Display Distance",
-                    "hint": "Will display the distance between the hovered token and one that is inferred automatically.",
+                    "hint": "Will display the distance between the hovered token and one that is inferred automatically. Note that the module will instead use the scene units if it is anything other than the default value.",
                     "choices": {
                         "never": "Never",
                         "idiot": "In Feet",
