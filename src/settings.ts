@@ -37,10 +37,9 @@ function registerGlobalSetting(key: GlobalSettingKey, options: RegisterSettingOp
     options.hint = settingPath("global", key, "hint");
 
     if ("choices" in options && Array.isArray(options.choices)) {
-        options.choices = R.mapToObj(options.choices, (choice) => [
-            choice,
-            settingPath("global", key, "choices", choice),
-        ]);
+        options.choices = R.fromKeys(options.choices, (choice) => {
+            return settingPath("global", key, "choices", choice);
+        });
     }
 
     options.onChange = (value, operation, userId) => {
@@ -113,7 +112,7 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
     const moduleSettings = R.pipe(
         R.values(huds),
         R.map((hud) => [hud.key, hud._getHudSettings()] as const),
-        R.mapToObj(([key, entries]) => [key, entries])
+        R.fromEntries()
     );
 
     registerModuleSettings(moduleSettings);

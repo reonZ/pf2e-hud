@@ -51,7 +51,7 @@ const SIDEBARS = [
     },
 ] as const satisfies SidebarDetails[];
 
-const SIDEBAR_ICONS = R.mapToObj(SIDEBARS, ({ type, icon }) => [type, icon]);
+const SIDEBAR_ICONS = R.pullObject(SIDEBARS, R.prop("type"), R.prop("icon"));
 
 function getSidebars(actor: ActorPF2e, active: SidebarName | null): SidebarMenu[] {
     return SIDEBARS.map((details: SidebarDetails & { type: SidebarName }): SidebarMenu => {

@@ -173,7 +173,8 @@ abstract class BaseStatisticAction<
             [ThisProto, ParentProto],
             R.flatMap((Proto) => R.entries(Object.getOwnPropertyDescriptors(Proto))),
             R.filter(([key, descriptor]) => key !== "data" && typeof descriptor.get === "function"),
-            R.mapToObj(([key]) => [key, this[key as keyof this]])
+            R.map(([key]) => [key, this[key as keyof this]] as const),
+            R.fromEntries()
         ) as ExtractReadonly<this>;
     }
 

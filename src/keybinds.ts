@@ -8,7 +8,7 @@ function registerKeybinds(huds: Record<string, BasePF2eHUD>) {
             R.map((hud) => [hud.key, hud.keybindsSchema] as const),
             R.concat([["sidebar", SidebarPF2eHUD.keybindsSchema] as const]),
             R.filter(([_, schemas]) => schemas.length > 0),
-            R.mapToObj(([key, entries]) => [key, entries])
+            R.fromEntries()
         )
     );
 }
