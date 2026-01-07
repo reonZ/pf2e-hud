@@ -137,7 +137,7 @@
         },
         "distance": {
           "name": "Mostrar distancia",
-          "hint": "Mostrará la distancia entre el token sobre el que se pasa el ratón y el que se deduce automáticamente.",
+          "hint": "Se mostrará la distancia entre el token sobre el que se pasa el cursor y el que se infiere automáticamente. Tenga en cuenta que el módulo usará las unidades de la escena si el valor es distinto al predeterminado.",
           "choices": {
             "never": "Nunca",
             "idiot": "En pies",
