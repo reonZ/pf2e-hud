@@ -33,10 +33,7 @@ const SKILL_EXCLUDE_EXCLUDE = [
 
 const _cachedExcludedActions: string[] = [];
 
-class ActionsSidebarAction extends BaseSidebarItem<
-    FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>,
-    ActionData
-> {
+class ActionsSidebarAction extends BaseSidebarItem<FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>, ActionData> {
     get actor(): ActorPF2e {
         return this.item.actor;
     }
@@ -94,9 +91,7 @@ function getExcludedActions(): string[] {
 }
 
 const _cached: { useLabel?: string; removeEffect?: string } = {};
-async function getSidebarActionsData(
-    this: ActionsSidebarPF2eHUD
-): Promise<ActionSection[] | undefined> {
+async function getSidebarActionsData(this: ActionsSidebarPF2eHUD): Promise<ActionSection[] | undefined> {
     const actor = this.actor;
     const isCharacter = actor.isOfType("character");
 
@@ -114,13 +109,10 @@ async function getSidebarActionsData(
     const useLabel = (_cached.useLabel ??= game.i18n.localize("PF2E.Action.Use"));
     const removeEffect = (_cached.removeEffect ??= localize("sidebar.removeEffect"));
     const getActionMacro = game.toolbelt?.api.actionable.getActionMacro;
-    const tactics =
-        isCharacter && game.dailies?.active
-            ? game.dailies?.api.getCommanderTactics(actor)
-            : undefined;
+    const tactics = isCharacter && game.dailies?.active ? game.dailies?.api.getCommanderTactics(actor) : undefined;
 
     const abilities = abilityTypes.flatMap(
-        (type): (FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>)[] => actor.itemTypes[type]
+        (type): (FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>)[] => actor.itemTypes[type],
     );
 
     const abilitiesPromises = abilities.map(async (item) => {
@@ -142,16 +134,14 @@ async function getSidebarActionsData(
         if (sourceId && excludedActions.includes(sourceId)) return;
 
         const actionCost = item.actionCost;
-        const type =
-            actionCost?.type ??
-            (isCharacter ? (isExploration ? "exploration" : "free") : "passive");
+        const type = actionCost?.type ?? (isCharacter ? (isExploration ? "exploration" : "free") : "passive");
 
-        sections[type] ??= {
+        const section = (sections[type] ??= {
             actions: [],
             filterValue: new FilterValue(),
             label: ACTION_TYPES[type].label,
             type,
-        };
+        });
 
         const itemId = item.id;
         const crafting = !isExploration && item.crafting;
@@ -193,7 +183,7 @@ async function getSidebarActionsData(
         };
 
         const sidebarAction = this.addSidebarItem(ActionsSidebarAction, "id", data);
-        sections[type].actions.push(sidebarAction);
+        section.actions.push(sidebarAction);
     });
 
     await Promise.all(abilitiesPromises);
@@ -204,15 +194,12 @@ async function getSidebarActionsData(
         R.sortBy((section) => ACTION_TYPES[section.type].sort),
         R.forEach((section) => {
             section.actions = R.sortBy(section.actions, (action) => action.item.name);
-        })
+        }),
     );
 }
 
 const FEAT_ICON = "icons/sundries/books/book-red-exclamation.webp";
-function getActionImg(
-    item: FeatPF2e | AbilityItemPF2e,
-    macro: MaybeFalsy<MacroPF2e> | null
-): ImageFilePath {
+function getActionImg(item: FeatPF2e | AbilityItemPF2e, macro: MaybeFalsy<MacroPF2e> | null): ImageFilePath {
     const actionIcon = getActionIcon(item.actionCost);
     const defaultIcon = getDocumentClass("Item").getDefaultArtwork(item._source).img;
 
@@ -220,9 +207,7 @@ function getActionImg(
         return item.img;
     }
 
-    const selfEffect = item.system.selfEffect
-        ? fromUuidSync(item.system.selfEffect.uuid)
-        : undefined;
+    const selfEffect = item.system.selfEffect ? fromUuidSync(item.system.selfEffect.uuid) : undefined;
 
     if (selfEffect?.img) {
         return selfEffect.img;
@@ -236,7 +221,7 @@ function getActionImg(
 }
 
 function getActionFrequency(
-    item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>
+    item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>,
 ): { max: number; value: number; label: string } | undefined {
     const frequency = item.frequency;
     if (!frequency?.max) return;
@@ -251,7 +236,7 @@ function getActionFrequency(
 }
 
 function getActionResource(
-    item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>
+    item: FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>,
 ): { max: number; value: number; slug: string; label: string } | undefined {
     if (item.crafting?.resource) {
         const resource = item.actor.getResource(item.crafting.resource);
@@ -270,7 +255,7 @@ function onActionClickAction(
     event: MouseEvent,
     sidebarItem: ActionsSidebarAction,
     action: Stringptionel<ActionEventAction>,
-    target: HTMLElement
+    target: HTMLElement,
 ) {
     switch (action) {
         case "remove-effect": {
