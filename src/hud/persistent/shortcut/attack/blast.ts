@@ -1,6 +1,7 @@
 import { ElementalBlastsData, getElementalBlastsData } from "hud";
 import {
     AbilityItemPF2e,
+    applySelfEffect,
     CharacterPF2e,
     EffectTrait,
     findItemWithSourceId,
@@ -13,11 +14,7 @@ import fields = foundry.data.fields;
 
 const CHANNEL_ELEMENTS_UUID = "Compendium.pf2e.actionspf2e.Item.g8QrV39TmZfkbXgE";
 
-class BlastShortcut extends AttackShortcut<
-    BlastShortcutSchema,
-    AbilityItemPF2e<CharacterPF2e>,
-    ElementalBlastsData
-> {
+class BlastShortcut extends AttackShortcut<BlastShortcutSchema, AbilityItemPF2e<CharacterPF2e>, ElementalBlastsData> {
     static defineSchema(): BlastShortcutSchema {
         return {
             ...generateAttackShortcutFields("blast"),
@@ -69,21 +66,20 @@ class BlastShortcut extends AttackShortcut<
 
             return `${label} (${range})`;
         } else {
-            return game.i18n.localize(
-                "PF2E.SpecificRule.Kineticist.Impulse.ElementalBlast.Channel"
-            );
+            return game.i18n.localize("PF2E.SpecificRule.Kineticist.Impulse.ElementalBlast.Channel");
         }
     }
 
-    use(event: MouseEvent): void {
+    async use(event: MouseEvent) {
         const attackData = this.attackData;
         if (!attackData) return;
 
         if (!attackData.ready) {
-            const action = findItemWithSourceId(this.actor, CHANNEL_ELEMENTS_UUID);
+            const action = findItemWithSourceId(this.actor, CHANNEL_ELEMENTS_UUID, "action");
 
             if (action) {
-                game.pf2e.rollItemMacro(action.uuid, event);
+                await applySelfEffect(action);
+                action.toMessage(event);
             }
 
             return;
@@ -94,19 +90,16 @@ class BlastShortcut extends AttackShortcut<
                 const shortLabel = getBlastShortLabel();
                 const glyph = getGlyph(attackData.actionCost);
 
-                return R.entries(attackData.maps).map(
-                    ([type, { map0, map1, map2 }]): ShortcutRadialSection => {
-                        return {
-                            title:
-                                type === "melee" ? "PF2E.WeaponRangeMelee" : "PF2E.NPCAttackRanged",
-                            options: [
-                                { value: `${type}-0`, label: `${shortLabel} ${glyph} ${map0}` },
-                                { value: `${type}-1`, label: map1 },
-                                { value: `${type}-2`, label: map2 },
-                            ],
-                        };
-                    }
-                );
+                return R.entries(attackData.maps).map(([type, { map0, map1, map2 }]): ShortcutRadialSection => {
+                    return {
+                        title: type === "melee" ? "PF2E.WeaponRangeMelee" : "PF2E.NPCAttackRanged",
+                        options: [
+                            { value: `${type}-0`, label: `${shortLabel} ${glyph} ${map0}` },
+                            { value: `${type}-1`, label: map1 },
+                            { value: `${type}-2`, label: map2 },
+                        ],
+                    };
+                });
             },
             (event, value) => {
                 const [type, map] = value.split("-") as ["melee" | "ranged", `${ZeroToTwo}`];
@@ -118,7 +111,7 @@ class BlastShortcut extends AttackShortcut<
                     mapIncreases: Number(map),
                     melee: type === "melee",
                 });
-            }
+            },
         );
     }
 
@@ -139,7 +132,7 @@ const _cached: { shortLabel?: string; glyph: PartialRecord<1 | 2, string> } = {
 
 function getBlastShortLabel() {
     return (_cached.shortLabel ??= game.i18n.localize(
-        "PF2E.SpecificRule.Kineticist.Impulse.ElementalBlast.ShortLabel"
+        "PF2E.SpecificRule.Kineticist.Impulse.ElementalBlast.ShortLabel",
     ));
 }
 
