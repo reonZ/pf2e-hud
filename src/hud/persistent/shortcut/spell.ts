@@ -1,10 +1,4 @@
-import {
-    CustomSpellcastingEntry,
-    isAnimistEntry,
-    isFocusCantrip,
-    SPELL_CATEGORIES,
-    SpellCategoryType,
-} from "hud";
+import { CustomSpellcastingEntry, isAnimistEntry, isFocusCantrip, SPELL_CATEGORIES, SpellCategoryType } from "hud";
 import {
     BaseSpellcastingEntry,
     CharacterPF2e,
@@ -37,7 +31,7 @@ import fields = foundry.data.fields;
 class SpellcastingEntryIdField<
     TRequired extends boolean = true,
     TNullable extends boolean = true,
-    THasInitial extends boolean = true
+    THasInitial extends boolean = true,
 > extends fields.DocumentIdField<string, TRequired, TNullable, THasInitial> {
     protected _validateType(value: string) {
         const id = value.endsWith("-casting") ? value.slice(0, -8) : value;
@@ -98,7 +92,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
     static async getItem(
         actor: CreaturePF2e,
         data: SpellShortcutData,
-        cached: ShortcutCache
+        cached: ShortcutCache,
     ): Promise<Maybe<SpellPF2e<CreaturePF2e>>> {
         const collection = actor.spellcasting.collections.get(data.entryId);
         const exact = collection?.get(data.itemId);
@@ -107,9 +101,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         // we recover similar consumable spell
         if (R.isIncludedIn(data.category, ["scroll", "wand"])) {
             const slug = `${data.slug}-rank-${data.castRank}`;
-            const embeddedSpell = actor.itemTypes.consumable.find(
-                (item) => getItemSlug(item) === slug
-            )?.embeddedSpell;
+            const embeddedSpell = actor.itemTypes.consumable.find((item) => getItemSlug(item) === slug)?.embeddedSpell;
 
             const embbededEntryId = embeddedSpell?.system.location.value;
             if (!embbededEntryId) return;
@@ -178,7 +170,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
             return this.#getEntryData.call(this);
         }));
 
-        if (!spell || !entryData || entryData.notPrimaryVessel) {
+        if (!spell || !entryData || entryData.notPrimaryVessel(this.itemId)) {
             return returnDisabled(true, !spell || !entryData ? "match" : "vessel");
         }
 
@@ -194,26 +186,21 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         const castRank = this.castRank;
         const group = (this.#group = entryData.groups.find((x) => x.id === groupId));
 
-        const groupUses =
-            typeof group?.uses?.value === "number" ? (group.uses as ValueAndMax) : undefined;
+        const groupUses = typeof group?.uses?.value === "number" ? (group.uses as ValueAndMax) : undefined;
 
         const uses =
             entryData.isFocus && (!isCantrip || isFocusCantrip(spell))
                 ? (actor as CreaturePF2e).system.resources?.focus
-                : isCantrip ||
-                  entryData.isConsumable ||
-                  (entryData.isPrepared && !entryData.isFlexible)
-                ? undefined
-                : entryData.isCharges && !isBroken
-                ? entryData.uses
-                : entryData.isInnate && !spell.atWill
-                ? spell.system.location.uses
-                : groupUses;
+                : isCantrip || entryData.isConsumable || (entryData.isPrepared && !entryData.isFlexible)
+                  ? undefined
+                  : entryData.isCharges && !isBroken
+                    ? entryData.uses
+                    : entryData.isInnate && !spell.atWill
+                      ? spell.system.location.uses
+                      : groupUses;
 
         this.#uses =
-            entryData.consumable && entryData.consumable.quantity > 1
-                ? { value: entryData.consumable.quantity }
-                : uses;
+            entryData.consumable && entryData.consumable.quantity > 1 ? { value: entryData.consumable.quantity } : uses;
 
         if (isCantrip && (!uses || spell.system.cast.focusPoints <= 0)) {
             return returnDisabled(false, "");
@@ -233,7 +220,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
             const canCast = this.cached(
                 "canCastStaffRank",
                 this.castRank,
-                () => !!game.dailies?.api.canCastRank(this.actor as CharacterPF2e, this.castRank)
+                () => !!game.dailies?.api.canCastRank(this.actor as CharacterPF2e, this.castRank),
             );
 
             return returnDisabled(!canCast, "charges");
@@ -248,8 +235,8 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         const actives = entryData.isConsumable
             ? [group?.active[0]].filter(R.isTruthy)
             : slotId != null
-            ? group?.active.filter((x) => x?.spell.id === spell.id)
-            : undefined;
+              ? group?.active.filter((x) => x?.spell.id === spell.id)
+              : undefined;
 
         // no longer prepared
         if (!actives?.length) {
@@ -285,9 +272,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
 
     get cost(): ShortcutCost | null {
         const value = this.item?.system.time.value;
-        return R.isNonNullish(value)
-            ? { value, combo: isNaN(Number(value)) && value !== "reaction" }
-            : null;
+        return R.isNonNullish(value) ? { value, combo: isNaN(Number(value)) && value !== "reaction" } : null;
     }
 
     get isCantrip(): boolean {
@@ -335,9 +320,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
 
         // for prepared, we look for any slot that isn't expended if the exact one is
         if (this.category === "prepared" && !this.isCantrip) {
-            const slotId = this.#group?.active.findIndex(
-                (x) => x?.spell.id === this.itemId && !x.expended
-            );
+            const slotId = this.#group?.active.findIndex((x) => x?.spell.id === this.itemId && !x.expended);
 
             if (R.isNumber(slotId)) {
                 this.spellcastinEntry?.cast(item, { rank: this.castRank, slotId });
@@ -382,8 +365,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
             isPrepared: !!entrySheetData.isPrepared,
             isSpontaneous: !!entrySheetData.isSpontaneous,
             isStaff,
-            notPrimaryVessel:
-                vessels?.entry.id === entryId && !vessels.primary.includes(this.itemId),
+            notPrimaryVessel: (spellId: string) => vessels?.entry.id === entryId && !vessels.primary.includes(spellId),
             uses: entrySheetData.uses,
         };
 
@@ -391,10 +373,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
     }
 }
 
-function getAnimistVesselsData(
-    cached: ShortcutCache,
-    actor: CreaturePF2e
-): dailies.AnimistVesselsData | null {
+function getAnimistVesselsData(cached: ShortcutCache, actor: CreaturePF2e): dailies.AnimistVesselsData | null {
     return cached("animistVesselsData", () => {
         if (!actor.isOfType("character") || !game.dailies?.active) return null;
         return game.dailies.api.getAnimistVesselsData(actor) ?? null;
@@ -415,7 +394,7 @@ type SpellEntryData = {
     isSpontaneous: boolean;
     isStaff: boolean;
     groups: CustomSpellcastingEntry["groups"];
-    notPrimaryVessel: boolean;
+    notPrimaryVessel: (spellId: string) => boolean;
     uses: ValueAndMax | undefined;
 };
 
