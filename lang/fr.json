@@ -48,6 +48,8 @@
       },
       "global": {
         "alwaysFilter": {
+          "name": "Le filtre de la barre latérale toujours visible",
+          "hint": "Les entrées du filtre de la barre latérale sera toujours visible au lieu de devoir utiliser le raccourcis clavier."
         },
         "highestSpeed": {
           "name": "Montrer la Vitesse max",
@@ -93,6 +95,8 @@
           "hint": "Lorsqu'elle est activée, vous devez maintenir la touche 'Maj' pour interagir avec les icônes d'effet du HUD."
         },
         "slots": {
+          "name": "Emplacements des raccourcis supplémentaires",
+          "hint": "Nombre d'emplacements des raccourcis supplémentaire a ajouter au HUD."
         }
       },
       "sidebar": {
@@ -459,6 +463,7 @@
     "sidebars": {
       "actions": "Actions",
       "extras": "Extras",
+      "feats": "Dons",
       "items": "Inventaire",
       "skills": "Compétences",
       "spells": "Incantation"
