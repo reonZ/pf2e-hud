@@ -47,6 +47,8 @@
         }
       },
       "global": {
+        "alwaysFilter": {
+        },
         "highestSpeed": {
           "name": "Montrer la Vitesse max",
           "hint": "Si aucune vitesse n'est sélectionnée manuellement, la plus élevée sera toujours affichée par défaut même si la Vitesse au sol n'est pas de 0."
@@ -89,6 +91,8 @@
         "shiftEffect": {
           "name": "Maintenez la touche Maj enfoncée pour les effets",
           "hint": "Lorsqu'elle est activée, vous devez maintenir la touche 'Maj' pour interagir avec les icônes d'effet du HUD."
+        },
+        "slots": {
         }
       },
       "sidebar": {
@@ -129,7 +133,7 @@
         },
         "distance": {
           "name": "Distance affichée",
-          "hint": "Affiche la distance entre le jeton survolé et le jeton de base automatiquement.",
+          "hint": "Affiche la distance entre le jeton survolé et un jeton estimé automatiquement. Le module utilisera les unités de la scène si celles-ci diffèrent de la valeur par défaut.",
           "choices": {
             "never": "Jamais",
             "idiot": "En pieds",
@@ -454,10 +458,10 @@
     },
     "sidebars": {
       "actions": "Actions",
+      "extras": "Extras",
       "items": "Inventaire",
-      "spells": "Incantation",
       "skills": "Compétences",
-      "extras": "Extras"
+      "spells": "Incantation"
     },
     "spellcasting": {
       "charges": "Charges",
