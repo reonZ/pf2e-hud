@@ -76,7 +76,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         {
             context: this,
             onDisable: this.clearDistance.bind(this),
-        }
+        },
     );
 
     static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
@@ -251,6 +251,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
             if (!health) return;
 
             const label = data.getEntryFromHealthData(health);
+            if (!label) return;
 
             return {
                 label,
@@ -301,18 +302,11 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         };
     }
 
-    protected _renderHTML(
-        context: ApplicationRenderContext,
-        options: ApplicationRenderOptions
-    ): Promise<string> {
+    protected _renderHTML(context: ApplicationRenderContext, options: ApplicationRenderOptions): Promise<string> {
         return render("tooltip", context);
     }
 
-    protected _replaceHTML(
-        result: string,
-        content: HTMLElement,
-        options: ApplicationRenderOptions
-    ): void {
+    protected _replaceHTML(result: string, content: HTMLElement, options: ApplicationRenderOptions): void {
         content.innerHTML = result;
     }
 
