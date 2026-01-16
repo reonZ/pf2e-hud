@@ -1,3 +1,8 @@
+# 2.41.1
+
+- `Combat Tracker`:
+  - fix tracker position with UI scaling other than `1`
+
 # 2.41.0
 
 - `Actions Sidebar`:
