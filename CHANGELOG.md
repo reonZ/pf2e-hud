@@ -2,6 +2,8 @@
 
 - `Combat Tracker`:
   - fix tracker position with UI scaling other than `1`
+- `Token Tooltip`:
+  - no longer display the health-status box when the label is blank
 
 # 2.41.0
 
