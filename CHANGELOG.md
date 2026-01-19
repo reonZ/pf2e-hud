@@ -1,3 +1,8 @@
+# 2.41.2
+
+- `Extras Sidebar`:
+  - fix special resources not being updated for NPCs
+
 # 2.41.1
 
 - `Combat Tracker`:
