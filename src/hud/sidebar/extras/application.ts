@@ -17,10 +17,7 @@ import {
 import { ExtrasSidebarItem, getExtrasActions, MacroSidebarItem } from ".";
 import { getStatistics, SidebarPF2eHUD } from "..";
 
-class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<
-    AbilityItemPF2e | ItemPF2e,
-    ExtrasSidebarItem | MacroSidebarItem
-> {
+class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e | ItemPF2e, ExtrasSidebarItem | MacroSidebarItem> {
     get name(): "extras" {
         return "extras";
     }
@@ -37,9 +34,7 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<
         return getFlag<string[]>(this.worldActor, "macros", game.user.id) ?? [];
     }
 
-    protected async _prepareContext(
-        options: ApplicationRenderOptions
-    ): Promise<ExtrasSidebarContext> {
+    protected async _prepareContext(options: ApplicationRenderOptions): Promise<ExtrasSidebarContext> {
         const actor = this.actor;
         const isCharacter = actor.isOfType("character");
 
@@ -65,9 +60,9 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<
                     const macro = await fromUuid<MacroPF2e>(uuid);
                     if (!macro) return;
                     return this.addSidebarItem(MacroSidebarItem, "uuid", { macro, actor });
-                })
+                }),
             ),
-            R.isTruthy
+            R.isTruthy,
         );
 
         return {
@@ -129,7 +124,7 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<
             await setFlag(this.worldActor, "macros", game.user.id, macros);
         });
 
-        if (!actor.isOfType("character")) return;
+        if (!actor.isOfType("character", "npc")) return;
 
         addListenerAll(html, "[data-resource]", "change", (el: HTMLInputElement) => {
             const resourceSlug = el.dataset.resource ?? "";
