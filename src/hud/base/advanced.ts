@@ -73,9 +73,7 @@ const INFOS = [
         icon: "fa-solid fa-message-dots",
         tooltipEntries: (actor) => {
             if (!actor.isOfType("creature")) return [];
-            return actor.system.details.languages.value.map((lang) =>
-                game.i18n.localize(CONFIG.PF2E.languages[lang])
-            );
+            return actor.system.details.languages.value.map((lang) => game.i18n.localize(CONFIG.PF2E.languages[lang]));
         },
     },
     {
@@ -113,15 +111,14 @@ const INFOS = [
 ] as const satisfies InfoDetails[];
 
 function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
-    Base: TBase
+    Base: TBase,
 ): TBase & AbstractConstructorOf<AdvancedPF2eHUD> {
-    type ThisAdvancedHUD = BaseActorPF2eHUD &
-        AdvancedPF2eHUD & { get token(): TokenPF2e | undefined };
+    type ThisAdvancedHUD = BaseActorPF2eHUD & AdvancedPF2eHUD & { get token(): TokenPF2e | undefined };
 
     abstract class AdvancedPF2eHUD extends Base {
         protected async _prepareContext(
             this: ThisAdvancedHUD,
-            _: ApplicationRenderOptions
+            _: ApplicationRenderOptions,
         ): Promise<ReturnedAdvancedHudContext> {
             const actor = this.actor;
             if (!actor) {
@@ -133,10 +130,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             const isCharacter = actor.isOfType("character");
             const isCombatant = isCharacter || isNPC;
 
-            const sidebars = getSidebars(
-                actor,
-                SidebarPF2eHUD.isParent(this) ? SidebarPF2eHUD.current : null
-            );
+            const sidebars = getSidebars(actor, SidebarPF2eHUD.isParent(this) ? SidebarPF2eHUD.current : null);
 
             return {
                 ac: actor.attributes.ac?.value,
@@ -166,7 +160,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             this: ThisAdvancedHUD,
             result: string,
             content: HTMLElement,
-            options: ApplicationRenderOptions
+            options: ApplicationRenderOptions,
         ): void {
             content.dataset.tooltipClass = "pf2e-hud-element";
             content.dataset.tooltipDirection = "UP";
@@ -175,11 +169,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             this.#activateListeners(content);
         }
 
-        protected _onClickAction(
-            this: ThisAdvancedHUD,
-            event: PointerEvent,
-            target: HTMLElement
-        ): void {
+        protected _onClickAction(this: ThisAdvancedHUD, event: PointerEvent, target: HTMLElement): void {
             const actor = this.actor;
             const action = target.dataset.action as EventAction;
 
@@ -212,11 +202,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             }
         }
 
-        #onSlider(
-            this: ThisAdvancedHUD,
-            action: "hero" | "wounded" | "dying" | "mythic",
-            direction: 1 | -1
-        ) {
+        #onSlider(this: ThisAdvancedHUD, action: "hero" | "wounded" | "dying" | "mythic", direction: 1 | -1) {
             const actor = this.actor;
             if (!actor) return;
 
@@ -290,7 +276,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             const speeds: MovementType[] = R.pipe(
                 R.values(actor.movement.speeds),
                 R.filter((speed) => R.isTruthy(speed) && speed.type !== "travel"),
-                R.map((speed) => speed.type)
+                R.map((speed): MovementType => speed!.type as MovementType),
             );
 
             const speedIndex = speeds.indexOf(selected);
@@ -360,7 +346,7 @@ function getInfoSections(actor: ActorPF2e) {
         const tooltipData = R.pipe(
             info.tooltipEntries(actor),
             R.filter(R.isTruthy),
-            R.map((row) => `<li>${row}</li>`)
+            R.map((row) => `<li>${row}</li>`),
         );
 
         const tooltip = tooltipData.length
@@ -375,14 +361,9 @@ function getInfoSections(actor: ActorPF2e) {
     });
 }
 
-function getMythicOrHeroPoints(
-    actor: CharacterPF2e
-): ValueAndMax & { name: "mythicPoints" | "heroPoints" } {
+function getMythicOrHeroPoints(actor: CharacterPF2e): ValueAndMax & { name: "mythicPoints" | "heroPoints" } {
     const name = actor.system.resources.mythicPoints.max ? "mythicPoints" : "heroPoints";
-    const resource =
-        name === "mythicPoints"
-            ? actor.system.resources.mythicPoints
-            : actor.system.resources.heroPoints;
+    const resource = name === "mythicPoints" ? actor.system.resources.mythicPoints : actor.system.resources.heroPoints;
 
     return {
         ...resource,
@@ -422,7 +403,7 @@ function getNpcTags(actor: NPCPF2e): string | undefined {
         R.map((trait) => {
             const label = game.i18n.localize(CONFIG.PF2E.creatureTraits[trait]);
             return `<li>${label}</li>`;
-        })
+        }),
     );
 
     if (traits.length) {
@@ -462,14 +443,14 @@ function getAdvancedStatistics(actor: ActorPF2e): AdvancedStatistic[] {
                 value: useModifiers ? signedInteger(statistic.mod) : statistic.dc.value,
             };
         }),
-        R.filter(R.isTruthy)
+        R.filter(R.isTruthy),
     );
 }
 
 function getAlliance(actor: CharacterPF2e | NPCPF2e): AllianceType {
     const details = actor._source.system.details;
     const allianceSource = "alliance" in details ? details.alliance : undefined;
-    const alliance = allianceSource === null ? "neutral" : allianceSource ?? "default";
+    const alliance = allianceSource === null ? "neutral" : (allianceSource ?? "default");
 
     return alliance === "default" ? (actor.hasPlayerOwner ? "party" : "opposition") : alliance;
 }
