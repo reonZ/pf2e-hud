@@ -1,11 +1,11 @@
-import { imagePath, isAreaOrAutoFireType, MeleePF2e, WeaponPF2e } from "module-helpers";
+import { imagePath, isAreaOrAutoFireType, MeleePF2e, R, SYSTEM, WeaponPF2e } from "module-helpers";
 
 const DEFAULT_NPC_STRIKE_ICON = "icons/default-icons/melee.svg";
 
 /**
  * thanks to https://github.com/shemetz for the compiled list
  */
-const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
+const _NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
     jaws: "icons/creatures/abilities/mouth-teeth-long-red.webp", // Jaws
     claw: "icons/creatures/claws/claw-curved-jagged-gray.webp", // Claw
     fist: "icons/skills/melee/unarmed-punch-fist.webp", // Fist
@@ -79,18 +79,15 @@ const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
     ranseur: "icons/weapons/polearms/trident-curved-steel.webp",
     lance: "systems/pf2e/icons/equipment/weapons/lance.webp",
     "light-mace": "icons/weapons/maces/mace-round-steel.webp",
-    "alchemists-fire-lesser":
-        "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/alchemists-fire.webp",
+    "alchemists-fire-lesser": "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/alchemists-fire.webp",
     dogslicer: "systems/pf2e/icons/equipment/weapons/dogslicer.webp",
     aklys: "icons/weapons/maces/mace-studded-steel.webp",
     "war-razor": "systems/pf2e/icons/equipment/weapons/war-razor.webp",
-    "alchemists-fire-moderate":
-        "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/alchemists-fire.webp",
+    "alchemists-fire-moderate": "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/alchemists-fire.webp",
     "spiked-gauntlet": "systems/pf2e/icons/equipment/weapons/spiked-gauntlet.webp",
     starknife: "systems/pf2e/icons/equipment/weapons/starknife.webp",
     greatpick: "systems/pf2e/icons/equipment/weapons/greatpick.webp",
-    "acid-flask-moderate":
-        "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/acid-flask.webp",
+    "acid-flask-moderate": "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/acid-flask.webp",
     "flintlock-pistol": "icons/weapons/guns/gun-pistol-flintlock-metal.webp",
     "dueling-pistol": "systems/pf2e/icons/equipment/weapons/dueling-pistol.webp",
     "ogre-hook": "systems/pf2e/icons/equipment/weapons/ogre-hook.webp",
@@ -122,14 +119,11 @@ const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
     "repeating-hand-crossbow": "systems/pf2e/icons/equipment/weapons/repeating-hand-crossbow.webp",
     gaff: "systems/pf2e/icons/equipment/weapons/gaff.webp",
     "tengu-gale-blade": "systems/pf2e/icons/equipment/weapons/tengu-gale-blade.webp",
-    "acid-flask-lesser":
-        "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/acid-flask.webp",
-    "frost-vial-moderate":
-        "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/frost-vial.webp",
+    "acid-flask-lesser": "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/acid-flask.webp",
+    "frost-vial-moderate": "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/frost-vial.webp",
     "tamchal-chakram": "systems/pf2e/icons/equipment/weapons/tamchal-chakram.webp",
     "soul-chain": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/soul-chain.webp",
-    "nightmare-cudgel":
-        "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/nightmare-cudgel.webp",
+    "nightmare-cudgel": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/nightmare-cudgel.webp",
     khopesh: "systems/pf2e/icons/equipment/weapons/khopesh.webp",
     "dragon-mouth-pistol": "icons/weapons/guns/gun-pistol-wood.webp",
     naginata: "systems/pf2e/icons/equipment/weapons/naginata.webp",
@@ -150,23 +144,18 @@ const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
     blackaxe: "systems/pf2e/icons/equipment/artifacts/blackaxe.webp",
     horsechopper: "systems/pf2e/icons/equipment/weapons/horsechopper.webp",
     "rope-dart": "icons/weapons/thrown/dagger-ringed-steel.webp",
-    "bloodletting-kukri":
-        "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/bloodletting-kukri.webp",
-    "retribution-axe":
-        "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/retribution-axe.webp",
+    "bloodletting-kukri": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/bloodletting-kukri.webp",
+    "retribution-axe": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/retribution-axe.webp",
     "wish-knife": "icons/weapons/daggers/dagger-curved-purple.webp",
     "double-barreled-pistol": "systems/pf2e/icons/equipment/weapons/double-barreled-pistol.webp",
     "boarding-pike": "icons/weapons/polearms/spear-hooked-spike.webp",
-    "vexing-vapor-moderate":
-        "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/vexing-vapor.webp",
+    "vexing-vapor-moderate": "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/vexing-vapor.webp",
     chakri: "systems/pf2e/icons/equipment/weapons/chakri.webp",
     visap: "icons/weapons/daggers/dagger-double-black.webp",
     "gun-sword": "systems/pf2e/icons/equipment/weapons/gun-sword.webp",
-    "alchemists-fire-greater":
-        "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/alchemists-fire.webp",
+    "alchemists-fire-greater": "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/alchemists-fire.webp",
     "fiends-hunger": "icons/weapons/daggers/dagger-straight-blue.webp",
-    "fighters-fork":
-        "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/fighters-fork.webp",
+    "fighters-fork": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/fighters-fork.webp",
     "scorpion-whip": "systems/pf2e/icons/equipment/weapons/scorpion-whip.webp",
     "spike-launcher": "systems/pf2e/icons/default-icons/weapon.svg",
     "shauth-lash": "systems/pf2e/icons/equipment/weapons/shauth-lash.webp",
@@ -186,10 +175,8 @@ const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
     "double-barreled-musket": "icons/weapons/guns/gun-double-barrel.webp",
     boomerang: "systems/pf2e/icons/equipment/weapons/boomerang.webp",
     ankylostar: "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/ankylostar.webp",
-    "stoneraiser-javelin":
-        "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/stoneraiser-javelin.webp",
-    "whip-of-compliance":
-        "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/whip-of-compliance.webp",
+    "stoneraiser-javelin": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/stoneraiser-javelin.webp",
+    "whip-of-compliance": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/whip-of-compliance.webp",
     "alchemical-crossbow": "icons/weapons/crossbows/handcrossbow-green.webp",
     "feng-huo-lun": "systems/pf2e/icons/default-icons/weapon.svg",
     khakkhara: "systems/pf2e/icons/equipment/weapons/khakkhara.webp",
@@ -197,8 +184,7 @@ const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
     "spore-sap": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/spore-sap.webp",
     "staff-of-power": "systems/pf2e/icons/equipment/staves/staff-of-power.webp",
     "hex-blaster": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/hex-blaster.webp",
-    "redeemers-pistol":
-        "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/redeemers-pistol.webp",
+    "redeemers-pistol": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/redeemers-pistol.webp",
     "reinforced-stock": "systems/pf2e/icons/equipment/weapons/reinforced-stock.webp",
     "clan-pistol": "systems/pf2e/icons/equipment/weapons/clan-pistol.webp",
     "slide-pistol": "systems/pf2e/icons/equipment/weapons/slide-pistol.webp",
@@ -210,21 +196,17 @@ const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
     wakizashi: "systems/pf2e/icons/equipment/weapons/wakizashi.webp",
     "frying-pan": "systems/pf2e/icons/equipment/weapons/frying-pan.webp",
     tetsubo: "systems/pf2e/icons/equipment/weapons/aklys.webp",
-    "bottled-lightning-lesser":
-        "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/bottled-lightning.webp",
+    "bottled-lightning-lesser": "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/bottled-lightning.webp",
     blunderbuss: "icons/weapons/guns/gun-blunderbuss-worn-brown.webp",
-    "dread-ampoule-greater":
-        "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/dread-ampoule.webp",
+    "dread-ampoule-greater": "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/dread-ampoule.webp",
     "glue-bomb-greater": "icons/containers/bags/sack-simple-leather-tan.webp",
     "mammoth-bow": "systems/pf2e/icons/equipment/weapons/composite-longbow.webp",
     kusarigama: "systems/pf2e/icons/equipment/weapons/kama.webp",
     urumi: "systems/pf2e/icons/equipment/weapons/urumi.webp",
     "buzzsaw-axe": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/buzzsaw-axe.webp",
-    "acid-flask-greater":
-        "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/acid-flask.webp",
+    "acid-flask-greater": "systems/pf2e/icons/equipment/alchemical-items/alchemical-bombs/acid-flask.webp",
     "staff-of-air-greater": "icons/weapons/staves/staff-simple.webp",
-    "repeating-heavy-crossbow":
-        "systems/pf2e/icons/equipment/weapons/repeating-heavy-crossbow.webp",
+    "repeating-heavy-crossbow": "systems/pf2e/icons/equipment/weapons/repeating-heavy-crossbow.webp",
     "spore-shephards-staff": "icons/weapons/staves/staff-forest-gold.webp",
     "throwing-knife": "icons/weapons/thrown/dagger-ringed-steel.webp",
     "deflecting-branch": "systems/pf2e/icons/default-icons/weapon.svg",
@@ -232,8 +214,7 @@ const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
     spellcutter: "systems/pf2e/icons/equipment/weapons/longsword.webp",
     briar: "icons/weapons/staves/staff-forest-jewel.webp",
     "slime-whip": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/slime-whip.webp",
-    "heartripper-blade":
-        "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/gloom-blade.webp",
+    "heartripper-blade": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/gloom-blade.webp",
     "gloom-blade": "systems/pf2e/icons/equipment/weapons/specific-magic-weapons/gloom-blade.webp",
     "claw-blade": "systems/pf2e/icons/equipment/weapons/claw-blade.webp",
     shears: "systems/pf2e/icons/equipment/weapons/shears.webp",
@@ -248,6 +229,18 @@ const NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {
     "shadow-hand": "icons/magic/unholy/hand-claw-fire-blue.webp",
     antlers: "icons/creatures/mammals/deer-antlers-blue.webp",
 };
+
+let NPC_STRIKE_ICONS: Record<string, ImageFilePath> = {};
+
+function prepareNpcStrikes() {
+    if (SYSTEM.isPF2e) {
+        NPC_STRIKE_ICONS = _NPC_STRIKE_ICONS;
+    } else {
+        NPC_STRIKE_ICONS = R.mapValues(_NPC_STRIKE_ICONS, (img): ImageFilePath => {
+            return img.replace("systems/pf2e", "systems/sf2e") as ImageFilePath;
+        });
+    }
+}
 
 function getNpcStrikeImage({
     item,
@@ -265,11 +258,7 @@ function getNpcStrikeImage({
     const match = NPC_STRIKE_ICONS[slug];
     if (match) return match;
 
-    return isAreaOrAutoFireType(type)
-        ? imagePath(type, "svg")
-        : item.range
-        ? imagePath("npc-range", "svg")
-        : item.img;
+    return isAreaOrAutoFireType(type) ? imagePath(type, "svg") : item.range ? imagePath("npc-range", "svg") : item.img;
 }
 
-export { getNpcStrikeImage };
+export { getNpcStrikeImage, prepareNpcStrikes };

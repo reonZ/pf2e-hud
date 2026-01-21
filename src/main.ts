@@ -11,6 +11,7 @@ import {
     PersistentPF2eHUD,
     prepareActionGroups,
     prepareExtrasActions,
+    prepareNpcStrikes,
     TimePF2eHUD,
     toggleStance,
     TokenPF2eHUD,
@@ -18,15 +19,7 @@ import {
     TrackerPF2eHUD,
 } from "hud";
 import { registerKeybinds } from "keybinds";
-import {
-    ActorPF2e,
-    createHTMLElement,
-    CreaturePF2e,
-    MODULE,
-    R,
-    templatePath,
-    userIsGM,
-} from "module-helpers";
+import { ActorPF2e, createHTMLElement, CreaturePF2e, MODULE, R, templatePath, userIsGM } from "module-helpers";
 import { registerSettings } from "settings";
 
 MODULE.register("pf2e-hud");
@@ -47,9 +40,7 @@ Hooks.once("init", () => {
 
     const templates = [
         ["actions", "extras", "items", "skills", "spells"].map((x) => templatePath("sidebar", x)),
-        ["item-image", "sidebars", "slider", "statistic-action"].map((x) =>
-            templatePath("partials", x)
-        ),
+        ["item-image", "sidebars", "slider", "statistic-action"].map((x) => templatePath("partials", x)),
         ["actor-hud", "tooltip"].map((x) => templatePath(x)),
     ];
 
@@ -76,6 +67,8 @@ Hooks.once("init", () => {
 
         return fakeCheckbox;
     });
+
+    prepareNpcStrikes();
 
     // we remove the preloaded checkboxes to not pollute the DOM
     setTimeout(() => {
