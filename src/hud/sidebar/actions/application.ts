@@ -9,6 +9,7 @@ import {
     htmlClosest,
     ItemPF2e,
     setFlag,
+    SYSTEM,
     TemplateLocalize,
 } from "module-helpers";
 import {
@@ -113,7 +114,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
         const actor = this.actor;
 
         if (action === "toggle-hide-stowed") {
-            actor.setFlag("pf2e", "hideStowed", !actor.flags.pf2e.hideStowed);
+            actor.setFlag(SYSTEM.id, "hideStowed", !actor.getFlag(SYSTEM.id, "hideStowed"));
         } else if (action === "toggle-show-shields") {
             setFlag(actor, "showShields", !getFlag(actor, "showShields"));
         } else {
