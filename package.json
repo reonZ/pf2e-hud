@@ -21,7 +21,7 @@
         "typescript": "5.3.3"
     },
     "dependencies": {
-        "module-helpers": "file:../../../../dev/module-helpers",
+        "module-helpers": "github:reonZ/module-helpers",
         "sortablejs": "^1.15.2"
     }
 }
