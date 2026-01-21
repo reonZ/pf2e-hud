@@ -13,6 +13,7 @@ import {
     getFirstActiveToken,
     htmlQuery,
     isInstanceOf,
+    SYSTEM,
 } from "module-helpers";
 import { PersistentPartPF2eHUD } from ".";
 
@@ -42,9 +43,7 @@ class PersistentEffectsPF2eHUD extends PersistentPartPF2eHUD {
         this.toggleBtn?.classList.remove("inactive");
     }
 
-    protected async _prepareContext(
-        options: ApplicationRenderOptions
-    ): Promise<EffectsPanelViewData> {
+    protected async _prepareContext(options: ApplicationRenderOptions): Promise<EffectsPanelViewData> {
         const actor = this.actor;
 
         if (!actor) {
@@ -60,13 +59,10 @@ class PersistentEffectsPF2eHUD extends PersistentPartPF2eHUD {
         };
     }
 
-    protected _renderHTML(
-        context: EffectsPanelViewData,
-        options: ApplicationRenderOptions
-    ): Promise<string> {
+    protected _renderHTML(context: EffectsPanelViewData, options: ApplicationRenderOptions): Promise<string> {
         return foundry.applications.handlebars.renderTemplate(
-            "systems/pf2e/templates/system/effects/panel.hbs",
-            context
+            `systems/${SYSTEM.id}/templates/system/effects/panel.hbs`,
+            context,
         );
     }
 
@@ -107,8 +103,8 @@ class PersistentEffectsPF2eHUD extends PersistentPartPF2eHUD {
 
         const content = createHTMLElement("div", {
             content: await foundry.applications.handlebars.renderTemplate(
-                "systems/pf2e/templates/system/effects/tooltip.hbs",
-                viewData
+                `systems/${SYSTEM.id}/templates/system/effects/tooltip.hbs`,
+                viewData,
             ),
         }).firstElementChild;
         if (!(content instanceof HTMLElement)) return null;
@@ -175,17 +171,13 @@ class PersistentEffectsPF2eHUD extends PersistentPartPF2eHUD {
 /**
  * https://github.com/foundryvtt/pf2e/blob/7baadf276f3d3f13fd77adf411387312ab287042/src/module/apps/effects-panel.ts#L164
  */
-async function getViewData(
-    effects: AfflictionPF2e[] | EffectPF2e[] | ConditionPF2e[]
-): Promise<EffectViewData[]> {
+async function getViewData(effects: AfflictionPF2e[] | EffectPF2e[] | ConditionPF2e[]): Promise<EffectViewData[]> {
     return Promise.all(
         effects.map(async (effect) => ({
             effect,
             description: (await effect.getDescription()).value,
-            remaining: isInstanceOf(effect, "EffectPF2e")
-                ? getRemainingDurationLabel(effect)
-                : null,
-        }))
+            remaining: isInstanceOf(effect, "EffectPF2e") ? getRemainingDurationLabel(effect) : null,
+        })),
     );
 }
 

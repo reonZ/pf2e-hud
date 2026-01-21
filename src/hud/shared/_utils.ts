@@ -9,10 +9,14 @@ import {
     InitiativeRollResult,
     R,
     SpellPF2e,
+    SYSTEM,
     ValueAndMax,
 } from "module-helpers";
 
-const COVER_UUID = "Compendium.pf2e.other-effects.Item.I9lfZUiCwMiGogVi";
+const COVER_UUID = SYSTEM.uuid(
+    "Compendium.pf2e.other-effects.Item.I9lfZUiCwMiGogVi",
+    "Compendium.sf2e.other-effects.Item.I9lfZUiCwMiGogVi",
+);
 
 type FilterValueEntry = string | FilterValue | { filterValue: FilterValue };
 
@@ -41,19 +45,17 @@ class FilterValue {
             this.#list,
             R.unique(),
             R.map((entry) => entry.toLowerCase()),
-            R.join("|")
+            R.join("|"),
         );
     }
 }
 
 function getCoverEffect(actor: ActorPF2e): EffectPF2e<ActorPF2e> | undefined {
-    return actor.itemTypes.effect.find((effect) => effect.sourceId === COVER_UUID);
+    const uuid = COVER_UUID();
+    return actor.itemTypes.effect.find((effect) => effect.sourceId === uuid);
 }
 
-function createSlider(
-    action: string,
-    { max, value, min }: ValueAndMax & { min?: number }
-): SliderData {
+function createSlider(action: string, { max, value, min }: ValueAndMax & { min?: number }): SliderData {
     return {
         action,
         canBack: R.isNumber(min) ? value > min : value > 0,
@@ -65,7 +67,7 @@ function createSlider(
 function rollInitiative(
     event: Event,
     actor: ActorPF2e,
-    statistic?: string
+    statistic?: string,
 ): Promise<InitiativeRollResult | null> | undefined {
     const args = eventToRollParams(event, { type: "check" });
 
@@ -96,7 +98,7 @@ function makeFadeable(app: ApplicationV2) {
                         app.element?.classList.remove("pf2e-hud-fadeout");
                     }, 500);
                 },
-                { once: true, capture: true }
+                { once: true, capture: true },
             );
         });
     };
@@ -108,14 +110,12 @@ function makeFadeable(app: ApplicationV2) {
         () => {
             window.removeEventListener("dragstart", onDragStart, true);
         },
-        { once: true }
+        { once: true },
     );
 }
 
 function isAnimistEntry(entry: BaseSpellcastingEntry<CreaturePF2e>) {
-    return (
-        foundry.utils.getProperty(entry, "flags.pf2e-dailies.identifier") === "animist-spontaneous"
-    );
+    return foundry.utils.getProperty(entry, "flags.pf2e-dailies.identifier") === "animist-spontaneous";
 }
 
 function getUiScale(): number {
@@ -133,9 +133,7 @@ function getTextureMask({ scaleX, scaleY }: { scaleX: number; scaleY: number }) 
 }
 
 function isFocusCantrip(spell: SpellPF2e): boolean {
-    return (
-        spell.system.cast.focusPoints > 0 || spell.system.traits.otherTags.includes("psi-cantrip")
-    );
+    return spell.system.cast.focusPoints > 0 || spell.system.traits.otherTags.includes("psi-cantrip");
 }
 
 type SliderData = {
