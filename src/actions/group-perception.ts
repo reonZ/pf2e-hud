@@ -3,13 +3,17 @@ import {
     R,
     render,
     ScenePF2e,
+    SYSTEM,
     TokenDocumentPF2e,
     TokenPF2e,
     warning,
     ZeroToFour,
 } from "module-helpers";
 
-const SEARCH_UUID = "Compendium.pf2e.actionspf2e.Item.TiNDYUGlMmxzxBYU";
+const SEARCH_UUID = SYSTEM.uuid(
+    "Compendium.pf2e.actionspf2e.Item.TiNDYUGlMmxzxBYU",
+    "Compendium.sf2e.actions.Item.TiNDYUGlMmxzxBYU",
+);
 
 async function rollGroupPerception() {
     if (!game.user.isGM) return;
@@ -17,22 +21,21 @@ async function rollGroupPerception() {
     const controlled = R.pipe(
         canvas.tokens.controlled,
         R.filter((token): token is ControlledToken => !!token.actor?.isOfType("creature")),
-        R.map((token) => token.actor)
+        R.map((token) => token.actor),
     );
 
     const actors = controlled.length
         ? controlled
-        : game.actors.party?.members.filter((actor) => actor.isOfType("creature")) ?? [];
+        : (game.actors.party?.members.filter((actor) => actor.isOfType("creature")) ?? []);
 
     const data = await Promise.all(
         actors.map(async (actor): Promise<ActorData> => {
             const perception = actor.getStatistic("perception");
+            const uuid = SEARCH_UUID();
 
             const isSearching =
                 actor.isOfType("character") &&
-                actor.system.exploration.find((id) => {
-                    return actor.items.get(id)?.sourceId === SEARCH_UUID;
-                });
+                actor.system.exploration.find((id) => actor.items.get(id)?.sourceId === uuid);
 
             const roll = await perception.roll({
                 createMessage: false,
@@ -46,7 +49,7 @@ async function rollGroupPerception() {
                 rank: perception.rank ?? 0,
                 roll: roll?.total ?? 0,
             };
-        })
+        }),
     );
 
     if (!data.length) {
