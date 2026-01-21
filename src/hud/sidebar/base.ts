@@ -57,8 +57,10 @@ const _cached: { filter?: string } = {};
 
 abstract class SidebarPF2eHUD<
     TItem extends ItemPF2e = ItemPF2e,
-    TSidebarItem extends BaseSidebarItem<TItem> = BaseSidebarItem<TItem>
-> extends foundry.applications.api.ApplicationV2 {
+    TSidebarItem extends BaseSidebarItem<TItem> = BaseSidebarItem<TItem>,
+>
+    extends foundry.applications.api.ApplicationV2
+{
     static #instance: SidebarPF2eHUD | null = null;
     static #filter: string = "";
 
@@ -69,12 +71,7 @@ abstract class SidebarPF2eHUD<
     #innerElement: HTMLElement | undefined;
     #sidebarElement: HTMLElement | undefined;
 
-    #mouseDownEvent = createToggleableEvent(
-        "mousedown",
-        "#board",
-        this.#onMouseDown.bind(this),
-        true
-    );
+    #mouseDownEvent = createToggleableEvent("mousedown", "#board", this.#onMouseDown.bind(this), true);
 
     #parentCloseListener = () => {
         this.close();
@@ -159,8 +156,7 @@ abstract class SidebarPF2eHUD<
 
         if (trimmed.length) {
             const toTest = trimmed.toLowerCase();
-            const toFilterElements =
-                innerElement?.querySelectorAll<HTMLElement>("[data-filter-value]");
+            const toFilterElements = innerElement?.querySelectorAll<HTMLElement>("[data-filter-value]");
 
             let hasFilter = false;
 
@@ -239,10 +235,7 @@ abstract class SidebarPF2eHUD<
         return this.#instance?.parent === hud;
     }
 
-    constructor(
-        parent: IAdvancedPF2eHUD & BaseActorPF2eHUD,
-        options?: DeepPartial<ApplicationConfiguration>
-    ) {
+    constructor(parent: IAdvancedPF2eHUD & BaseActorPF2eHUD, options?: DeepPartial<ApplicationConfiguration>) {
         super(options);
 
         this.#parent = parent;
@@ -303,10 +296,7 @@ abstract class SidebarPF2eHUD<
         ...args: ConstructorParameters<ConstructorOf<T>>
     ) {
         const item = new ItemCls(...args);
-        this.sidebarItems.set(
-            prop in item ? (item[prop as keyof typeof item] as string) : (prop as string),
-            item
-        );
+        this.sidebarItems.set(prop in item ? (item[prop as keyof typeof item] as string) : (prop as string), item);
         return item;
     }
 
@@ -356,7 +346,7 @@ abstract class SidebarPF2eHUD<
             if (this.#sidebarElement && this.#innerElement) {
                 this.#sidebarElement.classList.toggle(
                     "top",
-                    this.#innerElement.offsetHeight <= this.#sidebarElement.offsetHeight
+                    this.#innerElement.offsetHeight <= this.#sidebarElement.offsetHeight,
                 );
             }
 
@@ -394,7 +384,7 @@ abstract class SidebarPF2eHUD<
 
     protected async _renderHTML(
         context: SidebarRenderContext,
-        options: SidebarRenderOptions
+        options: SidebarRenderOptions,
     ): Promise<SidebarHudRenderElements> {
         const actor = this.actor;
         const flaggedItems = actor.isOfType("character")
@@ -440,7 +430,7 @@ abstract class SidebarPF2eHUD<
     protected _replaceHTML(
         { filterElement, innerElement, sidebarElement }: SidebarHudRenderElements,
         content: HTMLElement,
-        options: SidebarRenderOptions
+        options: SidebarRenderOptions,
     ): void {
         const previousInner = this.#innerElement;
         const previousFilter = this.#filterElement;
@@ -540,7 +530,7 @@ abstract class SidebarPF2eHUD<
             sidebarItem.img,
             this.actor,
             sidebarItem.item,
-            sidebarItem.createDragData(event)
+            sidebarItem.createDragData(event),
         );
     }
 
@@ -602,36 +592,27 @@ abstract class SidebarPF2eHUD<
 
         addEnterKeyListeners(html, "number");
 
-        addListenerAll(
-            html,
-            "input[data-item-id][data-item-property]",
-            "change",
-            (el: HTMLInputElement, event) => {
-                event.stopPropagation();
-                const { itemId, itemProperty } = el.dataset;
-                if (!itemId || !itemProperty) return;
+        addListenerAll(html, "input[data-item-id][data-item-property]", "change", (el: HTMLInputElement, event) => {
+            event.stopPropagation();
+            const { itemId, itemProperty } = el.dataset;
+            if (!itemId || !itemProperty) return;
 
-                const min = Number(el.min) || 0;
-                const max = Number(el.max) || Infinity;
+            const min = Number(el.min) || 0;
+            const max = Number(el.max) || Infinity;
 
-                if (el.valueAsNumber > max) {
-                    el.valueAsNumber = max;
-                } else if (el.valueAsNumber < min) {
-                    el.valueAsNumber = min;
-                }
-
-                this.actor.updateEmbeddedDocuments("Item", [
-                    { _id: itemId, [itemProperty]: el.valueAsNumber },
-                ]);
+            if (el.valueAsNumber > max) {
+                el.valueAsNumber = max;
+            } else if (el.valueAsNumber < min) {
+                el.valueAsNumber = min;
             }
-        );
+
+            this.actor.updateEmbeddedDocuments("Item", [{ _id: itemId, [itemProperty]: el.valueAsNumber }]);
+        });
 
         addListenerAll(html, "[data-action='item-description']", async (el, event) => {
             const actor = this.actor;
             const item =
-                this.getSidebarItemFromElement(el)?.item ??
-                (await getItemFromElement<TItem>(this.actor, el)) ??
-                null;
+                this.getSidebarItemFromElement(el)?.item ?? (await getItemFromElement<TItem>(this.actor, el)) ?? null;
 
             if (item) {
                 new ItemHudPopup(actor, item, event).render(true);
@@ -647,24 +628,12 @@ abstract class SidebarPF2eHUD<
          */
         addListenerAll(html, "ul[data-option-toggles]", "change", (_, event) => {
             const toggleRow = htmlClosest(event.target, "[data-item-id][data-domain][data-option]");
-            const checkbox = htmlQuery<HTMLInputElement>(
-                toggleRow,
-                "input[data-action=toggle-roll-option]"
-            );
-            const suboptionsSelect = htmlQuery<HTMLSelectElement>(
-                toggleRow,
-                "select[data-action=set-suboption"
-            );
+            const checkbox = htmlQuery<HTMLInputElement>(toggleRow, "input[data-action=toggle-roll-option]");
+            const suboptionsSelect = htmlQuery<HTMLSelectElement>(toggleRow, "select[data-action=set-suboption");
             const { domain, option, itemId } = toggleRow?.dataset ?? {};
             const suboption = suboptionsSelect?.value ?? null;
             if (checkbox && domain && option) {
-                this.actor.toggleRollOption(
-                    domain,
-                    option,
-                    itemId ?? null,
-                    checkbox.checked,
-                    suboption
-                );
+                this.actor.toggleRollOption(domain, option, itemId ?? null, checkbox.checked, suboption);
             }
         });
     }
@@ -694,4 +663,4 @@ type SidebarRenderOptions = ApplicationRenderOptions & {
 MODULE.devExpose({ SidebarPF2eHUD });
 
 export { SidebarPF2eHUD };
-export type { SidebarDragData };
+export type { SidebarDragData, SidebarRenderOptions };

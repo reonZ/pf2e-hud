@@ -31,20 +31,13 @@ import {
     StancesContext,
     StrikesContext,
 } from ".";
-import { SidebarPF2eHUD } from "..";
+import { SidebarPF2eHUD, SidebarRenderOptions } from "..";
 
 class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
     ItemPF2e,
-    | ActionsSidebarAction
-    | ActionsSidebarBlast
-    | ActionsSidebarBlastCost
-    | ActionsSidebarStrike
-    | ActionsStance
+    ActionsSidebarAction | ActionsSidebarBlast | ActionsSidebarBlastCost | ActionsSidebarStrike | ActionsStance
 > {
-    #combatantHooks = createToggleableHook(
-        ["createCombatant", "deleteCombatant"],
-        this.#onCombatant.bind(this)
-    );
+    #combatantHooks = createToggleableHook(["createCombatant", "deleteCombatant"], this.#onCombatant.bind(this));
 
     getSidebarItemKey({ itemId, index }: DOMStringMap): string | undefined {
         return itemId && index ? `${itemId}-${index}` : itemId;
@@ -72,7 +65,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
         };
     }
 
-    protected _onFirstRender(context: ActionsSidebarContext, options: ApplicationRenderOptions) {
+    protected _onFirstRender(context: ActionsSidebarContext, options: SidebarRenderOptions) {
         super._onFirstRender(context, options);
 
         if (context.stances) {
@@ -196,11 +189,7 @@ type EventHeroAction =
     | "hero-actions-draw"
     | "hero-actions-trade";
 
-type EventAction =
-    | EventHeroAction
-    | "send-hero-action-to-chat"
-    | "toggle-hide-stowed"
-    | "toggle-show-shields";
+type EventAction = EventHeroAction | "send-hero-action-to-chat" | "toggle-hide-stowed" | "toggle-show-shields";
 
 type ActionsSidebarContext = {
     sections: ActionSection[] | undefined;
