@@ -29,6 +29,7 @@ const ACTION_TYPES = {
 
 const SKILL_EXCLUDE_EXCLUDE = [
     "Compendium.pf2e.actionspf2e.Item.IE2nThCmoyhQA0Jn", // avoid-notice
+    "Compendium.sf2e.actions.Item.IE2nThCmoyhQA0Jn", // avoid-notice
 ];
 
 const _cachedExcludedActions: string[] = [];
