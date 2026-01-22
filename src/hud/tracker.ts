@@ -7,6 +7,7 @@ import {
     ApplicationRenderOptions,
     belongToPartyAlliance,
     canObserveActor,
+    CombatantFlags,
     createToggleableHook,
     createToggleableWrapper,
     createToggleKeybind,
@@ -26,6 +27,7 @@ import {
     RolledCombatant,
     setFlag,
     settingPath,
+    SYSTEM,
     templateLocalize,
     toggleHooksAndWrappers,
     TokenPF2e,
@@ -75,7 +77,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         "OVERRIDE",
         "foundry.applications.sidebar.tabs.ChatLog.prototype._shouldShowNotifications",
         this.#shouldShowNotifications,
-        { context: this }
+        { context: this },
     );
 
     #activeHooks = [
@@ -87,10 +89,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             this.#refreshTargetDisplay(token);
         }),
     ];
-    #combatHook = createToggleableHook(
-        "renderCombatTracker",
-        this.#onRenderCombatTracker.bind(this)
-    );
+    #combatHook = createToggleableHook("renderCombatTracker", this.#onRenderCombatTracker.bind(this));
 
     #combatTrackerHeightObserver = new ResizeObserver((entries) => {
         const trackerEvent = entries.find((entry) => entry.target === this.element);
@@ -104,7 +103,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
 
         this.interfaceElement?.classList.toggle(
             "pf2e-hud-tracker-tall",
-            this.#trackerHeight.offsetHeight > window.innerHeight / 2
+            this.#trackerHeight.offsetHeight > window.innerHeight / 2,
         );
 
         this.#updateEffectsPanel();
@@ -363,7 +362,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             const color: string = R.pipe(
                 getDispositionColor(actor).rgb,
                 R.map((x) => x * 255),
-                R.join(", ")
+                R.join(", "),
             );
 
             const health: TrackerHealth | undefined = (() => {
@@ -403,7 +402,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             canRollNPCs ||= canRoll && !hasPlayerOwner;
         }
 
-        const deathImg = game.settings.get("pf2e", "deathIcon");
+        const deathImg = game.settings.get(SYSTEM.id, "deathIcon");
 
         const expand = {
             tooltip: options.collapsed ? "collapsed" : "expanded",
@@ -420,9 +419,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             if (!options.collapsed || (!isGM && canRoll) || turns.length < 2) return;
 
             const combatantId = combatant?.id;
-            const list = isGM
-                ? turns
-                : turns.filter(({ hidden, id }) => !hidden || id === combatantId);
+            const list = isGM ? turns : turns.filter(({ hidden, id }) => !hidden || id === combatantId);
             if (list.length < 2) return;
 
             const combatantIndex = list.findIndex(({ id }) => id === combatantId);
@@ -457,18 +454,11 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         };
     }
 
-    protected _renderHTML(
-        context: ApplicationRenderContext,
-        options: TrackerRenderOptions
-    ): Promise<string> {
+    protected _renderHTML(context: ApplicationRenderContext, options: TrackerRenderOptions): Promise<string> {
         return render("tracker", context);
     }
 
-    protected _replaceHTML(
-        result: string,
-        content: HTMLElement,
-        options: TrackerRenderOptions
-    ): void {
+    protected _replaceHTML(result: string, content: HTMLElement, options: TrackerRenderOptions): void {
         content.innerHTML = result;
         content.dataset.tooltipClass = "pf2e-hud-element";
         content.dataset.tooltipDirection = "UP";
@@ -632,7 +622,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         return this.#newInitiativeOrder(
             newOrder.filter((c): c is RolledCombatant<EncounterPF2e> => hasRolledInitiative(c)),
             combatant,
-            true
+            true,
         );
     }
 
@@ -650,12 +640,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         const combatantsWrapper = this.combatantsWrapper;
         const tokenCombatant = token?.combatant;
 
-        if (
-            !combatantsWrapper ||
-            !combat ||
-            !canvas.ready ||
-            (tokenCombatant && tokenCombatant.encounter !== combat)
-        )
+        if (!combatantsWrapper || !combat || !canvas.ready || (tokenCombatant && tokenCombatant.encounter !== combat))
             return;
 
         const user = game.user;
@@ -666,9 +651,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             const token = combatant.token;
             if (!token) continue;
 
-            const combatantElement = combatantsWrapper.querySelector(
-                `[data-combatant-id="${combatant.id}"]`
-            );
+            const combatantElement = combatantsWrapper.querySelector(`[data-combatant-id="${combatant.id}"]`);
             if (!combatantElement) continue;
 
             const selfTargetIcon = htmlQuery(combatantElement, `[data-action="toggleTarget"]`);
@@ -681,14 +664,12 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
                 token.object?.targeted.toObject() ?? [],
                 R.filter((u) => u !== user),
                 R.map((u) => `<div class="target" style="--user-color: ${u.color};"></div>`),
-                R.join("")
+                R.join(""),
             );
         }
     }
 
-    #onRenderCombatTracker(
-        tracker: EncounterTrackerPF2e<EncounterPF2e | null> | null = this.tracker
-    ) {
+    #onRenderCombatTracker(tracker: EncounterTrackerPF2e<EncounterPF2e | null> | null = this.tracker) {
         if (tracker && this.shouldDisplay(tracker.viewed)) {
             this.render(true);
         } else {
@@ -875,9 +856,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             htmlQueryAll(event.target, "li.combatant"),
             R.map((row) => row.getAttribute("data-combatant-id") ?? ""),
             R.map((id) => encounter.combatants.get(id, { strict: true })),
-            R.filter((combatant): combatant is RolledCombatant<EncounterPF2e> =>
-                hasRolledInitiative(combatant)
-            )
+            R.filter((combatant): combatant is RolledCombatant<EncounterPF2e> => hasRolledInitiative(combatant)),
         );
 
         this.#newInitiativeOrder(newOrder, dropped);
@@ -890,7 +869,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
     async #newInitiativeOrder(
         newOrder: RolledCombatant<EncounterPF2e>[],
         dropped: RolledCombatant<EncounterPF2e>,
-        nextTurn?: boolean
+        nextTurn?: boolean,
     ) {
         const encounter = this.viewed;
         if (!encounter) return;
@@ -918,34 +897,24 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
                 id: c.id,
                 value: c.initiative,
                 overridePriority: c.overridePriority(c.initiative),
-            }))
+            })),
         );
     }
 
     /**
      * https://github.com/foundryvtt/pf2e/blob/a3856b6ae9c0427267b410bb81ff8d4cfefbeab4/src/module/apps/sidebar/encounter-tracker.ts#L341
      */
-    #setInitiativeFromDrop(
-        newOrder: RolledCombatant<EncounterPF2e>[],
-        dropped: RolledCombatant<EncounterPF2e>
-    ): void {
-        const aboveDropped = newOrder.find(
-            (c) => newOrder.indexOf(c) === newOrder.indexOf(dropped) - 1
-        );
-        const belowDropped = newOrder.find(
-            (c) => newOrder.indexOf(c) === newOrder.indexOf(dropped) + 1
-        );
+    #setInitiativeFromDrop(newOrder: RolledCombatant<EncounterPF2e>[], dropped: RolledCombatant<EncounterPF2e>): void {
+        const aboveDropped = newOrder.find((c) => newOrder.indexOf(c) === newOrder.indexOf(dropped) - 1);
+        const belowDropped = newOrder.find((c) => newOrder.indexOf(c) === newOrder.indexOf(dropped) + 1);
 
         const hasAboveAndBelow = !!aboveDropped && !!belowDropped;
         const hasAboveAndNoBelow = !!aboveDropped && !belowDropped;
         const hasBelowAndNoAbove = !aboveDropped && !!belowDropped;
-        const aboveIsHigherThanBelow =
-            hasAboveAndBelow && belowDropped.initiative < aboveDropped.initiative;
-        const belowIsHigherThanAbove =
-            hasAboveAndBelow && belowDropped.initiative < aboveDropped.initiative;
+        const aboveIsHigherThanBelow = hasAboveAndBelow && belowDropped.initiative < aboveDropped.initiative;
+        const belowIsHigherThanAbove = hasAboveAndBelow && belowDropped.initiative < aboveDropped.initiative;
         const wasDraggedUp =
-            !!belowDropped &&
-            this.viewed?.getCombatantWithHigherInit(dropped, belowDropped) === belowDropped;
+            !!belowDropped && this.viewed?.getCombatantWithHigherInit(dropped, belowDropped) === belowDropped;
         const wasDraggedDown = !!aboveDropped && !wasDraggedUp;
 
         // Set a new initiative intuitively, according to allegedly commonplace intuitions
@@ -953,16 +922,16 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             hasBelowAndNoAbove || (aboveIsHigherThanBelow && wasDraggedUp)
                 ? belowDropped.initiative + 1
                 : hasAboveAndNoBelow || (belowIsHigherThanAbove && wasDraggedDown)
-                ? aboveDropped.initiative - 1
-                : hasAboveAndBelow
-                ? belowDropped.initiative
-                : dropped.initiative;
+                  ? aboveDropped.initiative - 1
+                  : hasAboveAndBelow
+                    ? belowDropped.initiative
+                    : dropped.initiative;
 
         const withSameInitiative = newOrder.filter((c) => c.initiative === dropped.initiative);
         if (withSameInitiative.length > 1) {
             for (let priority = 0; priority < withSameInitiative.length; priority++) {
-                withSameInitiative[priority].flags.pf2e.overridePriority[dropped.initiative] =
-                    priority;
+                const flag = withSameInitiative[priority].flags[SYSTEM.id] as CombatantFlags["pf2e"];
+                flag.overridePriority[dropped.initiative] = priority;
             }
         }
     }
@@ -1037,7 +1006,7 @@ function buildMetrics(metrics: EncounterPF2e["metrics"] | null): TrackerContext[
         {
             allowProtoMethodsByDefault: true,
             allowProtoPropertiesByDefault: true,
-        }
+        },
     );
 
     return {

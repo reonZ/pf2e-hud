@@ -39,7 +39,7 @@
             {{#if @root.deathImg}}
             <img class="defeated-img custom" src="{{@root.deathImg}}">
             {{else}}
-            <img class="defeated-img" src="systems/pf2e/icons/damage/double.svg">
+            <img class="defeated-img" src="systems/{{@root.systemId}}/icons/damage/double.svg">
             {{/if}}
             {{/if}}
             <div class="alt" {{{@root.i18n.tooltip 'force-turn' }}}>

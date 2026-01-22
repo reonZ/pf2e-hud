@@ -26,15 +26,18 @@ import {
     ZeroToTwo,
 } from "module-helpers";
 
-const ACTION_IMAGES: Record<string, ImageFilePath> = {
-    "arrest-a-fall": "systems/pf2e/icons/spells/feather-fall.webp",
-    "grab-an-edge": "systems/pf2e/icons/spells/mage-hand.webp",
-    lore: "systems/pf2e/icons/spells/divine-decree.webp",
-    treatWounds: "systems/pf2e/icons/spells/delay-affliction.webp",
-    "recall-knowledge": "systems/pf2e/icons/spells/brain-drain.webp",
-    "learn-a-spell": "systems/pf2e/icons/equipment/adventuring-gear/writing-set.webp",
-    "identify-magic": "systems/pf2e/icons/equipment/adventuring-gear/magnifying-glass.webp",
-};
+const ACTION_IMAGES: PartialRecord<string, () => ImageFilePath> = R.mapValues(
+    {
+        "arrest-a-fall": "icons/spells/feather-fall.webp",
+        "grab-an-edge": "icons/spells/mage-hand.webp",
+        lore: "icons/spells/divine-decree.webp",
+        treatWounds: "icons/spells/delay-affliction.webp",
+        "recall-knowledge": "icons/spells/brain-drain.webp",
+        "learn-a-spell": "icons/equipment/adventuring-gear/writing-set.webp",
+        "identify-magic": "icons/equipment/adventuring-gear/magnifying-glass.webp",
+    } as const,
+    (tail) => SYSTEM.path(tail),
+);
 
 abstract class BaseStatisticAction<
     TData extends RawBaseActionData = RawBaseActionData,
@@ -97,7 +100,9 @@ abstract class BaseStatisticAction<
 
     get img(): ImageFilePath {
         return (this.#img ??=
-            ACTION_IMAGES[this.key] ?? game.pf2e.actions.get(this.key)?.img ?? getActionIcon(this.actionCost));
+            ACTION_IMAGES[this.key]?.() ??
+            (game.pf2e.actions.get(this.key)?.img as ImageFilePath) ??
+            getActionIcon(this.actionCost));
     }
 
     get system(): "pf2e" | "sf2e" {

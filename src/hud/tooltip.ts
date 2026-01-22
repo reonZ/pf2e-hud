@@ -16,6 +16,7 @@ import {
     R,
     render,
     TokenPF2e,
+    SYSTEM,
 } from "module-helpers";
 import { getHealthStatusData } from "settings";
 import { BaseTokenPF2eHUD, calculateActorHealth, HUDSettingsList } from ".";
@@ -169,7 +170,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         }
 
         if (distanceEnabled && game.pf2e.settings.distanceDisplay !== "never") {
-            game.settings.set("pf2e", "distanceDisplay", "never");
+            game.settings.set(SYSTEM.id, "distanceDisplay", "never");
         }
     }
 
