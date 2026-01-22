@@ -19,6 +19,11 @@ import {
 import { ActionsSidebarPF2eHUD } from ".";
 import { BaseSidebarItem, getExtrasActions, getSkillActionGroups } from "..";
 
+const FEAT_ICON = [
+    "icons/sundries/books/book-red-exclamation.webp",
+    "systems/sf2e/icons/default-icons/feats-sf2e.webp",
+];
+
 const ACTION_TYPES = {
     action: { sort: 0, label: "PF2E.ActionsActionsHeader" },
     reaction: { sort: 1, label: "PF2E.ActionsReactionsHeader" },
@@ -199,7 +204,6 @@ async function getSidebarActionsData(this: ActionsSidebarPF2eHUD): Promise<Actio
     );
 }
 
-const FEAT_ICON = "icons/sundries/books/book-red-exclamation.webp";
 function getActionImg(item: FeatPF2e | AbilityItemPF2e, macro: MaybeFalsy<MacroPF2e> | null): ImageFilePath {
     const actionIcon = getActionIcon(item.actionCost);
     const defaultIcon = getDocumentClass("Item").getDefaultArtwork(item._source).img;
@@ -218,7 +222,7 @@ function getActionImg(item: FeatPF2e | AbilityItemPF2e, macro: MaybeFalsy<MacroP
         return macro.img;
     }
 
-    return [actionIcon, defaultIcon, FEAT_ICON].includes(item.img) ? actionIcon : item.img;
+    return [actionIcon, defaultIcon, ...FEAT_ICON].includes(item.img) ? actionIcon : item.img;
 }
 
 function getActionFrequency(
