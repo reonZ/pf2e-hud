@@ -1,3 +1,11 @@
+# 2.42.0
+
+- this is a release for the `0.0.1` of the `Starfinder Second Edition` system
+- made all (hopefully) the necessary changes to be compatible with the `SF2e` system
+  - `Piloting` action skills aren't yet available in the system but are coming (https://github.com/foundryvtt/pf2e/pull/21288)
+- `Extras Sidebar`:
+  - fix actions image mouse-hover style
+
 # 2.41.2
 
 - `Extras Sidebar`:
