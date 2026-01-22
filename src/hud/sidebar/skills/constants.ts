@@ -1,13 +1,20 @@
-import { R } from "module-helpers";
+import { R, SYSTEM } from "module-helpers";
 import { RawBaseActionData, StatisticType } from "..";
 
-const FOLLOW_THE_EXPERT = "Compendium.pf2e.actionspf2e.Item.tfa4Sh7wcxCEqL29";
-const FOLLOW_THE_EXPERT_EFFECT = "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3XWMkd3";
+const FOLLOW_THE_EXPERT = SYSTEM.uuid(
+    "Compendium.pf2e.actionspf2e.Item.tfa4Sh7wcxCEqL29",
+    "Compendium.sf2e.actions.Item.tfa4Sh7wcxCEqL29",
+);
+const FOLLOW_THE_EXPERT_EFFECT = SYSTEM.uuid(
+    "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3XWMkd3",
+    "Compendium.sf2e.other-effects.Item.VCSpuc3Tf3XWMkd3",
+);
 
 const CHIRURGEON = "Compendium.pf2e.classfeatures.Item.eNZnx4LISDNftbx2";
 
 const UNTRAINED_IMPROVISATION = [
     "Compendium.pf2e.feats-srd.Item.KcbSxOPYC5CUqbZQ", // Cleaver Improviser
+    "Compendium.sf2e.feats.Item.KcbSxOPYC5CUqbZQ", // Cleaver Improviser
     "Compendium.pf2e.feats-srd.Item.73JyUrJnH3nOQJM5", // Ceremony of Knowledge
     "Compendium.pf2e.feats-srd.Item.jNrpvEqfncdGZPak", // Halfling Ingenuity
     "Compendium.pf2e.feats-srd.Item.TOyqtUUnOkOLl1Pm", // Eclectic Skill
@@ -382,15 +389,7 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
                 actionCost: 1,
                 requireTrained: true,
                 sourceId: "Compendium.sf2e-anachronism.actions.Item.7KMyRISNqp7JTzMn",
-                variants: [
-                    "back-off",
-                    "evade",
-                    "flip-and-burn",
-                    "barrel-roll",
-                    "flyby",
-                    "drift",
-                    "turn-in-place",
-                ],
+                variants: ["back-off", "evade", "flip-and-burn", "barrel-roll", "flyby", "drift", "turn-in-place"],
             },
             {
                 key: "take-control",
@@ -505,10 +504,7 @@ function getSkillKeys(): string[] {
 
 function getStatisticTypes(): StatisticType[] {
     if (!SKILLS_TYPES.length) {
-        SKILLS_TYPES.push(
-            ...R.keys(CONFIG.PF2E.skills),
-            ...(["perception", "computers", "piloting"] as const)
-        );
+        SKILLS_TYPES.push(...R.keys(CONFIG.PF2E.skills), ...(["perception", "computers", "piloting"] as const));
     }
 
     return SKILLS_TYPES;

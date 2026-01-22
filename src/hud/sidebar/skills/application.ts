@@ -40,12 +40,10 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e | AbilityItemPF2e, Sk
     }
 
     getSidebarItemKey({ itemId, itemUuid, statistic }: DOMStringMap): string | undefined {
-        return itemUuid && statistic ? `${statistic}-${itemUuid}` : itemUuid ?? itemId;
+        return itemUuid && statistic ? `${statistic}-${itemUuid}` : (itemUuid ?? itemId);
     }
 
-    protected async _prepareContext(
-        options: ApplicationRenderOptions
-    ): Promise<SkillsSidebarContext> {
+    protected async _prepareContext(options: ApplicationRenderOptions): Promise<SkillsSidebarContext> {
         const actor = this.actor;
         const hideUntrained = getGlobalSetting("hideUntrained");
         const lores = actor.itemTypes.lore.map((item) => new LoreSkill(item));
@@ -53,8 +51,7 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e | AbilityItemPF2e, Sk
         const isCharacter = actor.isOfType("character");
         const showUntrained = !hideUntrained;
 
-        const untrainedImprovisation =
-            isCharacter && hasAnyItemWithSourceId(actor, UNTRAINED_IMPROVISATION, "feat");
+        const untrainedImprovisation = isCharacter && hasAnyItemWithSourceId(actor, UNTRAINED_IMPROVISATION, "feat");
 
         const skillGroups = getSkillActionGroups().map((group) => {
             const statistic = actor.getStatistic(group.slug);
@@ -69,8 +66,8 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e | AbilityItemPF2e, Sk
             const proficiency = isCharacter
                 ? { rank, label: game.i18n.localize(`PF2E.ProficiencyLevel${rank}`) }
                 : statistic?.proficient
-                ? { rank, label: (_cached.proficient ??= localize("sidebar.skills.proficient")) }
-                : undefined;
+                  ? { rank, label: (_cached.proficient ??= localize("sidebar.skills.proficient")) }
+                  : undefined;
 
             const actions = group.map((action) => {
                 if (!isProficient && !showUntrained && action.requireTrained) return;
@@ -83,11 +80,7 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e | AbilityItemPF2e, Sk
                 const prepared = action.toData() as PreparedSkillAction;
                 prepared.isProficient = !action.requireTrained || isProficient;
 
-                return this.addSidebarItem(
-                    SkillsSidebarItem,
-                    `${action.statistic}-${action.sourceId}`,
-                    prepared
-                );
+                return this.addSidebarItem(SkillsSidebarItem, `${action.statistic}-${action.sourceId}`, prepared);
             });
 
             return {
@@ -134,13 +127,14 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e | AbilityItemPF2e, Sk
 }
 
 async function toggleFollowTheExpert(actor: ActorPF2e) {
-    const exist = findItemWithSourceId(actor, FOLLOW_THE_EXPERT_EFFECT, "effect");
+    const uuid = FOLLOW_THE_EXPERT_EFFECT();
+    const exist = findItemWithSourceId(actor, uuid, "effect");
 
     if (exist) {
         return exist.delete();
     }
 
-    const source = await getItemSourceFromUuid(FOLLOW_THE_EXPERT_EFFECT, "effect");
+    const source = await getItemSourceFromUuid(uuid, "effect");
     if (!source) return;
 
     actor.createEmbeddedDocuments("Item", [source]);
@@ -148,26 +142,23 @@ async function toggleFollowTheExpert(actor: ActorPF2e) {
 
 function getFollowTheExpertData(actor: ActorPF2e): FollowTheLeader {
     if (!_cached.followTheLeader) {
-        const item = fromUuidSync(FOLLOW_THE_EXPERT) ?? { name: "" };
+        const uuid = FOLLOW_THE_EXPERT();
+        const item = fromUuidSync(uuid) ?? { name: "" };
 
         _cached.followTheLeader = {
             filterValue: new FilterValue(item.name),
             label: item.name,
-            sourceId: FOLLOW_THE_EXPERT,
+            sourceId: uuid,
         };
     }
 
     return {
         ..._cached.followTheLeader,
-        active: hasItemWithSourceId(actor, FOLLOW_THE_EXPERT_EFFECT, "effect"),
+        active: hasItemWithSourceId(actor, FOLLOW_THE_EXPERT_EFFECT(), "effect"),
     };
 }
 
-type EventAction =
-    | "follow-the-expert"
-    | "roll-skill"
-    | "roll-statistic-action"
-    | "toggle-hide-untrained";
+type EventAction = "follow-the-expert" | "roll-skill" | "roll-statistic-action" | "toggle-hide-untrained";
 
 type SkillsSidebarContext = {
     follow: FollowTheLeader;
