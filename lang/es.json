@@ -171,13 +171,11 @@
       }
     },
     "actions": {
-      "borrowArcaneSpell": "Tomar presado un conjuro arcano",
       "drive": {
         "drive1": "Conducir <span class=\"action-glyph\">1</span>",
         "drive2": "Conducir <span class=\"action-glyph\">2</span>",
         "drive3": "Conducir <span class=\"action-glyph\">3</span>"
-      },
-      "operateDevice": "Manejar el dispositivo"
+      }
     },
     "actor-hud": {
       "alliance": "Alianza: {value}",

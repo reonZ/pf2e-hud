@@ -1,13 +1,11 @@
 {
     "pf2e-hud": {
         "actions": {
-            "borrowArcaneSpell": "借阅奥术",
             "drive": {
                 "drive2": "驱动 <span class=\"action-glyph\">2</span>",
                 "drive1": "驱动 <span class=\"action-glyph\">1</span>",
                 "drive3": "驱动 <span class=\"action-glyph\">3</span>"
-            },
-            "operateDevice": "操作设备 Operate Device"
+            }
         },
         "tooltip": {
             "distance": {

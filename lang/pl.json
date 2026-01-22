@@ -171,13 +171,11 @@
       }
     },
     "actions": {
-      "borrowArcaneSpell": "Pożyczanie Tajemnego Zaklęcia",
       "drive": {
         "drive1": "Prowadzenie <span class=\"action-glyph\">1</span>",
         "drive2": "Prowadzenie <span class=\"action-glyph\">2</span>",
         "drive3": "Prowadzenie <span class=\"action-glyph\">3</span>"
-      },
-      "operateDevice": "Obsługa urządzenia"
+      }
     },
     "actor-hud": {
       "alliance": "Sojusz: {value}",

@@ -95,7 +95,6 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
             {
                 key: "borrow-arcane-spell",
                 sourceId: "Compendium.pf2e.actionspf2e.Item.OizxuPb44g3eHPFh",
-                label: "borrowArcaneSpell",
                 requireTrained: true,
             },
             "recall-knowledge",
@@ -175,7 +174,6 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
             },
             {
                 key: "operate-device",
-                label: "operateDevice",
                 sourceId: "Compendium.sf2e-anachronism.actions.Item.wWtBcshahm11stMY",
             },
             {
@@ -187,7 +185,6 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
             "decipher-writing",
             "disable-device",
         ],
-        sf2e: true,
     },
     {
         statistic: "crafting",
@@ -295,7 +292,6 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
             },
             {
                 key: "treatWounds",
-                label: "PF2E.Actions.TreatWounds.Label",
                 requireTrained: true,
                 sourceId: "Compendium.pf2e.actionspf2e.Item.1kGNdIIhuglAjIp9",
             },
@@ -398,7 +394,6 @@ const RAW_STATISTICS: RawStatisticActionGroup[] = [
                 sourceId: "Compendium.pf2e.actionspf2e.Item.yh9O9BQjwWrAIiuf",
             },
         ],
-        sf2e: true,
     },
     {
         statistic: "religion",
@@ -532,7 +527,6 @@ type SkillActionData = RawBaseActionData & {
 type RawStatisticActionGroup = {
     actions: (SkillActionData | SharedActionKey)[];
     statistic: StatisticType;
-    sf2e?: boolean;
 };
 
 type SharedActionKey = keyof typeof SHARED_ACTIONS;

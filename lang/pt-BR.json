@@ -155,13 +155,11 @@
       }
     },
     "actions": {
-      "borrowArcaneSpell": "Emprestar uma Magia Arcana",
       "drive": {
         "drive1": "Dirigir <span class=\"action-glyph\">1</span>",
         "drive2": "Dirigir <span class=\"action-glyph\">2</span>",
         "drive3": "Dirigir <span class=\"action-glyph\">3</span>"
-      },
-      "operateDevice": "Operar dispositivo"
+      }
     },
     "actor-hud": {
       "alliance": "Aliança: {value}",

@@ -171,13 +171,11 @@
       }
     },
     "actions": {
-      "borrowArcaneSpell": "Emprunter un sort arcanique",
       "drive": {
         "drive1": "Piloter <span class=\"action-glyph\">1</span>",
         "drive2": "Piloter <span class=\"action-glyph\">2</span>",
         "drive3": "Piloter <span class=\"action-glyph\">3</span>"
-      },
-      "operateDevice": "Faire fonctionner l'appareil"
+      }
     },
     "actor-hud": {
       "alliance": "Alliance : {value}",

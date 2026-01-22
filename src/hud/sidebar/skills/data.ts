@@ -3,9 +3,7 @@ import {
     AbilityItemPF2e,
     ActorPF2e,
     FeatPF2e,
-    getActiveModule,
     gettersToData,
-    localizeIfExist,
     LorePF2e,
     MODULE,
     R,
@@ -44,9 +42,7 @@ class SkillAction extends BaseStatisticAction<SkillActionData> {
     }
 
     get label(): string {
-        return (this.#label ??= this.data.label
-            ? (localizeIfExist("actions", this.data.label) ?? game.i18n.localize(this.data.label))
-            : game.i18n.localize(`${this.systemPrefix}.Actions.${this.actionKey}.Title`));
+        return (this.#label ??= this.data.label ? game.i18n.localize(this.data.label) : this.item.name);
     }
 
     get filterValue(): FilterValue {
@@ -141,20 +137,14 @@ async function prepareActionGroups() {
     prepareSharedActions();
 
     const isSf2eSystem = SYSTEM.isSF2e;
-    const isSf2e = isSf2eSystem || !!getActiveModule("sf2e-anachronism");
     const skillActionGroups: SkillActionGroup[] = [];
 
-    for (const { actions, statistic, sf2e } of RAW_STATISTICS) {
-        if (sf2e && !isSf2e) continue;
+    for (const { actions, statistic } of RAW_STATISTICS) {
+        if (!(statistic in CONFIG.PF2E.skills)) continue;
 
         const actionsPromise = actions.map(async (action) => {
             const isShared = R.isString(action);
             const data = isShared ? { ...SHARED_ACTIONS[action], key: action } : action;
-
-            // we automatically set the sf2e flag
-            if (sf2e && !isShared) {
-                data.sf2e = true;
-            }
 
             if (isSf2eSystem) {
                 data.sourceId = data.sourceId

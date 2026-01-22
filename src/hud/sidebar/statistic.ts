@@ -47,7 +47,6 @@ abstract class BaseStatisticAction<
     #data: TData;
     #img?: ImageFilePath;
     #item: TItem;
-    #systemPrefix?: string;
     #variants?: SkillVariants;
 
     constructor(data: TData, item: TItem) {
@@ -105,15 +104,6 @@ abstract class BaseStatisticAction<
             getActionIcon(this.actionCost));
     }
 
-    get system(): "pf2e" | "sf2e" {
-        // this looks weird but we only want to prefix with sf2e if we use the sf2e-anachronism module
-        return this.data.sf2e && SYSTEM.isPF2e ? "sf2e" : "pf2e";
-    }
-
-    get systemPrefix(): string {
-        return (this.#systemPrefix ??= this.system.toUpperCase());
-    }
-
     get hasMap(): boolean {
         return !!this.data.variants && R.isPlainObject(this.data.variants);
     }
@@ -147,8 +137,8 @@ abstract class BaseStatisticAction<
                 };
             }
 
-            const variantKey = game.pf2e.system.sluggify(variant, { camel: "bactrian" });
-            const label = game.i18n.localize(`${this.systemPrefix}.Actions.${this.actionKey}.${variantKey}.Title`);
+            const name = game.pf2e.actions.get(this.key)?.variants.get(variant)?.name;
+            const label = name ? game.i18n.localize(name) : variant;
 
             return {
                 filterValue: new FilterValue(this.label, label),
@@ -364,7 +354,6 @@ type RawBaseActionData = {
     dc?: number;
     key: string;
     notes?: (SingleCheckActionRollNoteData & { sf2e: string })[];
-    sf2e?: boolean;
     /** item used for description and send-to-chat */
     sourceId: CompendiumItemUUID;
     // object refers to map, array refers to actual variants
