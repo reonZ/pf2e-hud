@@ -14,6 +14,7 @@ import {
     objectHasKey,
     R,
     StrikeData,
+    SYSTEM,
     tupleHasValue,
     WeaponAuxiliaryAction,
     WeaponPF2e,
@@ -21,10 +22,7 @@ import {
 import { ActionsSidebarPF2eHUD } from ".";
 import { BaseSidebarItem } from "..";
 
-class ActionsSidebarStrike extends BaseSidebarItem<
-    MeleePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e>,
-    AttackAction
-> {
+class ActionsSidebarStrike extends BaseSidebarItem<MeleePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e>, AttackAction> {
     #options: ActionsSidebarStrikeOptions;
     #formula: StrikeFormulas;
     #img?: ImageFilePath;
@@ -127,9 +125,7 @@ async function getFormula(strike: AttackAction): Promise<StrikeFormulas> {
     };
 }
 
-async function getSidebarStrikeData(
-    this: ActionsSidebarPF2eHUD
-): Promise<StrikesContext | undefined> {
+async function getSidebarStrikeData(this: ActionsSidebarPF2eHUD): Promise<StrikesContext | undefined> {
     const actor = this.actor;
 
     const strikesPromise = getStrikeActions(actor).map(async (strike, index) => {
@@ -141,7 +137,7 @@ async function getSidebarStrikeData(
             (strike.altUsages ?? [])?.map(async (usage, altIndex) => {
                 const usageFormula = await getFormula(usage);
                 return new ActionsSidebarStrike(usage, usageFormula, { altIndex });
-            })
+            }),
         );
 
         const strikeKey = `${strike.item.id}-${index}`;
@@ -161,7 +157,7 @@ async function getSidebarStrikeData(
         actions,
         filterValue: new FilterValue(...strikes),
         shields: showShields,
-        stowed: !!actor.flags.pf2e.hideStowed,
+        stowed: !!actor.getFlag(SYSTEM.id, "hideStowed"),
     };
 }
 
@@ -172,9 +168,7 @@ function getStrikeActions(actor: ActorPF2e, options?: StrikeActionOptions): Stri
         return actorStrikes;
     }
 
-    const exactMatch = actorStrikes.find(
-        (strike) => strike.item.id === options.id && strike.slug === options.slug
-    );
+    const exactMatch = actorStrikes.find((strike) => strike.item.id === options.id && strike.slug === options.slug);
 
     if (exactMatch) {
         if (!isAlchemicalStrike(exactMatch) || exactMatch.item.quantity) {
@@ -223,21 +217,16 @@ function getStrikeActions(actor: ActorPF2e, options?: StrikeActionOptions): Stri
 function otherAlchemicalStrike(
     actor: ActorPF2e,
     strike: WeaponStrike,
-    options: StrikeActionOptions
+    options: StrikeActionOptions,
 ): WeaponStrike | undefined {
     return (actor.system.actions ?? []).find((other): other is WeaponStrike => {
-        return (
-            other !== strike &&
-            other.slug === options.slug &&
-            isAlchemicalStrike(other) &&
-            other.item.quantity > 0
-        );
+        return other !== strike && other.slug === options.slug && isAlchemicalStrike(other) && other.item.quantity > 0;
     });
 }
 
 function getActionCategory(
     actor: ActorPF2e,
-    item: WeaponPF2e<ActorPF2e> | MeleePF2e<ActorPF2e>
+    item: WeaponPF2e<ActorPF2e> | MeleePF2e<ActorPF2e>,
 ): StrikeActionCategory | undefined {
     if (item.isMelee) {
         const reach = actor.getReach({ action: "attack", weapon: item });
@@ -263,9 +252,7 @@ function getActionCategory(
 }
 
 function isAlchemicalStrike(strike: StrikeData): strike is WeaponStrike {
-    return (
-        strike.item.isOfType("weapon") && strike.item.isAlchemical && strike.item.traits.has("bomb")
-    );
+    return strike.item.isOfType("weapon") && strike.item.isAlchemical && strike.item.traits.has("bomb");
 }
 
 function activateActionsListeners(this: ActionsSidebarPF2eHUD, html: HTMLElement) {
@@ -281,41 +268,34 @@ function activateActionsListeners(this: ActionsSidebarPF2eHUD, html: HTMLElement
     const actor = this.actor;
     if (!actor.isOfType("character")) return;
 
-    addListenerAll(
-        html,
-        `[data-action="change-ammo-quantity"]`,
-        "change",
-        (el: HTMLInputElement) => {
-            const strike = this.getSidebarItemFromElement(el);
-            const weapon = strike instanceof ActionsSidebarStrike ? strike.item : null;
-            if (!itemIsWeapon(weapon)) return;
+    addListenerAll(html, `[data-action="change-ammo-quantity"]`, "change", (el: HTMLInputElement) => {
+        const strike = this.getSidebarItemFromElement(el);
+        const weapon = strike instanceof ActionsSidebarStrike ? strike.item : null;
+        if (!itemIsWeapon(weapon)) return;
 
-            const ammoId = htmlClosest(el, "[data-ammo-id]")?.dataset.ammoId;
-            const item = weapon.subitems.get(ammoId, { strict: true });
-            if (!item.isOfType("ammo", "weapon")) return;
+        const ammoId = htmlClosest(el, "[data-ammo-id]")?.dataset.ammoId;
+        const item = weapon.subitems.get(ammoId, { strict: true });
+        if (!item.isOfType("ammo", "weapon")) return;
 
-            const value = el.valueAsNumber;
-            if (value === 0) {
-                item.delete();
-            } else if (item.isOfType("ammo") && item.system.uses.max > 1) {
-                item.update({ "system.uses.value": value });
-            } else {
-                item.update({ "system.quantity": value });
-            }
+        const value = el.valueAsNumber;
+        if (value === 0) {
+            item.delete();
+        } else if (item.isOfType("ammo") && item.system.uses.max > 1) {
+            item.update({ "system.uses.value": value });
+        } else {
+            item.update({ "system.quantity": value });
         }
-    );
+    });
 }
 
 function onStrikeClickAction(
     event: MouseEvent,
     sidebarItem: ActionsSidebarStrike,
     action: Stringptionel<StrikeEventAction>,
-    target: HTMLElement
+    target: HTMLElement,
 ) {
     const altUsageIndex = "altUsage" in target.dataset ? Number(target.dataset.altUsage) : null;
-    const foundStrike = R.isNumber(altUsageIndex)
-        ? sidebarItem.altStrikes.at(altUsageIndex) ?? null
-        : sidebarItem;
+    const foundStrike = R.isNumber(altUsageIndex) ? (sidebarItem.altStrikes.at(altUsageIndex) ?? null) : sidebarItem;
     const strike = foundStrike?.ready || action !== "strike-attack" ? foundStrike : null;
     if (!strike) return;
 
@@ -345,20 +325,15 @@ function onStrikeClickAction(
 
             // Sort the selected ammo to the top, and remove any 0 quantity ammo while we're at it (they may be out)
             // The sorted sources have the same references, but we persist the original to maintain ordering
-            const ammoSubItems = weapon.subitems.filter(
-                (i) => i.isOfType("ammo", "weapon") && i.isAmmoFor(weapon)
-            );
+            const ammoSubItems = weapon.subitems.filter((i) => i.isOfType("ammo", "weapon") && i.isAmmoFor(weapon));
             const purgedItems = ammoSubItems.filter((i) => !i.quantity).map((i) => i.id);
-            const sources = R.sortBy(
-                foundry.utils.deepClone(weapon._source.system.subitems),
-                (s) => s.sort
-            ).filter((i) => !purgedItems.includes(i._id ?? ""));
+            const sources = R.sortBy(foundry.utils.deepClone(weapon._source.system.subitems), (s) => s.sort).filter(
+                (i) => !purgedItems.includes(i._id ?? ""),
+            );
             const sourcesSorted = R.pipe(
                 sources,
                 R.sortBy((i) => i.sort),
-                R.sortBy((i) =>
-                    !ammoSubItems.some((a) => a.id === i._id) ? 0 : i._id === ammoId ? 1 : 2
-                )
+                R.sortBy((i) => (!ammoSubItems.some((a) => a.id === i._id) ? 0 : i._id === ammoId ? 1 : 2)),
             );
             for (const [idx, item] of sourcesSorted.entries()) {
                 item.sort = idx;
@@ -404,7 +379,7 @@ function simulateReload(
         item: Maybe<WeaponPF2e | MeleePF2e>;
         actor: Maybe<ActorPF2e>;
     },
-    target: Maybe<HTMLElement>
+    target: Maybe<HTMLElement>,
 ) {
     if (!R.isNumber(index) || !item || !actor || !target || !ammunition?.remaining) return;
 
@@ -474,11 +449,7 @@ type ActionsSidebarStrikeOptions = {
     altIndex?: number;
 };
 
-type ActionsSidebarStrikeArgs = [
-    data: StrikeData,
-    formula: StrikeFormulas,
-    options: ActionsSidebarStrikeOptions
-];
+type ActionsSidebarStrikeArgs = [data: StrikeData, formula: StrikeFormulas, options: ActionsSidebarStrikeOptions];
 
 type WeaponStrike = StrikeData & { item: WeaponPF2e<ActorPF2e> };
 
