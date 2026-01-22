@@ -3,24 +3,23 @@ import { AvatarEditor, AvatarModel } from "avatar-editor";
 import { FoundrySidebarPF2eNotHUD } from "foundry-sidebar";
 import { HealthStatus } from "health-status";
 import {
-    addStance,
-    canUseStances,
     DicePF2eHUD,
-    getNpcStrikeImage,
-    getStances,
     PersistentPF2eHUD,
-    prepareActionGroups,
-    prepareExtrasActions,
-    prepareNpcStrikes,
-    prepareSharedActions,
     TimePF2eHUD,
-    toggleStance,
     TokenPF2eHUD,
     TooltipPF2eHUD,
     TrackerPF2eHUD,
+    addStance,
+    canUseStances,
+    getNpcStrikeImage,
+    getStances,
+    prepareActionGroups,
+    prepareExtrasActions,
+    prepareNpcStrikes,
+    toggleStance,
 } from "hud";
 import { registerKeybinds } from "keybinds";
-import { ActorPF2e, createHTMLElement, CreaturePF2e, MODULE, R, templatePath, userIsGM } from "module-helpers";
+import { ActorPF2e, CreaturePF2e, MODULE, R, createHTMLElement, templatePath, userIsGM } from "module-helpers";
 import { registerSettings } from "settings";
 
 MODULE.register("pf2e-hud");
@@ -82,7 +81,6 @@ Hooks.once("init", () => {
 Hooks.once("ready", async () => {
     const isGM = game.user.isGM;
 
-    prepareSharedActions();
     await prepareActionGroups();
     await prepareExtrasActions();
 

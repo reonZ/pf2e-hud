@@ -11,16 +11,11 @@ import {
     R,
     signedInteger,
     Statistic,
+    SYSTEM,
     ZeroToFour,
 } from "module-helpers";
-import { RAW_STATISTICS, SHARED_ACTIONS, SkillActionData } from ".";
-import {
-    BaseStatisticAction,
-    MapVariant,
-    SkillsConfigSf2e,
-    StatisticType,
-    StatisticVariant,
-} from "..";
+import { prepareSharedActions, RAW_STATISTICS, SHARED_ACTIONS, SkillActionData } from ".";
+import { BaseStatisticAction, MapVariant, SkillsConfigSf2e, StatisticType, StatisticVariant } from "..";
 
 class SkillAction extends BaseStatisticAction<SkillActionData> {
     #filterValue?: FilterValue;
@@ -50,14 +45,14 @@ class SkillAction extends BaseStatisticAction<SkillActionData> {
 
     get label(): string {
         return (this.#label ??= this.data.label
-            ? localizeIfExist("actions", this.data.label) ?? game.i18n.localize(this.data.label)
+            ? (localizeIfExist("actions", this.data.label) ?? game.i18n.localize(this.data.label))
             : game.i18n.localize(`${this.systemPrefix}.Actions.${this.actionKey}.Title`));
     }
 
     get filterValue(): FilterValue {
         return (this.#filterValue ??= new FilterValue(
             this.label,
-            ...this.variants.map((variant) => variant.filterValue).filter(R.isTruthy)
+            ...this.variants.map((variant) => variant.filterValue).filter(R.isTruthy),
         ));
     }
 }
@@ -84,7 +79,7 @@ class SkillActionGroup extends Collection<SkillAction> {
         return (this.#label ??= game.i18n.localize(
             this.slug === "perception"
                 ? "PF2E.PerceptionLabel"
-                : (CONFIG.PF2E.skills as SkillsConfigSf2e)[this.slug].label
+                : (CONFIG.PF2E.skills as SkillsConfigSf2e)[this.slug].label,
         ));
     }
 
@@ -143,7 +138,10 @@ let _cachedSkillActionGroups: SkillActionGroups | undefined;
 async function prepareActionGroups() {
     if (_cachedSkillActionGroups) return;
 
-    const isSf2e = !!getActiveModule("sf2e-anachronism");
+    prepareSharedActions();
+
+    const isSf2eSystem = SYSTEM.isSF2e;
+    const isSf2e = isSf2eSystem || !!getActiveModule("sf2e-anachronism");
     const skillActionGroups: SkillActionGroup[] = [];
 
     for (const { actions, statistic, sf2e } of RAW_STATISTICS) {
@@ -156,6 +154,12 @@ async function prepareActionGroups() {
             // we automatically set the sf2e flag
             if (sf2e && !isShared) {
                 data.sf2e = true;
+            }
+
+            if (isSf2eSystem) {
+                data.sourceId = data.sourceId
+                    .replace("pf2e.actionspf2e", "sf2e.actions")
+                    .replace("sf2e-anachronism", "sf2e") as CompendiumItemUUID;
             }
 
             const sourceItem = await fromUuid<FeatPF2e | AbilityItemPF2e>(data.sourceId);
@@ -190,7 +194,7 @@ function getLoreProficiency(actor: ActorPF2e, rank: Maybe<ZeroToFour>): SkillPro
 
     return {
         label: isCharacter ? game.i18n.localize(`PF2E.ProficiencyLevel${rank ?? 0}`) : "",
-        rank: isCharacter ? rank ?? 0 : "",
+        rank: isCharacter ? (rank ?? 0) : "",
     };
 }
 
@@ -216,14 +220,7 @@ type ExtractedSkillActionData = ExtractReadonly<SkillAction>;
 
 MODULE.devExpose({ getSkillActionGroups, getSkillAction });
 
-export {
-    getSkillAction,
-    getSkillActionGroup,
-    getSkillActionGroups,
-    LoreSkill,
-    prepareActionGroups,
-    SkillActionGroups,
-};
+export { getSkillAction, getSkillActionGroup, getSkillActionGroups, LoreSkill, prepareActionGroups, SkillActionGroups };
 export type {
     ExtractedSkillActionData,
     ExtractedSkillActionGroupData,

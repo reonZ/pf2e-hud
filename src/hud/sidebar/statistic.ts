@@ -21,6 +21,7 @@ import {
     SingleCheckActionVariantData,
     SkillActionOptions,
     SkillSlug,
+    SYSTEM,
     waitDialog,
     ZeroToTwo,
 } from "module-helpers";
@@ -100,7 +101,8 @@ abstract class BaseStatisticAction<
     }
 
     get system(): "pf2e" | "sf2e" {
-        return this.data.sf2e ? "sf2e" : "pf2e";
+        // this looks weird but we only want to prefix with sf2e if we use the sf2e-anachronism module
+        return this.data.sf2e && SYSTEM.isPF2e ? "sf2e" : "pf2e";
     }
 
     get systemPrefix(): string {
@@ -208,7 +210,7 @@ abstract class BaseStatisticAction<
                     maps: R.times(3, (i) => ({ value: i, label: i })),
                     statistics: usedOptions.statistic ? getStatistics(actor) : undefined,
                 },
-                onRender: (event, dialog) => {
+                onRender: (_event, dialog) => {
                     const statistic = this.statistic;
                     const html = dialog.element;
                     const img = createHTMLElement("img", {
@@ -244,7 +246,7 @@ abstract class BaseStatisticAction<
                     htmlQuery(html, ".form-footer")?.append(img);
                 },
                 yes: {
-                    callback: async (event, el, dialog) => {
+                    callback: async (event, _el, dialog) => {
                         return {
                             data: createFormData(dialog.element),
                             event,
