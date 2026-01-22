@@ -510,6 +510,15 @@ function getStatisticTypes(): StatisticType[] {
     return SKILLS_TYPES;
 }
 
+function prepareSharedActions() {
+    if (!SYSTEM.isSF2e) return;
+
+    for (const action of R.values(SHARED_ACTIONS)) {
+        // easy to convert into their sf2e counterparts
+        action.sourceId = action.sourceId.replace("pf2e.actionspf2e", "sf2e.actions") as any;
+    }
+}
+
 type SkillActionData = RawBaseActionData & {
     /** this roll options must be present on the actor to show u */
     hasOptions?: string;
@@ -532,10 +541,11 @@ export {
     CHIRURGEON,
     FOLLOW_THE_EXPERT,
     FOLLOW_THE_EXPERT_EFFECT,
-    getSkillKeys,
-    getStatisticTypes,
     RAW_STATISTICS,
     SHARED_ACTIONS,
     UNTRAINED_IMPROVISATION,
+    getSkillKeys,
+    getStatisticTypes,
+    prepareSharedActions,
 };
 export type { SkillActionData };

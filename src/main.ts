@@ -12,6 +12,7 @@ import {
     prepareActionGroups,
     prepareExtrasActions,
     prepareNpcStrikes,
+    prepareSharedActions,
     TimePF2eHUD,
     toggleStance,
     TokenPF2eHUD,
@@ -81,6 +82,7 @@ Hooks.once("init", () => {
 Hooks.once("ready", async () => {
     const isGM = game.user.isGM;
 
+    prepareSharedActions();
     await prepareActionGroups();
     await prepareExtrasActions();
 
