@@ -7,6 +7,7 @@ import {
     ItemPF2e,
     R,
     RollOptionToggle,
+    SYSTEM,
 } from "module-helpers";
 
 const ROLLOPTIONS_PLACEMENT = {
@@ -14,12 +15,14 @@ const ROLLOPTIONS_PLACEMENT = {
     spells: "spellcasting",
     items: "inventory",
     skills: "proficiencies",
+    feats: "feats",
     extras: undefined,
 } as const satisfies Record<SidebarName, string | undefined>;
 
-class ToggleSidebarItem<
-    TItem extends ItemPF2e<ActorPF2e> = ItemPF2e<ActorPF2e>
-> extends BaseSidebarItem<TItem, SidebarToggle> {
+class ToggleSidebarItem<TItem extends ItemPF2e<ActorPF2e> = ItemPF2e<ActorPF2e>> extends BaseSidebarItem<
+    TItem,
+    SidebarToggle
+> {
     get img(): ImageFilePath {
         return this.item.img;
     }
@@ -43,17 +46,12 @@ class ToggleSidebarItem<
     }
 }
 
-interface ToggleSidebarItem<TItem extends ItemPF2e<ActorPF2e> = ItemPF2e<ActorPF2e>>
-    extends Readonly<SidebarToggle> {
+interface ToggleSidebarItem<TItem extends ItemPF2e<ActorPF2e> = ItemPF2e<ActorPF2e>> extends Readonly<SidebarToggle> {
     readonly item: TItem;
 }
 
 function generateToggleKey(options: { itemId: string; domain: string; option: string }): string;
-function generateToggleKey(options: {
-    itemId?: string;
-    domain?: string;
-    option?: string;
-}): string | undefined;
+function generateToggleKey(options: { itemId?: string; domain?: string; option?: string }): string | undefined;
 function generateToggleKey({
     itemId,
     domain,
@@ -72,8 +70,8 @@ async function createRollOptionsElements(this: SidebarPF2eHUD): Promise<HTMLElem
     if (!toggles.length) return;
 
     const togglesTemplate = await foundry.applications.handlebars.renderTemplate(
-        "systems/pf2e/templates/actors/partials/toggles.hbs",
-        { toggles }
+        `systems/${SYSTEM.id}/templates/actors/partials/toggles.hbs`,
+        { toggles },
     );
 
     const togglesElement = createHTMLElementContent({
@@ -112,7 +110,7 @@ function getRollOptionsData(this: SidebarPF2eHUD): ToggleSidebarItem[] {
             const item = this.actor.items.get(toggle.itemId);
             return item && this.addSidebarItem(ToggleSidebarItem, "itemKey", { ...toggle, item });
         }),
-        R.filter(R.isTruthy)
+        R.filter(R.isTruthy),
     );
 }
 
