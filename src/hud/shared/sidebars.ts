@@ -7,11 +7,7 @@ const SIDEBARS = [
         type: "actions",
         icon: "fa-solid fa-sword",
         disabled: (actor) => {
-            return (
-                !actor.isOfType("character") &&
-                !actor.system.actions?.length &&
-                !actor.itemTypes.action.length
-            );
+            return !actor.isOfType("character") && !actor.system.actions?.length && !actor.itemTypes.action.length;
         },
     },
     {
@@ -51,7 +47,7 @@ const SIDEBARS = [
     },
 ] as const satisfies SidebarDetails[];
 
-const SIDEBAR_ICONS = R.pullObject(SIDEBARS, R.prop("type"), R.prop("icon"));
+const SIDEBAR_ICONS = R.pullObject(SIDEBARS, R.prop("type"), R.prop("icon")) as Record<SidebarName, string>;
 
 function getSidebars(actor: ActorPF2e, active: SidebarName | null): SidebarMenu[] {
     return SIDEBARS.map((details: SidebarDetails & { type: SidebarName }): SidebarMenu => {
@@ -69,10 +65,7 @@ function hasSpells(actor: ActorPF2e): boolean {
     if (!actor.isOfType("character") && !actor.isOfType("npc")) return false;
 
     return actor.spellcasting.contents.some((entry) => {
-        return (
-            (entry.spells?.size && entry.spells?.size > 0) ||
-            (entry.isEphemeral && entry.id.endsWith("-casting"))
-        );
+        return (entry.spells?.size && entry.spells?.size > 0) || (entry.isEphemeral && entry.id.endsWith("-casting"));
     });
 }
 

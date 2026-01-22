@@ -82,10 +82,10 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
 
     #activeHooks = [
         createToggleableHook("hoverToken", this.#onHoverToken.bind(this)),
-        createToggleableHook("renderEffectsPanel", (panel: EffectsPanel, html: HTMLElement) => {
+        createToggleableHook("renderEffectsPanel", (_panel: EffectsPanel, html: HTMLElement) => {
             this.#updateEffectsPanel(html);
         }),
-        createToggleableHook("targetToken", (user, token) => {
+        createToggleableHook("targetToken", (_user, token) => {
             this.#refreshTargetDisplay(token);
         }),
     ];
@@ -234,7 +234,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         }
     }
 
-    init(isGM: boolean): void {
+    init(): void {
         this._configurate();
     }
 
@@ -402,7 +402,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             canRollNPCs ||= canRoll && !hasPlayerOwner;
         }
 
-        const deathImg = game.settings.get(SYSTEM.id, "deathIcon");
+        const deathImg = game.settings.get(SYSTEM.id, "deathIcon") as ImageFilePath;
 
         const expand = {
             tooltip: options.collapsed ? "collapsed" : "expanded",
@@ -454,7 +454,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         };
     }
 
-    protected _renderHTML(context: ApplicationRenderContext, options: TrackerRenderOptions): Promise<string> {
+    protected _renderHTML(context: ApplicationRenderContext, _options: TrackerRenderOptions): Promise<string> {
         return render("tracker", context);
     }
 
@@ -481,12 +481,12 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         return element;
     }
 
-    protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
+    protected _onFirstRender(_context: object, _options: ApplicationRenderOptions): void {
         this.#altKeybind.activate();
         toggleHooksAndWrappers(this.#activeHooks, true);
     }
 
-    protected _onRender(context: object, options: ApplicationRenderOptions): void {
+    protected _onRender(_context: object, _options: ApplicationRenderOptions): void {
         this.#updateEffectsPanel();
         this.#scrollToCurrent();
 
@@ -495,7 +495,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         }
     }
 
-    protected _onClose(options: ApplicationClosingOptions): void {
+    protected _onClose(_options: ApplicationClosingOptions): void {
         this.#cancelScroll = false;
         this.#activeCombatant = null;
         this.#combatantsWrapper = null;
@@ -720,7 +720,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         combat.update({ turn }, { direction });
     }
 
-    #onCombatantAltControl(el: HTMLElement, event: MouseEvent) {
+    #onCombatantAltControl(el: HTMLElement, _event: MouseEvent) {
         const index = Number(el.dataset.index);
         const menu = this.contextMenus.at(index);
         const target = htmlClosest(el, "[data-combatant-id]");
@@ -773,7 +773,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         return false;
     }
 
-    #activateListeners(html: HTMLElement, options: TrackerRenderOptions) {
+    #activateListeners(_html: HTMLElement, options: TrackerRenderOptions) {
         const isGM = game.user.isGM;
 
         for (const combatantElement of this.combatantsElements) {
