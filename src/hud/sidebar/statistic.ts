@@ -1,10 +1,4 @@
-import {
-    createDraggable,
-    ExtrasActionData,
-    FilterValue,
-    SkillActionData,
-    SkillVariants,
-} from "hud";
+import { createDraggable, ExtrasActionData, FilterValue, SkillActionData, SkillVariants } from "hud";
 import {
     AbilityItemPF2e,
     Action,
@@ -43,7 +37,7 @@ const ACTION_IMAGES: Record<string, ImageFilePath> = {
 
 abstract class BaseStatisticAction<
     TData extends RawBaseActionData = RawBaseActionData,
-    TItem extends AbilityItemPF2e | FeatPF2e = AbilityItemPF2e | FeatPF2e
+    TItem extends AbilityItemPF2e | FeatPF2e = AbilityItemPF2e | FeatPF2e,
 > {
     #actionKey?: string;
     #data: TData;
@@ -102,9 +96,7 @@ abstract class BaseStatisticAction<
 
     get img(): ImageFilePath {
         return (this.#img ??=
-            ACTION_IMAGES[this.key] ??
-            game.pf2e.actions.get(this.key)?.img ??
-            getActionIcon(this.actionCost));
+            ACTION_IMAGES[this.key] ?? game.pf2e.actions.get(this.key)?.img ?? getActionIcon(this.actionCost));
     }
 
     get system(): "pf2e" | "sf2e" {
@@ -149,9 +141,7 @@ abstract class BaseStatisticAction<
             }
 
             const variantKey = game.pf2e.system.sluggify(variant, { camel: "bactrian" });
-            const label = game.i18n.localize(
-                `${this.systemPrefix}.Actions.${this.actionKey}.${variantKey}.Title`
-            );
+            const label = game.i18n.localize(`${this.systemPrefix}.Actions.${this.actionKey}.${variantKey}.Title`);
 
             return {
                 filterValue: new FilterValue(this.label, label),
@@ -160,9 +150,7 @@ abstract class BaseStatisticAction<
             };
         });
 
-        return (this.#variants = new Collection(
-            variants.map((variant) => [variant.slug, variant])
-        ));
+        return (this.#variants = new Collection(variants.map((variant) => [variant.slug, variant])));
     }
 
     toData(): Omit<ExtractReadonly<this>, "data"> {
@@ -174,7 +162,7 @@ abstract class BaseStatisticAction<
             R.flatMap((Proto) => R.entries(Object.getOwnPropertyDescriptors(Proto))),
             R.filter(([key, descriptor]) => key !== "data" && typeof descriptor.get === "function"),
             R.map(([key]) => [key, this[key as keyof this]] as const),
-            R.fromEntries()
+            R.fromEntries(),
         ) as ExtractReadonly<this>;
     }
 
@@ -182,8 +170,8 @@ abstract class BaseStatisticAction<
         const variant = options.variant
             ? this.variants.get(options.variant)
             : R.isPlainObject(this.data.variants)
-            ? { map: 0, agile: this.data.variants.agile, label: "", slug: "" }
-            : undefined;
+              ? { map: 0, agile: this.data.variants.agile, label: "", slug: "" }
+              : undefined;
 
         const usedOptions: BaseStatisticRollOptions & { event: Event } = {
             ...R.pick(this, ["dc", "notes", "statistic"]),
@@ -245,8 +233,7 @@ abstract class BaseStatisticAction<
 
                         addToObjectIfNonNullish(dragData.override, {
                             agile: htmlQuery<HTMLInputElement>(html, `[name="agile"]`)?.checked,
-                            statistic: htmlQuery<HTMLSelectElement>(html, `[name="statistic"]`)
-                                ?.value,
+                            statistic: htmlQuery<HTMLSelectElement>(html, `[name="statistic"]`)?.value,
                         });
 
                         createDraggable(event, this.img, actor, this.item, {
@@ -282,9 +269,7 @@ abstract class BaseStatisticAction<
         } satisfies RollStatisticRollOptions;
 
         if (variant && !isMapVariant) {
-            rollOptions.rollOptions.push(
-                ...rollOptions.rollOptions.map((x) => `${x}:${variant.slug}`)
-            );
+            rollOptions.rollOptions.push(...rollOptions.rollOptions.map((x) => `${x}:${variant.slug}`));
         }
 
         if (usedOptions.map) {
@@ -325,8 +310,8 @@ function getStatistics(actor: ActorPF2e): RequiredSelectOptions {
                 R.entries(CONFIG.PF2E.skills),
                 R.map(([value, { label }]): Required<SelectOption> => {
                     return { value, label: game.i18n.localize(label) };
-                })
-            )
+                }),
+            ),
         );
     }
 
@@ -337,7 +322,7 @@ function getStatistics(actor: ActorPF2e): RequiredSelectOptions {
                 return { value: lore.slug, label: lore.name };
             }),
         ],
-        R.prop("label")
+        R.prop("label"),
     );
 }
 
@@ -353,10 +338,7 @@ function getMapLabel(map: ZeroToTwo, agile?: boolean) {
           });
 }
 
-function createMapsVariantsCollection(
-    filter: string,
-    agile: boolean = false
-): Collection<MapVariant> {
+function createMapsVariantsCollection(filter: string, agile: boolean = false): Collection<MapVariant> {
     const variants = R.times(3, (map): MapVariant => {
         return {
             agile,
@@ -374,7 +356,7 @@ type RawBaseActionData = {
     actionCost?: ActionCost["value"] | ActionCost["type"];
     dc?: number;
     key: string;
-    notes?: SingleCheckActionRollNoteData[];
+    notes?: (SingleCheckActionRollNoteData & { sf2e: string })[];
     sf2e?: boolean;
     /** item used for description and send-to-chat */
     sourceId: CompendiumItemUUID;
@@ -417,17 +399,11 @@ type MapVariant = StatisticVariant & {
 
 type StatisticType = SkillSlug | SkillSlugSfe2 | "perception";
 
-type RollStatisticRollOptions = Partial<ActionVariantUseOptions> &
-    (SingleCheckActionVariantData | SkillActionOptions);
+type RollStatisticRollOptions = Partial<ActionVariantUseOptions> & (SingleCheckActionVariantData | SkillActionOptions);
 
-type SkillsConfigSf2e = Record<
-    SkillSlug | SkillSlugSfe2,
-    { label: string; attribute: AttributeString }
->;
+type SkillsConfigSf2e = Record<SkillSlug | SkillSlugSfe2, { label: string; attribute: AttributeString }>;
 
-type SingleCheckActionRollNoteData = Omit<RollNoteSource, "selector"> & {
-    selector?: string;
-};
+type SingleCheckActionRollNoteData = WithPartial<RollNoteSource, "selector">;
 
 type SkillSlugSfe2 = "computers" | "piloting";
 

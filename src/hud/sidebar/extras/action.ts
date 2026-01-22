@@ -8,15 +8,7 @@ import {
     RawBaseActionData,
     StatisticType,
 } from "hud";
-import {
-    AbilityItemPF2e,
-    ActorPF2e,
-    DialogV2Button,
-    MODULE,
-    R,
-    SaveType,
-    signedInteger,
-} from "module-helpers";
+import { AbilityItemPF2e, ActorPF2e, DialogV2Button, MODULE, R, SYSTEM, SaveType, signedInteger } from "module-helpers";
 
 const RAW_EXTRAS_ACTIONS = [
     {
@@ -27,6 +19,7 @@ const RAW_EXTRAS_ACTIONS = [
             {
                 outcome: ["criticalFailure", "success", "criticalSuccess"],
                 text: "@UUID[Compendium.pf2e.other-effects.Item.AHMUpMbaVkZ5A1KX]{Effect: Aid}",
+                sf2e: "@UUID[Compendium.sf2e.other-effects.Item.AHMUpMbaVkZ5A1KX]{Effect: Aid}",
             },
         ],
         sourceId: "Compendium.pf2e.actionspf2e.Item.HCl3pzVefiv9ZKQW",
@@ -85,7 +78,7 @@ class ExtrasSidebarItem extends BaseSidebarItem<AbilityItemPF2e, ExtractedExtraA
                             },
                         };
                     }),
-                    R.filter(R.isTruthy)
+                    R.filter(R.isTruthy),
                 );
 
                 foundry.applications.api.DialogV2.wait({
@@ -119,6 +112,9 @@ class ExtrasSidebarItem extends BaseSidebarItem<AbilityItemPF2e, ExtractedExtraA
             type: "extraAction",
         };
     }
+}
+interface ExtrasSidebarItem extends Readonly<ExtractedExtraActionData> {
+    get key(): ExtraActionKey;
 }
 
 class ExtraAction extends BaseStatisticAction<ExtrasActionData, AbilityItemPF2e> {
@@ -171,13 +167,28 @@ const _cachedExtrasActions: Collection<ExtraAction> = new Collection();
 async function prepareExtrasActions() {
     if (_cachedExtrasActions.size) return;
 
-    for (const data of RAW_EXTRAS_ACTIONS) {
-        const sourceItem = await fromUuid<AbilityItemPF2e>(data.sourceId);
-        if (!(sourceItem instanceof Item)) return;
+    const isSF2e = SYSTEM.isSF2e;
 
-        const action = new ExtraAction(data, sourceItem);
-        _cachedExtrasActions.set(action.sourceId, action);
-    }
+    await Promise.all(
+        RAW_EXTRAS_ACTIONS.map(async (data: ExtrasActionData) => {
+            if (isSF2e) {
+                // all the extra actions are easily convertible to their sf2e variant
+                data.sourceId = data.sourceId.replace("pf2e.actionspf2e", "sf2e.actions") as CompendiumItemUUID;
+            }
+
+            const sourceItem = await fromUuid<AbilityItemPF2e>(data.sourceId);
+            if (!(sourceItem instanceof Item)) return;
+
+            if (isSF2e && data.notes?.length) {
+                for (const note of data.notes) {
+                    note.text = note.sf2e;
+                }
+            }
+
+            const action = new ExtraAction(data, sourceItem);
+            _cachedExtrasActions.set(action.sourceId, action);
+        }),
+    );
 }
 
 function getExtrasActions(): Collection<ExtraAction> {
@@ -200,18 +211,7 @@ type ExtraActionKey = (typeof RAW_EXTRAS_ACTIONS)[number]["key"];
 
 type ExtractedExtraActionData = Omit<ExtractReadonly<ExtraAction>, "data">;
 
-interface ExtrasSidebarItem extends Readonly<ExtractedExtraActionData> {
-    get key(): ExtraActionKey;
-}
-
 MODULE.devExpose({ getExtrasActions });
 
-export {
-    ExtrasSidebarItem,
-    getExtraAction,
-    getExtraKeys,
-    getExtrasActions,
-    prepareExtrasActions,
-    RAW_EXTRAS_ACTIONS,
-};
+export { ExtrasSidebarItem, RAW_EXTRAS_ACTIONS, getExtraAction, getExtraKeys, getExtrasActions, prepareExtrasActions };
 export type { ExtraAction, ExtraActionKey, ExtractedExtraActionData, ExtrasActionData };
