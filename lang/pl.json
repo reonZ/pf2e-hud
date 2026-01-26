@@ -137,7 +137,7 @@
         },
         "distance": {
           "name": "Wyświetlanie odległości",
-          "hint": "Wyświetla odległość między najechanym tokenem a tokenem, który jest wnioskowany automatycznie.",
+          "hint": "Wyświetli odległość między tokenem, nad którym znajduje się kursor, a tokenem, który jest automatycznie wykrywany. Należy pamiętać, że moduł będzie używał jednostek sceny, jeśli nie jest to wartość domyślna.",
           "choices": {
             "never": "Nigdy",
             "idiot": "W stopach",
