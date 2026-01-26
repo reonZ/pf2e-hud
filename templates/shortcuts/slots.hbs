@@ -8,7 +8,7 @@
     draggable="true">
     {{!-- image --}}
     <div class="image"
-        style="background-image: url({{ifThen shortcut.custom.img shortcut.custom.img shortcut.usedImage}});">
+        style="background-image: url('{{ifThen shortcut.custom.img shortcut.custom.img shortcut.usedImage}}');">
     </div>
     {{!-- label --}}
     {{#with shortcut.label as |label|}}

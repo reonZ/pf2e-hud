@@ -1,5 +1,5 @@
 <div class="header{{#if greyedOut}} greyed{{/if}}">
-    <div class="image" style="background-image: url({{ifThen custom.img custom.img usedImage}});">
+    <div class="image" style="background-image: url('{{ifThen custom.img custom.img usedImage}}');">
         {{!-- uses --}}
         {{#with uses as |uses|}}
         <div class="uses">
