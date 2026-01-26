@@ -80,7 +80,7 @@
     {{!-- shield --}}
     {{#if isCombatant}}
     <div class="double" data-section="shield" {{#if shield.itemId}}
-        data-tooltip="{{shield.name}}<br>{{localize 'PF2E.Actor.Creature.Shield.HitPoints.Value'}}: {{shield.hp.value}} / {{shield.hp.max}}"
+        data-tooltip="{{localize shield.name}}<br>{{localize 'PF2E.Actor.Creature.Shield.HitPoints.Value'}}: {{shield.hp.value}} / {{shield.hp.max}}"
         {{/if}}>
         <a {{#if (eq shield.itemId null)}}class="disabled" {{/if}} data-action="raise-shield"
             data-tooltip="PF2E.Actions.RaiseAShield.SingleActionTitle">

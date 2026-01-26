@@ -158,9 +158,9 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
 
         protected _replaceHTML(
             this: ThisAdvancedHUD,
-            result: string,
+            _result: string,
             content: HTMLElement,
-            options: ApplicationRenderOptions,
+            _options: ApplicationRenderOptions,
         ): void {
             content.dataset.tooltipClass = "pf2e-hud-element";
             content.dataset.tooltipDirection = "UP";
