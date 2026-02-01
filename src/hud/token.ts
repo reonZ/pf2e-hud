@@ -32,19 +32,13 @@ import {
 const TOKEN_ACTIVATION = ["disabled", "first", "second"] as const;
 const TOKEN_MODE = ["exploded", "left", "right"] as const;
 
-class TokenPF2eHUD
-    extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, TokenHudActor>)
-    implements IAdvancedPF2eHUD
-{
+class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, TokenHudActor>) implements IAdvancedPF2eHUD {
     #controlled: TokenPF2e | null = null;
     #tokenClickAction: (token: TokenPF2e) => void = () => {};
 
     #canvasPanHook = createToggleableHook("canvasPan", this.#onCanvasPan.bind(this));
     #canvasTearDownHook = createToggleableHook("canvasTearDown", () => this.setToken(null));
-    #renderActorSheetHook = createToggleableHook(
-        "renderActorSheet",
-        this.#onRenderActorSheet.bind(this)
-    );
+    #renderActorSheetHook = createToggleableHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
 
     #mouseDownEvent = createToggleableEvent("mousedown", "#board", this.#onMouseDown.bind(this));
 
@@ -52,14 +46,14 @@ class TokenPF2eHUD
         "WRAPPER",
         "CONFIG.Token.objectClass.prototype._onClickLeft",
         this.#tokenOnClickLeft,
-        { context: this }
+        { context: this },
     );
 
     #tokenDragLeftStartWrapper = createToggleableWrapper(
         "WRAPPER",
         "CONFIG.Token.objectClass.prototype._onDragLeftStart",
         this.#tokenOnDragLeftStart,
-        { context: this }
+        { context: this },
     );
 
     static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
@@ -120,8 +114,7 @@ class TokenPF2eHUD
         const activation = this.settings.activation;
         const enabled =
             activation !== "disabled" &&
-            (hud.persistent.settings.display === "disabled" ||
-                hud.persistent.settings.selection !== "select");
+            (hud.persistent.settings.display === "disabled" || hud.persistent.settings.selection !== "select");
 
         this._toggleTokenHooks(enabled);
         this.#tokenClickLeftWrapper.toggle(enabled);
@@ -245,11 +238,7 @@ class TokenPF2eHUD
         }
     }
 
-    #tokenOnClickLeft(
-        token: TokenPF2e,
-        wrapped: libWrapper.RegisterCallback,
-        event: PIXI.FederatedEvent & MouseEvent
-    ) {
+    #tokenOnClickLeft(token: TokenPF2e, wrapped: libWrapper.RegisterCallback, event: PIXI.FederatedEvent & MouseEvent) {
         wrapped(event);
 
         if (event.altKey || event.shiftKey || event.ctrlKey || game.activeTool !== "select") return;
@@ -265,11 +254,7 @@ class TokenPF2eHUD
         });
     }
 
-    #tokenOnDragLeftStart(
-        token: TokenPF2e,
-        wrapped: libWrapper.RegisterCallback,
-        event: PIXI.FederatedEvent
-    ) {
+    #tokenOnDragLeftStart(token: TokenPF2e, wrapped: libWrapper.RegisterCallback, event: PIXI.FederatedEvent) {
         wrapped(event);
         this.close();
     }
@@ -282,6 +267,7 @@ class TokenPF2eHUD
         if (focused instanceof HTMLInputElement || focused instanceof HTMLTextAreaElement) {
             focused.blur();
         } else {
+            this.#controlled = null;
             this.close();
         }
     }
