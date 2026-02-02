@@ -140,7 +140,7 @@ async function prepareActionGroups() {
     const skillActionGroups: SkillActionGroup[] = [];
 
     for (const { actions, statistic } of RAW_STATISTICS) {
-        if (!(statistic in CONFIG.PF2E.skills)) continue;
+        if (statistic !== "perception" && !(statistic in CONFIG.PF2E.skills)) continue;
 
         const actionsPromise = actions.map(async (action) => {
             const isShared = R.isString(action);
