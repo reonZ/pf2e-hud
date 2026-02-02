@@ -8,8 +8,8 @@
 - this is a release for the `0.0.4` of the `Starfinder Second Edition` system
 - fix shield tooltip not localizing the shield's name (the shield data can now contain unlocalized name)
 - add quotes to some background `URL` to hopefully avoid escaping weirdness
-  - `Token HUD`:
-    - fix second click cached value not resetting when completely un-seleting a token and re-selecting it
+- `Token HUD`:
+  - fix second click cached value not resetting when completely un-seleting a token and re-selecting it
 
 # 2.42.0
 
