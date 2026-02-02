@@ -1,3 +1,8 @@
+# 2.43.1
+
+- `Skills Sidebar`:
+  - fix perception section not showing
+
 # 2.43.0
 
 - this is a release for the `0.0.4` of the `Starfinder Second Edition` system
