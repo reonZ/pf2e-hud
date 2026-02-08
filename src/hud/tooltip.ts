@@ -43,8 +43,8 @@ const DISTANCES: Record<Exclude<TooltipDistance, "never">, DistanceDetails> = {
         unit: "feet",
     },
     smart: {
-        multiplier: 0.3048,
-        decimals: 2,
+        multiplier: 0.3,
+        decimals: 1,
         unit: "meter",
     },
     weird: {
@@ -236,11 +236,11 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
             .lineTo(targetCenter.x, targetCenter.y);
     }
 
-    protected _onSetToken(token: TokenPF2e): void {
+    protected _onSetToken(_token: TokenPF2e): void {
         this.renderWithDelay();
     }
 
-    protected async _prepareContext(options: ApplicationRenderOptions): Promise<TooltipContext> {
+    protected async _prepareContext(_options: ApplicationRenderOptions): Promise<TooltipContext> {
         const status = ((): TooltipContext["status"] => {
             if (!this.settings.status) return;
 
@@ -303,15 +303,15 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         };
     }
 
-    protected _renderHTML(context: ApplicationRenderContext, options: ApplicationRenderOptions): Promise<string> {
+    protected _renderHTML(context: ApplicationRenderContext, _options: ApplicationRenderOptions): Promise<string> {
         return render("tooltip", context);
     }
 
-    protected _replaceHTML(result: string, content: HTMLElement, options: ApplicationRenderOptions): void {
+    protected _replaceHTML(result: string, content: HTMLElement, _options: ApplicationRenderOptions): void {
         content.innerHTML = result;
     }
 
-    protected _onRender(context: ApplicationRenderContext, options: ApplicationRenderOptions) {
+    protected _onRender(_context: ApplicationRenderContext, _options: ApplicationRenderOptions) {
         this.cancelClose();
         this.drawDistance();
         this.#canvasPanHook.activate();
@@ -386,7 +386,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         }
     }
 
-    #tokenHoverOut(token: TokenPF2e) {
+    #tokenHoverOut(_token: TokenPF2e) {
         this._cleanupToken();
         this.cancelRender();
         this.closeWithDelay();
