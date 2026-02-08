@@ -1,3 +1,8 @@
+# 2.43.2
+
+- `Token Tooltip`:
+  - fix the distance conversion for meters being too precise, making the displayed value technically wrong in square grids
+
 # 2.43.1
 
 - `Skills Sidebar`:
