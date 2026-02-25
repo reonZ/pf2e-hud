@@ -641,8 +641,8 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         if (!combatantsWrapper || !combat || !canvas.ready || (tokenCombatant && tokenCombatant.encounter !== combat))
             return;
 
-        const user = game.user;
-        const targetsIds = user.targets.ids;
+        const selfUser = game.user;
+        const targetsIds = selfUser.targets.ids;
         const combatants = tokenCombatant ? [tokenCombatant] : combat.turns;
 
         for (const combatant of combatants) {
@@ -660,8 +660,10 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
 
             targetsElement.innerHTML = R.pipe(
                 token.object?.targeted.toObject() ?? [],
-                R.filter((u) => u !== user),
-                R.map((u) => `<div class="target" style="--user-color: ${u.color};"></div>`),
+                R.filter((user) => user !== selfUser),
+                R.map(({ color, name }) => {
+                    return `<div class="target" style="--user-color: ${color};" data-tooltip="${name}"></div>`;
+                }),
                 R.join(""),
             );
         }
