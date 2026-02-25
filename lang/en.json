@@ -422,6 +422,8 @@
         "sidebar": {
             "filter": "Sidebar Filter",
             "actions": {
+                "area-fire": "Cone/Line/Burst {range} ft.",
+                "auto-fire": "Cone {range} ft.",
                 "blasts": "Elemental Blasts",
                 "ranged": "Range {max} ft.",
                 "rangedWithIncrement": "Range {increment}/{max} ft.",

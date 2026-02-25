@@ -98,6 +98,11 @@
                 border: none;
                 height: 1.35em;
                 margin-bottom: -0.2em;
+
+                &.auto-fire {
+                    height: 1em;
+                    margin-right: 0.1em;
+                }
             }
 
             i {

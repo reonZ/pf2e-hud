@@ -334,8 +334,8 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         const shortcuts: PersistentShortcutsContext["shortcuts"] = [];
 
         for (const slot of R.range(0, this.nbSlots)) {
-            const data = shortcutsSources[slot];
-            const shortcut = data ? await this.#instantiateShortcut(data, slot) : undefined;
+            const source = shortcutsSources[slot];
+            const shortcut = source ? await this.#instantiateShortcut(source, slot) : undefined;
 
             if (shortcut) {
                 this.shortcuts.set(slot, shortcut);

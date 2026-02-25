@@ -182,7 +182,7 @@ class StrikeShortcut extends AttackShortcut<
         const label = this.isAreaOrAutoFire
             ? attackData.variants[0].label.replace(/[\(\)]/g, "")
             : (this.ammo?.name ?? this.damageType ?? super.subtitle);
-        const range = this.item ? getActionCategory(this.actor, this.item)?.tooltip : null;
+        const range = this.item ? getActionCategory(this.actor, this.item, this.type)?.tooltip : null;
 
         return range ? `${label} (${range})` : label;
     }
@@ -289,7 +289,7 @@ class StrikeShortcut extends AttackShortcut<
                 }
 
                 const ammunition = attackData.ammunition;
-                if (ammunition?.requiresReload) {
+                if (ammunition?.requiresReload && ammunition.remaining > 0) {
                     const label = game.i18n.localize("PF2E.Actions.Interact.Reload.Title");
                     const icon = Handlebars.helpers.actionGlyph(ammunition.reloadGlyph);
                     const remaining = ammunition.capacity > 1 ? ` ${ammunition.remaining}` : "";

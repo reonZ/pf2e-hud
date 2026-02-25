@@ -41,7 +41,7 @@ class ActionsSidebarStrike extends BaseSidebarItem<MeleePF2e<ActorPF2e> | Weapon
 
     get category(): StrikeActionCategory | undefined {
         const actor = this.actor;
-        return actor.isOfType("character") ? getActionCategory(actor, this.item) : undefined;
+        return actor.isOfType("character") ? getActionCategory(actor, this.item, this.type) : undefined;
     }
 
     get index(): number | undefined {
@@ -117,7 +117,9 @@ class ActionsSidebarStrike extends BaseSidebarItem<MeleePF2e<ActorPF2e> | Weapon
         };
     }
 }
-interface ActionsSidebarStrike extends Readonly<StrikeData> {}
+interface ActionsSidebarStrike extends Readonly<Omit<StrikeData, "type">> {
+    readonly type: "strike" | "area-fire" | "auto-fire";
+}
 
 async function getFormula(strike: AttackAction): Promise<StrikeFormulas> {
     return {
@@ -228,13 +230,13 @@ function otherAlchemicalStrike(
 function getActionCategory(
     actor: ActorPF2e,
     item: WeaponPF2e<ActorPF2e> | MeleePF2e<ActorPF2e>,
+    type: "strike" | "area-fire" | "auto-fire",
 ): StrikeActionCategory | undefined {
     if (item.isMelee) {
         const reach = actor.getReach({ action: "attack", weapon: item });
 
         return {
             type: "melee",
-            value: String(reach),
             tooltip: localize("sidebar.actions.reach", { reach }),
         };
     }
@@ -243,12 +245,26 @@ function getActionCategory(
     if (!range) return;
 
     const isThrown = item.isThrown;
-    const key = isThrown ? "thrown" : range.increment ? "rangedWithIncrement" : "ranged";
+
+    const tooltipKey = isThrown
+        ? "thrown"
+        : type !== "strike"
+          ? type
+          : range.increment
+            ? "rangedWithIncrement"
+            : "ranged";
+
+    const tooltipRange = isThrown
+        ? range
+        : type === "area-fire"
+          ? { range: range.increment ?? range.max }
+          : type === "auto-fire"
+            ? { range: (range.increment ?? range.max) / 2 }
+            : range;
 
     return {
-        type: isThrown ? "thrown" : "ranged",
-        value: isThrown || range.increment ? `${range.increment}/${range.max}` : String(range.max),
-        tooltip: localize("sidebar.actions", key, range),
+        type: isThrown ? "thrown" : type !== "strike" ? type : "ranged",
+        tooltip: localize("sidebar.actions", tooltipKey, tooltipRange),
     };
 }
 
@@ -434,8 +450,7 @@ type StrikeActionOptions = {
 };
 
 type StrikeActionCategory = {
-    type: "melee" | "thrown" | "ranged";
-    value: string;
+    type: "area-fire" | "auto-fire" | "melee" | "thrown" | "ranged";
     tooltip: string;
 };
 
