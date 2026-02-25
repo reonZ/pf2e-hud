@@ -209,7 +209,7 @@
 {{#each heroActions.actions as |action|}}
 <div class="item action" data-uuid="{{action.uuid}}" data-filter-value="{{action.filterValue}}">
     <div class="image" data-action="send-hero-action-to-chat">
-        <img src="systems/{{@root.systemId}}/icons/actions/Passive.webp">
+        <img src="{{resolvePath 'icons/actions/Passive.webp'}}">
         <i class="fa-solid fa-message chat"></i>
     </div>
     <div class="name">
@@ -296,9 +296,9 @@
     {{#if (eq type 'blast')}}
     <i class="fa-regular fa-meteor fa-rotate-180 alt-usage-icon" data-tooltip="{{tooltip}}"></i>
     {{else if (eq type 'melee')}}
-    <img class="alt-usage-icon" src="systems/{{@root.systemId}}/icons/mdi/sword.svg" data-tooltip="{{tooltip}}">
+    <img class="alt-usage-icon" src="{{resolvePath 'icons/mdi/sword.svg'}}" data-tooltip="{{tooltip}}">
     {{else if (eq type 'thrown')}}
-    <img class="alt-usage-icon" src="systems/{{@root.systemId}}/icons/mdi/thrown.svg" data-tooltip="{{tooltip}}">
+    <img class="alt-usage-icon" src="{{resolvePath 'icons/mdi/thrown.svg'}}" data-tooltip="{{tooltip}}">
     {{else }}
     <i class="fa-regular fa-bow-arrow" data-tooltip="{{tooltip}}"></i>
     {{/if}}

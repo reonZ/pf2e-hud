@@ -101,7 +101,7 @@ class PersistentEffectsPF2eHUD extends PersistentPartPF2eHUD {
 
         const content = createHTMLElement("div", {
             content: await foundry.applications.handlebars.renderTemplate(
-                `systems/${SYSTEM.id}/templates/system/effects/tooltip.hbs`,
+                SYSTEM.relativePath("templates/system/effects/tooltip.hbs"),
                 viewData,
             ),
         }).firstElementChild;
