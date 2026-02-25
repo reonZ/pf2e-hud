@@ -80,7 +80,7 @@ class ShortcutPopup extends ItemHudPopup {
             title: localize("popup.shortcut.config"),
         });
 
-        if (!result || (!result.image && !result.name)) return;
+        if (!result) return;
 
         this.shortcut.updateSource({
             custom: {

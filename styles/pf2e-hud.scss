@@ -135,6 +135,8 @@ body > input[type="checkbox"].fake {
 }
 
 .application.dialog.pf2e-hud {
+    min-width: 400px;
+
     input.invalid {
         outline: 2px solid #970303;
     }
