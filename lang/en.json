@@ -112,7 +112,7 @@
                 "title": "Token HUD",
                 "activation": {
                     "name": "Activation Mode",
-                    "hint": "Select the mode to activate the to token HUD.",
+                    "hint": "Select the mode to activate the token HUD.",
                     "choices": {
                         "disabled": "Disabled",
                         "first": "On First Click",
