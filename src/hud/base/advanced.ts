@@ -1,8 +1,27 @@
 import { useResolve } from "actions";
 import {
+    ActorPF2e,
+    addEnterKeyListeners,
+    addListener,
+    CharacterPF2e,
+    EffectPF2e,
+    getSkillLabel,
+    HeldShieldData,
+    localize,
+    MODULE,
+    MovementType,
+    NPCPF2e,
+    R,
+    setFlag,
+    signedInteger,
+    TokenPF2e,
+    ValueAndMax,
+} from "foundry-helpers";
+import {
     addSidebarsListeners,
     addTextNumberInputListeners,
     calculateActorHealth,
+    COVER_UUID,
     createSlider,
     getAllSpeeds,
     getCoverEffect,
@@ -17,24 +36,6 @@ import {
 } from "hud";
 import { getGlobalSetting } from "settings";
 import { BaseActorPF2eHUD } from ".";
-import {
-    ActionUseOptions,
-    ActorPF2e,
-    addEnterKeyListeners,
-    addListener,
-    CharacterPF2e,
-    getSkillLabel,
-    HeldShieldData,
-    localize,
-    MODULE,
-    MovementType,
-    NPCPF2e,
-    R,
-    setFlag,
-    signedInteger,
-    TokenPF2e,
-    ValueAndMax,
-} from "foundry-helpers";
 
 const ALLIANCE_TYPES = ["party", "neutral", "opposition"] as const;
 
@@ -247,7 +248,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             this.actor?.getStatistic(statistic)?.roll(rollOptions);
         }
 
-        #takeCover(this: ThisAdvancedHUD, event: PointerEvent) {
+        async #takeCover(this: ThisAdvancedHUD, event: PointerEvent) {
             const actor = this.actor;
             if (!actor?.isOfType("creature")) return;
 
@@ -256,14 +257,11 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             if (existing) {
                 existing.delete();
             } else {
-                const token = this.token;
-                const options: Partial<ActionUseOptions> = { actors: [actor], event };
+                const source = (await fromUuid<EffectPF2e>(COVER_UUID()))?.toObject();
 
-                if (token) {
-                    options.tokens = [token];
+                if (source) {
+                    actor.createEmbeddedDocuments("Item", [source]);
                 }
-
-                game.pf2e.actions.get("take-cover")?.use(options);
             }
         }
 

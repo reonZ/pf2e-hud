@@ -143,6 +143,7 @@ type SliderData = {
 };
 
 export {
+    COVER_UUID,
     createSlider,
     FilterValue,
     getCoverEffect,
