@@ -1,17 +1,16 @@
 import {
     ActorInitiative,
     ActorPF2e,
-    ApplicationV2,
     BaseSpellcastingEntry,
     CreaturePF2e,
     EffectPF2e,
-    eventToRollParams,
     InitiativeRollResult,
     R,
     SpellPF2e,
     SYSTEM,
     ValueAndMax,
-} from "module-helpers";
+} from "foundry-helpers";
+import { eventToRollParams } from "foundry-helpers/dist";
 
 const COVER_UUID = SYSTEM.uuid(
     "Compendium.pf2e.other-effects.Item.I9lfZUiCwMiGogVi",
@@ -86,8 +85,8 @@ function rollInitiative(
     return initiative.roll(args);
 }
 
-function makeFadeable(app: ApplicationV2) {
-    const onDragStart = (event: DragEvent) => {
+function makeFadeable(app: fa.api.ApplicationV2) {
+    const onDragStart = () => {
         requestAnimationFrame(() => {
             app.element.classList.add("pf2e-hud-fadeout");
 
@@ -119,7 +118,7 @@ function isAnimistEntry(entry: BaseSpellcastingEntry<CreaturePF2e>) {
 }
 
 function getUiScale(): number {
-    return game.settings.get<{ uiScale?: number }>("core", "uiConfig")?.uiScale ?? 1;
+    return game.settings.get("core", "uiConfig")?.uiScale ?? 1;
 }
 
 function getTextureMask({ scaleX, scaleY }: { scaleX: number; scaleY: number }) {

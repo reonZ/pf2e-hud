@@ -1,4 +1,4 @@
-import { CreaturePF2e, EquipmentPF2e, ValueAndMaybeMax } from "module-helpers";
+import { CreaturePF2e, EquipmentPF2e, ModelPropsFromSchema, ValueAndMaybeMax } from "foundry-helpers";
 import { generateItemShortcutFields, ItemShortcut, ItemShortcutSchema, ShortcutSource } from "..";
 
 class EquipmentShortcut extends ItemShortcut<EquipmentShortcutSchema, EquipmentPF2e<CreaturePF2e>> {

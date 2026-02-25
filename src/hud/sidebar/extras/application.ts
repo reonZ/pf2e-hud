@@ -1,9 +1,10 @@
 import { FilterValue, rollInitiative } from "hud/shared";
+import { ExtrasSidebarItem, getExtrasActions, MacroSidebarItem } from ".";
+import { getStatistics, SidebarPF2eHUD } from "..";
 import {
     AbilityItemPF2e,
     ActorPF2e,
     addListenerAll,
-    ApplicationRenderOptions,
     getDragEventData,
     getFlag,
     htmlQueryIn,
@@ -13,9 +14,7 @@ import {
     setFlag,
     SkillSlug,
     SpecialResourceRuleElement,
-} from "module-helpers";
-import { ExtrasSidebarItem, getExtrasActions, MacroSidebarItem } from ".";
-import { getStatistics, SidebarPF2eHUD } from "..";
+} from "foundry-helpers";
 
 class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e | ItemPF2e, ExtrasSidebarItem | MacroSidebarItem> {
     get name(): "extras" {
@@ -34,7 +33,7 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e | ItemPF2e, Ex
         return getFlag<string[]>(this.worldActor, "macros", game.user.id) ?? [];
     }
 
-    protected async _prepareContext(options: ApplicationRenderOptions): Promise<ExtrasSidebarContext> {
+    protected async _prepareContext(_options: fa.ApplicationRenderOptions): Promise<ExtrasSidebarContext> {
         const actor = this.actor;
         const isCharacter = actor.isOfType("character");
 
@@ -149,7 +148,7 @@ type EventAction =
     | "roll-statistic-action"
     | "use-macro";
 
-type ExtrasSidebarContext = {
+type ExtrasSidebarContext = fa.ApplicationRenderContext & {
     actions: ExtrasSidebarItem[];
     dailies: MaybeFalsy<{ canPrep: boolean; tooltip: string }>;
     filterValue: (str: string, options: { hash: { localize?: boolean } }) => FilterValue;
@@ -157,7 +156,7 @@ type ExtrasSidebarContext = {
     isCharacter: boolean;
     macros: MacroSidebarItem[];
     resources: SpecialResourceRuleElement[];
-    statistics: SelectOptions;
+    statistics: { value: string; label: string }[];
 };
 
 export { ExtrasSidebarPF2eHUD };

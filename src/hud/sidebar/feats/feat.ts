@@ -1,6 +1,6 @@
 import { FeatShortcutData } from "hud";
-import { ActorPF2e, FeatPF2e } from "module-helpers";
 import { BaseSidebarItem } from "..";
+import { ActorPF2e, FeatPF2e } from "foundry-helpers";
 
 class FeatsSidebarItem extends BaseSidebarItem<FeatPF2e<ActorPF2e>, SidebarFeat> {
     toShortcut(): FeatShortcutData {

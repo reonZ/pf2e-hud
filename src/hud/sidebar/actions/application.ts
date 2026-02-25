@@ -1,17 +1,14 @@
-import { FilterValue, TextHudPopup } from "hud";
 import {
-    ApplicationClosingOptions,
-    ApplicationRenderOptions,
     CharacterPF2e,
     CombatantPF2e,
-    createToggleableHook,
+    createToggleHook,
     getFlag,
     htmlClosest,
     ItemPF2e,
     setFlag,
     SYSTEM,
-    TemplateLocalize,
-} from "module-helpers";
+} from "foundry-helpers";
+import { FilterValue, TextHudPopup } from "hud";
 import {
     ActionSection,
     ActionsSidebarAction,
@@ -38,7 +35,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
     ItemPF2e,
     ActionsSidebarAction | ActionsSidebarBlast | ActionsSidebarBlastCost | ActionsSidebarStrike | ActionsStance
 > {
-    #combatantHooks = createToggleableHook(["createCombatant", "deleteCombatant"], this.#onCombatant.bind(this));
+    #combatantHooks = createToggleHook(["createCombatant", "deleteCombatant"], this.#onCombatant.bind(this));
 
     getSidebarItemKey({ itemId, index }: DOMStringMap): string | undefined {
         return itemId && index ? `${itemId}-${index}` : itemId;
@@ -48,7 +45,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
         return "actions";
     }
 
-    async _prepareContext(options: ApplicationRenderOptions): Promise<ActionsSidebarContext> {
+    async _prepareContext(options: fa.ApplicationRenderOptions): Promise<ActionsSidebarContext> {
         const actor = this.actor;
         const isCharacter = actor.isOfType("character");
 
@@ -66,7 +63,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
         };
     }
 
-    protected _onFirstRender(context: ActionsSidebarContext, options: SidebarRenderOptions) {
+    protected async _onFirstRender(context: ActionsSidebarContext, options: SidebarRenderOptions) {
         super._onFirstRender(context, options);
 
         if (context.stances) {
@@ -74,7 +71,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
         }
     }
 
-    protected _onClose(options: ApplicationClosingOptions): void {
+    protected _onClose(options: fa.ApplicationClosingOptions): void {
         super._onClose(options);
 
         this.#combatantHooks.disable();
@@ -87,7 +84,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
     protected _onClickAction(event: PointerEvent, target: HTMLElement) {
         if (event.button !== 0 || target.dataset.disabled === "true") return;
 
-        const action = target.dataset.action as Stringptionel<"dailies-retrain">;
+        const action = target.dataset.action as "dailies-retrain" | (string & {});
 
         if (action === "dailies-retrain") {
             return game.dailies?.api.retrainFromElement(this.actor, target);
@@ -110,7 +107,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
         }
     }
 
-    #onClickAction(event: PointerEvent, action: Stringptionel<EventAction>) {
+    #onClickAction(event: PointerEvent, action: EventAction | (string & {})) {
         const actor = this.actor;
 
         if (action === "toggle-hide-stowed") {
@@ -122,7 +119,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
         }
     }
 
-    async #onHeroEventAction(event: PointerEvent, action: Stringptionel<EventHeroAction>) {
+    async #onHeroEventAction(event: PointerEvent, action: EventHeroAction | (string & {})) {
         const actor = this.actor;
         const heroActions = game.toolbelt?.api.heroActions;
         if (!heroActions || !actor.isOfType("character")) return;
@@ -192,7 +189,7 @@ type EventHeroAction =
 
 type EventAction = EventHeroAction | "send-hero-action-to-chat" | "toggle-hide-stowed" | "toggle-show-shields";
 
-type ActionsSidebarContext = {
+type ActionsSidebarContext = fa.ApplicationRenderContext & {
     sections: ActionSection[] | undefined;
     blasts: MaybeFalsy<BlastsContext>;
     heroActions: MaybeFalsy<HeroActionData>;
@@ -205,7 +202,7 @@ type ActionsSidebarContext = {
 
 type HeroActionData = toolbelt.heroActions.HeroActionsTemplateData & {
     filterValue: FilterValue;
-    i18n: TemplateLocalize;
+    i18n: (key: string, options: { hash: Record<string, string> }) => string;
 };
 
 export { ActionsSidebarPF2eHUD };

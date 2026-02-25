@@ -3,16 +3,12 @@ import {
     CharacterPF2e,
     CreaturePF2e,
     EffectTrait,
-    IdField,
     ItemPF2e,
     localize,
-} from "module-helpers";
-import {
-    BaseShortcutSchema,
-    generateBaseShortcutFields,
-    PersistentShortcut,
-    ShortcutSource,
-} from "..";
+    ModelPropsFromSchema,
+} from "foundry-helpers";
+import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutSource } from "..";
+import { IdField } from "_utils";
 
 function generateAttackShortcutFields(type: string): AttackShortcutSchema {
     return {
@@ -27,7 +23,7 @@ function generateAttackShortcutFields(type: string): AttackShortcutSchema {
 abstract class AttackShortcut<
     TSchema extends AttackShortcutSchema,
     TItem extends ItemPF2e,
-    TData extends { label: string }
+    TData extends { label: string },
 > extends PersistentShortcut<TSchema, TItem> {
     #attackData: Maybe<TData>;
 
@@ -70,10 +66,7 @@ abstract class AttackShortcut<
             const html = popup.element[0];
             const bounds = html.getBoundingClientRect();
             const left = Math.max(event.x - bounds.width / 2, 50);
-            const top = Math.min(
-                event.y - bounds.height / 2 - 15,
-                window.innerHeight - 50 - bounds.height
-            );
+            const top = Math.min(event.y - bounds.height / 2 - 15, window.innerHeight - 50 - bounds.height);
 
             popup.setPosition({ left, top });
         });
@@ -83,7 +76,7 @@ abstract class AttackShortcut<
 interface AttackShortcut<
     TSchema extends AttackShortcutSchema,
     TItem extends ItemPF2e,
-    TData extends { label: string }
+    TData extends { label: string },
 > extends ModelPropsFromSchema<AttackShortcutSchema> {
     type: "strike" | "blast";
 }

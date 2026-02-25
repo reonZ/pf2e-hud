@@ -16,31 +16,6 @@ import {
 } from "hud";
 import { hud } from "main";
 import {
-    ActorPF2e,
-    addEnterKeyListeners,
-    addListener,
-    addListenerAll,
-    ApplicationClosingOptions,
-    ApplicationConfiguration,
-    ApplicationPosition,
-    ApplicationRenderContext,
-    ApplicationRenderOptions,
-    assignStyle,
-    createHTMLElement,
-    createToggleableEvent,
-    htmlClosest,
-    htmlQuery,
-    htmlQueryIn,
-    ItemPF2e,
-    localize,
-    MODULE,
-    postSyncElement,
-    preSyncElement,
-    R,
-    render,
-    templatePath,
-} from "module-helpers";
-import {
     ActionsSidebarPF2eHUD,
     BaseSidebarItem,
     createRollOptionsElements,
@@ -52,6 +27,26 @@ import {
     SpellsSidebarPF2eHUD,
 } from ".";
 import { getGlobalSetting } from "settings";
+import {
+    ActorPF2e,
+    addEnterKeyListeners,
+    addListener,
+    addListenerAll,
+    assignStyle,
+    createHTMLElement,
+    createToggleEvent,
+    htmlClosest,
+    htmlQuery,
+    htmlQueryIn,
+    ItemPF2e,
+    KeybindingActionConfig,
+    localize,
+    MODULE,
+    postSyncElement,
+    preSyncElement,
+    R,
+    render,
+} from "foundry-helpers";
 
 const _cached: { filter?: string } = {};
 
@@ -64,14 +59,14 @@ abstract class SidebarPF2eHUD<
     static #instance: SidebarPF2eHUD | null = null;
     static #filter: string = "";
 
-    #sidebarItems: Collection<TSidebarItem> = new Collection();
+    #sidebarItems: Collection<string, TSidebarItem> = new Collection();
 
     #parent: IAdvancedPF2eHUD & BaseActorPF2eHUD;
     #filterElement: HTMLElement | undefined;
     #innerElement: HTMLElement | undefined;
     #sidebarElement: HTMLElement | undefined;
 
-    #mouseDownEvent = createToggleableEvent("mousedown", "#board", this.#onMouseDown.bind(this), true);
+    #mouseDownEvent = createToggleEvent("mousedown", "#board", this.#onMouseDown.bind(this), true);
 
     #parentCloseListener = () => {
         this.close();
@@ -100,7 +95,7 @@ abstract class SidebarPF2eHUD<
         };
     }
 
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<fa.ApplicationConfiguration> = {
         id: "pf2e-hud-sidebar",
         window: {
             positioned: true,
@@ -197,7 +192,7 @@ abstract class SidebarPF2eHUD<
         }
     }
 
-    async close(options: ApplicationClosingOptions = {}): Promise<this> {
+    async close(options: fa.ApplicationClosingOptions = {}): Promise<this> {
         options.animate = false;
         return super.close(options);
     }
@@ -235,7 +230,7 @@ abstract class SidebarPF2eHUD<
         return this.#instance?.parent === hud;
     }
 
-    constructor(parent: IAdvancedPF2eHUD & BaseActorPF2eHUD, options?: DeepPartial<ApplicationConfiguration>) {
+    constructor(parent: IAdvancedPF2eHUD & BaseActorPF2eHUD, options?: DeepPartial<fa.ApplicationConfiguration>) {
         super(options);
 
         this.#parent = parent;
@@ -282,7 +277,7 @@ abstract class SidebarPF2eHUD<
         return coords;
     }
 
-    get sidebarItems(): Collection<TSidebarItem> {
+    get sidebarItems(): Collection<string, TSidebarItem> {
         return this.#sidebarItems;
     }
 
@@ -321,7 +316,7 @@ abstract class SidebarPF2eHUD<
 
     protected _activateListeners(html: HTMLElement) {}
 
-    protected _onFirstRender(context: object, options: SidebarRenderOptions): void {
+    protected async _onFirstRender(context: object, options: SidebarRenderOptions) {
         SidebarPF2eHUD.#instance = this;
         SidebarPF2eHUD.#filter = "";
 
@@ -338,7 +333,7 @@ abstract class SidebarPF2eHUD<
         }
     }
 
-    protected _onRender(context: object, options: SidebarRenderOptions): void {
+    protected async _onRender(context: object, options: SidebarRenderOptions) {
         htmlQuery(this.parent.element, `[data-sidebar="${this.name}"]`)?.classList.add("active");
         this.#setColumns();
 
@@ -356,7 +351,7 @@ abstract class SidebarPF2eHUD<
         });
     }
 
-    protected _onClose(options: ApplicationClosingOptions): void {
+    protected _onClose(options: fa.ApplicationClosingOptions): void {
         SidebarPF2eHUD.#filter = "";
         SidebarPF2eHUD.#instance = null;
 
@@ -391,7 +386,7 @@ abstract class SidebarPF2eHUD<
             ? Object.keys(actor.flags["pf2e-dailies"]?.flaggedItems ?? {})
             : [];
 
-        context.partial = (key: string) => templatePath("partials", key);
+        context.partial = (key: string) => MODULE.templatePath("partials", key);
         context.flagged = ({ id } = {}) => R.isIncludedIn(id, flaggedItems);
 
         const listElement = createHTMLElement("div", {
@@ -479,7 +474,7 @@ abstract class SidebarPF2eHUD<
         this._activateListeners(innerElement);
     }
 
-    protected _updatePosition(position: ApplicationPosition): ApplicationPosition {
+    protected _updatePosition(position: fa.ApplicationPosition): fa.ApplicationPosition {
         const element = this.element;
         const { bounds, limits, origin } = this.coords;
 
@@ -651,16 +646,16 @@ type SidebarHudRenderElements = {
 
 type UpdatedSidebarCoords = SidebarCoords & { bounds: DOMRect; uiScale: number };
 
-type SidebarRenderContext = ApplicationRenderContext & {
+type SidebarRenderContext = fa.ApplicationRenderContext & {
     partial: (key: string) => string;
     flagged: (item?: { id?: string }) => boolean;
 };
 
-type SidebarRenderOptions = ApplicationRenderOptions & {
+type SidebarRenderOptions = fa.ApplicationRenderOptions & {
     alwaysFilter: boolean;
 };
 
-MODULE.devExpose({ SidebarPF2eHUD });
+MODULE.debugExpose("sidebar", SidebarPF2eHUD);
 
 export { SidebarPF2eHUD };
 export type { SidebarDragData, SidebarRenderOptions };

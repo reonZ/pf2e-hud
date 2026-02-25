@@ -1,24 +1,21 @@
 import { getActionFrequency, getActionImg, getActionResource, toggleExploration } from "hud";
+
+import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutCost, ShortcutSource } from ".";
 import {
     AbilityItemPF2e,
     ActionType,
     CreaturePF2e,
     FeatPF2e,
-    IdField,
+    ImageFilePath,
     localize,
     MacroPF2e,
+    ModelPropsFromSchema,
     OneToThree,
     SelfEffectReference,
     useAction,
     ValueAndMaybeMax,
-} from "module-helpers";
-import {
-    BaseShortcutSchema,
-    generateBaseShortcutFields,
-    PersistentShortcut,
-    ShortcutCost,
-    ShortcutSource,
-} from ".";
+} from "foundry-helpers";
+import { IdField } from "_utils";
 
 class ActionShortcut extends PersistentShortcut<
     ActionShortcutSchema,
@@ -44,7 +41,7 @@ class ActionShortcut extends PersistentShortcut<
 
     static async getItem(
         actor: CreaturePF2e,
-        data: ActionShortcutData
+        data: ActionShortcutData,
     ): Promise<Maybe<FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>>> {
         return actor.items.get<FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>>(data.itemId);
     }
@@ -70,9 +67,7 @@ class ActionShortcut extends PersistentShortcut<
         const includedInTactics =
             isTacticAbility &&
             this.cached("commanderTactics", () => {
-                return game.dailies?.active
-                    ? game.dailies?.api.getCommanderTactics(this.actor)
-                    : null;
+                return game.dailies?.active ? game.dailies?.api.getCommanderTactics(this.actor) : null;
             })?.includes(item.id);
 
         const crafting = item.crafting;
@@ -138,9 +133,7 @@ class ActionShortcut extends PersistentShortcut<
             return (this.actor.isOfType("character") && this.actor.system.exploration) || [];
         });
 
-        return this.item && this.isExploration
-            ? { checked: explorations.includes(this.item.id) }
-            : null;
+        return this.item && this.isExploration ? { checked: explorations.includes(this.item.id) } : null;
     }
 
     get subtitle(): string {
@@ -153,8 +146,8 @@ class ActionShortcut extends PersistentShortcut<
         const suffix = this.macro
             ? localize("shortcuts.tooltip.subtitle.macro")
             : this.selfEffect
-            ? game.i18n.localize("PF2E.Item.Ability.FIELDS.selfEffect.label")
-            : null;
+              ? game.i18n.localize("PF2E.Item.Ability.FIELDS.selfEffect.label")
+              : null;
 
         return suffix ? `${label} (${suffix})` : label;
     }
@@ -163,10 +156,10 @@ class ActionShortcut extends PersistentShortcut<
         return !this.item
             ? "match"
             : this.uses && this.uses.value < 1
-            ? "uses"
-            : this.isUntrainedTactic
-            ? "tactic"
-            : undefined;
+              ? "uses"
+              : this.isUntrainedTactic
+                ? "tactic"
+                : undefined;
     }
 
     use(event: MouseEvent): void {

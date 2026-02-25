@@ -1,18 +1,25 @@
 import { getUiScale } from "hud";
+
+import { ShortcutCache, ShortcutSlotId } from "..";
+import fields = foundry.data.fields;
 import {
     createHTMLElement,
     CreaturePF2e,
+    DataModelConstructionContext,
+    DataSchema,
+    DocumentUUID,
+    ImageFilePath,
     ItemPF2e,
     localize,
+    ModelPropsFromSchema,
     render,
+    SourceFromSchema,
     ValueAndMaybeMax,
-} from "module-helpers";
-import { ShortcutCache, ShortcutSlotId } from "..";
-import fields = foundry.data.fields;
+} from "foundry-helpers";
 
 abstract class PersistentShortcut<
     TSchema extends BaseShortcutSchema = BaseShortcutSchema,
-    TItem extends ItemPF2e = ItemPF2e
+    TItem extends ItemPF2e = ItemPF2e,
 > extends foundry.abstract.DataModel<null, TSchema> {
     #actor: CreaturePF2e;
     #cached: ShortcutCache;
@@ -25,7 +32,7 @@ abstract class PersistentShortcut<
     static async getItem(
         actor: CreaturePF2e,
         data: ShortcutSource<BaseShortcutSchema>,
-        cached: ShortcutCache
+        cached: ShortcutCache,
     ): Promise<Maybe<ItemPF2e>> {
         return null;
     }
@@ -36,9 +43,9 @@ abstract class PersistentShortcut<
         item: Maybe<ItemPF2e>,
         slot: number,
         cached: ShortcutCache,
-        options?: DataModelConstructionOptions<null>
+        options?: DataModelConstructionContext<null>,
     ) {
-        super(data, options);
+        super(data as DeepPartial<fields.SourceFromSchema<DataSchema>>, options);
 
         this.#actor = actor;
         this.#cached = cached;
@@ -167,7 +174,7 @@ abstract class PersistentShortcut<
 
     async radialMenu<T extends string>(
         sectionsFn: () => ShortcutRadialSection[],
-        onSelect: (event: MouseEvent, value: T) => void
+        onSelect: (event: PointerEvent, value: T) => void,
     ) {
         const element = this.element;
         if (!element) return;
@@ -240,8 +247,10 @@ abstract class PersistentShortcut<
     }
 }
 
-interface PersistentShortcut<TSchema extends BaseShortcutSchema, TItem extends ItemPF2e>
-    extends ModelPropsFromSchema<BaseShortcutSchema> {}
+interface PersistentShortcut<
+    TSchema extends BaseShortcutSchema,
+    TItem extends ItemPF2e,
+> extends ModelPropsFromSchema<BaseShortcutSchema> {}
 
 function generateBaseShortcutFields<T extends string>(type: T): BaseShortcutSchema {
     return {
@@ -304,7 +313,7 @@ type ShortcutCustomSchema = {
 type BaseShortcutSchema = {
     custom: fields.SchemaField<ShortcutCustomSchema>;
     img: fields.FilePathField<ImageFilePath, ImageFilePath, true, false, false>;
-    name: fields.StringField;
+    name: fields.StringField<string, string, false, false, true>;
     type: fields.StringField<string, string, true, false, true>;
 };
 

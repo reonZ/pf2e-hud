@@ -1,6 +1,6 @@
 import { ELEMENTAL_BLAST_IMG } from "hud";
-import { localize } from "module-helpers";
 import { generateToggleShortcutFields, ToggleShortcut, ToggleShortcutSchema } from "..";
+import { ImageFilePath, localize } from "foundry-helpers";
 
 class BlastCostShortcut extends ToggleShortcut {
     static defineSchema(): ToggleShortcutSchema {
@@ -31,21 +31,15 @@ class BlastCostShortcut extends ToggleShortcut {
         return this.selected ? (this.selected.value === "2" ? "Ⅱ" : "Ⅰ") : null;
     }
 
-    use(event: MouseEvent): void {
+    use(): void {
         const actor = this.item?.actor;
         const selected = this.selected;
         if (!selected || !actor) return;
 
-        actor.toggleRollOption(
-            "elemental-blast",
-            "action-cost",
-            this.itemId,
-            true,
-            selected.value === "2" ? "1" : "2"
-        );
+        actor.toggleRollOption("elemental-blast", "action-cost", this.itemId, true, selected.value === "2" ? "1" : "2");
     }
 
-    altUse(event: MouseEvent): void {
+    altUse(): void {
         this.item?.sheet.render(true);
     }
 }

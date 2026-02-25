@@ -1,21 +1,14 @@
 import { FilterValue } from "hud";
-import {
-    ActorPF2e,
-    ApplicationRenderOptions,
-    isCastConsumable,
-    PhysicalItemPF2e,
-    R,
-    SheetInventory,
-} from "module-helpers";
 import { ItemsSidebarItem, SidebarItem } from ".";
 import { SidebarPF2eHUD } from "..";
+import { ActorPF2e, isCastConsumable, PhysicalItemPF2e, R, SheetInventory } from "foundry-helpers";
 
 class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, ItemsSidebarItem> {
     get name(): "items" {
         return "items";
     }
 
-    protected async _prepareContext(options: ApplicationRenderOptions): Promise<ItemsHudContext> {
+    protected async _prepareContext(_options: fa.ApplicationRenderOptions): Promise<ItemsHudContext> {
         const actor = this.actor;
         const sheetData = actor.sheet["prepareInventory"]();
         const isGM = game.user.isGM;
@@ -31,13 +24,13 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
             if (isConsumable && (customConsumableUse || isCastConsumable(item))) return true;
 
             const macro = canUseMacro && (await game.toolbelt?.api.actionable.getItemMacro(item));
-            return !!macro || (isConsumable && itemData.hasCharges && !item.isAmmo);
+            return !!macro || (isConsumable && itemData.hasCharges);
         };
 
         const sections = await Promise.all(
             R.pipe(
-                sheetData.sections,
-                R.filter((section): section is SidebarItemList => section.items.length > 0),
+                sheetData.sections as unknown as SidebarItemList[],
+                R.filter((section) => section.items.length > 0),
                 R.map(async (section) => {
                     section.filterValue = new FilterValue();
 
@@ -64,7 +57,6 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
                                     isInvestable: false,
                                     isSellable: false,
                                     item: subItem,
-                                    unitBulk: null,
                                 };
 
                                 return this.addSidebarItem(ItemsSidebarItem, "id", subItemData);
@@ -80,8 +72,8 @@ class ItemsSidebarPF2eHUD extends SidebarPF2eHUD<PhysicalItemPF2e<ActorPF2e>, It
                     section.items = await Promise.all(itemsPromises);
 
                     return section;
-                })
-            )
+                }),
+            ),
         );
 
         const canPlayerIdentify =
@@ -200,18 +192,20 @@ type EventAction =
     | "toggle-invested"
     | "use-item";
 
-type ItemsHudContext = SheetInventory & {
-    canIdentify: boolean;
-    canMergeItems: string | undefined;
-    investedTooltip: string;
-    isCharacter: boolean;
-    isGM: boolean;
-    isNPC: boolean;
-    wealth: {
-        coins: number;
-        total: number;
+type ItemsHudContext = Omit<SheetInventory, "sections"> &
+    fa.ApplicationRenderContext & {
+        canIdentify: boolean;
+        canMergeItems: string | undefined;
+        investedTooltip: string;
+        isCharacter: boolean;
+        isGM: boolean;
+        isNPC: boolean;
+        sections: SidebarItemList[];
+        wealth: {
+            coins: number;
+            total: number;
+        };
     };
-};
 
 type SheetItemList = SheetInventory["sections"][number];
 

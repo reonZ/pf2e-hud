@@ -1,17 +1,8 @@
-import {
-    ApplicationClosingOptions,
-    ApplicationConfiguration,
-    ApplicationRenderContext,
-    ApplicationRenderOptions,
-    htmlQuery,
-    render,
-} from "module-helpers";
+import { htmlQuery, render } from "foundry-helpers";
 import { BasePF2eHUD } from "./base";
 
-abstract class FoundrySidebarPF2eHUD<
-    TSettings extends { enabled: boolean }
-> extends BasePF2eHUD<TSettings> {
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
+abstract class FoundrySidebarPF2eHUD<TSettings extends { enabled: boolean }> extends BasePF2eHUD<TSettings> {
+    static DEFAULT_OPTIONS: DeepPartial<fa.ApplicationConfiguration> = {
         id: "pf2e-hud-dice",
     };
 
@@ -37,17 +28,13 @@ abstract class FoundrySidebarPF2eHUD<
     abstract _activateListeners(html: HTMLElement): void;
 
     protected _renderHTML(
-        context: ApplicationRenderContext,
-        options: ApplicationRenderOptions
+        context: fa.ApplicationRenderContext,
+        options: fa.ApplicationRenderOptions,
     ): Promise<unknown> {
         return render(this.key, context);
     }
 
-    protected _replaceHTML(
-        result: string,
-        content: HTMLElement,
-        options: ApplicationRenderOptions
-    ): void {
+    protected _replaceHTML(result: string, content: HTMLElement, options: fa.ApplicationRenderOptions): void {
         content.innerHTML = result;
         content.dataset.tooltipClass = "pf2e-hud-element";
         content.dataset.tooltipDirection = "DOWN";
@@ -55,7 +42,7 @@ abstract class FoundrySidebarPF2eHUD<
         this._activateListeners(content);
     }
 
-    protected _onClose(options: ApplicationClosingOptions): void {
+    protected _onClose(options: fa.ApplicationClosingOptions): void {
         document.getElementById("sidebar-content")?.classList.remove(this.id);
     }
 

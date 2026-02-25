@@ -1,4 +1,6 @@
 import { FilterValue, getNpcStrikeImage, StrikeShortcutData } from "hud";
+import { ActionsSidebarPF2eHUD } from ".";
+import { BaseSidebarItem } from "..";
 import {
     ActorPF2e,
     addListenerAll,
@@ -9,6 +11,7 @@ import {
     getFlag,
     htmlClosest,
     htmlQuery,
+    ImageFilePath,
     localize,
     MeleePF2e,
     objectHasKey,
@@ -18,9 +21,7 @@ import {
     tupleHasValue,
     WeaponAuxiliaryAction,
     WeaponPF2e,
-} from "module-helpers";
-import { ActionsSidebarPF2eHUD } from ".";
-import { BaseSidebarItem } from "..";
+} from "foundry-helpers";
 
 class ActionsSidebarStrike extends BaseSidebarItem<MeleePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e>, AttackAction> {
     #options: ActionsSidebarStrikeOptions;
@@ -161,7 +162,7 @@ async function getSidebarStrikeData(this: ActionsSidebarPF2eHUD): Promise<Strike
     };
 }
 
-function getStrikeActions(actor: ActorPF2e, options?: StrikeActionOptions): StrikeData[] {
+function getStrikeActions(actor: ActorPF2e, options?: StrikeActionOptions): AttackAction[] {
     const actorStrikes = actor.system.actions ?? [];
 
     if (!options) {
@@ -251,7 +252,7 @@ function getActionCategory(
     };
 }
 
-function isAlchemicalStrike(strike: StrikeData): strike is WeaponStrike {
+function isAlchemicalStrike(strike: AttackAction): strike is WeaponStrike {
     return strike.item.isOfType("weapon") && strike.item.isAlchemical && strike.item.traits.has("bomb");
 }
 
@@ -261,7 +262,7 @@ function activateActionsListeners(this: ActionsSidebarPF2eHUD, html: HTMLElement
         sidebarItem?.linkAmmo(el.value);
     });
 
-    addListenerAll(html, `[data-action="auxiliary-action"]`, "change", (el, event) => {
+    addListenerAll(html, `[data-action="auxiliary-action"]`, "change", (_el, event) => {
         event.stopImmediatePropagation();
     });
 
@@ -289,9 +290,9 @@ function activateActionsListeners(this: ActionsSidebarPF2eHUD, html: HTMLElement
 }
 
 function onStrikeClickAction(
-    event: MouseEvent,
+    event: PointerEvent,
     sidebarItem: ActionsSidebarStrike,
-    action: Stringptionel<StrikeEventAction>,
+    action: StrikeEventAction | (string & {}),
     target: HTMLElement,
 ) {
     const altUsageIndex = "altUsage" in target.dataset ? Number(target.dataset.altUsage) : null;
@@ -449,7 +450,7 @@ type ActionsSidebarStrikeOptions = {
     altIndex?: number;
 };
 
-type ActionsSidebarStrikeArgs = [data: StrikeData, formula: StrikeFormulas, options: ActionsSidebarStrikeOptions];
+type ActionsSidebarStrikeArgs = [data: AttackAction, formula: StrikeFormulas, options: ActionsSidebarStrikeOptions];
 
 type WeaponStrike = StrikeData & { item: WeaponPF2e<ActorPF2e> };
 

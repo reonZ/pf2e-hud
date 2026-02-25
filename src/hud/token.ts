@@ -1,23 +1,5 @@
 import { hud } from "main";
-import {
-    ActorInstances,
-    ActorPF2e,
-    ActorSheetPF2e,
-    ActorType,
-    ApplicationClosingOptions,
-    ApplicationConfiguration,
-    ApplicationPosition,
-    ApplicationRenderOptions,
-    createToggleableHook,
-    createToggleableEvent,
-    createToggleableWrapper,
-    LootPF2e,
-    PartyPF2e,
-    render,
-    signedInteger,
-    TokenDocumentPF2e,
-    TokenPF2e,
-} from "module-helpers";
+
 import {
     AdvancedHudContext,
     BaseTokenPF2eHUD,
@@ -28,6 +10,21 @@ import {
     SidebarCoords,
     SidebarMenu,
 } from ".";
+import {
+    ActorInstances,
+    ActorPF2e,
+    ActorSheetPF2e,
+    ActorType,
+    createToggleEvent,
+    createToggleHook,
+    createToggleWrapper,
+    LootPF2e,
+    PartyPF2e,
+    render,
+    signedInteger,
+    TokenDocumentPF2e,
+    TokenPF2e,
+} from "foundry-helpers";
 
 const TOKEN_ACTIVATION = ["disabled", "first", "second"] as const;
 const TOKEN_MODE = ["exploded", "left", "right"] as const;
@@ -36,27 +33,27 @@ class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, Token
     #controlled: TokenPF2e | null = null;
     #tokenClickAction: (token: TokenPF2e) => void = () => {};
 
-    #canvasPanHook = createToggleableHook("canvasPan", this.#onCanvasPan.bind(this));
-    #canvasTearDownHook = createToggleableHook("canvasTearDown", () => this.setToken(null));
-    #renderActorSheetHook = createToggleableHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
+    #canvasPanHook = createToggleHook("canvasPan", this.#onCanvasPan.bind(this));
+    #canvasTearDownHook = createToggleHook("canvasTearDown", () => this.setToken(null));
+    #renderActorSheetHook = createToggleHook("renderActorSheet", this.#onRenderActorSheet.bind(this));
 
-    #mouseDownEvent = createToggleableEvent("mousedown", "#board", this.#onMouseDown.bind(this));
+    #mouseDownEvent = createToggleEvent("mousedown", "#board", this.#onMouseDown.bind(this));
 
-    #tokenClickLeftWrapper = createToggleableWrapper(
+    #tokenClickLeftWrapper = createToggleWrapper(
         "WRAPPER",
         "CONFIG.Token.objectClass.prototype._onClickLeft",
         this.#tokenOnClickLeft,
         { context: this },
     );
 
-    #tokenDragLeftStartWrapper = createToggleableWrapper(
+    #tokenDragLeftStartWrapper = createToggleWrapper(
         "WRAPPER",
         "CONFIG.Token.objectClass.prototype._onDragLeftStart",
         this.#tokenOnDragLeftStart,
         { context: this },
     );
 
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<fa.ApplicationConfiguration> = {
         id: "pf2e-hud-token",
     };
 
@@ -161,21 +158,21 @@ class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, Token
         );
     }
 
-    protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
+    protected async _onFirstRender(_context: object, _options: fa.ApplicationRenderOptions) {
         this.#canvasPanHook.activate();
         this.#mouseDownEvent.activate();
 
         makeFadeable(this);
     }
 
-    protected _onClose(options: ApplicationClosingOptions) {
+    protected _onClose(options: fa.ApplicationClosingOptions) {
         this.#canvasPanHook.disable();
         this.#mouseDownEvent.disable();
 
         return super._onClose(options);
     }
 
-    protected _onSetToken(token: TokenPF2e): void {
+    protected _onSetToken(_token: TokenPF2e): void {
         this.render(true);
     }
 
@@ -207,7 +204,7 @@ class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, Token
         };
     }
 
-    async _renderHTML(context: TokenContext, options: TokenRenderOptions): Promise<string> {
+    async _renderHTML(context: TokenContext, _options: TokenRenderOptions): Promise<string> {
         return render("actor-hud", context);
     }
 
@@ -218,7 +215,7 @@ class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, Token
         super._replaceHTML(result, content, options);
     }
 
-    protected _updatePosition(position: ApplicationPosition): ApplicationPosition {
+    protected _updatePosition(position: fa.ApplicationPosition): fa.ApplicationPosition {
         super._updatePosition(position);
 
         this.element.style.setProperty("z-index", String(position.zIndex));
@@ -254,7 +251,7 @@ class TokenPF2eHUD extends makeAdvancedHUD(BaseTokenPF2eHUD<TokenSettings, Token
         });
     }
 
-    #tokenOnDragLeftStart(token: TokenPF2e, wrapped: libWrapper.RegisterCallback, event: PIXI.FederatedEvent) {
+    #tokenOnDragLeftStart(_token: TokenPF2e, wrapped: libWrapper.RegisterCallback, event: PIXI.FederatedEvent) {
         wrapped(event);
         this.close();
     }
@@ -295,7 +292,7 @@ type TokenContext = Omit<AdvancedHudContext, "sidebars"> & {
     sidebars: SidebarMenu[] | undefined;
 };
 
-type TokenRenderOptions = ApplicationRenderOptions & {
+type TokenRenderOptions = fa.ApplicationRenderOptions & {
     mode: TokenMode;
 };
 

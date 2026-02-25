@@ -1,10 +1,4 @@
-import {
-    ActorPF2e,
-    ApplicationConfiguration,
-    ApplicationRenderContext,
-    ApplicationRenderOptions,
-    createHTMLElement,
-} from "module-helpers";
+import { ActorPF2e, createHTMLElement } from "foundry-helpers";
 import { BaseHudPopup } from ".";
 
 class TextHudPopup extends BaseHudPopup {
@@ -14,7 +8,7 @@ class TextHudPopup extends BaseHudPopup {
         actor: ActorPF2e,
         title: string,
         content: string,
-        options: DeepPartial<ApplicationConfiguration> = {}
+        options: DeepPartial<fa.ApplicationConfiguration> = {},
     ) {
         (options.window ??= {}).title = title;
         super(actor, options);
@@ -22,14 +16,12 @@ class TextHudPopup extends BaseHudPopup {
     }
 
     async _renderHTML(
-        context: ApplicationRenderContext,
-        options: ApplicationRenderOptions
+        _context: fa.ApplicationRenderContext,
+        _options: fa.ApplicationRenderOptions,
     ): Promise<HTMLElement> {
         return createHTMLElement("div", {
             classes: ["item-summary"],
-            content: await foundry.applications.ux.TextEditor.implementation.enrichHTML(
-                this.#content
-            ),
+            content: await foundry.applications.ux.TextEditor.implementation.enrichHTML(this.#content),
         });
     }
 }

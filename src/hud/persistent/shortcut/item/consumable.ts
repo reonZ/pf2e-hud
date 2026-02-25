@@ -1,10 +1,7 @@
-import { ConsumablePF2e, CreaturePF2e, ValueAndMaybeMax } from "module-helpers";
+import { ConsumablePF2e, CreaturePF2e, ModelPropsFromSchema, ValueAndMaybeMax } from "foundry-helpers";
 import { generateItemShortcutFields, ItemShortcut, ItemShortcutSchema, ShortcutSource } from "..";
 
-class ConsumableShortcut extends ItemShortcut<
-    ConsumableShortcutSchema,
-    ConsumablePF2e<CreaturePF2e>
-> {
+class ConsumableShortcut extends ItemShortcut<ConsumableShortcutSchema, ConsumablePF2e<CreaturePF2e>> {
     #uses!: ValueAndMaybeMax;
 
     static defineSchema(): ConsumableShortcutSchema {
@@ -14,10 +11,7 @@ class ConsumableShortcut extends ItemShortcut<
     async _initShortcut(): Promise<void> {
         const item = this.item;
 
-        const uses =
-            item?.uses.max && (item.uses.max > 1 || item.category === "wand")
-                ? item.uses
-                : undefined;
+        const uses = item?.uses.max && (item.uses.max > 1 || item.category === "wand") ? item.uses : undefined;
 
         this.#uses = (this.quantity > 0 && uses) || { value: this.quantity };
     }

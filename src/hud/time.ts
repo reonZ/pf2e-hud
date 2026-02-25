@@ -1,23 +1,20 @@
 import {
     addListenerAll,
     advanceTime,
-    ApplicationClosingOptions,
-    ApplicationConfiguration,
-    ApplicationRenderOptions,
-    createToggleableHook,
+    createToggleHook,
     getShortDateTime,
     getTimeWithSeconds,
     htmlQuery,
     settingPath,
-} from "module-helpers";
+} from "foundry-helpers";
 import { FoundrySidebarPF2eHUD, HUDSettingsList } from "./base";
 
 class TimePF2eHUD extends FoundrySidebarPF2eHUD<TimeSettings> {
-    #worldTimeHook = createToggleableHook("updateWorldTime", () => {
+    #worldTimeHook = createToggleHook("updateWorldTime", () => {
         this.render();
     });
 
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<fa.ApplicationConfiguration> = {
         id: "pf2e-hud-time",
     };
 
@@ -29,7 +26,7 @@ class TimePF2eHUD extends FoundrySidebarPF2eHUD<TimeSettings> {
                 default: true,
                 scope: "user",
                 name: settingPath("enabled.name"),
-                onChange: (value: boolean) => {
+                onChange: () => {
                     this.configurate();
                 },
             },
@@ -70,7 +67,7 @@ class TimePF2eHUD extends FoundrySidebarPF2eHUD<TimeSettings> {
         }
     }
 
-    protected async _prepareContext(options: ApplicationRenderOptions): Promise<TimeContext> {
+    protected async _prepareContext(options: fa.api.HandlebarsRenderOptions): Promise<TimeContext> {
         const isGM = game.user.isGM;
         const worldTime = this.worldTime;
         const data = await game.pf2e.worldClock["_prepareContext"](options);
@@ -86,11 +83,11 @@ class TimePF2eHUD extends FoundrySidebarPF2eHUD<TimeSettings> {
         };
     }
 
-    protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
+    protected async _onFirstRender(_context: object, _options: fa.ApplicationRenderOptions) {
         this.#worldTimeHook.activate();
     }
 
-    protected _onClose(options: ApplicationClosingOptions): void {
+    protected _onClose(options: fa.ApplicationClosingOptions): void {
         this.#worldTimeHook.disable();
         super._onClose(options);
     }
@@ -145,7 +142,7 @@ class TimePF2eHUD extends FoundrySidebarPF2eHUD<TimeSettings> {
     }
 }
 
-type TimeContext = {
+type TimeContext = fa.ApplicationRenderContext & {
     isGM: boolean;
     date: string;
     time: string;

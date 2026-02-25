@@ -1,4 +1,4 @@
-import { ConsumablePF2e, ItemPF2e, OneToTen } from "module-helpers";
+import { ConsumablePF2e, ItemPF2e, OneToTen } from "foundry-helpers";
 
 const ROMAN_RANKS = ["", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"] as const;
 
@@ -18,7 +18,7 @@ function getConsumableRank(item: Maybe<ConsumablePF2e>, roman: true): RomanRank 
 function getConsumableRank(item: Maybe<ConsumablePF2e>, roman?: false): OneToTen | undefined;
 function getConsumableRank(item: Maybe<ConsumablePF2e>, roman?: boolean) {
     const rank = item?.system.spell
-        ? item.system.spell.system.location.heightenedLevel ?? item.system.spell.system.level.value
+        ? (item.system.spell.system.location.heightenedLevel ?? item.system.spell.system.level.value)
         : undefined;
     return rank && roman ? ROMAN_RANKS[rank] : rank;
 }

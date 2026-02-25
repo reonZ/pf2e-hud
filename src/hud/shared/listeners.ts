@@ -1,4 +1,4 @@
-import { ActorPF2e, createHTMLElement, ItemPF2e, R } from "module-helpers";
+import { ActorPF2e, ActorUUID, createHTMLElement, ImageFilePath, ItemPF2e, R, VideoFilePath } from "foundry-helpers";
 
 function addTextNumberInputListeners(doc: ActorPF2e | ItemPF2e, html: HTMLElement) {
     const textNumbers = html.querySelectorAll<HTMLInputElement>("input[type='text'].text-number");
@@ -8,9 +8,7 @@ function addTextNumberInputListeners(doc: ActorPF2e | ItemPF2e, html: HTMLElemen
         if (cursor === undefined) continue;
 
         const cursorIsObject =
-            R.isObjectType<{ value: number; max: number } | null>(cursor) &&
-            "value" in cursor &&
-            "max" in cursor;
+            R.isObjectType<{ value: number; max: number } | null>(cursor) && "value" in cursor && "max" in cursor;
 
         const path = cursorIsObject ? `${el.name}.value` : el.name;
         const min = Number(el.dataset.min) || 0;
@@ -25,16 +23,16 @@ function addTextNumberInputListeners(doc: ActorPF2e | ItemPF2e, html: HTMLElemen
             el.value = String(newValue);
         };
 
-        el.addEventListener("focus", (event) => {
+        el.addEventListener("focus", () => {
             el.setSelectionRange(0, -1);
             el.addEventListener("wheel", wheelListener);
         });
 
-        el.addEventListener("blur", (event) => {
+        el.addEventListener("blur", () => {
             el.removeEventListener("wheel", wheelListener);
 
             const input = el.value;
-            const current: number = foundry.utils.getProperty(doc, path) ?? 0;
+            const current = (foundry.utils.getProperty(doc, path) as number) ?? 0;
             const isNegative = input.startsWith("-");
             const isDelta = isNegative || input.startsWith("+");
             const isPercent = input.endsWith("%");
@@ -52,9 +50,7 @@ function addTextNumberInputListeners(doc: ActorPF2e | ItemPF2e, html: HTMLElemen
                     : Math.floor(Math.abs(current) * (valueNum / 100))
                 : valueNum;
 
-            const processedValue = isDelta
-                ? current + calculatedValue * (isNegative ? -1 : 1)
-                : calculatedValue;
+            const processedValue = isDelta ? current + calculatedValue * (isNegative ? -1 : 1) : calculatedValue;
 
             const value = Math.clamp(processedValue, min, max);
 
@@ -71,7 +67,7 @@ function addTextNumberInputListeners(doc: ActorPF2e | ItemPF2e, html: HTMLElemen
 function processSliderEvent<TAction extends string>(
     event: PointerEvent,
     target: HTMLElement,
-    callback: (action: TAction, direction: 1 | -1) => void | Promise<void>
+    callback: (action: TAction, direction: 1 | -1) => void | Promise<void>,
 ) {
     if (![0, 2].includes(event.button)) return;
 
@@ -86,7 +82,7 @@ function createDraggable<T extends FoundryDragData>(
     img: ImageFilePath | VideoFilePath,
     actor: ActorPF2e,
     item: Maybe<ItemPF2e>,
-    data: Omit<T, keyof FoundryDragData>
+    data: Omit<T, keyof FoundryDragData>,
 ) {
     const target = event.target;
     if (!event.dataTransfer || !(target instanceof HTMLElement)) return;
@@ -118,7 +114,7 @@ function createDraggable<T extends FoundryDragData>(
             target.classList.remove("dragging");
             draggable.remove();
         },
-        { once: true }
+        { once: true },
     );
 }
 

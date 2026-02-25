@@ -1,32 +1,26 @@
 import {
     addEnterKeyListeners,
     addListenerAll,
-    ApplicationConfiguration,
-    ApplicationRenderOptions,
-    error,
     htmlClosest,
     htmlQuery,
-    info,
     localize,
     R,
     render,
-    setSetting,
     waitDialog,
-} from "module-helpers";
-import { getHealthStatusData } from "settings";
-import { HealthStatus, HealthStatusSource } from ".";
+} from "foundry-helpers";
+import { getHealthStatusData, setGlobalSetting } from "settings";
+import { filterHealthStatusSourceEntries, HEALTH_STATUS_DEFAULT_LABEL, HealthStatus, zHealthStatusData } from ".";
 import utils = foundry.utils;
 
 class HealthStatusMenu extends foundry.applications.api.ApplicationV2 {
-    #status: HealthStatusSource;
+    #status: HealthStatus;
 
-    constructor(options: DeepPartial<ApplicationConfiguration> = {}) {
+    constructor(options: DeepPartial<fa.ApplicationConfiguration> = {}) {
         super(options);
-
-        this.#status = getHealthStatusData().toJSON();
+        this.#status = getHealthStatusData();
     }
 
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<fa.ApplicationConfiguration> = {
         id: "pf2e-hud-health-status",
     };
 
@@ -34,17 +28,14 @@ class HealthStatusMenu extends foundry.applications.api.ApplicationV2 {
         return localize("health-status.title");
     }
 
-    protected async _prepareContext(
-        options?: ApplicationRenderOptions
-    ): Promise<HealthStatuContext> {
+    protected async _prepareContext(_options?: fa.ApplicationRenderOptions): Promise<HealthStatuContext> {
         const status = this.#status;
         const entries = R.pipe(
             status.entries,
             R.map((entry, i): HealthStatusDataEntry => {
                 const previous = status.entries[i - 1]?.marker ?? 0;
                 const next = status.entries[i + 1]?.marker ?? 100;
-                const add =
-                    next - entry.marker > 1 ? Math.floor((entry.marker + next) / 2) : undefined;
+                const add = next - entry.marker > 1 ? Math.floor((entry.marker + next) / 2) : undefined;
 
                 return {
                     add,
@@ -55,7 +46,7 @@ class HealthStatusMenu extends foundry.applications.api.ApplicationV2 {
                     min: previous + 1,
                 };
             }),
-            R.sortBy([R.prop("index"), "desc"])
+            R.sortBy([R.prop("index"), "desc"]),
         );
 
         return {
@@ -66,15 +57,11 @@ class HealthStatusMenu extends foundry.applications.api.ApplicationV2 {
         };
     }
 
-    protected _renderHTML(context: object, options: ApplicationRenderOptions): Promise<string> {
+    protected _renderHTML(context: object, _options: fa.ApplicationRenderOptions): Promise<string> {
         return render("health-status", context);
     }
 
-    protected _replaceHTML(
-        result: string,
-        content: HTMLElement,
-        options: ApplicationRenderOptions
-    ): void {
+    protected _replaceHTML(result: string, content: HTMLElement, _options: fa.ApplicationRenderOptions): void {
         const scrollPosition = htmlQuery(content, ".scroll")?.scrollTop;
 
         content.innerHTML = result;
@@ -112,13 +99,7 @@ class HealthStatusMenu extends foundry.applications.api.ApplicationV2 {
         });
 
         addListenerAll(html, "[data-action]", (el) => {
-            type EventAction =
-                | "add-entry"
-                | "delete-entry"
-                | "export"
-                | "import"
-                | "save"
-                | "cancel";
+            type EventAction = "add-entry" | "delete-entry" | "export" | "import" | "save" | "cancel";
 
             const action = el.dataset.action as EventAction;
 
@@ -132,7 +113,7 @@ class HealthStatusMenu extends foundry.applications.api.ApplicationV2 {
                 const marker = Number(el.dataset.marker);
 
                 this.#status.entries.splice(index + 1, 0, {
-                    label: HealthStatus.DEFAULT_LABEL,
+                    label: HEALTH_STATUS_DEFAULT_LABEL,
                     marker,
                 });
 
@@ -148,11 +129,12 @@ class HealthStatusMenu extends foundry.applications.api.ApplicationV2 {
                 const data = R.omit(this.#status, ["enabled"]);
 
                 game.clipboard.copyPlainText(JSON.stringify(data));
-                info("health-status.export.confirm");
+                localize.info("health-status.export.confirm");
             } else if (action === "import") {
                 this.#import();
             } else if (action === "save") {
-                setSetting("healthStatusData", this.#status);
+                const encoded = zHealthStatusData.encode(this.#status);
+                setGlobalSetting("healthStatusData", encoded);
                 this.close();
             }
         });
@@ -175,11 +157,7 @@ class HealthStatusMenu extends foundry.applications.api.ApplicationV2 {
                 !R.isString(status.full) ||
                 !R.isArray(status.entries) ||
                 !status.entries.every((entry): entry is HealthStatusDataEntry => {
-                    return (
-                        R.isPlainObject(entry) &&
-                        R.isString(entry.label) &&
-                        R.isNumber(entry.marker)
-                    );
+                    return R.isPlainObject(entry) && R.isString(entry.label) && R.isNumber(entry.marker);
                 }) ||
                 !status.entries.some((entry) => entry.marker === 1)
             ) {
@@ -187,16 +165,16 @@ class HealthStatusMenu extends foundry.applications.api.ApplicationV2 {
             }
 
             foundry.utils.mergeObject(this.#status, R.pick(status, ["dead", "full", "entries"]));
-            HealthStatus.filterSourceEntries(this.#status);
+            filterHealthStatusSourceEntries(this.#status);
 
             this.render();
         } catch {
-            error("health-status.import.error");
+            localize.error("health-status.import.error");
         }
     }
 }
 
-type HealthStatuContext = {
+type HealthStatuContext = fa.ApplicationRenderContext & {
     dead: string;
     enabled: boolean;
     entries: HealthStatusDataEntry[];

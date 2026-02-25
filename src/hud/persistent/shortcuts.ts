@@ -8,30 +8,6 @@ import {
     SpellCategoryType,
 } from "hud";
 import {
-    ApplicationClosingOptions,
-    ApplicationRenderContext,
-    ApplicationRenderOptions,
-    CombatantPF2e,
-    ConsumablePF2e,
-    createToggleableHook,
-    CreaturePF2e,
-    dataToDatasetString,
-    getDragEventData,
-    getFlag,
-    htmlQuery,
-    isCastConsumable,
-    isInstanceOf,
-    MacroPF2e,
-    MODULE,
-    NPCPF2e,
-    objectIsIn,
-    OneToTen,
-    R,
-    render,
-    SpellCollection,
-    warning,
-} from "module-helpers";
-import {
     ActionShortcut,
     ActionShortcutData,
     BlastCostShortcut,
@@ -63,6 +39,27 @@ import {
     ToggleShortcut,
     ToggleShortcutData,
 } from ".";
+import {
+    CombatantPF2e,
+    ConsumablePF2e,
+    createToggleHook,
+    CreaturePF2e,
+    dataToDatasetString,
+    DocumentUUID,
+    getDragEventData,
+    getFlag,
+    htmlQuery,
+    isCastConsumable,
+    isInstanceOf,
+    localize,
+    MacroPF2e,
+    MODULE,
+    NPCPF2e,
+    OneToTen,
+    R,
+    render,
+    SpellCollection,
+} from "foundry-helpers";
 
 const SHORTCUTS = {
     action: ActionShortcut,
@@ -96,10 +93,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     #shortcuts: Shortcuts = new Shortcuts();
     #shortcutsCache: ShortcutCache = createShortcutCache();
 
-    #combatantHooks = createToggleableHook(
-        ["createCombatant", "deleteCombatant"],
-        this.#onCombatantUpdate.bind(this)
-    );
+    #combatantHooks = createToggleHook(["createCombatant", "deleteCombatant"], this.#onCombatantUpdate.bind(this));
 
     get nbSlots(): number {
         return 18 + Math.floor(this.parent.settings.slots / 2) * 2;
@@ -121,9 +115,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         const worldActor = this.worldActor;
         if (!worldActor) return [];
 
-        return (
-            getFlag<ShortcutData[]>(worldActor, "shortcuts", game.userId, String(this.tab)) ?? []
-        );
+        return getFlag<ShortcutData[]>(worldActor, "shortcuts", game.userId, String(this.tab)) ?? [];
     }
 
     get shortcutBinElement(): HTMLElement | null {
@@ -255,18 +247,13 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         for (const collection of actor.spellcasting.collections) {
             const entry = collection.entry;
 
-            if (
-                entry.category === "ritual" ||
-                (entry.category === "items" && !isInstanceOf(entry, "ItemSpellcasting"))
-            )
+            if (entry.category === "ritual" || (entry.category === "items" && !isInstanceOf(entry, "ItemSpellcasting")))
                 continue;
 
             const entryId = entry.id;
 
             const entrySheetData = await this.#shortcutsCache("spellcastingEntry", entryId, () => {
-                return entry.getSheetData({
-                    spells: collection,
-                }) as Promise<CustomSpellcastingEntry>;
+                return entry.getSheetData({ spells: collection }) as unknown as Promise<CustomSpellcastingEntry>;
             });
             if (!entrySheetData.groups.length) continue;
 
@@ -278,8 +265,8 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                 entry.category === "items" && item
                     ? (item.category as SpellCategoryType)
                     : entry.isFlexible
-                    ? "flexible"
-                    : (entry.category as SpellCategoryType);
+                      ? "flexible"
+                      : (entry.category as SpellCategoryType);
 
             for (const group of entrySheetData.groups) {
                 if (!group.active.length || group.uses?.max === 0) continue;
@@ -312,11 +299,8 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         return shortcuts;
     }
 
-    render(
-        options?: boolean | ShortcutsRenderOptions,
-        _options?: ShortcutsRenderOptions
-    ): Promise<this> {
-        const keepCache = R.isPlainObject(options) ? options.keepCache : _options?.keepCache;
+    render(options?: boolean | ShortcutsRenderOptions): Promise<this> {
+        const keepCache = R.isPlainObject(options) ? options.keepCache : false;
 
         this.shortcuts.clear();
 
@@ -324,17 +308,15 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             this.#shortcutsCache = createShortcutCache();
         }
 
-        return super.render(options, _options);
+        return super.render(options);
     }
 
-    protected _onClose(options: ApplicationClosingOptions): void {
+    protected _onClose(options: fa.ApplicationClosingOptions): void {
         super._onClose(options);
         this.#combatantHooks.disable();
     }
 
-    protected async _prepareContext(
-        options: ApplicationRenderOptions
-    ): Promise<PersistentShortcutsContext> {
+    protected async _prepareContext(_options: fa.ApplicationRenderOptions): Promise<PersistentShortcutsContext> {
         let shortcutsData = this.shortcutsData;
 
         if (
@@ -368,17 +350,13 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     }
 
     protected async _renderHTML(
-        context: ApplicationRenderContext,
-        options: ApplicationRenderOptions
+        context: fa.ApplicationRenderContext,
+        _options: fa.ApplicationRenderOptions,
     ): Promise<string> {
         return render("shortcuts/slots", context);
     }
 
-    protected _replaceHTML(
-        result: string,
-        content: HTMLElement,
-        options: ApplicationRenderOptions
-    ): void {
+    protected _replaceHTML(result: string, content: HTMLElement, options: fa.ApplicationRenderOptions): void {
         super._replaceHTML(result, content, options);
         content.classList.toggle("character", !!this.actor?.isOfType("character"));
     }
@@ -406,7 +384,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             event.preventDefault();
             event.stopPropagation();
 
-            warning("shortcuts.error.locked");
+            localize.warning("shortcuts.error.locked");
             return true;
         };
 
@@ -417,46 +395,39 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             target.addEventListener("drop", async (event) => {
                 if (isLocked(event)) return;
 
-                const dragData = getDragEventData<
-                    SidebarDragData | ShortcutDragData | MacroSlotData
-                >(event);
+                const dragData = getDragEventData<SidebarDragData | ShortcutDragData | MacroSlotData>(event);
 
                 if (!R.isPlainObject(dragData)) {
-                    return warning("shortcuts.error.wrongData");
+                    return localize.warning("shortcuts.error.wrongData");
                 }
 
                 const isMacro = isMacroDragData(dragData);
 
-                if (
-                    !isMacro &&
-                    (!this.parent.actor || this.parent.actor.uuid !== dragData.actorUUID)
-                ) {
-                    return warning("shortcuts.error.wrongActor");
+                if (!isMacro && (!this.parent.actor || this.parent.actor.uuid !== dragData.actorUUID)) {
+                    return localize.warning("shortcuts.error.wrongActor");
                 }
 
                 const macroData = isMacro ? getMacroShortcutData(dragData.uuid) : null;
                 if (isMacro && !macroData) {
-                    return warning("shortcuts.error.notScript");
+                    return localize.warning("shortcuts.error.notScript");
                 }
 
-                if (isMacro || objectIsIn(dragData, "fromSidebar")) {
-                    const shortcutData = isMacro
-                        ? (macroData as MacroShortcutData)
-                        : dragData.fromSidebar;
+                if (isMacro || "fromSidebar" in dragData) {
+                    const shortcutData = isMacro ? (macroData as MacroShortcutData) : dragData.fromSidebar;
 
                     if (!(await this.replace(slot, shortcutData))) {
-                        warning("shortcuts.error.wrongType");
+                        localize.warning("shortcuts.error.wrongType");
                     }
 
                     return;
                 }
 
-                if (objectIsIn(dragData, "fromShortcut")) {
+                if ("fromShortcut" in dragData) {
                     this.swap(dragData.fromShortcut.slot, slot);
                     return;
                 }
 
-                warning("shortcuts.error.notHUD");
+                localize.warning("shortcuts.error.notHUD");
             });
 
             const shortcut = this.shortcuts.get(slot);
@@ -473,9 +444,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                 if (event.ctrlKey || !shortcut.canAltUse) {
                     if (this.actor && shortcut.canOpenPopup) {
                         game.tooltip.deactivate();
-                        new ShortcutPopup(this.actor, shortcut, this.save.bind(this), event).render(
-                            true
-                        );
+                        new ShortcutPopup(this.actor, shortcut, this.save.bind(this), event).render(true);
                     }
                 } else {
                     game.tooltip.deactivate();
@@ -483,7 +452,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                 }
             });
 
-            target.addEventListener("pointerenter", async (event) => {
+            target.addEventListener("pointerenter", async () => {
                 game.tooltip.activate(this.element, {
                     cssClass: "pf2e-hud-shortcut-tooltip",
                     direction: "UP",
@@ -491,7 +460,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                 });
             });
 
-            target.addEventListener("pointerleave", async (event) => {
+            target.addEventListener("pointerleave", async () => {
                 game.tooltip.deactivate();
             });
 
@@ -517,7 +486,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                         () => {
                             shortcutBinElement.classList.remove("visible");
                         },
-                        { once: true }
+                        { once: true },
                     );
                 }
             });
@@ -530,10 +499,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         }
     }
 
-    async #instantiateShortcut(
-        data: ShortcutData,
-        slot: number
-    ): Promise<PersistentShortcut | undefined> {
+    async #instantiateShortcut(data: ShortcutData, slot: number): Promise<PersistentShortcut | undefined> {
         const actor = this.actor;
         const ShortcutCls = SHORTCUTS[data.type as keyof typeof SHORTCUTS];
         if (!actor || !ShortcutCls) return;
@@ -546,7 +512,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 
             await shortcut._initShortcut();
             return shortcut;
-        } catch (error) {
+        } catch (error: any) {
             MODULE.error(`An error occured while instantiating a shortcut in slot ${slot}`, error);
         }
     }
@@ -591,9 +557,7 @@ function createShortcutCache(): ShortcutCache {
     return getShortcutCache as unknown as ShortcutCache;
 }
 
-function isMacroDragData(
-    data: SidebarDragData | ShortcutDragData | MacroSlotData
-): data is MacroSlotData {
+function isMacroDragData(data: SidebarDragData | ShortcutDragData | MacroSlotData): data is MacroSlotData {
     return "type" in data && data.type === "Macro" && "uuid" in data;
 }
 
@@ -612,25 +576,21 @@ function getMacroShortcutData(uuid: DocumentUUID): MacroShortcutData | undefined
 type ShortcutCache = { get values(): ShortcutCacheData } & {
     <
         A extends keyof Pathable<ShortcutCacheData>,
-        R extends PathValue1<ShortcutCacheData, A> | Promise<PathValue1<ShortcutCacheData, A>>
+        R extends PathValue1<ShortcutCacheData, A> | Promise<PathValue1<ShortcutCacheData, A>>,
     >(
         path: A,
-        defaultValue: () => R
+        defaultValue: () => R,
     ): R;
     <
         A extends keyof Pathable<ShortcutCacheData>,
         B extends keyof Pathable1<ShortcutCacheData, A>,
-        R extends
-            | Promisable<PathValue2<ShortcutCacheData, A, B>>
-            | PathValue2<ShortcutCacheData, A, B>
+        R extends Promisable<PathValue2<ShortcutCacheData, A, B>> | PathValue2<ShortcutCacheData, A, B>,
     >(
         args_0: A,
         args_1: B,
-        defaultValue: () => R
+        defaultValue: () => R,
     ): R;
 };
-
-R.pathOr;
 
 type ShortcutCacheData = {
     animistCollection?: SpellCollection<CreaturePF2e> | null;
@@ -667,12 +627,12 @@ type ShortcutData =
     | StrikeShortcutData
     | ToggleShortcutData;
 
-type PersistentShortcutsContext = {
+type PersistentShortcutsContext = fa.ApplicationRenderContext & {
     dataset: (data: ShortcutDataset | undefined) => string;
     shortcuts: ShortcutsList;
 };
 
-type ShortcutsRenderOptions = DeepPartial<ApplicationRenderOptions> & {
+type ShortcutsRenderOptions = DeepPartial<fa.ApplicationRenderOptions> & {
     keepCache?: boolean;
 };
 
@@ -690,17 +650,11 @@ type Pathable<T> = {
     [K in AllKeys<T>]: TypesForKey<T, K>;
 };
 type AllKeys<T> = T extends infer I ? keyof I : never;
-type TypesForKey<T, K extends PropertyKey> = T extends infer I
-    ? K extends keyof I
-        ? I[K]
-        : never
-    : never;
+type TypesForKey<T, K extends PropertyKey> = T extends infer I ? (K extends keyof I ? I[K] : never) : never;
 
 type PathValue1<T, A extends keyof Pathable<T>> = StrictlyRequired<Pathable<T>>[A];
 type Pathable1<T, A extends keyof Pathable<T>> = Pathable<PathValue1<T, A>>;
-type PathValue2<T, A extends keyof Pathable<T>, B extends keyof Pathable1<T, A>> = StrictlyRequired<
-    Pathable1<T, A>
->[B];
+type PathValue2<T, A extends keyof Pathable<T>, B extends keyof Pathable1<T, A>> = StrictlyRequired<Pathable1<T, A>>[B];
 
 type StrictlyRequired<T> = {
     [K in keyof T]-?: Exclude<T[K], undefined>;

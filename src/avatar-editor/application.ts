@@ -1,26 +1,24 @@
 import {
     addListener,
-    ApplicationConfiguration,
-    ApplicationRenderOptions,
     CreaturePF2e,
-    FlagData,
-    getDataFlag,
     htmlQuery,
+    ImageFilePath,
     localize,
     MODULE,
     render,
-    warning,
-} from "module-helpers";
-import { AvatarModel } from ".";
+    setFlag,
+    VideoFilePath,
+} from "foundry-helpers";
+import { AvatarData, getAvatarData, zAvatar } from ".";
 
 class AvatarEditor extends foundry.applications.api.ApplicationV2 {
     #actor: CreaturePF2e;
-    #data!: FlagData<AvatarModel>;
+    #data!: AvatarData;
     #img?: HTMLImageElement | HTMLVideoElement;
     #inputElement: HTMLInputElement | null = null;
     #viewport: HTMLElement | null = null;
 
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<fa.ApplicationConfiguration> = {
         classes: ["standard-form"],
         id: "pf2e-hud-avatar-editor",
         window: {
@@ -29,7 +27,7 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
         },
     };
 
-    constructor(actor: CreaturePF2e, options: DeepPartial<ApplicationConfiguration> = {}) {
+    constructor(actor: CreaturePF2e, options: DeepPartial<fa.ApplicationConfiguration> = {}) {
         super(options);
         this.#actor = actor;
     }
@@ -43,36 +41,24 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
     }
 
     get inputElement(): HTMLInputElement | null {
-        return (this.#inputElement ??= htmlQuery<HTMLInputElement>(
-            this.element,
-            "input[name='src']"
-        ));
+        return (this.#inputElement ??= htmlQuery<HTMLInputElement>(this.element, "input[name='src']"));
     }
 
     get viewportImage(): HTMLElement | null {
         return (this.#viewport ??= htmlQuery(this.element, ".viewport .image"));
     }
 
-    protected async _prepareContext(
-        options: ApplicationRenderOptions
-    ): Promise<AvatarEditorContext> {
+    protected async _prepareContext(_options: fa.ApplicationRenderOptions): Promise<AvatarEditorContext> {
         return {
             noBrowser: !game.user.can("FILES_BROWSE"),
         };
     }
 
-    protected _renderHTML(
-        context: AvatarEditorContext,
-        options: ApplicationRenderOptions
-    ): Promise<string> {
+    protected _renderHTML(context: AvatarEditorContext, _options: fa.ApplicationRenderOptions): Promise<string> {
         return render("avatar-editor", context);
     }
 
-    protected _replaceHTML(
-        result: string,
-        content: HTMLElement,
-        options: ApplicationRenderOptions
-    ) {
+    protected _replaceHTML(result: string, content: HTMLElement, _options: fa.ApplicationRenderOptions) {
         content.innerHTML = result;
 
         this.#resetData();
@@ -88,14 +74,15 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
         if (action === "cancel") {
             this.close();
         } else if (action === "contain") {
-            this.#data.updateSource({ position: undefined });
+            delete this.#data.position;
             this.#updateImage();
         } else if (action === "open-browser") {
             this.#openBrowser();
         } else if (action === "reset") {
             this.#resetData();
         } else if (action === "save") {
-            this.#data.setFlag();
+            const encoded = zAvatar.encode(this.#data);
+            setFlag(this.actor, "avatar", encoded);
             this.close();
         } else if (action === "use-actor-image") {
             this.#setImage(actor.img);
@@ -112,12 +99,12 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
             allowUpload: false,
             type: "imagevideo",
             current: this.#data.src || this.actor.img,
-        }).render(true);
+        }).render({ force: true });
     }
 
     #setImage(src: Maybe<ImageFilePath | VideoFilePath>) {
         if (!src) {
-            return warning("avatar-editor.src.none");
+            return localize.warning("avatar-editor.src.none");
         }
 
         const inputElement = this.inputElement;
@@ -126,19 +113,15 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
             inputElement.value = src;
         }
 
-        this.#data.updateSource({ src, position: undefined });
+        this.#data.src = src;
+        delete this.#data.position;
+
         this.#loadImage();
     }
 
     #updateColor() {
-        const colorCheckbox = htmlQuery<HTMLInputElement>(
-            this.element,
-            `.buttons .color input[type="checkbox"]`
-        );
-        const colorPicker = htmlQuery<HTMLInputElement>(
-            this.element,
-            `.buttons .color input[type="color"]`
-        );
+        const colorCheckbox = htmlQuery<HTMLInputElement>(this.element, `.buttons .color input[type="checkbox"]`);
+        const colorPicker = htmlQuery<HTMLInputElement>(this.element, `.buttons .color input[type="color"]`);
         const viewport = this.viewportImage;
 
         if (!viewport || !colorPicker || !colorCheckbox) return;
@@ -154,11 +137,7 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
     }
 
     #resetData() {
-        const actor = this.actor;
-
-        const data = getDataFlag(actor, AvatarModel, "avatar", {
-            fallback: { src: actor.img },
-        });
+        const data = getAvatarData(this.actor);
 
         if (!data) {
             throw MODULE.Error("an error occured in AvatarEditor");
@@ -189,29 +168,29 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
         const scale = calculatePosition(this.#data, img);
 
         if (this.#data.position == null) {
-            this.#data.updateSource({ scale });
+            this.#data.scale = scale;
             this.#savePosition();
         }
     }
 
     #activateListeners(html: HTMLElement) {
-        addListener(html, ".image", "wheel", (el, event) => {
+        addListener(html, ".image", "wheel", (_el, event) => {
             const delta = event.deltaY >= 0 ? -1 : 1;
-            this.#data.updateSource({ scale: this.#data.scale + delta * 0.05 });
+            this.#data.scale = this.#data.scale + delta * 0.05;
             this.#updateImage();
         });
 
         addListener(html, `.color input[type="color"]`, "change", (el: HTMLInputElement) => {
-            this.#data.updateSource({ "color.value": el.value });
+            this.#data.color.value = el.value;
             this.#updateColor();
         });
 
         addListener(html, `.color input[type="checkbox"]`, "change", (el: HTMLInputElement) => {
-            this.#data.updateSource({ "color.enabled": el.checked });
+            this.#data.color.enabled = el.checked;
             this.#updateColor();
         });
 
-        addListener(html, ".image", "pointerdown", (el, event) => {
+        addListener(html, ".image", "pointerdown", (_el, event) => {
             const img = this.#img;
             const viewport = this.viewportImage;
             if (!img || !viewport) return;
@@ -236,7 +215,7 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
                 img.style.top = `${position.y}px`;
             };
 
-            const pointerUp = (event: PointerEvent) => {
+            const pointerUp = (_event: PointerEvent) => {
                 window.removeEventListener("pointermove", pointerMove);
                 this.#savePosition();
             };
@@ -254,24 +233,16 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
 
         const { left, top } = getComputedStyle(img);
 
-        this.#data.updateSource({
-            position: {
-                x: parseInt(left) / viewH / scale,
-                y: parseInt(top) / viewH / scale,
-            },
-        });
+        this.#data.position = {
+            x: parseInt(left) / viewH / scale,
+            y: parseInt(top) / viewH / scale,
+        };
     }
 }
 
-async function loadAvatar(
-    parent: HTMLElement,
-    data: AvatarModel
-): Promise<HTMLImageElement | HTMLVideoElement> {
+async function loadAvatar(parent: HTMLElement, data: AvatarData): Promise<HTMLImageElement | HTMLVideoElement> {
     const src = data.src;
-
-    const img = foundry.helpers.media.VideoHelper.hasVideoExtension(src)
-        ? await loadVideo(src)
-        : await loadImage(src);
+    const img = foundry.helpers.media.VideoHelper.hasVideoExtension(src) ? await loadVideo(src) : await loadImage(src);
 
     if (img) {
         parent.replaceChildren(img);
@@ -311,7 +282,7 @@ function loadImage(src: ImageFilePath): Promise<HTMLImageElement> {
     });
 }
 
-function calculatePosition(data: AvatarModel, img: HTMLImageElement | HTMLVideoElement): number {
+function calculatePosition(data: AvatarData, img: HTMLImageElement | HTMLVideoElement): number {
     if (data.position == null) {
         return calculateContainedPosition(img);
     }
@@ -356,16 +327,9 @@ function calculateContainedPosition(img: HTMLImageElement | HTMLVideoElement): n
     return scale;
 }
 
-type EventAction =
-    | "cancel"
-    | "contain"
-    | "open-browser"
-    | "reset"
-    | "save"
-    | "use-actor-image"
-    | "use-token-image";
+type EventAction = "cancel" | "contain" | "open-browser" | "reset" | "save" | "use-actor-image" | "use-token-image";
 
-type AvatarEditorContext = {
+type AvatarEditorContext = fa.ApplicationRenderContext & {
     noBrowser: boolean;
 };
 

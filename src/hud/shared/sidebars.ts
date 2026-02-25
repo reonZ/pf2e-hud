@@ -1,6 +1,6 @@
+import { ActorPF2e, addListenerAll, localize, R } from "foundry-helpers";
 import { BaseActorPF2eHUD, IAdvancedPF2eHUD } from "hud/base";
 import { SidebarPF2eHUD } from "hud/sidebar";
-import { ActorPF2e, addListenerAll, localize, R } from "module-helpers";
 
 const SIDEBARS = [
     {

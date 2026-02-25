@@ -1,4 +1,4 @@
-import { ActorPF2e, CharacterAttributes, MODULE } from "module-helpers";
+import { ActorPF2e, CharacterAttributes } from "foundry-helpers";
 
 function calculateActorHealth(actor: ActorPF2e): HealthData | undefined {
     const hp = actor.attributes.hp as CharacterAttributes["hp"] | undefined;
@@ -14,9 +14,7 @@ function calculateActorHealth(actor: ActorPF2e): HealthData | undefined {
     const maxTotal = hp.max + maxSP;
     const currentTotal = currentHP + currentSP + hp.temp;
 
-    const sp = useStamina
-        ? { value: currentSP, max: maxSP, ...calculateRatio(currentSP, maxSP) }
-        : undefined;
+    const sp = useStamina ? { value: currentSP, max: maxSP, ...calculateRatio(currentSP, maxSP) } : undefined;
 
     return {
         ...calculateRatio(currentHP, hp.max),
@@ -55,8 +53,6 @@ type HealthData = {
     totalTemp: Omit<HealthSection, "max">;
     value: number;
 };
-
-MODULE.devExpose({ calculateActorHealth });
 
 export { calculateActorHealth };
 export type { HealthData, HealthSection };

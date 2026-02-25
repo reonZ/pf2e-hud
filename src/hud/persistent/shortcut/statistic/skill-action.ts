@@ -8,7 +8,6 @@ import {
     SkillAction,
     StatisticType,
 } from "hud";
-import { AbilityItemPF2e, FeatPF2e, localize } from "module-helpers";
 import {
     generateStatisticActionSchema,
     ShortcutSource,
@@ -16,6 +15,7 @@ import {
     StatisticActionShortcutSchema,
 } from "..";
 import fields = foundry.data.fields;
+import { AbilityItemPF2e, FeatPF2e, localize, ModelPropsFromSchema } from "foundry-helpers";
 
 class SkillActionShortcut extends StatisticActionShortcut<SkillAction, FeatPF2e | AbilityItemPF2e> {
     static defineSchema(): SkillActionShortcutSchema {

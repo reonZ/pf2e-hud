@@ -1,4 +1,6 @@
 import { BlastShortcutData, FilterValue, ToggleShortcutData } from "hud";
+import { ActionsSidebarPF2eHUD } from ".";
+import { BaseSidebarItem, ToggleSidebarItem } from "..";
 import {
     AbilityItemPF2e,
     CharacterPF2e,
@@ -8,13 +10,13 @@ import {
     DamageType,
     EffectTrait,
     ElementalBlast,
+    ImageFilePath,
     localize,
     objectHasKey,
     R,
+    Rolled,
     RollOptionToggle,
-} from "module-helpers";
-import { ActionsSidebarPF2eHUD } from ".";
-import { BaseSidebarItem, ToggleSidebarItem } from "..";
+} from "foundry-helpers";
 
 const ELEMENTAL_BLAST_IMG = "icons/magic/symbols/elements-air-earth-fire-water.webp";
 
@@ -62,7 +64,7 @@ class ActionsSidebarBlastCost extends ToggleSidebarItem<AbilityItemPF2e<Characte
             "action-cost",
             this.id,
             true,
-            selected.cost === "1" ? "2" : "1"
+            selected.cost === "1" ? "2" : "1",
         );
     }
 
@@ -74,10 +76,7 @@ class ActionsSidebarBlastCost extends ToggleSidebarItem<AbilityItemPF2e<Characte
     }
 }
 
-class ActionsSidebarBlast extends BaseSidebarItem<
-    AbilityItemPF2e<CharacterPF2e>,
-    ElementalBlastsData
-> {
+class ActionsSidebarBlast extends BaseSidebarItem<AbilityItemPF2e<CharacterPF2e>, ElementalBlastsData> {
     #reach?: string;
 
     get blastId(): BlastId {
@@ -99,11 +98,7 @@ class ActionsSidebarBlast extends BaseSidebarItem<
         return this.#reach;
     }
 
-    attack(
-        event: MouseEvent,
-        melee: boolean,
-        mapIncreases: number
-    ): Promise<Rolled<CheckRoll> | null> {
+    attack(event: PointerEvent, melee: boolean, mapIncreases: number): Promise<Rolled<CheckRoll> | null> {
         return this.action.attack({
             damageType: this.damageType,
             element: this.element,
@@ -113,11 +108,7 @@ class ActionsSidebarBlast extends BaseSidebarItem<
         });
     }
 
-    damage(
-        event: MouseEvent,
-        melee: boolean,
-        outcome: BlastOutcome
-    ): Promise<Rolled<DamageRoll> | null> {
+    damage(event: PointerEvent, melee: boolean, outcome: BlastOutcome): Promise<string | Rolled<DamageRoll> | null> {
         return this.action.damage({
             damageType: this.damageType,
             element: this.element,
@@ -151,9 +142,7 @@ class ActionsSidebarBlast extends BaseSidebarItem<
 
 interface ActionsSidebarBlast extends Readonly<ElementalBlastsData> {}
 
-async function getSidebarBlastsData(
-    this: ActionsSidebarPF2eHUD
-): Promise<BlastsContext | undefined> {
+async function getSidebarBlastsData(this: ActionsSidebarPF2eHUD): Promise<BlastsContext | undefined> {
     const actor = this.actor as CharacterPF2e;
     const toggle = actor.synthetics.toggles["elemental-blast"]?.["action-cost"];
     if (!toggle) return;
@@ -177,15 +166,15 @@ async function getSidebarBlastsData(
  */
 async function getElementalBlastsData(
     actor: CharacterPF2e,
-    elementTrait: EffectTrait
+    elementTrait: EffectTrait,
 ): Promise<ElementalBlastsData | null>;
 async function getElementalBlastsData(
     actor: CharacterPF2e,
-    elementTrait?: never
+    elementTrait?: never,
 ): Promise<ElementalBlastsData[] | null>;
 async function getElementalBlastsData(
     actor: CharacterPF2e,
-    elementTrait?: EffectTrait
+    elementTrait?: EffectTrait,
 ): Promise<ElementalBlastsData[] | ElementalBlastsData | null> {
     const action = new game.pf2e.ElementalBlast(actor);
     const item = action.item;
@@ -225,7 +214,7 @@ async function getElementalBlastsData(
                 item,
                 label: (_cached.labels[config.label] ??= game.i18n.localize(config.label)),
             };
-        })
+        }),
     );
 
     if (elementTrait) {
@@ -236,10 +225,10 @@ async function getElementalBlastsData(
 }
 
 function onBlastsClickAction(
-    event: MouseEvent,
+    event: PointerEvent,
     sidebarItem: ActionsSidebarBlastCost | ActionsSidebarBlast,
-    action: Stringptionel<CostEventAction>,
-    target: HTMLElement
+    action: CostEventAction | (string & {}),
+    target: HTMLElement,
 ) {
     if (event.button !== 0) return;
 
@@ -251,21 +240,17 @@ function onBlastsClickAction(
 }
 
 function onBlastClickAction(
-    event: MouseEvent,
+    event: PointerEvent,
     sidebarItem: ActionsSidebarBlast,
     action: BlastEventAction,
-    target: HTMLElement
+    target: HTMLElement,
 ) {
     if (action === "blast-attack") {
         const { mapIncreases, melee } = target.dataset as BlastAttackDataset;
         sidebarItem.attack(event, melee === "true", Number(mapIncreases));
     } else if (action === "blast-damage") {
         const { melee, outcome } = target.dataset as BlastDamageDataset;
-        sidebarItem.damage(
-            event,
-            melee === "true",
-            outcome === "success" ? "success" : "criticalSuccess"
-        );
+        sidebarItem.damage(event, melee === "true", outcome === "success" ? "success" : "criticalSuccess");
     } else if (action === "blast-set-damage-type") {
         const type = target.dataset.value;
 

@@ -1,4 +1,4 @@
-import { R, SYSTEM } from "module-helpers";
+import { ImageFilePath, R, SYSTEM } from "foundry-helpers";
 import { RawBaseActionData, StatisticType } from "..";
 
 const FOLLOW_THE_EXPERT = SYSTEM.uuid(

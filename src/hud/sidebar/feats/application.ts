@@ -1,13 +1,4 @@
-import {
-    ActorPF2e,
-    ApplicationRenderOptions,
-    FeatLike,
-    FeatNotSlot,
-    FeatPF2e,
-    FeatSlot,
-    HeritagePF2e,
-    R,
-} from "module-helpers";
+import { ActorPF2e, FeatLike, FeatNotSlot, FeatPF2e, FeatSlot, HeritagePF2e, R } from "foundry-helpers";
 import { FeatsSidebarItem, SidebarPF2eHUD } from "..";
 import { FilterValue } from "hud";
 
@@ -16,7 +7,7 @@ class FeatsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e<ActorPF2e>, FeatsSideb
         return "feats";
     }
 
-    async _prepareContext(options: ApplicationRenderOptions): Promise<FeatsSidebarContext> {
+    async _prepareContext(options: fa.ApplicationRenderOptions): Promise<FeatsSidebarContext> {
         const actor = this.actor;
         const sections = R.pipe(
             actor.isOfType("character") ? [...actor.feats, actor.feats.bonus] : [],
@@ -37,7 +28,7 @@ class FeatsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e<ActorPF2e>, FeatsSideb
                             label: label || (R.isNumber(slot.level) ? String(slot.level) : ""),
                         };
                     }),
-                    R.filter(R.isTruthy)
+                    R.filter(R.isTruthy),
                 );
 
                 return {
@@ -47,7 +38,7 @@ class FeatsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e<ActorPF2e>, FeatsSideb
                     slots,
                 };
             }),
-            R.filter((section) => section.slots.length > 0)
+            R.filter((section) => section.slots.length > 0),
         );
 
         return {
@@ -56,14 +47,14 @@ class FeatsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e<ActorPF2e>, FeatsSideb
     }
 
     #prepareSectionSlot(
-        slot: FeatSlot<FeatPF2e | FeatLike | HeritagePF2e> | FeatNotSlot<FeatPF2e>
+        slot: FeatSlot<FeatPF2e | FeatLike | HeritagePF2e> | FeatNotSlot<FeatPF2e>,
     ): SectionSlot | undefined {
         if (!slot.feat) return;
 
         const children = R.pipe(
             slot.children,
             R.map((child) => this.#prepareSectionSlot(child)),
-            R.filter(R.isTruthy)
+            R.filter(R.isTruthy),
         );
 
         const feat = this.addSidebarItem(FeatsSidebarItem, "id", { item: slot.feat });
@@ -73,7 +64,7 @@ class FeatsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e<ActorPF2e>, FeatsSideb
     }
 }
 
-type FeatsSidebarContext = {
+type FeatsSidebarContext = fa.ApplicationRenderContext & {
     sections: FeatsSection[];
 };
 

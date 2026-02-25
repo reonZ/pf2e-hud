@@ -1,12 +1,4 @@
-import {
-    BaseStatisticRollOptions,
-    ExtraAction,
-    getExtraAction,
-    getExtraKeys,
-    SIDEBAR_ICONS,
-    StatisticType,
-} from "hud";
-import { AbilityItemPF2e, localize, R, SaveType, signedInteger } from "module-helpers";
+import { BaseStatisticRollOptions, ExtraAction, getExtraAction, getExtraKeys, SIDEBAR_ICONS, StatisticType } from "hud";
 import {
     generateStatisticActionSchema,
     ShortcutRadialOption,
@@ -14,6 +6,7 @@ import {
     StatisticActionShortcut,
     StatisticActionShortcutSchema,
 } from "..";
+import { AbilityItemPF2e, localize, R, SaveType, signedInteger } from "foundry-helpers";
 
 class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityItemPF2e> {
     static defineSchema(): ExtraActionShortcutSchema {
@@ -68,7 +61,7 @@ class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityIt
                                 label: `${statistic.label} ${signedInteger(statistic.mod)}`,
                             };
                         }),
-                        R.filter(R.isTruthy)
+                        R.filter(R.isTruthy),
                     );
 
                     return [
@@ -83,7 +76,7 @@ class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityIt
                         ...this.useOptions,
                         statistic: value,
                     });
-                }
+                },
             );
 
             return;

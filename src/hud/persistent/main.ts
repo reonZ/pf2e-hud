@@ -1,27 +1,27 @@
 import { randomPick, rollGroupPerception } from "actions";
-import { AvatarEditor, AvatarModel, calculateAvatarPosition } from "avatar-editor";
-import { hud } from "main";
+import { AvatarEditor, calculateAvatarPosition, getAvatarData } from "avatar-editor";
 import {
     ActorPF2e,
+    ActorUUID,
     addListener,
-    ApplicationClosingOptions,
-    ApplicationConfiguration,
-    ApplicationRenderOptions,
     CharacterPF2e,
     CombatantPF2e,
     confirmDialog,
     createHTMLElement,
-    createToggleableHook,
+    createToggleHook,
     createToggleKeybind,
     CreaturePF2e,
+    DocumentOwnership,
+    DocumentUUID,
     EncounterPF2e,
-    getDataFlag,
+    FormSelectOption,
     getFirstActiveToken,
     getFlag,
     htmlClosest,
     htmlQuery,
+    ImageFilePath,
+    KeybindingActionConfig,
     localize,
-    localizePath,
     NPCPF2e,
     panToToken,
     PARTY_ACTOR_ID,
@@ -30,14 +30,14 @@ import {
     render,
     ResourceData,
     selectTokens,
-    success,
     toggleHooksAndWrappers,
     TokenDocumentPF2e,
     TokenPF2e,
     updateFlag,
+    VideoFilePath,
     waitDialog,
-    warning,
-} from "module-helpers";
+} from "foundry-helpers";
+import { hud } from "main";
 import { PersistentEffectsPF2eHUD, PersistentShortcutsPF2eHUD, ShortcutData } from ".";
 import {
     AdvancedStatistic,
@@ -78,7 +78,7 @@ class PersistentPF2eHUD
             tooltip(this: PersistentPF2eHUD, state: boolean) {
                 // pretty weird one but whatever
                 this.element.classList.toggle("cleaned", !state);
-                return localizePath(`persistent.menu.clean.${state ? "always" : "hover"}`);
+                return localize.path(`persistent.menu.clean.${state ? "always" : "hover"}`);
             },
         },
         lock: {
@@ -96,7 +96,7 @@ class PersistentPF2eHUD
                 return this.settings.lockOwned;
             },
             tooltip(this: PersistentPF2eHUD, state: boolean) {
-                return localizePath(`persistent.menu.lockOwned.${state ? "unlock" : "lock"}`);
+                return localize.path(`persistent.menu.lockOwned.${state ? "unlock" : "lock"}`);
             },
         },
         mute: {
@@ -119,45 +119,41 @@ class PersistentPF2eHUD
     #previousActor: ActorPF2e | null = null;
     #previousAvatar: HTMLImageElement | HTMLVideoElement | null = null;
     #shortcutsPanel = new PersistentShortcutsPF2eHUD(this);
-    #shortcutsTab: ValueAndMinMax = {
-        value: 1,
-        min: 1,
-        max: 3,
-    };
+    #shortcutsTab: ValueMinAndMax = { value: 1, min: 1, max: 3 };
 
-    #deleteActorHook = createToggleableHook("deleteActor", (actor: ActorPF2e) => {
+    #deleteActorHook = createToggleHook("deleteActor", (actor: ActorPF2e) => {
         if (this.isCurrentActor(actor) || this.#ownedActors?.includes(actor.id)) {
             this.render();
         }
     });
 
-    #updateActorHook = createToggleableHook("updateActor", this.#onUpdateActor.bind(this));
+    #updateActorHook = createToggleHook("updateActor", this.#onUpdateActor.bind(this));
 
-    #deleteTokenHook = createToggleableHook("deleteToken", this.#onDeleteToken.bind(this));
+    #deleteTokenHook = createToggleHook("deleteToken", this.#onDeleteToken.bind(this));
 
-    #controlTokenHook = createToggleableHook(
+    #controlTokenHook = createToggleHook(
         "controlToken",
-        foundry.utils.debounce((token: TokenPF2e, controlled: boolean) => {
+        foundry.utils.debounce((_token: TokenPF2e, controlled: boolean) => {
             if (!controlled) {
                 this.#previousActor = null;
             }
             this.render();
-        }, 1)
+        }, 1),
     );
 
     #combatHooks = [
-        createToggleableHook("combatStart", (combat: EncounterPF2e) => {
+        createToggleHook("combatStart", (combat: EncounterPF2e) => {
             const hook = combat.combatants.size ? "updateCombat" : "createCombatant";
             Hooks.once(hook, () => {
                 this.render();
             });
         }),
-        createToggleableHook("deleteCombat", (combat: EncounterPF2e) => {
+        createToggleHook("deleteCombat", () => {
             this.render();
         }),
-        createToggleableHook("deleteCombatant", (combatant: CombatantPF2e) => {
+        createToggleHook("deleteCombatant", (combatant: CombatantPF2e) => {
             if (combatant.encounter?.combatants.size === 0) {
-                Hooks.once("combatTurnChange", (combat: EncounterPF2e) => {
+                Hooks.once("combatTurnChange", () => {
                     this.render();
                 });
 
@@ -175,7 +171,7 @@ class PersistentPF2eHUD
         },
     });
 
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<fa.ApplicationConfiguration> = {
         id: "pf2e-hud-persistent",
         window: {
             positioned: false,
@@ -300,7 +296,7 @@ class PersistentPF2eHUD
                         blank: false,
                         nullable: false,
                         type: "Actor",
-                    })
+                    }),
                 ),
                 default: [],
                 scope: "user",
@@ -359,16 +355,14 @@ class PersistentPF2eHUD
     }
 
     get parentElement(): HTMLElement | null {
-        return document.getElementById(
-            this.settings.display === "left" ? "ui-left-column-1" : "ui-bottom"
-        );
+        return document.getElementById(this.settings.display === "left" ? "ui-left-column-1" : "ui-bottom");
     }
 
     get shortcutsPanel(): PersistentShortcutsPF2eHUD {
         return this.#shortcutsPanel;
     }
 
-    get shortcutsTab(): ValueAndMinMax {
+    get shortcutsTab(): ValueMinAndMax {
         return this.#shortcutsTab;
     }
 
@@ -441,14 +435,10 @@ class PersistentPF2eHUD
         return isCurrentActor;
     }
 
-    async render(
-        options?: boolean | DeepPartial<ApplicationRenderOptions>,
-        _options?: DeepPartial<ApplicationRenderOptions>
-    ): Promise<this> {
+    async render(options?: boolean | (fa.ApplicationRenderOptions & { renderContext: string })): Promise<this> {
         const mode = this.settings.selection;
-        const usedOptions = typeof options === "object" ? options : _options;
 
-        if (usedOptions?.renderContext === "updateCombat" && mode !== "combat") {
+        if (R.isObjectType(options) && options.renderContext === "updateCombat" && mode !== "combat") {
             return this;
         }
 
@@ -458,11 +448,10 @@ class PersistentPF2eHUD
             mode === "manual"
                 ? this.savedActor
                 : mode === "select"
-                ? (this.#controlled = R.only(canvas.tokens.controlled)?.actor) ??
-                  this.#previousActor
-                : mode === "combat"
-                ? game.combat?.combatant?.actor
-                : null;
+                  ? ((this.#controlled = R.only(canvas.tokens.controlled)?.actor) ?? this.#previousActor)
+                  : mode === "combat"
+                    ? game.combat?.combatant?.actor
+                    : null;
 
         this.#actor = this.isValidActor(prospectActor) ? prospectActor : null;
 
@@ -478,7 +467,7 @@ class PersistentPF2eHUD
 
         this.#previousActor = this.#actor;
 
-        return super.render(options, _options);
+        return super.render(options);
     }
 
     async close(options?: PersistentCloseOptions): Promise<this> {
@@ -536,7 +525,7 @@ class PersistentPF2eHUD
         const token = tokens[0];
 
         if (tokens.length !== 1 || !this.isValidActor(token.actor)) {
-            return warning("persistent.error.selectOne");
+            return localize.warning("persistent.error.selectOne");
         }
 
         this.setActor(token.actor, { token });
@@ -574,9 +563,7 @@ class PersistentPF2eHUD
         }
     }
 
-    async updateShortcuts(
-        ...args: [...string[], null | Record<string, ShortcutData[]>]
-    ): Promise<void>;
+    async updateShortcuts(...args: [...string[], null | Record<string, ShortcutData[]>]): Promise<void>;
     async updateShortcuts(...args: [string, number, null | ShortcutData[]]): Promise<void>;
     async updateShortcuts(...args: any[]) {
         const worldActor = this.worldActor;
@@ -604,7 +591,7 @@ class PersistentPF2eHUD
     }
 
     async _prepareContext(
-        options: PersistentRenderOptions
+        options: PersistentRenderOptions,
     ): Promise<EmptyPersistentContext | PersistentContext | PersistentContextBase> {
         const actor = this.actor!;
         const context = (await super._prepareContext(options)) as ReturnedAdvancedHudContext;
@@ -650,7 +637,7 @@ class PersistentPF2eHUD
 
         if (context.hasActor) {
             const worldActor = this.worldActor!;
-            const avatarData = getDataFlag(worldActor, AvatarModel, "avatar", { strict: true });
+            const avatarData = getAvatarData(worldActor);
             const src = avatarData?.src ?? worldActor.img;
             const isVideo = foundry.helpers.media.VideoHelper.hasVideoExtension(src);
 
@@ -689,30 +676,26 @@ class PersistentPF2eHUD
 
             const favoriteUUIDS = this.settings.favorites;
             const favorites: OwnedActorEntry[] = await Promise.all(
-                favoriteUUIDS
-                    .slice(0, PersistentPF2eHUD.#nbOwnedActors)
-                    .map(async (uuid): Promise<OwnedActorEntry> => {
-                        const actor = (await fromUuid(uuid)) as Maybe<CreaturePF2e>;
-                        if (!this.isValidActor(actor)) return;
+                favoriteUUIDS.slice(0, PersistentPF2eHUD.#nbOwnedActors).map(async (uuid): Promise<OwnedActorEntry> => {
+                    const actor = (await fromUuid(uuid)) as Maybe<CreaturePF2e>;
+                    if (!this.isValidActor(actor)) return;
 
-                        return { actor, favorite: true };
-                    })
+                    return { actor, favorite: true };
+                }),
             );
 
             const freeSlots = PersistentPF2eHUD.#nbOwnedActors - favorites.length;
-
-            const allOwned: FilterableIterable<ActorPF2e, CreaturePF2e> =
-                freeSlots > 0 ? (isGM ? party?.members ?? [] : game.actors) : [];
+            const allOwned: ActorPF2e[] = freeSlots > 0 ? (isGM ? (party?.members ?? []) : game.actors.contents) : [];
 
             const ownedActors: OwnedActorEntry[] = R.pipe(
-                allOwned.filter((actor) => {
+                allOwned.filter((actor): actor is CreaturePF2e => {
                     return !favoriteUUIDS.includes(actor.uuid) && this.isValidOwnedActor(actor);
                 }),
                 R.sortBy(...sortLogic),
                 R.take(freeSlots),
                 R.map((actor) => {
                     return { actor, favorite: false };
-                })
+                }),
             );
 
             const actors = R.pipe(
@@ -734,7 +717,7 @@ class PersistentPF2eHUD
                         tokenImage: getTokenImage(actor),
                         uuid: actor.uuid,
                     };
-                })
+                }),
             );
 
             this.#ownedActors = actors.map(R.prop("id"));
@@ -763,19 +746,19 @@ class PersistentPF2eHUD
 
     protected async _renderHTML(
         context: EmptyPersistentContext | PersistentContext,
-        options: PersistentRenderOptions
+        options: PersistentRenderOptions,
     ): Promise<string> {
         const actor = this.actor;
         const persistent = await render("persistent", context);
         const actorHud = actor
             ? await render("actor-hud", { ...context, i18n: "actor-hud" })
             : options.selectionMode === "combat"
-            ? R.pipe(
-                  ["alliance", "details", "info", "npc-extras", "sidebars", "statistics"],
-                  R.map((x) => `<div data-panel="${x}"></div>`),
-                  R.join("")
-              )
-            : "";
+              ? R.pipe(
+                    ["alliance", "details", "info", "npc-extras", "sidebars", "statistics"],
+                    R.map((x) => `<div data-panel="${x}"></div>`),
+                    R.join(""),
+                )
+              : "";
 
         return persistent + actorHud;
     }
@@ -819,7 +802,7 @@ class PersistentPF2eHUD
             case "journal-sheet": {
                 if (event.button === 0) {
                     const journal = await fromUuid(this.settings.journal);
-                    return journal?.sheet.render(true);
+                    return journal?.sheet?.render(true);
                 } else {
                     return (this.settings.journal = "");
                 }
@@ -885,7 +868,7 @@ class PersistentPF2eHUD
                 const journal = await fromUuid(GM_SCREEN_UUID);
                 if (isValidJournal(journal)) {
                     const pageId = game.user.isGM ? "" : "a7RGk2IiPaC3bLkf";
-                    journal?.sheet.render(true, { pageId });
+                    journal?.sheet.render(true, { pageId } as any);
                 }
                 return;
             }
@@ -930,10 +913,7 @@ class PersistentPF2eHUD
         if (!menu) return;
 
         const toggled = menu.state.call(this);
-        const previous = htmlQuery(
-            this.element,
-            `[data-panel="menu"] [data-action="toggle-${key}"]`
-        );
+        const previous = htmlQuery(this.element, `[data-panel="menu"] [data-action="toggle-${key}"]`);
         const btn = createHTMLElement("a", {
             classes: toggled ? [] : ["greyed"],
             content: `<i class="${menu.icon}"></i>`,
@@ -969,7 +949,7 @@ class PersistentPF2eHUD
     async #pinToken() {
         canvas.tokens.releaseAll();
 
-        const notified = success("pin-token.notify", true);
+        const notified = localize.success("pin-token.notify", true);
 
         this.#isPinning = true;
 
@@ -985,7 +965,7 @@ class PersistentPF2eHUD
                     Hooks.off("controlToken", hook);
                     this.#isPinning = false;
                 },
-                { once: true }
+                { once: true },
             );
         });
     }
@@ -1010,20 +990,18 @@ class PersistentPF2eHUD
         const worlds = game.journal
             .filter((journal) => journal.testUserPermission(user, "OBSERVER"))
             .map((journal) => {
-                return { value: journal.uuid, label: journal.name };
+                return { value: journal.uuid as string, label: journal.name };
             });
 
         const fields = foundry.applications.fields;
-        const inputs: (HTMLInputElement | HTMLSelectElement)[] = [
-            fields.createTextInput({ name: "uuid" }),
-        ];
+        const inputs: (HTMLInputElement | HTMLSelectElement)[] = [fields.createTextInput({ name: "uuid" })];
 
         if (worlds.length) {
             inputs.unshift(
                 fields.createSelectInput({
                     name: "world",
                     options: [{ value: "", label: "" }, ...worlds],
-                })
+                }),
             );
         }
 
@@ -1035,7 +1013,7 @@ class PersistentPF2eHUD
                     input,
                 }).outerHTML;
             }),
-            R.join("")
+            R.join(""),
         );
 
         const result = await waitDialog<{ uuid: DocumentUUID }>({
@@ -1045,7 +1023,7 @@ class PersistentPF2eHUD
             yes: {
                 icon: "fa-solid fa-book-open",
             },
-            onRender: (event, dialog) => {
+            onRender: (_event, dialog) => {
                 const html = dialog.element;
                 const select = htmlQuery(html, "select");
                 const input = htmlQuery(html, "input");
@@ -1053,7 +1031,7 @@ class PersistentPF2eHUD
 
                 input.classList.add("invalid");
 
-                select.addEventListener("change", (event) => {
+                select.addEventListener("change", () => {
                     input.value = select.value;
                     input.classList.remove("invalid");
                 });
@@ -1081,9 +1059,7 @@ class PersistentPF2eHUD
     }
 
     #launchTravelSheet() {
-        const controlled = canvas.tokens.controlled.filter(
-            (token) => !!token.actor?.isOfType("character", "npc")
-        );
+        const controlled = canvas.tokens.controlled.filter((token) => !!token.actor?.isOfType("character", "npc"));
 
         const actors = controlled.length
             ? controlled.map((token) => token.actor)
@@ -1099,7 +1075,7 @@ class PersistentPF2eHUD
         return actorUuid ? fromUuid<ActorPF2e>(actorUuid) : game.actors.get(actorId ?? "");
     }
 
-    async #setOwnedActor(event: PointerEvent, target: HTMLElement) {
+    async #setOwnedActor(event: PointerEvent, _target: HTMLElement) {
         const actor = await this.#getOwnedActorFromEvent(event);
         if (!actor) return;
 
@@ -1160,7 +1136,7 @@ class PersistentPF2eHUD
             });
 
         if (options.length === 0) {
-            warning("persistent.shortcuts.copy.none");
+            localize.warning("persistent.shortcuts.copy.none");
             return;
         }
 
@@ -1181,11 +1157,7 @@ class PersistentPF2eHUD
 
         if (!result) return;
 
-        const shortcuts = getFlag<Record<string, ShortcutData[]>>(
-            worldActor,
-            "shortcuts",
-            result.user
-        );
+        const shortcuts = getFlag<Record<string, ShortcutData[]>>(worldActor, "shortcuts", result.user);
 
         if (!shortcuts) {
             await this.deleteShortcuts(true);
@@ -1200,7 +1172,7 @@ class PersistentPF2eHUD
         const token = R.only(canvas.tokens.controlled);
 
         if (!token || !this.isValidActor(token.actor)) {
-            return warning("persistent.error.selectOne");
+            return localize.warning("persistent.error.selectOne");
         }
 
         this.setActor(token.actor, { token });
@@ -1213,7 +1185,7 @@ class PersistentPF2eHUD
         const worldActor = this.worldActor;
         if (!worldActor) return;
 
-        const avatarData = getDataFlag(worldActor, AvatarModel, "avatar", { strict: true });
+        const avatarData = getAvatarData(worldActor);
         if (!avatarData) return;
 
         const newImage = (this.#previousAvatar = htmlQuery(html, ".avatar .image"));
@@ -1245,7 +1217,7 @@ class PersistentPF2eHUD
         if (exist) {
             event.preventDefault();
 
-            warning("persistent.ownedActor.drag.exist");
+            localize.warning("persistent.ownedActor.drag.exist");
             this.#panToToken(exist);
         } else {
             const image = htmlQuery<HTMLImageElement>(parent, "img.token")?.src ?? "";
@@ -1299,7 +1271,7 @@ class PersistentPF2eHUD
         if (token) {
             this.#panToToken(token);
         } else {
-            warning("persistent.pan.none");
+            localize.warning("persistent.pan.none");
         }
     }
 
@@ -1315,7 +1287,7 @@ class PersistentPF2eHUD
         this.#updateActorHook.toggle(hasOwnedActors);
 
         if (actor) {
-            addListener(html, ".avatar", "drop", (el, event) => {
+            addListener(html, ".avatar", "drop", (_el, event) => {
                 actor.sheet._onDrop(event);
             });
         } else if (hasOwnedActors) {
@@ -1402,7 +1374,7 @@ type EventAction =
     | "select-owned-actor"
     | "unpin-owned-actor";
 
-type PersistentRenderOptions = ApplicationRenderOptions & {
+type PersistentRenderOptions = fa.ApplicationRenderOptions & {
     selectionMode: PersistentSettings["selection"];
 };
 
@@ -1434,7 +1406,7 @@ type EmptyPersistentContext = PersistentContextBase & {
     }>;
 };
 
-type OwnedActorContext = {
+type OwnedActorContext = fa.ApplicationRenderContext & {
     ac: number;
     favorite: boolean;
     hero: ResourceData | null;
@@ -1453,7 +1425,7 @@ type PersistentContextBase = ReturnedAdvancedHudContext & {
     setActor: { tooltip: string; disabled: boolean; icon: string } | undefined;
 };
 
-type PersistentCloseOptions = ApplicationClosingOptions & {
+type PersistentCloseOptions = fa.ApplicationClosingOptions & {
     force?: boolean;
 };
 

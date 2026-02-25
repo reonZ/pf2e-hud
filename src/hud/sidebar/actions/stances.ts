@@ -1,18 +1,9 @@
 import { canUseStances, FilterValue, getStances, StanceShortcutData, toggleStance } from "hud";
-import {
-    AbilityItemPF2e,
-    CharacterPF2e,
-    CreaturePF2e,
-    FeatPF2e,
-    hasItemWithSourceId,
-} from "module-helpers";
 import { ActionsSidebarPF2eHUD } from ".";
 import { BaseSidebarItem } from "..";
+import { AbilityItemPF2e, CharacterPF2e, CreaturePF2e, FeatPF2e, findItemWithSourceId } from "foundry-helpers";
 
-class ActionsStance extends BaseSidebarItem<
-    FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>,
-    hud.StanceData
-> {
+class ActionsStance extends BaseSidebarItem<FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>, hud.StanceData> {
     get uuid(): string {
         return this.effectUUID;
     }
@@ -22,7 +13,7 @@ class ActionsStance extends BaseSidebarItem<
     }
 
     get active(): boolean {
-        return hasItemWithSourceId(this.actor, this.effectUUID, "effect");
+        return !!findItemWithSourceId(this.actor, this.effectUUID, "effect");
     }
 
     async toggle(force?: boolean): Promise<void> {
@@ -58,11 +49,7 @@ function getSidebarStancesData(this: ActionsSidebarPF2eHUD): StancesContext | un
     };
 }
 
-function onStancesClickAction(
-    event: MouseEvent,
-    sidebarItem: ActionsStance,
-    action: Stringptionel<"toggle-stance">
-) {
+function onStancesClickAction(event: MouseEvent, sidebarItem: ActionsStance, action: "toggle-stance" | (string & {})) {
     if (action === "toggle-stance") {
         sidebarItem.toggle(event.ctrlKey);
     }

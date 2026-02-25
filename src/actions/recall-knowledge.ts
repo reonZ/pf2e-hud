@@ -1,24 +1,7 @@
-import {
-    CreaturePF2e,
-    DegreeOfSuccess,
-    NPCPF2e,
-    R,
-    render,
-    signedInteger,
-    Statistic,
-    ZeroToFour,
-    ZeroToThree,
-} from "module-helpers";
+import { CreaturePF2e, NPCPF2e, R, render, signedInteger, Statistic, ZeroToFour, ZeroToThree } from "foundry-helpers";
+import { DegreeOfSuccess } from "foundry-helpers/dist";
 
-const SKILLS = [
-    "arcana",
-    "crafting",
-    "medicine",
-    "nature",
-    "occultism",
-    "religion",
-    "society",
-] as const;
+const SKILLS = ["arcana", "crafting", "medicine", "nature", "occultism", "religion", "society"] as const;
 
 const SUCCESS = {
     0: {
@@ -40,7 +23,7 @@ async function rollRecallKnowledge(actor: CreaturePF2e) {
     const lores = R.pipe(
         R.values(actor.skills),
         R.filter((skill) => !!skill.lore),
-        R.sortBy(R.prop("label"))
+        R.sortBy(R.prop("label")),
     );
 
     const target = (() => {
@@ -66,14 +49,12 @@ async function rollRecallKnowledge(actor: CreaturePF2e) {
             skills.map((slug) => {
                 const skill = actor.skills[slug];
                 return rollStatistic(skill, dieResult, skillsDCs);
-            })
+            }),
         );
         templateData.lores = await Promise.all(lores.map((lore) => rollStatistic(lore, dieResult)));
     } else {
         templateData.skills = await Promise.all(
-            [...SKILLS.map((slug) => actor.skills[slug]), ...lores].map((skill) =>
-                rollStatistic(skill, dieResult)
-            )
+            [...SKILLS.map((slug) => actor.skills[slug]), ...lores].map((skill) => rollStatistic(skill, dieResult)),
         );
     }
 
@@ -83,17 +64,13 @@ async function rollRecallKnowledge(actor: CreaturePF2e) {
     ChatMessagePF2e.create({
         flavor: await render("recall-knowledge", templateData),
         speaker: ChatMessage.getSpeaker({ actor }),
-        whisper: isSecret ? ChatMessage.getWhisperRecipients("GM") : undefined,
+        whisper: isSecret ? (ChatMessage.getWhisperRecipients("GM") as any) : undefined,
         blind: isSecret,
-        rolls: [roll],
+        rolls: [roll] as any,
     });
 }
 
-async function rollStatistic(
-    statistic: Statistic,
-    dieResult: number,
-    dcs?: number[]
-): Promise<RolledStatisticData> {
+async function rollStatistic(statistic: Statistic, dieResult: number, dcs?: number[]): Promise<RolledStatisticData> {
     const { rank, label } = statistic;
 
     const roll = await statistic.roll({

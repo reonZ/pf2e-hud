@@ -1,9 +1,9 @@
+import { ImageFilePath, ItemPF2e, R } from "foundry-helpers";
 import { FilterValue, ShortcutData } from "hud";
-import { ItemPF2e, R } from "module-helpers";
 
 abstract class BaseSidebarItem<
     TItem extends ItemPF2e = ItemPF2e,
-    TData extends Record<string, any> = Record<string, any>
+    TData extends Record<string, any> = Record<string, any>,
 > {
     #filterValue?: FilterValue;
 

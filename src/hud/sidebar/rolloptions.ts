@@ -1,14 +1,15 @@
-import { BaseSidebarItem, SidebarName, SidebarPF2eHUD, ToggleShortcutData } from "hud";
 import {
     ActorPF2e,
     createHTMLElement,
     createHTMLElementContent,
     htmlQuery,
+    ImageFilePath,
     ItemPF2e,
     R,
     RollOptionToggle,
     SYSTEM,
-} from "module-helpers";
+} from "foundry-helpers";
+import { BaseSidebarItem, SidebarName, SidebarPF2eHUD, ToggleShortcutData } from "hud";
 
 const ROLLOPTIONS_PLACEMENT = {
     actions: "actions",
@@ -70,7 +71,7 @@ async function createRollOptionsElements(this: SidebarPF2eHUD): Promise<HTMLElem
     if (!toggles.length) return;
 
     const togglesTemplate = await foundry.applications.handlebars.renderTemplate(
-        `systems/${SYSTEM.id}/templates/actors/partials/toggles.hbs`,
+        SYSTEM.relativePath("templates/actors/partials/toggles.hbs"),
         { toggles },
     );
 

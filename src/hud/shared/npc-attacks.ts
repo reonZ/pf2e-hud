@@ -1,4 +1,4 @@
-import { imagePath, isAreaOrAutoFireType, MeleePF2e, R, SYSTEM, WeaponPF2e } from "module-helpers";
+import { ImageFilePath, isAreaOrAutoFireType, MeleePF2e, MODULE, R, SYSTEM, WeaponPF2e } from "foundry-helpers";
 
 const DEFAULT_NPC_STRIKE_ICON = "icons/default-icons/melee.svg";
 
@@ -258,7 +258,11 @@ function getNpcStrikeImage({
     const match = NPC_STRIKE_ICONS[slug];
     if (match) return match;
 
-    return isAreaOrAutoFireType(type) ? imagePath(type, "svg") : item.range ? imagePath("npc-range", "svg") : item.img;
+    return isAreaOrAutoFireType(type)
+        ? MODULE.imagePath(type, "svg")
+        : item.range
+          ? MODULE.imagePath("npc-range", "svg")
+          : item.img;
 }
 
 export { getNpcStrikeImage, prepareNpcStrikes };

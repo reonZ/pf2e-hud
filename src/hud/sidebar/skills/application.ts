@@ -1,18 +1,4 @@
 import { FilterValue } from "hud";
-import {
-    AbilityItemPF2e,
-    ActorPF2e,
-    ApplicationRenderOptions,
-    FeatPF2e,
-    findItemWithSourceId,
-    getItemSourceFromUuid,
-    hasAnyItemWithSourceId,
-    hasItemWithSourceId,
-    localize,
-    R,
-    signedInteger,
-    StatisticRollParameters,
-} from "module-helpers";
 import { getGlobalSetting, setGlobalSetting } from "settings";
 import {
     CHIRURGEON,
@@ -28,6 +14,20 @@ import {
     UNTRAINED_IMPROVISATION,
 } from ".";
 import { SidebarPF2eHUD, StatisticType } from "..";
+import {
+    AbilityItemPF2e,
+    ActorPF2e,
+    CompendiumIndexData,
+    CompendiumItemUUID,
+    FeatPF2e,
+    findItemWithSourceId,
+    getItemSourceFromUuid,
+    hasAnyItemWithSourceId,
+    localize,
+    R,
+    signedInteger,
+    StatisticRollParameters,
+} from "foundry-helpers";
 
 const _cached: {
     followTheLeader?: Omit<FollowTheLeader, "active">;
@@ -43,7 +43,7 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e | AbilityItemPF2e, Sk
         return itemUuid && statistic ? `${statistic}-${itemUuid}` : (itemUuid ?? itemId);
     }
 
-    protected async _prepareContext(options: ApplicationRenderOptions): Promise<SkillsSidebarContext> {
+    protected async _prepareContext(_options: fa.ApplicationRenderOptions): Promise<SkillsSidebarContext> {
         const actor = this.actor;
         const hideUntrained = getGlobalSetting("hideUntrained");
         const lores = actor.itemTypes.lore.map((item) => new LoreSkill(item));
@@ -61,7 +61,7 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e | AbilityItemPF2e, Sk
                 !isCharacter ||
                 untrainedImprovisation ||
                 statistic?.proficient ||
-                (group.slug === "medicine" && hasItemWithSourceId(actor, CHIRURGEON, "feat"));
+                (group.slug === "medicine" && !!findItemWithSourceId(actor, CHIRURGEON, "feat"));
 
             const proficiency = isCharacter
                 ? { rank, label: game.i18n.localize(`PF2E.ProficiencyLevel${rank}`) }
@@ -143,7 +143,7 @@ async function toggleFollowTheExpert(actor: ActorPF2e) {
 function getFollowTheExpertData(actor: ActorPF2e): FollowTheLeader {
     if (!_cached.followTheLeader) {
         const uuid = FOLLOW_THE_EXPERT();
-        const item = fromUuidSync(uuid) ?? { name: "" };
+        const item = fromUuidSync<CompendiumIndexData>(uuid) ?? { name: "" };
 
         _cached.followTheLeader = {
             filterValue: new FilterValue(item.name),
@@ -154,13 +154,13 @@ function getFollowTheExpertData(actor: ActorPF2e): FollowTheLeader {
 
     return {
         ..._cached.followTheLeader,
-        active: hasItemWithSourceId(actor, FOLLOW_THE_EXPERT_EFFECT(), "effect"),
+        active: !!findItemWithSourceId(actor, FOLLOW_THE_EXPERT_EFFECT(), "effect"),
     };
 }
 
 type EventAction = "follow-the-expert" | "roll-skill" | "roll-statistic-action" | "toggle-hide-untrained";
 
-type SkillsSidebarContext = {
+type SkillsSidebarContext = fa.ApplicationRenderContext & {
     follow: FollowTheLeader;
     hideUntrained: boolean;
     isCharacter: boolean;
@@ -172,7 +172,7 @@ type FollowTheLeader = {
     active: boolean;
     label: string;
     filterValue: FilterValue;
-    sourceId: CompendiumUUID;
+    sourceId: CompendiumItemUUID;
 };
 
 type PreparedSkillAction = ExtractedSkillActionData & {

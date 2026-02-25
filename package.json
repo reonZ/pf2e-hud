@@ -21,7 +21,7 @@
         "typescript": "^5.9.3"
     },
     "dependencies": {
-        "module-helpers": "github:reonZ/module-helpers",
+        "foundry-helpers": "file:../../../../dev/foundry-helpers",
         "sortablejs": "^1.15.2"
     }
 }

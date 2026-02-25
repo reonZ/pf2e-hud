@@ -1,9 +1,5 @@
-import { HealthStatus, HealthStatusMenu } from "health-status";
-import { BasePF2eHUD, SidebarPF2eHUD } from "hud";
-import { hud } from "main";
 import {
     getSetting,
-    MODULE,
     R,
     registerModuleSettings,
     registerSetting,
@@ -11,7 +7,10 @@ import {
     RegisterSettingOptions,
     setSetting,
     settingPath,
-} from "module-helpers";
+} from "foundry-helpers";
+import { HealthStatus, HealthStatusMenu, HealthStatusSource, zHealthStatus } from "health-status";
+import { BasePF2eHUD, SidebarPF2eHUD } from "hud";
+import { hud } from "main";
 
 const _globalSettings: Partial<GlobalSetting> = {};
 
@@ -19,15 +18,13 @@ function getGlobalSetting<K extends GlobalSettingKey>(setting: K): GlobalSetting
     return (_globalSettings[setting] ??= getSetting(setting)) as GlobalSetting[K];
 }
 
-function setGlobalSetting<K extends GlobalSettingKey>(
-    setting: K,
-    value: GlobalSetting[K]
-): Promise<GlobalSetting[K]> {
+function setGlobalSetting<K extends GlobalSettingKey>(setting: K, value: GlobalSetting[K]): Promise<GlobalSetting[K]> {
     return setSetting(setting, value);
 }
 
 function getHealthStatusData(): HealthStatus {
-    return getGlobalSetting("healthStatusData");
+    const source = getGlobalSetting("healthStatusData");
+    return zHealthStatus.parse(source);
 }
 
 function registerGlobalSetting(key: GlobalSettingKey, options: RegisterSettingOptions) {
@@ -58,11 +55,11 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
     });
 
     registerGlobalSetting("healthStatusData", {
-        type: HealthStatus,
+        type: Object,
         default: {},
         scope: "world",
         config: false,
-        onChange: (value: HealthStatus) => {
+        onChange: () => {
             hud.tracker.render();
             hud.tooltip.configurate();
         },
@@ -73,7 +70,7 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
         default: false,
         scope: "user",
         config: false,
-        onChange: (value) => {
+        onChange: () => {
             if (SidebarPF2eHUD.current === "skills") {
                 SidebarPF2eHUD.refresh();
             }
@@ -112,17 +109,15 @@ function registerSettings(huds: Record<string, BasePF2eHUD>) {
     const moduleSettings = R.pipe(
         R.values(huds),
         R.map((hud) => [hud.key, hud._getHudSettings()] as const),
-        R.fromEntries()
+        R.fromEntries(),
     );
 
     registerModuleSettings(moduleSettings);
-
-    MODULE.debugExpose({ getHealthStatusData });
 }
 
 type GlobalSetting = {
     alwaysFilter: boolean;
-    healthStatusData: HealthStatus;
+    healthStatusData: HealthStatusSource;
     hideUntrained: boolean;
     highestSpeed: boolean;
     useModifiers: boolean;

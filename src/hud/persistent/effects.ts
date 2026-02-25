@@ -2,8 +2,6 @@ import {
     AbstractEffectPF2e,
     addListenerAll,
     AfflictionPF2e,
-    ApplicationClosingOptions,
-    ApplicationRenderOptions,
     ConditionPF2e,
     createHTMLElement,
     CreaturePF2e,
@@ -14,7 +12,7 @@ import {
     htmlQuery,
     isInstanceOf,
     SYSTEM,
-} from "module-helpers";
+} from "foundry-helpers";
 import { PersistentPartPF2eHUD } from ".";
 
 class PersistentEffectsPF2eHUD extends PersistentPartPF2eHUD {
@@ -34,16 +32,16 @@ class PersistentEffectsPF2eHUD extends PersistentPartPF2eHUD {
         }
     }
 
-    protected _onClose(options: ApplicationClosingOptions): void {
+    protected _onClose(_options: fa.ApplicationClosingOptions): void {
         this.toggleBtn?.classList.add("inactive");
     }
 
-    protected _onRender(context: object, options: ApplicationRenderOptions): void {
+    protected async _onRender(context: object, options: fa.ApplicationRenderOptions) {
         super._onRender(context, options);
         this.toggleBtn?.classList.remove("inactive");
     }
 
-    protected async _prepareContext(options: ApplicationRenderOptions): Promise<EffectsPanelViewData> {
+    protected async _prepareContext(_options: fa.ApplicationRenderOptions): Promise<PersistentEffectsContext> {
         const actor = this.actor;
 
         if (!actor) {
@@ -59,15 +57,15 @@ class PersistentEffectsPF2eHUD extends PersistentPartPF2eHUD {
         };
     }
 
-    protected _renderHTML(context: EffectsPanelViewData, options: ApplicationRenderOptions): Promise<string> {
+    protected _renderHTML(context: PersistentEffectsContext, _options: fa.ApplicationRenderOptions): Promise<string> {
         return foundry.applications.handlebars.renderTemplate(
-            `systems/${SYSTEM.id}/templates/system/effects/panel.hbs`,
+            SYSTEM.relativePath("templates/system/effects/panel.hbs"),
             context,
         );
     }
 
     _activateListeners(html: HTMLElement) {
-        const actor = this.actor as CreaturePF2e;
+        const actor = this.actor;
         if (!actor) return;
 
         const effectElements = html.querySelectorAll<HTMLElement>(".effect-item[data-item-id]");
@@ -262,5 +260,7 @@ function getRemainingDurationLabel(effect: EffectPF2e): string {
 type EventAction = "edit" | "recover-persistent-damage" | "send-to-chat";
 
 type EffectViewData = EffectsPanelViewData["afflictions"][number];
+
+type PersistentEffectsContext = fa.ApplicationRenderContext & EffectsPanelViewData;
 
 export { PersistentEffectsPF2eHUD };

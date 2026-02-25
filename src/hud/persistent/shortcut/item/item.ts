@@ -1,18 +1,15 @@
+import { BaseShortcutSchema, generateBaseShortcutFields, getItemSlug, PersistentShortcut } from "..";
+import fields = foundry.data.fields;
 import {
     ConsumablePF2e,
     CreaturePF2e,
     EquipmentPF2e,
-    IdField,
     ItemType,
+    ModelPropsFromSchema,
+    SourceFromSchema,
     usePhysicalItem,
-} from "module-helpers";
-import {
-    BaseShortcutSchema,
-    generateBaseShortcutFields,
-    getItemSlug,
-    PersistentShortcut,
-} from "..";
-import fields = foundry.data.fields;
+} from "foundry-helpers";
+import { IdField } from "_utils";
 
 function generateItemShortcutFields(type: string): ItemShortcutSchema {
     return {
@@ -30,11 +27,11 @@ function generateItemShortcutFields(type: string): ItemShortcutSchema {
 
 abstract class ItemShortcut<
     TSchema extends ItemShortcutSchema,
-    TItem extends ItemShortcutItem
+    TItem extends ItemShortcutItem,
 > extends PersistentShortcut<TSchema, TItem> {
     static async getItem(
         actor: CreaturePF2e,
-        data: SourceFromSchema<ItemShortcutSchema>
+        data: SourceFromSchema<ItemShortcutSchema>,
     ): Promise<Maybe<ItemShortcutItem>> {
         const item =
             actor.items.get(data.itemId) ??
@@ -63,13 +60,7 @@ abstract class ItemShortcut<
     }
 
     get unusableReason(): string | undefined {
-        return !this.item
-            ? "match"
-            : this.dropped
-            ? "dropped"
-            : this.quantity < 1
-            ? "quantity"
-            : undefined;
+        return !this.item ? "match" : this.dropped ? "dropped" : this.quantity < 1 ? "quantity" : undefined;
     }
 
     get subtitle(): string {
@@ -85,8 +76,10 @@ abstract class ItemShortcut<
     }
 }
 
-interface ItemShortcut<TSchema extends ItemShortcutSchema, TItem extends ItemShortcutItem>
-    extends ModelPropsFromSchema<ItemShortcutSchema> {
+interface ItemShortcut<
+    TSchema extends ItemShortcutSchema,
+    TItem extends ItemShortcutItem,
+> extends ModelPropsFromSchema<ItemShortcutSchema> {
     type: "consumable" | "equipment";
 }
 

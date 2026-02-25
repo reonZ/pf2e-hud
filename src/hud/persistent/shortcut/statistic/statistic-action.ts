@@ -1,18 +1,19 @@
 import { BaseStatisticAction, BaseStatisticRollOptions, getMapLabel } from "hud";
-import { AbilityItemPF2e, CreaturePF2e, FeatPF2e, R, ZeroToTwo } from "module-helpers";
-import {
-    BaseShortcutSchema,
-    generateBaseShortcutFields,
-    PersistentShortcut,
-    ShortcutCost,
-    ShortcutDataset,
-} from "..";
+import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutCost, ShortcutDataset } from "..";
 import fields = foundry.data.fields;
+import {
+    AbilityItemPF2e,
+    CreaturePF2e,
+    DocumentUUID,
+    FeatPF2e,
+    ImageFilePath,
+    ModelPropsFromSchema,
+    R,
+    SourceFromSchema,
+    ZeroToTwo,
+} from "foundry-helpers";
 
-function generateStatisticActionSchema(
-    type: string,
-    keysChoices: () => string[]
-): StatisticActionShortcutSchema {
+function generateStatisticActionSchema(type: string, keysChoices: () => string[]): StatisticActionShortcutSchema {
     return {
         ...generateBaseShortcutFields(type),
         key: new fields.StringField({
@@ -42,13 +43,13 @@ function generateStatisticActionSchema(
 
 abstract class StatisticActionShortcut<
     TAction extends BaseStatisticAction,
-    TItem extends FeatPF2e | AbilityItemPF2e
+    TItem extends FeatPF2e | AbilityItemPF2e,
 > extends PersistentShortcut<StatisticActionShortcutSchema, TItem> {
     #usedImage?: ImageFilePath;
 
     static getItem(
-        actor: CreaturePF2e,
-        { sourceId }: SourceFromSchema<StatisticActionShortcutSchema>
+        _actor: CreaturePF2e,
+        { sourceId }: SourceFromSchema<StatisticActionShortcutSchema>,
     ): Promise<Maybe<FeatPF2e | AbilityItemPF2e>> {
         return fromUuid<FeatPF2e | AbilityItemPF2e>(sourceId);
     }
@@ -83,7 +84,7 @@ abstract class StatisticActionShortcut<
         this.radialMenu(
             () => {
                 const mapVariants = generateMapRadialOptions(
-                    useOptions.agile ?? (action.data.variants as { agile: boolean }).agile
+                    useOptions.agile ?? (action.data.variants as { agile: boolean }).agile,
                 );
 
                 return [
@@ -100,7 +101,7 @@ abstract class StatisticActionShortcut<
                     ...useOptions,
                     map: !isNaN(map) && map.between(0, 2) ? (map as ZeroToTwo) : undefined,
                 });
-            }
+            },
         );
     }
 
@@ -109,8 +110,8 @@ abstract class StatisticActionShortcut<
     }
 }
 
-const _mapRadialCached: PartialRecord<string, RequiredSelectOptions> = {};
-function generateMapRadialOptions(agile: boolean): RequiredSelectOptions {
+const _mapRadialCached: PartialRecord<string, { value: string; label: string }[]> = {};
+function generateMapRadialOptions(agile: boolean): { value: string; label: string }[] {
     return (_mapRadialCached[String(agile)] ??= R.times(3, (map) => {
         return {
             label: getMapLabel(map as ZeroToTwo, agile),
@@ -121,7 +122,7 @@ function generateMapRadialOptions(agile: boolean): RequiredSelectOptions {
 
 interface StatisticActionShortcut<
     TAction extends BaseStatisticAction,
-    TItem extends FeatPF2e | AbilityItemPF2e
+    TItem extends FeatPF2e | AbilityItemPF2e,
 > extends ModelPropsFromSchema<StatisticActionShortcutSchema> {}
 
 type StatisticActionOverrideSchema = {

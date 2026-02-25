@@ -1,20 +1,20 @@
 import { canUseStances, toggleStance } from "hud";
+
+import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutSource } from ".";
+import fields = foundry.data.fields;
 import {
     AbilityItemPF2e,
+    CompendiumIndexData,
     CreaturePF2e,
+    DocumentUUID,
     EffectPF2e,
     FeatPF2e,
-    hasItemWithSourceId,
-    IdField,
+    findItemWithSourceId,
+    ImageFilePath,
     localize,
-} from "module-helpers";
-import {
-    BaseShortcutSchema,
-    generateBaseShortcutFields,
-    PersistentShortcut,
-    ShortcutSource,
-} from ".";
-import fields = foundry.data.fields;
+    ModelPropsFromSchema,
+} from "foundry-helpers";
+import { IdField } from "_utils";
 
 class StanceShortcut extends PersistentShortcut<
     StanceShortcutSchema,
@@ -41,7 +41,7 @@ class StanceShortcut extends PersistentShortcut<
 
     static async getItem(
         actor: CreaturePF2e,
-        data: StanceShortcutData
+        data: StanceShortcutData,
     ): Promise<Maybe<FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>>> {
         return actor.items.get<FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>>(data.itemId);
     }
@@ -50,7 +50,7 @@ class StanceShortcut extends PersistentShortcut<
         if (!this.item) return;
 
         this.#active = this.cached("hasItemWithSourceId", this.effectUUID, () => {
-            return hasItemWithSourceId(this.actor, this.effectUUID, "effect");
+            return !!findItemWithSourceId(this.actor, this.effectUUID, "effect");
         });
         this.#canUseStances = this.cached("canUseStances", () => {
             return canUseStances(this.actor);

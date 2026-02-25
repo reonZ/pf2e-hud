@@ -1,4 +1,5 @@
 import { getItemSlug, SpellShortcutData } from "hud";
+import { BaseSidebarItem, CustomSpellcastingEntry, SpellCategoryType } from "..";
 import {
     CreaturePF2e,
     EquipAnnotationData,
@@ -8,8 +9,7 @@ import {
     SpellPF2e,
     SpellSlotGroupId,
     ValueAndMax,
-} from "module-helpers";
-import { BaseSidebarItem, CustomSpellcastingEntry, SpellCategoryType } from "..";
+} from "foundry-helpers";
 
 class SpellSidebarItem extends BaseSidebarItem<SpellPF2e<CreaturePF2e>, SlotSpellData> {
     #collection?: SpellCollection<CreaturePF2e> | null;
@@ -72,10 +72,7 @@ class SpellSidebarItem extends BaseSidebarItem<SpellPF2e<CreaturePF2e>, SlotSpel
 
 interface SpellSidebarItem extends Readonly<SlotSpellData> {}
 
-type SlotSpellData = Omit<
-    CustomSpellcastingEntry,
-    "category" | "groups" | "id" | "statistic" | "uses"
-> & {
+type SlotSpellData = Omit<CustomSpellcastingEntry, "category" | "groups" | "id" | "statistic" | "uses"> & {
     annotation: (EquipAnnotationData & { dataset: string }) | undefined;
     canTogglePrepared: boolean | undefined;
     castRank: OneToTen;

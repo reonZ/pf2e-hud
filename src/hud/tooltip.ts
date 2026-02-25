@@ -1,25 +1,22 @@
 import { hud } from "main";
+
+import { getHealthStatusData } from "settings";
+import { BaseTokenPF2eHUD, calculateActorHealth, HUDSettingsList } from ".";
 import {
     ActorPF2e,
-    ApplicationClosingOptions,
-    ApplicationConfiguration,
-    ApplicationPosition,
-    ApplicationRenderContext,
-    ApplicationRenderOptions,
-    createToggleableHook,
     createTimeout,
-    createToggleableEvent,
-    createToggleableWrapper,
+    createToggleEvent,
+    createToggleHook,
+    createToggleWrapper,
     htmlQuery,
     isHoldingModifierKey,
     localize,
     R,
     render,
-    TokenPF2e,
     SYSTEM,
-} from "module-helpers";
-import { getHealthStatusData } from "settings";
-import { BaseTokenPF2eHUD, calculateActorHealth, HUDSettingsList } from ".";
+    TokenPF2e,
+} from "foundry-helpers";
+import { getEntryFromHealthData } from "health-status";
 
 const TARGET_ICONS = {
     selected: "fa-solid fa-expand",
@@ -64,13 +61,13 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
     #closeTimeout = createTimeout(this.close.bind(this), { minDelay: DELAY_BUFFER });
     #renderTimeout = createTimeout(this.render.bind(this), { minDelay: DELAY_BUFFER });
 
-    #mouseDownEvent = createToggleableEvent("mousedown", null, this._onMouseDown.bind(this));
+    #mouseDownEvent = createToggleEvent("mousedown", null, this._onMouseDown.bind(this));
 
-    #canvasPanHook = createToggleableHook("canvasPan", this.#onCanvasPan.bind(this));
-    #hoverTokenHook = createToggleableHook("hoverToken", this.#onHoverToken.bind(this));
-    #canvasTearDownHook = createToggleableHook("canvasTearDown", this.#onCanvasTearDown.bind(this));
+    #canvasPanHook = createToggleHook("canvasPan", this.#onCanvasPan.bind(this));
+    #hoverTokenHook = createToggleHook("hoverToken", this.#onHoverToken.bind(this));
+    #canvasTearDownHook = createToggleHook("canvasTearDown", this.#onCanvasTearDown.bind(this));
 
-    #tokenRefreshWrapper = createToggleableWrapper(
+    #tokenRefreshWrapper = createToggleWrapper(
         "WRAPPER",
         "CONFIG.Token.objectClass.prototype._refreshVisibility",
         this.#tokenRefreshVisibility,
@@ -80,7 +77,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         },
     );
 
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<fa.ApplicationConfiguration> = {
         id: "pf2e-hud-tooltip",
     };
 
@@ -178,9 +175,9 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         this._configurate();
     }
 
-    renderWithDelay(force?: boolean, options?: ApplicationRenderOptions) {
+    renderWithDelay(force?: boolean) {
         if (this.rendered) {
-            this.render(force, options);
+            this.render(force);
             return;
         }
 
@@ -190,11 +187,11 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         if (delay > 0) {
             this.#renderTimeout.startWithDelay(delay, true);
         } else {
-            this.render(true, options);
+            this.render(true);
         }
     }
 
-    closeWithDelay(options?: ApplicationClosingOptions) {
+    closeWithDelay(options?: fa.ApplicationClosingOptions) {
         this.#closeTimeout.start(options);
     }
 
@@ -240,7 +237,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         this.renderWithDelay();
     }
 
-    protected async _prepareContext(_options: ApplicationRenderOptions): Promise<TooltipContext> {
+    protected async _prepareContext(_options: fa.ApplicationRenderOptions): Promise<TooltipContext> {
         const status = ((): TooltipContext["status"] => {
             if (!this.settings.status) return;
 
@@ -251,7 +248,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
             const health = calculateActorHealth(actor);
             if (!health) return;
 
-            const label = data.getEntryFromHealthData(health);
+            const label = getEntryFromHealthData(health, data);
             if (!label) return;
 
             return {
@@ -303,21 +300,24 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         };
     }
 
-    protected _renderHTML(context: ApplicationRenderContext, _options: ApplicationRenderOptions): Promise<string> {
+    protected _renderHTML(
+        context: fa.ApplicationRenderContext,
+        _options: fa.ApplicationRenderOptions,
+    ): Promise<string> {
         return render("tooltip", context);
     }
 
-    protected _replaceHTML(result: string, content: HTMLElement, _options: ApplicationRenderOptions): void {
+    protected _replaceHTML(result: string, content: HTMLElement, _options: fa.ApplicationRenderOptions): void {
         content.innerHTML = result;
     }
 
-    protected _onRender(_context: ApplicationRenderContext, _options: ApplicationRenderOptions) {
+    protected async _onRender(_context: fa.ApplicationRenderContext, _options: fa.ApplicationRenderOptions) {
         this.cancelClose();
         this.drawDistance();
         this.#canvasPanHook.activate();
     }
 
-    protected _onClose(options: ApplicationClosingOptions): void {
+    protected _onClose(options: fa.ApplicationClosingOptions): void {
         this.#canvasPanHook.disable();
         return super._onClose(options);
     }
@@ -331,7 +331,7 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
         super._cleanupToken();
     }
 
-    protected _updatePosition(position: ApplicationPosition) {
+    protected _updatePosition(position: fa.ApplicationPosition) {
         super._updatePosition(position);
 
         const element = this.element;
@@ -407,7 +407,7 @@ function tokenCanDraw(token: Maybe<TokenPF2e>): token is TokenPF2e {
     return !!token && token.visible && !token.isPreview && !token.isAnimating;
 }
 
-type TooltipContext = {
+type TooltipContext = fa.ApplicationRenderContext & {
     status: { label: string; hue: number } | undefined;
     distance: { unit: string; icon: string; range: string } | undefined;
 };

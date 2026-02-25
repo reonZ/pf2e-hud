@@ -1,16 +1,7 @@
 import { PersistentShortcut } from "hud";
-import {
-    ActorPF2e,
-    addListener,
-    ApplicationConfiguration,
-    ApplicationRenderOptions,
-    htmlQuery,
-    ItemPF2e,
-    localize,
-    localizePath,
-    waitDialog,
-} from "module-helpers";
+
 import { ItemHudPopup } from ".";
+import { ActorPF2e, addListener, htmlQuery, ItemPF2e, localize, waitDialog } from "foundry-helpers";
 
 class ShortcutPopup extends ItemHudPopup {
     #save: () => void;
@@ -21,7 +12,7 @@ class ShortcutPopup extends ItemHudPopup {
         shortcut: PersistentShortcut,
         save: () => void,
         event: Event,
-        options?: DeepPartial<ApplicationConfiguration>
+        options?: DeepPartial<fa.ApplicationConfiguration>,
     ) {
         super(actor, shortcut.item as ItemPF2e, event, options);
         this.#save = save;
@@ -32,11 +23,11 @@ class ShortcutPopup extends ItemHudPopup {
         return this.#shortcut;
     }
 
-    async _renderFrame(options: ApplicationRenderOptions) {
+    async _renderFrame(options: fa.ApplicationRenderOptions) {
         const frame = await super._renderFrame(options);
-        const tooltip = localizePath("popup.shortcut.config");
+        const tooltip = localize.path("popup.shortcut.config");
 
-        const configBtn = `<button type="button" class="header-control" data-action="edit-shortcut" 
+        const configBtn = `<button type="button" class="header-control" data-action="edit-shortcut"
         data-tooltip="${tooltip}">
         <i class="fa-solid fa-gear"></i></button>`;
 
@@ -70,7 +61,6 @@ class ShortcutPopup extends ItemHudPopup {
                 },
                 noBrowser: !game.user.can("FILES_BROWSE"),
             },
-            disabled: true,
             i18n: "edit-shortcut",
             onRender: (event, dialog) => {
                 addListener(dialog.element, `[data-action="open-browser"]`, (el) => {
@@ -84,7 +74,7 @@ class ShortcutPopup extends ItemHudPopup {
                         allowUpload: false,
                         type: "image",
                         current: input?.value || this.shortcut.usedImage,
-                    }).render(true);
+                    }).render({ force: true });
                 });
             },
             title: localize("popup.shortcut.config"),

@@ -1,19 +1,20 @@
 import { FilterValue } from "hud";
+import { prepareSharedActions, RAW_STATISTICS, SHARED_ACTIONS, SkillActionData } from ".";
+import { BaseStatisticAction, MapVariant, SkillsConfigSf2e, StatisticType, StatisticVariant } from "..";
 import {
     AbilityItemPF2e,
     ActorPF2e,
+    CompendiumItemUUID,
     FeatPF2e,
-    gettersToData,
+    ItemUUID,
     LorePF2e,
-    MODULE,
     R,
     signedInteger,
     Statistic,
     SYSTEM,
     ZeroToFour,
-} from "module-helpers";
-import { prepareSharedActions, RAW_STATISTICS, SHARED_ACTIONS, SkillActionData } from ".";
-import { BaseStatisticAction, MapVariant, SkillsConfigSf2e, StatisticType, StatisticVariant } from "..";
+} from "foundry-helpers";
+import { gettersToData } from "_utils";
 
 class SkillAction extends BaseStatisticAction<SkillActionData> {
     #filterValue?: FilterValue;
@@ -53,7 +54,7 @@ class SkillAction extends BaseStatisticAction<SkillActionData> {
     }
 }
 
-class SkillActionGroup extends Collection<SkillAction> {
+class SkillActionGroup extends Collection<string, SkillAction> {
     #filterValue?: FilterValue;
     #label?: string;
     #slug: StatisticType;
@@ -124,7 +125,7 @@ class LoreSkill implements ISkill {
     }
 }
 
-class SkillActionGroups<T extends SkillActionGroup = SkillActionGroup> extends Collection<T> {
+class SkillActionGroups<T extends SkillActionGroup = SkillActionGroup> extends Collection<StatisticType, T> {
     constructor(groups?: T[]) {
         super(groups?.map((group) => [group.slug, group]));
     }
@@ -203,12 +204,10 @@ interface ISkill<TSlug extends string = string> {
 
 type SkillProficiency = { rank: ZeroToFour | ""; label: string };
 
-type SkillVariants = Collection<StatisticVariant | MapVariant>;
+type SkillVariants = Collection<string, StatisticVariant | MapVariant>;
 
 type ExtractedSkillActionGroupData = ExtractReadonly<SkillActionGroup>;
 type ExtractedSkillActionData = ExtractReadonly<SkillAction>;
-
-MODULE.devExpose({ getSkillActionGroups, getSkillAction });
 
 export { getSkillAction, getSkillActionGroup, getSkillActionGroups, LoreSkill, prepareActionGroups, SkillActionGroups };
 export type {

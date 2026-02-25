@@ -1,14 +1,10 @@
-import { ActorPF2e, htmlClosest, ItemPF2e } from "module-helpers";
+import { ActorPF2e, htmlClosest, ItemPF2e } from "foundry-helpers";
 
+function getItemFromElement<T extends ItemPF2e>(actor: ActorPF2e, el: HTMLElement, sync: true): T | null;
 function getItemFromElement<T extends ItemPF2e>(
     actor: ActorPF2e,
     el: HTMLElement,
-    sync: true
-): T | null;
-function getItemFromElement<T extends ItemPF2e>(
-    actor: ActorPF2e,
-    el: HTMLElement,
-    sync?: false
+    sync?: false,
 ): T | null | Promise<T | null>;
 function getItemFromElement(actor: ActorPF2e, el: HTMLElement, sync?: boolean) {
     const element = htmlClosest(el, "[data-item-id]") ?? htmlClosest(el, "[data-item-uuid]");
@@ -19,16 +15,14 @@ function getItemFromElement(actor: ActorPF2e, el: HTMLElement, sync?: boolean) {
     const item = parentId
         ? actor.inventory.get(parentId, { strict: true }).subitems.get(itemId, { strict: true })
         : itemUuid
-        ? fromUuid(itemUuid)
-        : entryId
-        ? actor.spellcasting?.collections
-              .get(entryId, { strict: true })
-              .get(itemId, { strict: true }) ?? null
-        : itemType === "condition"
-        ? actor.conditions.get(itemId, { strict: true })
-        : actionIndex
-        ? actor.system.actions?.[Number(actionIndex)].item ?? null
-        : actor.items.get(itemId ?? "") ?? null;
+          ? fromUuid(itemUuid)
+          : entryId
+            ? (actor.spellcasting?.collections.get(entryId, { strict: true }).get(itemId, { strict: true }) ?? null)
+            : itemType === "condition"
+              ? actor.conditions.get(itemId, { strict: true })
+              : actionIndex
+                ? (actor.system.actions?.[Number(actionIndex)].item ?? null)
+                : (actor.items.get(itemId ?? "") ?? null);
 
     if (sync) {
         return item instanceof Item ? item : null;
@@ -37,7 +31,7 @@ function getItemFromElement(actor: ActorPF2e, el: HTMLElement, sync?: boolean) {
     }
 }
 
-async function sendItemToChat(actor: ActorPF2e, event: MouseEvent, el: HTMLElement) {
+async function sendItemToChat(actor: ActorPF2e, event: PointerEvent, el: HTMLElement) {
     const rawItem = await getItemFromElement(actor, el);
     const item = rawItem ? itemWithActor(rawItem, actor) : null;
     if (!item) return;

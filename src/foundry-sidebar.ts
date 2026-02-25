@@ -1,15 +1,11 @@
+import { createToggleHook, htmlQuery } from "foundry-helpers";
 import { FakePF2eHUD, HUDSettingsList } from "hud";
-import { createToggleableHook, htmlQuery } from "module-helpers";
 
 class FoundrySidebarPF2eNotHUD extends FakePF2eHUD<SidebarSettings> {
-    #renderChatInputHook = createToggleableHook(
-        "renderChatInput",
-        () => this.#updateChatControls(),
-        {
-            onActivate: () => this.#updateChatControls(),
-            onDisable: () => this.#cleanupChatControls(),
-        }
-    );
+    #renderChatInputHook = createToggleHook("renderChatInput", () => this.#updateChatControls(), {
+        onActivate: () => this.#updateChatControls(),
+        onDisable: () => this.#cleanupChatControls(),
+    });
 
     get key(): "foundrySidebar" {
         return "foundrySidebar";
@@ -28,20 +24,20 @@ class FoundrySidebarPF2eNotHUD extends FakePF2eHUD<SidebarSettings> {
                 type: Boolean,
                 default: false,
                 scope: "user",
-                onChange: (value) => {
+                onChange: (value: boolean) => {
                     this.#renderChatInputHook.toggle(value);
                 },
             },
         ];
     }
 
-    init(isGM: boolean): void {
+    init(): void {
         if (this.settings.noRollMode) {
             this.#renderChatInputHook.activate();
         }
     }
 
-    ready(isGM: boolean): void {
+    ready(): void {
         if (this.settings.expand) {
             requestAnimationFrame(() => {
                 ui.sidebar.toggleExpanded(true);

@@ -1,29 +1,27 @@
 import { randomPick, rollGroupPerception, rollRecallKnowledge, useResolve } from "actions";
-import { AvatarEditor, AvatarModel } from "avatar-editor";
+import { AvatarEditor } from "avatar-editor";
+import { ActorPF2e, createHTMLElement, CreaturePF2e, MODULE, R, userIsGM } from "foundry-helpers";
 import { FoundrySidebarPF2eNotHUD } from "foundry-sidebar";
-import { HealthStatus } from "health-status";
 import {
-    DicePF2eHUD,
-    PersistentPF2eHUD,
-    TimePF2eHUD,
-    TokenPF2eHUD,
-    TooltipPF2eHUD,
-    TrackerPF2eHUD,
     addStance,
     canUseStances,
+    DicePF2eHUD,
     getNpcStrikeImage,
     getStances,
+    PersistentPF2eHUD,
     prepareActionGroups,
     prepareExtrasActions,
     prepareNpcStrikes,
+    TimePF2eHUD,
     toggleStance,
+    TokenPF2eHUD,
+    TooltipPF2eHUD,
+    TrackerPF2eHUD,
 } from "hud";
 import { registerKeybinds } from "keybinds";
-import { ActorPF2e, CreaturePF2e, MODULE, R, createHTMLElement, templatePath, userIsGM } from "module-helpers";
 import { registerSettings } from "settings";
 
 MODULE.register("pf2e-hud");
-// MODULE.enableDebugMode();
 
 const HUDS = {
     foundrySidebar: new FoundrySidebarPF2eNotHUD(),
@@ -39,9 +37,9 @@ Hooks.once("init", () => {
     const isGM = userIsGM();
 
     const templates = [
-        ["actions", "extras", "items", "skills", "spells"].map((x) => templatePath("sidebar", x)),
-        ["item-image", "sidebars", "slider", "statistic-action"].map((x) => templatePath("partials", x)),
-        ["actor-hud", "tooltip"].map((x) => templatePath(x)),
+        ["actions", "extras", "items", "skills", "spells"].map((x) => MODULE.templatePath("sidebar", x)),
+        ["item-image", "sidebars", "slider", "statistic-action"].map((x) => MODULE.templatePath("partials", x)),
+        ["actor-hud", "tooltip"].map((x) => MODULE.templatePath(x)),
     ];
 
     foundry.applications.handlebars.loadTemplates(templates.flat());
@@ -89,29 +87,26 @@ Hooks.once("ready", async () => {
     }
 });
 
-MODULE.apiExpose({
-    actions: {
-        randomPick,
-        rollGroupPerception,
-        rollRecallKnowledge,
-        useResolve,
-    },
-    utils: {
-        addStance,
-        canUseStances,
-        editAvatar: (actor: ActorPF2e) => {
-            if (!actor.isOfType("creature", "npc")) return;
-            const worldActor = (actor.token?.baseActor ?? actor) as CreaturePF2e;
-            new AvatarEditor(worldActor).render(true);
-        },
-        getNpcStrikeImage,
-        getStances,
-        toggleStance,
-    },
+MODULE.apiExpose("actions", {
+    randomPick,
+    rollGroupPerception,
+    rollRecallKnowledge,
+    useResolve,
 });
 
-MODULE.devExpose({ huds: HUDS });
+MODULE.apiExpose("utils", {
+    addStance,
+    canUseStances,
+    editAvatar: (actor: ActorPF2e) => {
+        if (!actor.isOfType("creature", "npc")) return;
+        const worldActor = (actor.token?.baseActor ?? actor) as CreaturePF2e;
+        new AvatarEditor(worldActor).render(true);
+    },
+    getNpcStrikeImage,
+    getStances,
+    toggleStance,
+});
 
-MODULE.debugExpose({ AvatarModel, HealthStatus });
+MODULE.debugExpose("huds", HUDS);
 
 export { HUDS as hud };

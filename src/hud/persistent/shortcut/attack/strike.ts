@@ -1,25 +1,21 @@
-import { getActionCategory, getNpcStrikeImage, getStrikeActions, simulateReload } from "hud";
 import {
     ActorPF2e,
+    AmmoPF2e,
+    AttackAction,
     CharacterStrike,
-    ConsumablePF2e,
     CreaturePF2e,
+    ImageFilePath,
     MeleePF2e,
+    ModelPropsFromSchema,
     R,
-    StrikeData,
     ValueAndMaybeMax,
     WeaponAuxiliaryAction,
     WeaponPF2e,
     ZeroToTwo,
-} from "module-helpers";
+} from "foundry-helpers";
+import { getActionCategory, getNpcStrikeImage, getStrikeActions, simulateReload } from "hud";
 import { AttackShortcut, AttackShortcutSchema, generateAttackShortcutFields } from ".";
-import {
-    ShortcutCost,
-    ShortcutLabel,
-    ShortcutRadialOption,
-    ShortcutRadialSection,
-    ShortcutSource,
-} from "..";
+import { ShortcutCost, ShortcutLabel, ShortcutRadialOption, ShortcutRadialSection, ShortcutSource } from "..";
 import fields = foundry.data.fields;
 
 const DRAW_AUXILIARY_ANNOTATION = ["draw", "pick-up", "retrieve"];
@@ -27,9 +23,9 @@ const DRAW_AUXILIARY_ANNOTATION = ["draw", "pick-up", "retrieve"];
 class StrikeShortcut extends AttackShortcut<
     StrikeShortcutSchema,
     MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>,
-    StrikeData | CharacterStrike
+    AttackAction | CharacterStrike
 > {
-    #ammo!: ConsumablePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e> | null;
+    #ammo!: AmmoPF2e<ActorPF2e> | WeaponPF2e<ActorPF2e> | null;
     #damageType?: string | null;
     #drawAuxiliaries!: WeaponAuxiliaryAction[];
     #isEquipped!: boolean;
@@ -61,8 +57,7 @@ class StrikeShortcut extends AttackShortcut<
         const ammo = (this.#ammo = this.item && "ammo" in this.item ? this.item.ammo : null);
 
         this.#uses =
-            (ammo?.isOfType("ammo") && ammo.uses.max > 1 && ammo.uses) ||
-            (ammo ? { value: ammo.quantity } : null);
+            (ammo?.isOfType("ammo") && ammo.uses.max > 1 && ammo.uses) || (ammo ? { value: ammo.quantity } : null);
 
         this.#isEquipped = !!this.item && (!("isEquipped" in this.item) || this.item.isEquipped);
 
@@ -74,7 +69,7 @@ class StrikeShortcut extends AttackShortcut<
                 : [];
     }
 
-    async _getAttackData(): Promise<Maybe<StrikeData | CharacterStrike>> {
+    async _getAttackData(): Promise<Maybe<AttackAction | CharacterStrike>> {
         return getStrikeActions(this.actor, { id: this.itemId, slug: this.slug })[0];
     }
 
@@ -94,7 +89,7 @@ class StrikeShortcut extends AttackShortcut<
         return (
             !!this.item &&
             !!this.attackData?.canAttack &&
-            this.attackData.handsAvailable &&
+            (this.attackData as CharacterStrike).handsAvailable &&
             (!("quantity" in this.item) || this.item.quantity > 0)
         );
     }
@@ -113,19 +108,14 @@ class StrikeShortcut extends AttackShortcut<
         if (!item) return this.img;
         if (!this.actorIsNPC) return this.item.img;
 
-        return (
-            getNpcStrikeImage({ item, slug: this.slug, type: this.attackData!.type }) ||
-            this.item.img
-        );
+        return getNpcStrikeImage({ item, slug: this.slug, type: this.attackData!.type }) || this.item.img;
     }
 
     get cost(): ShortcutCost | null {
         if (!this.attackData) return null;
 
         return {
-            value: this.isEquipped
-                ? this.attackData.glyph
-                : this.#drawAuxiliaries.at(0)?.actions ?? 1,
+            value: this.isEquipped ? this.attackData.glyph : (this.#drawAuxiliaries.at(0)?.actions ?? 1),
         };
     }
 
@@ -136,13 +126,13 @@ class StrikeShortcut extends AttackShortcut<
         const variant0Label = this.actor.isOfType("character")
             ? this.attackData.variants[0].label
             : this.attackData.canAttack
-            ? this.attackData.variants[0].label.split(" ")[1]
-            : null;
+              ? this.attackData.variants[0].label.split(" ")[1]
+              : null;
 
         return variant0Label ? { value: variant0Label, class: "attack" } : null;
     }
 
-    get ammo(): ConsumablePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e> | null {
+    get ammo(): AmmoPF2e<ActorPF2e> | WeaponPF2e<ActorPF2e> | null {
         return this.#ammo;
     }
 
@@ -154,8 +144,8 @@ class StrikeShortcut extends AttackShortcut<
         return this.item?.isThrown
             ? "fa-solid fa-reply-all"
             : this.item?.isRanged
-            ? "fa-solid fa-bow-arrow"
-            : "fa-solid fa-sword";
+              ? "fa-solid fa-bow-arrow"
+              : "fa-solid fa-sword";
     }
 
     get isAreaOrAutoFire(): boolean {
@@ -198,7 +188,7 @@ class StrikeShortcut extends AttackShortcut<
 
         const label = this.isAreaOrAutoFire
             ? attackData.variants[0].label.replace(/[\(\)]/g, "")
-            : this.ammo?.name ?? this.damageType ?? super.subtitle;
+            : (this.ammo?.name ?? this.damageType ?? super.subtitle);
         const range = this.item ? getActionCategory(this.actor, this.item)?.tooltip : null;
 
         return range ? `${label} (${range})` : label;
@@ -212,19 +202,19 @@ class StrikeShortcut extends AttackShortcut<
         return !this.item
             ? "match"
             : !this.attackData?.canAttack
-            ? "available"
-            : !this.attackData?.handsAvailable
-            ? "hands"
-            : this.item && "quantity" in this.item && this.item.quantity <= 0
-            ? "quantity"
-            : undefined;
+              ? "available"
+              : !(this.attackData as Maybe<CharacterStrike>)?.handsAvailable
+                ? "hands"
+                : this.item && "quantity" in this.item && this.item.quantity <= 0
+                  ? "quantity"
+                  : undefined;
     }
 
     get mustBeDrawn(): boolean {
         return this.#drawAuxiliaries.length > 0 && !this.isEquipped;
     }
 
-    use(event: MouseEvent) {
+    use(event: PointerEvent) {
         const attackData = this.attackData;
         if (!attackData) return;
 
@@ -245,10 +235,10 @@ class StrikeShortcut extends AttackShortcut<
                         },
                     ];
                 },
-                (event, value) => {
+                (_event, value) => {
                     const index = Number(value);
                     this.#drawAuxiliaries.at(index)?.execute();
-                }
+                },
             );
 
             return;
@@ -266,15 +256,13 @@ class StrikeShortcut extends AttackShortcut<
                 const [areaOrAutoFireAlts, otherAlts] = R.pipe(
                     attackData.altUsages ?? [],
                     R.map((data, i) => [i + 1, data] as const),
-                    R.partition(([i, data]) => isAreaOrAutoFireType(data.type))
+                    R.partition(([_i, data]) => isAreaOrAutoFireType(data.type)),
                 );
 
                 const sections = R.pipe(
                     [[0, attackData], ...otherAlts] as const,
                     R.map(([index, { item, variants }]): ShortcutRadialSection => {
-                        const variant0Label = isCharacter
-                            ? variants[0].label
-                            : variants[0].label.split(" ")[1];
+                        const variant0Label = isCharacter ? variants[0].label : variants[0].label.split(" ")[1];
 
                         const options: ShortcutRadialOption[] = [
                             { value: `${index}-0`, label: `${strikeLabel} ${variant0Label}` },
@@ -286,25 +274,23 @@ class StrikeShortcut extends AttackShortcut<
                             title: item.isMelee
                                 ? "PF2E.WeaponRangeMelee"
                                 : item.isThrown
-                                ? "PF2E.TraitThrown"
-                                : "PF2E.NPCAttackRanged",
+                                  ? "PF2E.TraitThrown"
+                                  : "PF2E.NPCAttackRanged",
                             options,
                         };
-                    })
+                    }),
                 );
 
                 if (areaOrAutoFireAlts.length) {
-                    const entries = areaOrAutoFireAlts.map(
-                        ([index, { glyph, variants }]): ShortcutRadialOption => {
-                            const label = variants[0].label.split(" (")[0];
-                            const icon = Handlebars.helpers.actionGlyph(glyph);
+                    const entries = areaOrAutoFireAlts.map(([index, { glyph, variants }]): ShortcutRadialOption => {
+                        const label = variants[0].label.split(" (")[0];
+                        const icon = Handlebars.helpers.actionGlyph(glyph);
 
-                            return {
-                                value: `${index}-0`,
-                                label: `${label} ${icon}`,
-                            };
-                        }
-                    );
+                        return {
+                            value: `${index}-0`,
+                            label: `${label} ${icon}`,
+                        };
+                    });
 
                     sections[0].options.push(...entries);
                 }
@@ -330,7 +316,7 @@ class StrikeShortcut extends AttackShortcut<
 
                     return simulateReload(
                         { actor, ammunition: attackData.ammunition, item: this.item, index },
-                        this.element
+                        this.element,
                     );
                 }
 
@@ -338,7 +324,7 @@ class StrikeShortcut extends AttackShortcut<
                 const attack = index === 0 ? attackData : attackData.altUsages?.at(index - 1);
 
                 attack?.variants[map]?.roll({ event });
-            }
+            },
         );
     }
 

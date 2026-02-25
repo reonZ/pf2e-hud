@@ -1,18 +1,11 @@
-import {
-    ApplicationClosingOptions,
-    ApplicationConfiguration,
-    DataField,
-    getSetting,
-    RegisterSettingOptions,
-    setSetting,
-} from "module-helpers";
+import { getSetting, KeybindingActionConfig, RegisterSettingOptions, setSetting } from "foundry-helpers";
 
-abstract class BasePF2eHUD<
-    TSettings extends Record<string, any> = Record<string, any>
-> extends foundry.applications.api.ApplicationV2 {
+abstract class BasePF2eHUD<TSettings extends Record<string, any> = Record<string, any>>
+    extends foundry.applications.api.ApplicationV2
+{
     #settings: Record<string, any> = {};
 
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<fa.ApplicationConfiguration> = {
         window: {
             resizable: false,
             minimizable: false,
@@ -36,7 +29,7 @@ abstract class BasePF2eHUD<
 
     configurate = foundry.utils.debounce(this._configurate, 1);
 
-    async close(options: ApplicationClosingOptions = {}) {
+    async close(options: fa.ApplicationClosingOptions = {}) {
         options.animate = false;
         return super.close(options);
     }
@@ -87,9 +80,10 @@ abstract class BasePF2eHUD<
     }
 }
 
-type HUDSetting<TSettings extends Record<string, any>> = TSettings extends Record<infer K, infer V>
-    ? RegisterSettingOptions & { key: K; type: FromPrimitive<V> | DataField }
-    : never;
+type HUDSetting<TSettings extends Record<string, any>> =
+    TSettings extends Record<infer K, infer V>
+        ? RegisterSettingOptions & { key: K; type: FromPrimitive<V> | foundry.data.fields.DataField }
+        : never;
 
 type HUDSettingsList<TSettings extends Record<string, any>> = Array<HUDSetting<TSettings>>;
 

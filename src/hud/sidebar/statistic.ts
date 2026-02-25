@@ -1,4 +1,3 @@
-import { createDraggable, ExtrasActionData, FilterValue, SkillActionData, SkillVariants } from "hud";
 import {
     AbilityItemPF2e,
     Action,
@@ -7,14 +6,15 @@ import {
     ActorPF2e,
     addToObjectIfNonNullish,
     AttributeString,
+    CompendiumItemUUID,
     createFormData,
     createHTMLElement,
     FeatPF2e,
-    getActionIcon,
     htmlQuery,
+    ImageFilePath,
     isInstanceOf,
     localize,
-    ModifierPF2e,
+    Modifier,
     R,
     RollNoteSource,
     SingleCheckAction,
@@ -24,7 +24,9 @@ import {
     SYSTEM,
     waitDialog,
     ZeroToTwo,
-} from "module-helpers";
+} from "foundry-helpers";
+import { getActionIcon } from "foundry-helpers/dist";
+import { createDraggable, ExtrasActionData, FilterValue, SkillActionData, SkillVariants } from "hud";
 
 const ACTION_IMAGES: PartialRecord<string, () => ImageFilePath> = R.mapValues(
     {
@@ -261,7 +263,7 @@ abstract class BaseStatisticAction<
             actors: [actor],
             variant: !isMapVariant ? variant?.slug : undefined,
             rollOptions: this.rollOptions?.map((x) => `action:${x}`) ?? [],
-            modifiers: [] as ModifierPF2e[],
+            modifiers: [] as Modifier[],
             difficultyClass: usedOptions.dc ? { value: usedOptions.dc } : undefined,
         } satisfies RollStatisticRollOptions;
 
@@ -294,8 +296,8 @@ abstract class BaseStatisticAction<
     }
 }
 
-const _cachedStatistics: RequiredSelectOptions = [];
-function getStatistics(actor: ActorPF2e): RequiredSelectOptions {
+const _cachedStatistics: { value: string; label: string }[] = [];
+function getStatistics(actor: ActorPF2e): { value: string; label: string }[] {
     if (_cachedStatistics.length === 0) {
         _cachedStatistics.push({
             value: "perception",
@@ -305,7 +307,7 @@ function getStatistics(actor: ActorPF2e): RequiredSelectOptions {
         _cachedStatistics.push(
             ...R.pipe(
                 R.entries(CONFIG.PF2E.skills),
-                R.map(([value, { label }]): Required<SelectOption> => {
+                R.map(([value, { label }]): { value: string; label: string } => {
                     return { value, label: game.i18n.localize(label) };
                 }),
             ),
@@ -335,7 +337,7 @@ function getMapLabel(map: ZeroToTwo, agile?: boolean) {
           });
 }
 
-function createMapsVariantsCollection(filter: string, agile: boolean = false): Collection<MapVariant> {
+function createMapsVariantsCollection(filter: string, agile: boolean = false): Collection<string, MapVariant> {
     const variants = R.times(3, (map): MapVariant => {
         return {
             agile,
@@ -399,7 +401,7 @@ type RollStatisticRollOptions = Partial<ActionVariantUseOptions> & (SingleCheckA
 
 type SkillsConfigSf2e = Record<SkillSlug | SkillSlugSfe2, { label: string; attribute: AttributeString }>;
 
-type SingleCheckActionRollNoteData = WithPartial<RollNoteSource, "selector">;
+type SingleCheckActionRollNoteData = Omit<RollNoteSource, "selector"> & { selector?: string };
 
 type SkillSlugSfe2 = "computers" | "piloting";
 

@@ -1,15 +1,5 @@
-import {
-    CreaturePF2e,
-    getFirstActiveToken,
-    localize,
-    panToToken,
-    R,
-    render,
-    ScenePF2e,
-    TokenDocumentPF2e,
-    TokenPF2e,
-    warning,
-} from "module-helpers";
+import { getFirstActiveToken, localize, panToToken, R, render } from "foundry-helpers";
+import { ControlledToken } from ".";
 
 async function randomPick(event?: PointerEvent) {
     if (!game.user.isGM) return;
@@ -20,19 +10,17 @@ async function randomPick(event?: PointerEvent) {
         canvas.tokens.controlled,
         R.filter((token): token is ControlledToken => {
             const actor = token.actor;
-            return (
-                !!actor?.isOfType("creature") && (actor.hasPlayerOwner || members.includes(actor))
-            );
+            return !!actor?.isOfType("creature") && (actor.hasPlayerOwner || members.includes(actor));
         }),
-        R.map((token) => token.actor)
+        R.map((token) => token.actor),
     );
 
     const actors = controlled.length
         ? controlled
-        : game.actors.party?.members.filter((actor) => actor.isOfType("creature")) ?? [];
+        : (game.actors.party?.members.filter((actor) => actor.isOfType("creature")) ?? []);
 
     if (!actors.length) {
-        return warning("no-selection");
+        return localize.warning("no-selection");
     }
 
     const roll = await new Roll(`1d${actors.length}`).evaluate();
@@ -59,13 +47,9 @@ async function randomPick(event?: PointerEvent) {
     ChatMessagePF2e.create({
         flavor: localize("random-pick.title"),
         content: await render("random-pick", data),
-        whisper: event?.ctrlKey ? ChatMessage.getWhisperRecipients("GM") : [],
+        whisper: event?.ctrlKey ? (ChatMessage.getWhisperRecipients("GM") as any) : [],
     });
 }
-
-type ControlledToken = TokenPF2e<TokenDocumentPF2e<ScenePF2e>> & {
-    actor: CreaturePF2e;
-};
 
 type ActorData = {
     name: string;

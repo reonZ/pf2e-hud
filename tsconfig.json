@@ -12,15 +12,16 @@
         "noUnusedParameters": false,
         "noUnusedLocals": true,
         "noFallthroughCasesInSwitch": true,
+        "strict": true,
         "strictFunctionTypes": true,
         "strictNullChecks": true,
         "strictPropertyInitialization": true,
         "strictBindCallApply": true,
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
-        "types": ["module-helpers"],
+        "types": ["foundry-helpers"],
         "rootDir": "src",
         "outDir": "scripts",
-        "baseUrl": "src"
+        "baseUrl": "src",
     },
-    "include": ["./src/**/*"]
+    "include": ["./src/**/*"],
 }

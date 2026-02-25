@@ -1,11 +1,6 @@
-import { localize, MacroPF2e } from "module-helpers";
-import {
-    BaseShortcutSchema,
-    generateBaseShortcutFields,
-    PersistentShortcut,
-    ShortcutSource,
-} from ".";
+import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutSource } from ".";
 import fields = foundry.data.fields;
+import { DocumentUUID, localize, MacroPF2e, ModelPropsFromSchema } from "foundry-helpers";
 
 class MacroShortcut extends PersistentShortcut<MacroShortcutSchema> {
     #macro: Maybe<MacroPF2e>;
@@ -49,7 +44,7 @@ class MacroShortcut extends PersistentShortcut<MacroShortcutSchema> {
         return !this.macro ? "macro" : undefined;
     }
 
-    use(event: MouseEvent): void {
+    use(): void {
         this.macro?.execute({ actor: this.actor });
     }
 }

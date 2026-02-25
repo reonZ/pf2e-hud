@@ -1,18 +1,6 @@
-import {
-    CreaturePF2e,
-    ItemPF2e,
-    localize,
-    RollOptionToggle,
-    Suboption,
-    warning,
-} from "module-helpers";
-import {
-    BaseShortcutSchema,
-    generateBaseShortcutFields,
-    PersistentShortcut,
-    ShortcutSource,
-} from "..";
+import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutSource } from "..";
 import fields = foundry.data.fields;
+import { CreaturePF2e, ItemPF2e, localize, ModelPropsFromSchema, RollOptionToggle, Suboption } from "foundry-helpers";
 
 function generateToggleShortcutFields(type: string): ToggleShortcutSchema {
     return {
@@ -38,10 +26,7 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
         return generateToggleShortcutFields("toggle");
     }
 
-    static async getItem(
-        actor: CreaturePF2e,
-        { domain, option }: ToggleShortcutData
-    ): Promise<Maybe<ItemPF2e>> {
+    static async getItem(actor: CreaturePF2e, { domain, option }: ToggleShortcutData): Promise<Maybe<ItemPF2e>> {
         const itemId = actor.synthetics.toggles[domain]?.[option]?.itemId ?? "";
         return actor.items.get(itemId);
     }
@@ -109,12 +94,12 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
             : super.altUseLabel;
     }
 
-    use(event: MouseEvent): void {
+    use(): void {
         const toggle = this.toggle;
         if (!toggle) return;
 
         if (toggle.alwaysActive) {
-            warning("shortcuts.use.toggle");
+            localize.warning("shortcuts.use.toggle");
         } else {
             this.actor.toggleRollOption(this.domain, this.option, !toggle.checked);
         }
@@ -138,14 +123,8 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
                 ];
             },
             (event, value) => {
-                this.actor.toggleRollOption(
-                    this.domain,
-                    this.option,
-                    this.itemId,
-                    toggle.checked,
-                    value
-                );
-            }
+                this.actor.toggleRollOption(this.domain, this.option, this.itemId, toggle.checked, value);
+            },
         );
     }
 }

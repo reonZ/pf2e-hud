@@ -1,59 +1,24 @@
-import { PositionField, SchemaField } from "module-helpers";
-import fields = foundry.data.fields;
+import { ActorPF2e, getFlag, ImageFilePath, VideoFilePath, z, zFilePath, zPoint } from "foundry-helpers";
 
-class AvatarModel extends foundry.abstract.DataModel<null, AvatarDataSchema> {
-    static defineSchema(): AvatarDataSchema {
-        return {
-            color: new fields.SchemaField({
-                enabled: new fields.BooleanField({
-                    required: false,
-                    nullable: false,
-                    initial: false,
-                }),
-                value: new fields.StringField({
-                    required: false,
-                    nullable: false,
-                    blank: false,
-                    initial: "#000000",
-                }),
-            }),
-            position: new PositionField({
-                required: false,
-                nullable: true,
-                initial: undefined,
-            }),
-            scale: new fields.NumberField({
-                required: false,
-                nullable: false,
-                initial: 1,
-            }),
-            src: new fields.FilePathField({
-                required: true,
-                nullable: false,
-                categories: ["IMAGE", "VIDEO"],
-            }),
-        };
-    }
+const zAvatarColor = z.object({
+    enabled: z.boolean().default(false),
+    value: z.string().trim().length(7).startsWith("#").default("#000000"),
+});
+
+const zAvatar = z.object({
+    color: zAvatarColor.prefault({}),
+    position: zPoint().optional(),
+    scale: z.number().default(1),
+    src: zFilePath<VideoFilePath | ImageFilePath>(["IMAGE", "VIDEO"]),
+});
+
+function getAvatarData(actor: ActorPF2e) {
+    const source = getFlag<AvatarSource>(actor, "avatar") ?? { src: actor.img };
+    return zAvatar.safeParse(source).data;
 }
 
-interface AvatarModel extends ModelPropsFromSchema<AvatarDataSchema> {}
+type AvatarSource = z.input<typeof zAvatar>;
+type AvatarData = z.output<typeof zAvatar>;
 
-type AvatarColorSchema = {
-    enabled: fields.BooleanField<boolean, boolean, false, false, true>;
-    value: fields.StringField;
-};
-
-type AvatarDataSchema = {
-    color: SchemaField<AvatarColorSchema, false, false, true>;
-    position: PositionField<false, true, false>;
-    scale: fields.NumberField<number, number, false, false, true>;
-    src: fields.FilePathField<
-        ImageFilePath | VideoFilePath,
-        ImageFilePath | VideoFilePath,
-        true,
-        false,
-        false
-    >;
-};
-
-export { AvatarModel };
+export { getAvatarData, zAvatar };
+export type { AvatarData, AvatarSource };

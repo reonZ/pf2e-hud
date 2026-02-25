@@ -1,13 +1,13 @@
-import { ActionShortcutData, FilterValue } from "hud";
 import {
     AbilityItemPF2e,
     ActionType,
     ActorPF2e,
+    CompendiumIndexData,
     EffectPF2e,
     FeatPF2e,
     findItemWithSourceId,
     getActionGlyph,
-    getActionIcon,
+    ImageFilePath,
     isSupressedFeat,
     LabeledValueAndMax,
     localize,
@@ -15,7 +15,9 @@ import {
     R,
     TraitToggleViewData,
     useAction,
-} from "module-helpers";
+} from "foundry-helpers";
+import { getActionIcon } from "foundry-helpers/dist";
+import { ActionShortcutData, FilterValue } from "hud";
 import { ActionsSidebarPF2eHUD } from ".";
 import { BaseSidebarItem, getExtrasActions, getSkillActionGroups } from "..";
 
@@ -212,7 +214,9 @@ function getActionImg(item: FeatPF2e | AbilityItemPF2e, macro: MaybeFalsy<MacroP
         return item.img;
     }
 
-    const selfEffect = item.system.selfEffect ? fromUuidSync(item.system.selfEffect.uuid) : undefined;
+    const selfEffect = item.system.selfEffect
+        ? fromUuidSync<CompendiumIndexData>(item.system.selfEffect.uuid)
+        : undefined;
 
     if (selfEffect?.img) {
         return selfEffect.img;
@@ -259,7 +263,7 @@ function getActionResource(
 function onActionClickAction(
     event: MouseEvent,
     sidebarItem: ActionsSidebarAction,
-    action: Stringptionel<ActionEventAction>,
+    action: ActionEventAction | (string & {}),
     target: HTMLElement,
 ) {
     switch (action) {

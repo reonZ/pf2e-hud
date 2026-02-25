@@ -1,4 +1,4 @@
-import { ActorPF2e, hasItemWithSourceId, localize, waitDialog, warning } from "module-helpers";
+import { ActorPF2e, findItemWithSourceId, localize, waitDialog } from "foundry-helpers";
 
 const RESOLVE_UUID = "Compendium.pf2e.feats-srd.Item.jFmdevE4nKevovzo";
 
@@ -10,7 +10,7 @@ async function useResolve(actor: Maybe<ActorPF2e>) {
     const checkCurrentData = () => {
         const stamina = actor.attributes.hp.sp;
         if (!stamina || stamina.value >= stamina.max) {
-            warning("use-resolve.full", { name });
+            localize.warning("use-resolve.full", { name });
             return null;
         }
 
@@ -30,7 +30,7 @@ async function useResolve(actor: Maybe<ActorPF2e>) {
         classes: ["pf2e-hud-resolve"],
         content: "dialogs/resolve",
         data: {
-            hasSteel: hasItemWithSourceId(actor, RESOLVE_UUID, "feat"),
+            hasSteel: !!findItemWithSourceId(actor, RESOLVE_UUID, "feat"),
         },
         i18n: "dialogs.resolve",
     });

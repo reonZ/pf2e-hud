@@ -1,19 +1,15 @@
 import {
     ActorPF2e,
     addListener,
-    ApplicationClosingOptions,
-    ApplicationConfiguration,
-    ApplicationRenderContext,
-    ApplicationRenderOptions,
     belongToPartyAlliance,
     canObserveActor,
-    CombatantFlags,
-    createToggleableHook,
-    createToggleableWrapper,
+    ContextMenuEntry,
+    createToggleHook,
     createToggleKeybind,
+    createToggleWrapper,
     EffectsPanel,
     EncounterPF2e,
-    EncounterTrackerPF2e,
+    EncounterTracker,
     ErrorPF2e,
     getDispositionColor,
     getFlag,
@@ -21,6 +17,8 @@ import {
     htmlClosest,
     htmlQuery,
     htmlQueryAll,
+    ImageFilePath,
+    KeybindingActionConfig,
     localize,
     R,
     render,
@@ -28,12 +26,12 @@ import {
     setFlag,
     settingPath,
     SYSTEM,
-    templateLocalize,
     toggleHooksAndWrappers,
     TokenPF2e,
     unsetFlag,
     waitDialog,
-} from "module-helpers";
+} from "foundry-helpers";
+import { getEntryFromHealthData } from "health-status";
 import { getHealthStatusData } from "settings";
 import Sortable, { SortableEvent } from "sortablejs";
 import {
@@ -73,7 +71,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         },
     });
 
-    #notifyWrapper = createToggleableWrapper(
+    #notifyWrapper = createToggleWrapper(
         "OVERRIDE",
         "foundry.applications.sidebar.tabs.ChatLog.prototype._shouldShowNotifications",
         this.#shouldShowNotifications,
@@ -81,15 +79,15 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
     );
 
     #activeHooks = [
-        createToggleableHook("hoverToken", this.#onHoverToken.bind(this)),
-        createToggleableHook("renderEffectsPanel", (_panel: EffectsPanel, html: HTMLElement) => {
+        createToggleHook("hoverToken", this.#onHoverToken.bind(this)),
+        createToggleHook("renderEffectsPanel", (_panel: EffectsPanel, html: HTMLElement) => {
             this.#updateEffectsPanel(html);
         }),
-        createToggleableHook("targetToken", (_user, token) => {
+        createToggleHook("targetToken", (_user, token) => {
             this.#refreshTargetDisplay(token);
         }),
     ];
-    #combatHook = createToggleableHook("renderCombatTracker", this.#onRenderCombatTracker.bind(this));
+    #combatHook = createToggleHook("renderCombatTracker", this.#onRenderCombatTracker.bind(this));
 
     #combatTrackerHeightObserver = new ResizeObserver((entries) => {
         const trackerEvent = entries.find((entry) => entry.target === this.element);
@@ -110,7 +108,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         this.#scrollToCurrent();
     });
 
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<fa.ApplicationConfiguration> = {
         id: "pf2e-hud-tracker",
         window: {
             positioned: false,
@@ -178,7 +176,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         return "tracker";
     }
 
-    get tracker(): EncounterTrackerPF2e<EncounterPF2e | null> | null {
+    get tracker(): EncounterTracker<EncounterPF2e | null> | null {
         return ui.combat;
     }
 
@@ -219,7 +217,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             hookName: "get{}ContextOptions",
         });
 
-        return (this.#contextMenus = menuItems);
+        return (this.#contextMenus = menuItems as any);
     }
 
     protected _configurate(): void {
@@ -311,7 +309,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         const healthHeader = game.i18n.localize("PF2E.HitPointsHeader");
         const createHealthTooltip = (canObserve: boolean, health: HealthData) => {
             if (!canObserve) {
-                return healthStatus.getEntryFromHealthData(health);
+                return getEntryFromHealthData(health, healthStatus);
             }
 
             let tooltip = `${healthHeader}: ${health.value}/${health.max}`;
@@ -340,7 +338,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
 
             const texture: TrackerTexture = {
                 ...((textureScaling && combatant.token?.texture) || { scaleX: 1, scaleY: 1 }),
-                img: await tracker._getCombatantThumbnail(combatant),
+                img: await tracker["_getCombatantThumbnail"](combatant),
             };
             texture.mask = getTextureMask(texture);
 
@@ -454,7 +452,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         };
     }
 
-    protected _renderHTML(context: ApplicationRenderContext, _options: TrackerRenderOptions): Promise<string> {
+    protected _renderHTML(context: fa.ApplicationRenderContext, _options: TrackerRenderOptions): Promise<string> {
         return render("tracker", context);
     }
 
@@ -481,12 +479,12 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         return element;
     }
 
-    protected _onFirstRender(_context: object, _options: ApplicationRenderOptions): void {
+    protected async _onFirstRender(_context: object, _options: fa.ApplicationRenderOptions) {
         this.#altKeybind.activate();
         toggleHooksAndWrappers(this.#activeHooks, true);
     }
 
-    protected _onRender(_context: object, _options: ApplicationRenderOptions): void {
+    protected async _onRender(_context: object, _options: fa.ApplicationRenderOptions) {
         this.#updateEffectsPanel();
         this.#scrollToCurrent();
 
@@ -495,7 +493,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         }
     }
 
-    protected _onClose(_options: ApplicationClosingOptions): void {
+    protected _onClose(_options: fa.ApplicationClosingOptions): void {
         this.#cancelScroll = false;
         this.#activeCombatant = null;
         this.#combatantsWrapper = null;
@@ -669,7 +667,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         }
     }
 
-    #onRenderCombatTracker(tracker: EncounterTrackerPF2e<EncounterPF2e | null> | null = this.tracker) {
+    #onRenderCombatTracker(tracker: EncounterTracker<EncounterPF2e | null> | null = this.tracker) {
         if (tracker && this.shouldDisplay(tracker.viewed)) {
             this.render(true);
         } else {
@@ -717,7 +715,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
 
         const direction = turn < currentTurn ? -1 : 1;
         Hooks.callAll("combatTurn", combat, { turn }, { direction });
-        combat.update({ turn }, { direction });
+        combat.update({ turn }, { direction } as any);
     }
 
     #onCombatantAltControl(el: HTMLElement, _event: MouseEvent) {
@@ -777,11 +775,11 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         const isGM = game.user.isGM;
 
         for (const combatantElement of this.combatantsElements) {
-            combatantElement.addEventListener("mouseenter", (event) => {
+            combatantElement.addEventListener("pointerenter", (event) => {
                 this.tracker?.["_onCombatantHoverIn"](event);
             });
 
-            combatantElement.addEventListener("mouseleave", (event) => {
+            combatantElement.addEventListener("pointerleave", (event) => {
                 this.tracker?.["_onCombatantHoverOut"](event);
             });
 
@@ -930,7 +928,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         const withSameInitiative = newOrder.filter((c) => c.initiative === dropped.initiative);
         if (withSameInitiative.length > 1) {
             for (let priority = 0; priority < withSameInitiative.length; priority++) {
-                const flag = withSameInitiative[priority].flags[SYSTEM.id] as CombatantFlags["pf2e"];
+                const flag = withSameInitiative[priority].flags[SYSTEM.id];
                 flag.overridePriority[dropped.initiative] = priority;
             }
         }
@@ -1001,7 +999,7 @@ function buildMetrics(metrics: EncounterPF2e["metrics"] | null): TrackerContext[
     const tooltip = metricsTemplate(
         {
             ...metrics,
-            i18n: templateLocalize("tracker"),
+            i18n: localize.i18n("tracker"),
         },
         {
             allowProtoMethodsByDefault: true,
@@ -1056,7 +1054,7 @@ type TrackerTurn = {
     toggleName: Maybe<{ tooltip: string; active: boolean }>;
 };
 
-type TrackerContext = {
+type TrackerContext = fa.ApplicationRenderContext & {
     canRoll: boolean;
     canRollNPCs: boolean;
     contextMenus: ContextMenuEntry[];
@@ -1080,7 +1078,7 @@ type TrackerSettings = {
     textureScaling: boolean;
 };
 
-type TrackerRenderOptions = ApplicationRenderOptions & {
+type TrackerRenderOptions = fa.ApplicationRenderOptions & {
     collapsed: boolean;
     partyAsObserved: boolean;
     textureScaling: boolean;

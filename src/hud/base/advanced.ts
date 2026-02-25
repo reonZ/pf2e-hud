@@ -15,27 +15,26 @@ import {
     SidebarPF2eHUD,
     SliderData,
 } from "hud";
+import { getGlobalSetting } from "settings";
+import { BaseActorPF2eHUD } from ".";
 import {
     ActionUseOptions,
     ActorPF2e,
     addEnterKeyListeners,
     addListener,
-    ApplicationRenderOptions,
     CharacterPF2e,
     getSkillLabel,
     HeldShieldData,
     localize,
+    MODULE,
     MovementType,
     NPCPF2e,
     R,
     setFlag,
     signedInteger,
-    templatePath,
     TokenPF2e,
     ValueAndMax,
-} from "module-helpers";
-import { getGlobalSetting } from "settings";
-import { BaseActorPF2eHUD } from ".";
+} from "foundry-helpers";
 
 const ALLIANCE_TYPES = ["party", "neutral", "opposition"] as const;
 
@@ -118,7 +117,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
     abstract class AdvancedPF2eHUD extends Base {
         protected async _prepareContext(
             this: ThisAdvancedHUD,
-            _: ApplicationRenderOptions,
+            _: fa.ApplicationRenderOptions,
         ): Promise<ReturnedAdvancedHudContext> {
             const actor = this.actor;
             if (!actor) {
@@ -146,7 +145,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
                 level: actor.level,
                 name: actor.name,
                 npcTags: isNPC ? getNpcTags(actor) : undefined,
-                partial: (key: string) => templatePath("partials", key),
+                partial: (key: string) => MODULE.templatePath("partials", key),
                 resolve: isCharacter ? actor.system.resources.resolve : undefined,
                 resources: isCharacter ? getResources(actor) : undefined,
                 shield: isCombatant ? actor.attributes.shield : undefined,
@@ -160,7 +159,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             this: ThisAdvancedHUD,
             _result: string,
             content: HTMLElement,
-            _options: ApplicationRenderOptions,
+            _options: fa.ApplicationRenderOptions,
         ): void {
             content.dataset.tooltipClass = "pf2e-hud-element";
             content.dataset.tooltipDirection = "UP";
@@ -396,10 +395,10 @@ function getKnowledge(actor: NPCPF2e): AdvancedHudContext["knowledge"] {
 }
 
 function getNpcTags(actor: NPCPF2e): string | undefined {
-    const whitelist = Object.keys(CONFIG.PF2E.creatureTraits);
+    const whitelist = R.keys(CONFIG.PF2E.creatureTraits);
     const traits = R.pipe(
         [...actor.traits],
-        R.filter((trait) => whitelist.includes(trait)),
+        R.filter((trait) => R.isIncludedIn(trait, whitelist)),
         R.map((trait) => {
             const label = game.i18n.localize(CONFIG.PF2E.creatureTraits[trait]);
             return `<li>${label}</li>`;
@@ -470,8 +469,8 @@ interface IAdvancedPF2eHUD {
 
 interface AdvancedPF2eHUD {
     _onSlider(action: string, direction: 1 | -1): void;
-    _prepareContext(options: ApplicationRenderOptions): Promise<AdvancedHudContext | {}>;
-    _replaceHTML(result: unknown, content: HTMLElement, options: ApplicationRenderOptions): void;
+    _prepareContext(options: fa.ApplicationRenderOptions): Promise<AdvancedHudContext | {}>;
+    _replaceHTML(result: unknown, content: HTMLElement, options: fa.ApplicationRenderOptions): void;
 }
 
 type EventAction =
@@ -495,9 +494,9 @@ type SidebarCoords = {
     };
 };
 
-type ReturnedAdvancedHudContext = AdvancedHudContext | { hasActor: false };
+type ReturnedAdvancedHudContext = AdvancedHudContext | (fa.ApplicationRenderContext & { hasActor: false });
 
-type AdvancedHudContext = {
+type AdvancedHudContext = fa.ApplicationRenderContext & {
     ac: number | undefined;
     alliance: AllianceData | undefined;
     hasActor: true;

@@ -1,14 +1,5 @@
-import {
-    CreaturePF2e,
-    R,
-    render,
-    ScenePF2e,
-    SYSTEM,
-    TokenDocumentPF2e,
-    TokenPF2e,
-    warning,
-    ZeroToFour,
-} from "module-helpers";
+import { localize, R, render, SYSTEM, ZeroToFour } from "foundry-helpers";
+import { ControlledToken } from ".";
 
 const SEARCH_UUID = SYSTEM.uuid(
     "Compendium.pf2e.actionspf2e.Item.TiNDYUGlMmxzxBYU",
@@ -53,14 +44,14 @@ async function rollGroupPerception() {
     );
 
     if (!data.length) {
-        return warning("no-selection");
+        return localize.warning("no-selection");
     }
 
     const ChatMessagePF2e = getDocumentClass("ChatMessage");
 
     ChatMessagePF2e.create({
         content: await render("group-perception", { actors: data }),
-        whisper: ChatMessage.getWhisperRecipients("GM"),
+        whisper: ChatMessage.getWhisperRecipients("GM") as any,
     });
 }
 
@@ -72,10 +63,6 @@ async function rollGroupPerception() {
 //     const level = actor.level;
 //     return level < 7 ? 1 : level < 13 ? 2 : 3;
 // }
-
-type ControlledToken = TokenPF2e<TokenDocumentPF2e<ScenePF2e>> & {
-    actor: CreaturePF2e;
-};
 
 type ActorData = {
     die: number;

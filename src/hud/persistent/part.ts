@@ -1,16 +1,10 @@
-import {
-    ApplicationClosingOptions,
-    ApplicationConfiguration,
-    ApplicationRenderOptions,
-    CreaturePF2e,
-    htmlQuery,
-} from "module-helpers";
+import { CreaturePF2e, htmlQuery } from "foundry-helpers";
 import { PersistentPF2eHUD } from ".";
 
 abstract class PersistentPartPF2eHUD extends foundry.applications.api.ApplicationV2 {
     #parent: PersistentPF2eHUD;
 
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<fa.ApplicationConfiguration> = {
         window: {
             resizable: false,
             minimizable: false,
@@ -19,7 +13,7 @@ abstract class PersistentPartPF2eHUD extends foundry.applications.api.Applicatio
         },
     };
 
-    constructor(parent: PersistentPF2eHUD, options?: DeepPartial<ApplicationConfiguration>) {
+    constructor(parent: PersistentPF2eHUD, options?: DeepPartial<fa.ApplicationConfiguration>) {
         super(options);
         this.#parent = parent;
     }
@@ -42,13 +36,13 @@ abstract class PersistentPartPF2eHUD extends foundry.applications.api.Applicatio
         return htmlQuery(this.parent.element, `[data-panel="${this.name}"]`);
     }
 
-    close(options: ApplicationClosingOptions = {}): Promise<this> {
+    close(_options?: fa.ApplicationClosingOptions): Promise<this> {
         return super.close({ animate: false });
     }
 
     abstract _activateListeners(html: HTMLElement): void;
 
-    protected _onRender(context: object, options: ApplicationRenderOptions): void {
+    protected async _onRender(_context: object, _options: fa.ApplicationRenderOptions) {
         const currentPanel = this.currentPanel;
 
         if (currentPanel) {
@@ -58,11 +52,7 @@ abstract class PersistentPartPF2eHUD extends foundry.applications.api.Applicatio
         }
     }
 
-    protected _replaceHTML(
-        result: string,
-        content: HTMLElement,
-        options: ApplicationRenderOptions
-    ): void {
+    protected _replaceHTML(result: string, content: HTMLElement, _options: fa.ApplicationRenderOptions): void {
         content.innerHTML = result;
         content.dataset.panel = this.name;
 

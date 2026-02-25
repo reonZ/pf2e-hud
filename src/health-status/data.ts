@@ -1,158 +1,94 @@
+import { localize, R, z } from "foundry-helpers";
 import { HealthData } from "hud";
-import {
-    ArrayField,
-    localize,
-    ModelPropFromDataField,
-    R,
-    SourcePropFromDataField,
-} from "module-helpers";
-import fields = foundry.data.fields;
 
-class HealthStatusEntriesField extends fields.ArrayField<
-    fields.SchemaField<HealthStatusEntrySchema>,
-    SourcePropFromDataField<fields.SchemaField<HealthStatusEntrySchema>>[],
-    ModelPropFromDataField<fields.SchemaField<HealthStatusEntrySchema>>[],
-    true,
-    false,
-    true
-> {
-    constructor(options?: any, context?: fields.DataFieldContext) {
-        super(
-            new fields.SchemaField({
-                label: new fields.StringField({
-                    required: true,
-                    nullable: false,
-                }),
-                marker: new fields.NumberField({
-                    required: true,
-                    nullable: false,
-                    min: 1,
-                    max: 99,
-                }),
-            }),
-            options,
-            context
-        );
+const HEALTH_STATUS_DEFAULT_LABEL = "???";
+
+const zHealthStatusEntry = z.object({
+    label: z.string(),
+    marker: z.number().min(1).max(99).multipleOf(1),
+});
+
+const zHealthStatusEntries = z.array(zHealthStatusEntry).catch(() => {
+    const entries = getEntries();
+    const nbEntries = entries.length - 1;
+
+    if (nbEntries < 1) {
+        return [];
     }
 
-    static get _defaults() {
-        return Object.assign(super._defaults, {
-            required: true,
-            nullable: false,
-        });
+    const segment = 100 / (nbEntries - 1);
+
+    return R.pipe(
+        R.range(1, nbEntries),
+        R.map((i) => {
+            return {
+                label: entries[i].trim(),
+                marker: Math.max(Math.floor((i - 1) * segment), 1),
+            };
+        }),
+    );
+});
+
+const zHealthStatusData = z.object({
+    dead: z.string().catch(() => getEntry(0)),
+    enabled: z.boolean().catch(true),
+    full: z.string().catch(() => getEntry(-1)),
+    entries: zHealthStatusEntries,
+});
+
+const zHealthStatus = zHealthStatusData.transform((data) => {
+    if (data.entries.length === 0) {
+        data.entries.push({ label: HEALTH_STATUS_DEFAULT_LABEL, marker: 50 });
+    } else {
+        filterHealthStatusSourceEntries(data);
     }
 
-    getInitialValue(data?: object): SourceFromSchema<HealthStatusEntrySchema>[] {
-        const entries = getEntries();
-        const nbEntries = entries.length - 1;
+    return data;
+});
 
-        if (nbEntries < 1) {
-            return [];
+function filterHealthStatusSourceEntries(source: HealthStatusSource) {
+    const entries = R.pipe(
+        source.entries,
+        R.filter((entry) => R.isNumber(entry.marker)),
+        R.sortBy(R.prop("marker")),
+    );
+
+    for (let i = entries.length - 1; i >= 0; i--) {
+        const entry = entries[i];
+        const previous = entries[i - 1]?.marker ?? 0;
+        const next = entries[i + 1]?.marker ?? 100;
+
+        if (entry.marker <= previous) {
+            entry.marker = previous + 1;
         }
 
-        const segment = 100 / (nbEntries - 1);
-
-        return R.pipe(
-            R.range(1, nbEntries),
-            R.map((i) => {
-                return {
-                    label: entries[i].trim(),
-                    marker: Math.max(Math.floor((i - 1) * segment), 1),
-                };
-            })
-        );
+        if (entry.marker >= next) {
+            entries.splice(i, 1);
+        }
     }
+
+    source.entries = entries;
 }
 
-class HealthStatus extends foundry.abstract.DataModel<null, HealthStatusSchema> {
-    static DEFAULT_LABEL = "???";
+function getEntryFromHealthData(health: HealthData, status: HealthStatus): string {
+    const { max, ratio, value } = health.total;
 
-    static defineSchema(): HealthStatusSchema {
-        return {
-            dead: new fields.StringField({
-                required: true,
-                nullable: false,
-                blank: true,
-                initial: () => {
-                    return getEntry(0);
-                },
-            }),
-            enabled: new fields.BooleanField({
-                required: true,
-                nullable: false,
-                initial: true,
-            }),
-            full: new fields.StringField({
-                required: true,
-                nullable: false,
-                blank: true,
-                initial: () => {
-                    return getEntry(-1);
-                },
-            }),
-            entries: new HealthStatusEntriesField(),
-        };
+    if (value === 0) {
+        return status.dead;
     }
 
-    static filterSourceEntries(source: HealthStatusSource) {
-        const entries = R.pipe(
-            source.entries,
-            R.filter((entry) => R.isNumber(entry.marker)),
-            R.sortBy(R.prop("marker"))
-        );
-
-        for (let i = entries.length - 1; i >= 0; i--) {
-            const entry = entries[i];
-            const previous = entries[i - 1]?.marker ?? 0;
-            const next = entries[i + 1]?.marker ?? 100;
-
-            if (entry.marker <= previous) {
-                entry.marker = previous + 1;
-            }
-
-            if (entry.marker >= next) {
-                entries.splice(i, 1);
-            }
-        }
-
-        source.entries = entries;
+    if (value >= max) {
+        return status.full;
     }
 
-    _initializeSource(
-        data: object,
-        options?: DataModelConstructionOptions<null> | undefined
-    ): HealthStatusSource {
-        const source = super._initializeSource(data, options);
+    const percent = Math.max(ratio * 100, 1);
+    const entry = R.pipe(
+        status.entries,
+        R.sortBy([R.prop("marker"), "desc"]),
+        R.find((entry) => percent >= entry.marker),
+    );
 
-        if (source.entries.length === 0) {
-            source.entries.push({ label: HealthStatus.DEFAULT_LABEL, marker: 50 });
-        } else {
-            HealthStatus.filterSourceEntries(source);
-        }
-
-        return source;
-    }
-
-    getEntryFromHealthData(data: HealthData): string {
-        const { max, ratio, value } = data.total;
-
-        if (value === 0) {
-            return this.dead;
-        }
-
-        if (value >= max) {
-            return this.full;
-        }
-
-        const percent = Math.max(ratio * 100, 1);
-        const entry = R.pipe(
-            this.entries,
-            R.sortBy([R.prop("marker"), "desc"]),
-            R.find((entry) => percent >= entry.marker)
-        );
-
-        return entry?.label ?? HealthStatus.DEFAULT_LABEL;
-    }
+    return entry?.label ?? HEALTH_STATUS_DEFAULT_LABEL;
 }
 
 function getEntries(): string[] {
@@ -163,23 +99,14 @@ function getEntry(index: number): string {
     return getEntries().at(index)?.trim() ?? "";
 }
 
-interface HealthStatus
-    extends foundry.abstract.DataModel<null, HealthStatusSchema>,
-        ModelPropsFromSchema<HealthStatusSchema> {}
+type HealthStatusSource = z.input<typeof zHealthStatusData>;
+type HealthStatus = z.output<typeof zHealthStatusData>;
 
-type HealthStatusEntrySchema = {
-    marker: fields.NumberField<number, number, true, false, true>;
-    label: fields.StringField<string, string, true, false, true>;
+export {
+    filterHealthStatusSourceEntries,
+    getEntryFromHealthData,
+    HEALTH_STATUS_DEFAULT_LABEL,
+    zHealthStatus,
+    zHealthStatusData,
 };
-
-type HealthStatusSchema = {
-    enabled: fields.BooleanField;
-    dead: fields.StringField<string, string, true, false, true>;
-    full: fields.StringField<string, string, true, false, true>;
-    entries: ArrayField<fields.SchemaField<HealthStatusEntrySchema>, true, false, true>;
-};
-
-type HealthStatusSource = SourceFromSchema<HealthStatusSchema>;
-
-export { HealthStatus };
-export type { HealthStatusSource };
+export type { HealthStatus, HealthStatusSource };

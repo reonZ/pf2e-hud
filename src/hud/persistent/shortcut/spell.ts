@@ -1,20 +1,5 @@
 import { CustomSpellcastingEntry, isAnimistEntry, isFocusCantrip, SPELL_CATEGORIES, SpellCategoryType } from "hud";
 import {
-    BaseSpellcastingEntry,
-    CharacterPF2e,
-    ConsumablePF2e,
-    CreaturePF2e,
-    IdField,
-    localize,
-    OneToTen,
-    R,
-    SpellCollection,
-    SpellPF2e,
-    ValueAndMax,
-    ValueAndMaybeMax,
-    ZeroToTen,
-} from "module-helpers";
-import {
     BaseShortcutSchema,
     generateBaseShortcutFields,
     getItemSlug,
@@ -27,6 +12,22 @@ import {
     ShortcutSource,
 } from "..";
 import fields = foundry.data.fields;
+import {
+    BaseSpellcastingEntry,
+    CharacterPF2e,
+    ConsumablePF2e,
+    CreaturePF2e,
+    localize,
+    ModelPropsFromSchema,
+    OneToTen,
+    R,
+    SpellCollection,
+    SpellPF2e,
+    ValueAndMax,
+    ValueAndMaybeMax,
+    ZeroToTen,
+} from "foundry-helpers";
+import { IdField } from "_utils";
 
 class SpellcastingEntryIdField<
     TRequired extends boolean = true,
@@ -35,7 +36,7 @@ class SpellcastingEntryIdField<
 > extends fields.DocumentIdField<string, TRequired, TNullable, THasInitial> {
     protected _validateType(value: string) {
         const id = value.endsWith("-casting") ? value.slice(0, -8) : value;
-        super._validateType(id);
+        return super._validateType(id);
     }
 }
 
@@ -308,7 +309,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
         return dcLabel ? `${dcLabel} - ${entry.name}` : entry.name;
     }
 
-    use(event: MouseEvent) {
+    use() {
         const item = this.item;
         if (!item?.isOfType("spell")) return;
 
@@ -338,9 +339,7 @@ class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<Cr
 
         const entry = collection.entry;
         const entrySheetData = await this.cached("spellcastingEntry", entryId, () => {
-            return entry.getSheetData({
-                spells: collection,
-            }) as Promise<CustomSpellcastingEntry>;
+            return entry.getSheetData({ spells: collection }) as unknown as Promise<CustomSpellcastingEntry>;
         });
 
         const vessels = getAnimistVesselsData(this.cached, actor);

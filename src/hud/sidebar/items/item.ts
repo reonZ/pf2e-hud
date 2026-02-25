@@ -1,23 +1,16 @@
 import {
-    BaseSidebarItem,
-    ConsumableShortcutData,
-    EquipmentShortcutData,
-    getItemSlug,
-    SidebarItemDragData,
-} from "hud";
-import {
     ActorPF2e,
     createHTMLElement,
     ErrorPF2e,
     htmlClosest,
-    IdentifyItemPopup,
     InventoryItem,
     isControlDown,
-    ITEM_CARRY_TYPES,
     PhysicalItemPF2e,
     tupleHasValue,
     usePhysicalItem,
-} from "module-helpers";
+} from "foundry-helpers";
+import { IdentifyItemPopup, ITEM_CARRY_TYPES } from "foundry-helpers/dist";
+import { BaseSidebarItem, ConsumableShortcutData, EquipmentShortcutData, getItemSlug, SidebarItemDragData } from "hud";
 import applications = foundry.applications;
 
 class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, SidebarItem> {
@@ -33,7 +26,7 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
         }
     }
 
-    delete(event: MouseEvent) {
+    delete(event: PointerEvent) {
         const item = this.item;
         item.actor.sheet["deleteItem"](item, event);
     }
@@ -56,9 +49,7 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
 
         const itemId = htmlClosest(anchor, "[data-item-id]")?.dataset.itemId;
         const item = actor.inventory.get(itemId, { strict: true });
-        const hasStowingContainers = actor.itemTypes.backpack.some(
-            (i) => i.system.stowing && !i.isInContainer
-        );
+        const hasStowingContainers = actor.itemTypes.backpack.some((i) => i.system.stowing && !i.isInContainer);
         const templatePath = `${SYSTEM_ROOT}/templates/actors/partials/carry-type.hbs`;
         const templateArgs = { item, hasStowingContainers };
         const template = await applications.handlebars.renderTemplate(templatePath, templateArgs);
@@ -176,12 +167,17 @@ interface ItemsSidebarItem extends Readonly<Omit<SidebarItem, "canBeUsed">> {
 
 type ItemShortcutData = ConsumableShortcutData | EquipmentShortcutData;
 
-type SidebarItem = Omit<InventoryItem<PhysicalItemPF2e<ActorPF2e>>, "heldItems"> & {
-    canBeUsed: boolean;
-    isSubitem: boolean;
-    heldItems?: ItemsSidebarItem[];
-    subItems?: ItemsSidebarItem[];
-};
+type SidebarItem = Prettify<
+    Omit<
+        InventoryItem<PhysicalItemPF2e<ActorPF2e>>,
+        "canEditQuantity" | "heldItems" | "subitems" | "unitBulk" | "unitPrice" | "assetValue"
+    > & {
+        canBeUsed: boolean;
+        isSubitem: boolean;
+        heldItems?: ItemsSidebarItem[];
+        subItems?: ItemsSidebarItem[];
+    }
+>;
 
 export { ItemsSidebarItem };
 export type { SidebarItem };

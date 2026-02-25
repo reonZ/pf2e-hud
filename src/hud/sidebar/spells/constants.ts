@@ -1,4 +1,4 @@
-import { SpellcastingCategory } from "module-helpers";
+import { SpellcastingCategory } from "foundry-helpers";
 
 const SPELL_CATEGORIES: Record<SpellCategoryType, { icon: string; label: string }> = {
     charges: {
@@ -43,13 +43,7 @@ const SPELL_CATEGORIES: Record<SpellCategoryType, { icon: string; label: string 
     },
 };
 
-type SpellCategoryType =
-    | Exclude<SpellcastingCategory, "items">
-    | "charges"
-    | "staff"
-    | "wand"
-    | "scroll"
-    | "flexible";
+type SpellCategoryType = Exclude<SpellcastingCategory, "items"> | "charges" | "staff" | "wand" | "scroll" | "flexible";
 
 export type { SpellCategoryType };
 export { SPELL_CATEGORIES };

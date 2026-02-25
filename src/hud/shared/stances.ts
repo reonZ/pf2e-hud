@@ -2,13 +2,14 @@ import {
     actorItems,
     ActorPF2e,
     CreaturePF2e,
+    DocumentUUID,
     EffectPF2e,
     findItemWithSourceId,
+    getFirstTokenThatMatches,
     getItemSourceFromUuid,
-    hasTokenThatMatches,
     isSupressedFeat,
     R,
-} from "module-helpers";
+} from "foundry-helpers";
 
 const REPLACERS: Map<DocumentUUID, { replace: DocumentUUID; effect: DocumentUUID }> = new Map([
     [
@@ -39,11 +40,7 @@ const EXTRAS: Map<DocumentUUID, { effect: DocumentUUID }> = new Map([
     ],
 ]);
 
-async function toggleStance(
-    actor: CreaturePF2e,
-    sourceUUID: DocumentUUID,
-    force?: boolean
-): Promise<void> {
+async function toggleStance(actor: CreaturePF2e, sourceUUID: DocumentUUID, force?: boolean): Promise<void> {
     if (!force && !canUseStances(actor)) return;
 
     const effects = R.pipe(
@@ -52,7 +49,7 @@ async function toggleStance(
             const effect = findItemWithSourceId(actor, effectUUID, "effect");
             return effect ? [effectUUID, effect.id] : undefined;
         }),
-        R.filter(R.isTruthy)
+        R.filter(R.isTruthy),
     );
 
     const effect = effects.findSplice(([effectUUID]) => {
@@ -62,7 +59,7 @@ async function toggleStance(
     if (effects.length) {
         await actor.deleteEmbeddedDocuments(
             "Item",
-            effects.map(([_, id]) => id)
+            effects.map(([_, id]) => id),
         );
     }
 
@@ -87,8 +84,8 @@ async function addStance(actor: CreaturePF2e, sourceUUID: DocumentUUID, createMe
     }
 }
 
-function canUseStances(actor: ActorPF2e) {
-    return hasTokenThatMatches(actor, (token) => token.inCombat);
+function canUseStances(actor: ActorPF2e): boolean {
+    return !!getFirstTokenThatMatches(actor, (token) => token.inCombat);
 }
 
 function getStances(actor: CreaturePF2e): StanceData[] | undefined {
@@ -104,11 +101,7 @@ function getStances(actor: CreaturePF2e): StanceData[] | undefined {
         const replacer = REPLACERS.get(sourceUUID);
         const extra = EXTRAS.get(sourceUUID);
 
-        if (
-            !replacer &&
-            !extra &&
-            (!item.system.traits.value.includes("stance") || !item.system.selfEffect?.uuid)
-        )
+        if (!replacer && !extra && (!item.system.traits.value.includes("stance") || !item.system.selfEffect?.uuid))
             continue;
 
         const effectUUID = replacer?.effect ?? extra?.effect ?? item.system.selfEffect!.uuid;

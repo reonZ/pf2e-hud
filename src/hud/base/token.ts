@@ -1,30 +1,27 @@
 import {
     activateHooksAndWrappers,
     ActorPF2e,
-    ApplicationClosingOptions,
-    ApplicationConfiguration,
-    ApplicationPosition,
     assignStyle,
-    createToggleableHook,
+    createToggleHook,
     disableHooksAndWrappers,
     TokenDocumentPF2e,
     TokenPF2e,
-} from "module-helpers";
+} from "foundry-helpers";
 import { BaseActorPF2eHUD } from ".";
 
 abstract class BaseTokenPF2eHUD<
     TSettings extends Record<string, any>,
-    TActor extends ActorPF2e
+    TActor extends ActorPF2e,
 > extends BaseActorPF2eHUD<TSettings, TActor> {
     #token: TokenPF2e | null = null;
 
     #hooks = [
-        createToggleableHook("deleteToken", this.#onDeleteToken.bind(this)),
-        createToggleableHook("updateToken", this.#onUpdateToken.bind(this)),
-        createToggleableHook(["renderTokenHUD", "tearDownTokenLayer"], () => this.close()),
+        createToggleHook("deleteToken", this.#onDeleteToken.bind(this)),
+        createToggleHook("updateToken", this.#onUpdateToken.bind(this)),
+        createToggleHook(["renderTokenHUD", "tearDownTokenLayer"], () => this.close()),
     ];
 
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<fa.ApplicationConfiguration> = {
         window: {
             positioned: true,
         },
@@ -64,7 +61,7 @@ abstract class BaseTokenPF2eHUD<
 
     protected abstract _onSetToken(token: TokenPF2e): void;
 
-    protected _onClose(options: ApplicationClosingOptions) {
+    protected _onClose(options: fa.ApplicationClosingOptions) {
         this._cleanupToken();
     }
 
@@ -81,7 +78,7 @@ abstract class BaseTokenPF2eHUD<
         }
     }
 
-    protected _updatePosition(position: ApplicationPosition) {
+    protected _updatePosition(position: fa.ApplicationPosition) {
         const token = this.token;
         if (!token || !canvas.ready) return position;
 

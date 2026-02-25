@@ -1,5 +1,15 @@
 import { rollRecallKnowledge } from "actions";
 import {
+    AbilityItemPF2e,
+    ActorPF2e,
+    CompendiumItemUUID,
+    ItemUUID,
+    R,
+    SaveType,
+    signedInteger,
+    SYSTEM,
+} from "foundry-helpers";
+import {
     BaseSidebarItem,
     BaseStatisticAction,
     BaseStatisticRollOptions,
@@ -8,7 +18,6 @@ import {
     RawBaseActionData,
     StatisticType,
 } from "hud";
-import { AbilityItemPF2e, ActorPF2e, DialogV2Button, MODULE, R, SYSTEM, SaveType, signedInteger } from "module-helpers";
 
 const RAW_EXTRAS_ACTIONS = [
     {
@@ -64,9 +73,9 @@ class ExtrasSidebarItem extends BaseSidebarItem<AbilityItemPF2e, ExtractedExtraA
     async roll(actor: ActorPF2e, event: MouseEvent, options: BaseStatisticRollOptions) {
         if (!options.statistic && this.hasChoices) {
             const result = await new Promise<StatisticType | SaveType | null>((resolve) => {
-                const buttons: DialogV2Button[] = R.pipe(
+                const buttons: fa.api.DialogV2Button[] = R.pipe(
                     this.choices,
-                    R.map((slug): DialogV2Button | undefined => {
+                    R.map((slug): fa.api.DialogV2Button | undefined => {
                         const statistic = actor.getStatistic(slug);
                         if (!statistic) return;
 
@@ -163,7 +172,7 @@ class ExtraAction extends BaseStatisticAction<ExtrasActionData, AbilityItemPF2e>
     }
 }
 
-const _cachedExtrasActions: Collection<ExtraAction> = new Collection();
+const _cachedExtrasActions: Collection<ItemUUID, ExtraAction> = new Collection();
 async function prepareExtrasActions() {
     if (_cachedExtrasActions.size) return;
 
@@ -191,7 +200,7 @@ async function prepareExtrasActions() {
     );
 }
 
-function getExtrasActions(): Collection<ExtraAction> {
+function getExtrasActions(): Collection<ItemUUID, ExtraAction> {
     return _cachedExtrasActions!;
 }
 
@@ -210,8 +219,6 @@ type ExtrasActionData = RawBaseActionData & {
 type ExtraActionKey = (typeof RAW_EXTRAS_ACTIONS)[number]["key"];
 
 type ExtractedExtraActionData = Omit<ExtractReadonly<ExtraAction>, "data">;
-
-MODULE.devExpose({ getExtrasActions });
 
 export { ExtrasSidebarItem, RAW_EXTRAS_ACTIONS, getExtraAction, getExtraKeys, getExtrasActions, prepareExtrasActions };
 export type { ExtraAction, ExtraActionKey, ExtractedExtraActionData, ExtrasActionData };

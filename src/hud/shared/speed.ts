@@ -1,4 +1,4 @@
-import { ActorPF2e, CreaturePF2e, CreatureSpeeds, getFlag, MovementType, R } from "module-helpers";
+import { ActorPF2e, CreaturePF2e, CreatureSpeeds, getFlag, MovementType, R } from "foundry-helpers";
 import { getGlobalSetting } from "settings";
 
 const SPEEDS_ICONS = {
@@ -13,11 +13,7 @@ function getAllSpeeds(actor: CreaturePF2e): ActorSpeeds | undefined {
     const speeds: HudSpeed[] = R.pipe(
         R.values(actor.movement.speeds),
         R.filter((speed): speed is ModuleSpeed => {
-            return (
-                R.isTruthy(speed) &&
-                speed.type !== "travel" &&
-                (speed.type === "land" || speed.value > 0)
-            );
+            return R.isTruthy(speed) && speed.type !== "travel" && (speed.type === "land" || speed.value > 0);
         }),
         R.map(({ type, value, label }): HudSpeed => {
             return {
@@ -26,7 +22,7 @@ function getAllSpeeds(actor: CreaturePF2e): ActorSpeeds | undefined {
                 label,
                 type,
             };
-        })
+        }),
     );
 
     if (!speeds.length) return;

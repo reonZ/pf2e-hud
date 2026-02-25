@@ -1,28 +1,22 @@
-import { itemWithActor, sendItemToChat } from "hud";
 import {
     ActorPF2e,
-    ApplicationConfiguration,
-    ApplicationRenderOptions,
     createHTMLElement,
-    getSpellRankLabel,
     htmlClosest,
     htmlQuery,
     ItemPF2e,
+    ItemUUID,
     RawItemChatData,
     ZeroToTen,
-} from "module-helpers";
+} from "foundry-helpers";
+import { getSpellRankLabel } from "foundry-helpers/dist";
+import { itemWithActor, sendItemToChat } from "hud";
 import { BaseHudPopup } from ".";
 
 class ItemHudPopup extends BaseHudPopup {
     #item: ItemPF2e;
     #dataset: DOMStringMap | undefined;
 
-    constructor(
-        actor: ActorPF2e,
-        item: ItemPF2e,
-        event: Event,
-        options?: DeepPartial<ApplicationConfiguration>
-    ) {
+    constructor(actor: ActorPF2e, item: ItemPF2e, event: Event, options?: DeepPartial<fa.ApplicationConfiguration>) {
         super(actor, options);
 
         this.#item = item;
@@ -54,10 +48,10 @@ class ItemHudPopup extends BaseHudPopup {
         return title;
     }
 
-    async _renderFrame(options: ApplicationRenderOptions) {
+    async _renderFrame(options: fa.ApplicationRenderOptions) {
         const frame = await super._renderFrame(options);
 
-        const chatBtn = `<button type="button" class="header-control" data-action="send-to-chat" 
+        const chatBtn = `<button type="button" class="header-control" data-action="send-to-chat"
         data-tooltip="PF2E.NPC.SendToChat" aria-label="PF2E.NPC.SendToChat">
         <i class="fa-solid fa-message"></i></button>`;
 
@@ -65,7 +59,7 @@ class ItemHudPopup extends BaseHudPopup {
         return frame;
     }
 
-    protected async _prepareContext(options: ApplicationRenderOptions): Promise<ItemHudContext> {
+    protected async _prepareContext(_options: fa.ApplicationRenderOptions): Promise<ItemHudContext> {
         const actor = this.actor;
         const dataset = this.#dataset;
         const item = itemWithActor(this.item, actor);
@@ -79,10 +73,7 @@ class ItemHudPopup extends BaseHudPopup {
         };
     }
 
-    protected async _renderHTML(
-        context: ItemHudContext,
-        options: ApplicationRenderOptions
-    ): Promise<HTMLElement> {
+    protected async _renderHTML(context: ItemHudContext, _options: fa.ApplicationRenderOptions): Promise<HTMLElement> {
         const summaryElement = createHTMLElement("div", {
             classes: ["item-summary", "item"],
             dataset: {
@@ -91,11 +82,7 @@ class ItemHudPopup extends BaseHudPopup {
             },
         });
 
-        await context.actor.sheet.itemRenderer.renderItemSummary(
-            summaryElement,
-            context.item,
-            context.data
-        );
+        await context.actor.sheet.itemRenderer.renderItemSummary(summaryElement, context.item, context.data);
 
         const damageLinks = summaryElement.querySelectorAll<HTMLElement>("a[data-damage-roll]");
         for (const link of damageLinks) {
@@ -129,7 +116,7 @@ class ItemHudPopup extends BaseHudPopup {
     }
 }
 
-type ItemHudContext = {
+type ItemHudContext = fa.ApplicationRenderContext & {
     actor: ActorPF2e;
     data: RawItemChatData;
     dataset: DOMStringMap | undefined;

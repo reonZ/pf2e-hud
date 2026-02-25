@@ -1,10 +1,6 @@
-import { CharacterPF2e, CreaturePF2e, FeatPF2e, IdField } from "module-helpers";
-import {
-    BaseShortcutSchema,
-    generateBaseShortcutFields,
-    PersistentShortcut,
-    ShortcutSource,
-} from ".";
+import { CharacterPF2e, CreaturePF2e, FeatPF2e, ModelPropsFromSchema } from "foundry-helpers";
+import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutSource } from ".";
+import { IdField } from "_utils";
 
 class FeatShortcut extends PersistentShortcut<FeatShortcutSchema> {
     static defineSchema(): FeatShortcutSchema {
@@ -17,10 +13,7 @@ class FeatShortcut extends PersistentShortcut<FeatShortcutSchema> {
         };
     }
 
-    static async getItem(
-        actor: CreaturePF2e,
-        data: FeatShortcutData
-    ): Promise<Maybe<FeatPF2e<CharacterPF2e>>> {
+    static async getItem(actor: CreaturePF2e, data: FeatShortcutData): Promise<Maybe<FeatPF2e<CharacterPF2e>>> {
         return actor.items.get<FeatPF2e<CharacterPF2e>>(data.itemId);
     }
 

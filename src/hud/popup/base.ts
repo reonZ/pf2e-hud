@@ -1,18 +1,12 @@
+import { ActorPF2e } from "foundry-helpers";
 import { makeFadeable } from "hud";
-import {
-    ActorPF2e,
-    ApplicationClosingOptions,
-    ApplicationConfiguration,
-    ApplicationRenderOptions,
-} from "module-helpers";
 
-abstract class BaseHudPopup<TActor extends ActorPF2e = ActorPF2e> extends foundry.applications.api
-    .ApplicationV2 {
+abstract class BaseHudPopup<TActor extends ActorPF2e = ActorPF2e> extends foundry.applications.api.ApplicationV2 {
     #actor: TActor;
 
     static apps: Set<BaseHudPopup> = new Set();
 
-    static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
+    static DEFAULT_OPTIONS: DeepPartial<fa.ApplicationConfiguration> = {
         id: "pf2e-hud-popup-{id}",
         window: {
             positioned: true,
@@ -23,7 +17,7 @@ abstract class BaseHudPopup<TActor extends ActorPF2e = ActorPF2e> extends foundr
         classes: ["pf2e-hud-popup"],
     };
 
-    constructor(actor: TActor, options?: DeepPartial<ApplicationConfiguration>) {
+    constructor(actor: TActor, options?: DeepPartial<fa.ApplicationConfiguration>) {
         super(options);
 
         this.#actor = actor;
@@ -36,21 +30,21 @@ abstract class BaseHudPopup<TActor extends ActorPF2e = ActorPF2e> extends foundr
         return this.#actor;
     }
 
-    close(options: ApplicationClosingOptions = {}): Promise<this> {
+    close(options: fa.ApplicationClosingOptions = {}): Promise<this> {
         options.animate = false;
         return super.close(options);
     }
 
-    protected _onFirstRender(context: object, options: ApplicationRenderOptions): void {
+    protected async _onFirstRender(context: object, options: fa.ApplicationRenderOptions) {
         makeFadeable(this);
     }
 
-    _onClose(options?: ApplicationClosingOptions) {
+    _onClose(options?: fa.ApplicationClosingOptions) {
         delete this.actor?.apps[this.id];
         BaseHudPopup.apps.delete(this);
     }
 
-    _replaceHTML(result: HTMLElement, content: HTMLElement, options: ApplicationRenderOptions) {
+    _replaceHTML(result: HTMLElement, content: HTMLElement, options: fa.ApplicationRenderOptions) {
         content.replaceChildren(result);
     }
 }

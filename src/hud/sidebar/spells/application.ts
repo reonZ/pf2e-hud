@@ -7,14 +7,13 @@ import {
     SidebarPF2eHUD,
     SliderData,
 } from "hud";
+import { SlotSpellData, SPELL_CATEGORIES, SpellCategoryType, SpellSidebarItem } from ".";
 import {
+    getEquipAnnotation,
     ActiveSpell,
-    addListenerAll,
-    ApplicationRenderOptions,
     ConsumablePF2e,
     CreaturePF2e,
     dataToDatasetString,
-    getEquipAnnotation,
     localeCompare,
     OneToTen,
     R,
@@ -22,10 +21,10 @@ import {
     SpellcastingSheetData,
     SpellcastingSlotGroup,
     SpellPF2e,
-    spellSlotGroupIdToNumber,
     ValueAndMax,
-} from "module-helpers";
-import { SlotSpellData, SPELL_CATEGORIES, SpellCategoryType, SpellSidebarItem } from ".";
+} from "foundry-helpers";
+import { spellSlotGroupIdToNumber } from "foundry-helpers/dist";
+import { addListenerAll } from "foundry-helpers/src";
 
 class SpellsSidebarPF2eHUD extends SidebarPF2eHUD<SpellPF2e, SpellSidebarItem> {
     get name(): "spells" {
@@ -36,7 +35,7 @@ class SpellsSidebarPF2eHUD extends SidebarPF2eHUD<SpellPF2e, SpellSidebarItem> {
         return itemId && groupId ? `${itemId}-${groupId}-${slotId}` : itemId;
     }
 
-    protected async _prepareContext(options: ApplicationRenderOptions): Promise<SpellsHudContext> {
+    protected async _prepareContext(_options: fa.ApplicationRenderOptions): Promise<SpellsHudContext> {
         return getSpellcastingData.call(this);
     }
 
@@ -71,14 +70,9 @@ class SpellsSidebarPF2eHUD extends SidebarPF2eHUD<SpellPF2e, SpellSidebarItem> {
         const actor = this.actor;
 
         if (actor.isOfType("character") && game.dailies?.active) {
-            addListenerAll(
-                html,
-                "[data-action='update-staff-charges']",
-                "change",
-                (el: HTMLInputElement) => {
-                    game.dailies?.api.setStaffChargesValue(actor, el.valueAsNumber);
-                }
-            );
+            addListenerAll(html, "[data-action='update-staff-charges']", "change", (el: HTMLInputElement) => {
+                game.dailies?.api.setStaffChargesValue(actor, el.valueAsNumber);
+            });
         }
     }
 
@@ -133,18 +127,13 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
         const [categoryType, consumable] =
             entry.category === "items" && item
                 ? [item.category, item]
-                : [
-                      entry.isFlexible ? "flexible" : entry.isStaff ? "staff" : entry.category,
-                      undefined,
-                  ];
+                : [entry.isFlexible ? "flexible" : entry.isStaff ? "staff" : entry.category, undefined];
 
         const category = SPELL_CATEGORIES[categoryType as SpellCategoryType];
         if (!category) continue;
 
         const entryDc = entry.statistic?.dc.value;
-        const entryDcLabel = entryDc
-            ? game.i18n.format("PF2E.DCWithValue", { dc: entryDc, text: "" })
-            : "";
+        const entryDcLabel = entryDc ? game.i18n.format("PF2E.DCWithValue", { dc: entryDc, text: "" }) : "";
         const entryLabel = game.i18n.localize(category.label);
         const entryTooltip = entryDcLabel
             ? `${entryLabel} - ${entryDcLabel}<br>${entry.name}`
@@ -155,7 +144,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
             ? {
                   ...annotationData,
                   dataset: dataToDatasetString(
-                      R.pick(annotationData, ["carryType", "cost", "fullAnnotation", "handsHeld"])
+                      R.pick(annotationData, ["carryType", "cost", "fullAnnotation", "handsHeld"]),
                   ),
               }
             : undefined;
@@ -168,29 +157,21 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
             const isCantrip = group.id === "cantrips";
             const isBroken = !isCantrip && isCharges && !canUseCharges;
             const focusExpended = !isCantrip && focusPool.value <= 0;
-            const groupUses = R.isNumber(group.uses?.value)
-                ? (group.uses as ValueAndMax)
-                : undefined;
+            const groupUses = R.isNumber(group.uses?.value) ? (group.uses as ValueAndMax) : undefined;
 
             const getUses = (active: CustomGroupActive): SpellSidebarItem["uses"] | undefined => {
-                if (
-                    isCantrip ||
-                    entry.isFocusPool ||
-                    consumable ||
-                    (entry.isPrepared && !entry.isFlexible)
-                )
-                    return;
+                if (isCantrip || entry.isFocusPool || consumable || (entry.isPrepared && !entry.isFlexible)) return;
 
-                const uses = isCharges && !isBroken ? entry.uses : active.uses ?? groupUses;
+                const uses = isCharges && !isBroken ? entry.uses : (active.uses ?? groupUses);
                 if (!uses) return;
 
                 const input = entry.isStaff
                     ? ""
                     : isCharges
-                    ? "system.slots.slot1.value"
-                    : entry.isInnate
-                    ? "system.location.uses.value"
-                    : `system.slots.slot${groupNumber}.value`;
+                      ? "system.slots.slot1.value"
+                      : entry.isInnate
+                        ? "system.location.uses.value"
+                        : `system.slots.slot${groupNumber}.value`;
 
                 return {
                     ...uses,
@@ -208,9 +189,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                 const expended = entry.isFocusPool ? focusExpended : active.expended;
                 const isVirtual = entry.isSpontaneous && !isCantrip && active.virtual;
                 const signature =
-                    entry.isAnimist && !isCantrip && !isVirtual
-                        ? { toggled: active.signature }
-                        : undefined;
+                    entry.isAnimist && !isCantrip && !isVirtual ? { toggled: active.signature } : undefined;
 
                 const untrainedVesselBtn =
                     isVessel && !vesselsData.primary.includes(spell.id)
@@ -243,7 +222,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                 const sidebarSpell = this.addSidebarItem(
                     SpellSidebarItem,
                     `${spell.id}-${group.id}-${entry.isPrepared ? slotId : "x"}`,
-                    spellData
+                    spellData,
                 );
                 slotSpells.push(sidebarSpell);
             }
@@ -258,8 +237,8 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                     label: isFocusGroup
                         ? "PF2E.Focus.Spells"
                         : entry.isRitual
-                        ? "PF2E.Actor.Character.Spellcasting.Tab.Rituals"
-                        : group.label,
+                          ? "PF2E.Actor.Character.Spellcasting.Tab.Rituals"
+                          : group.label,
                     slotSpells: [],
                 });
 
@@ -325,7 +304,7 @@ type CustomSpellcastingEntry = Omit<SpellcastingSheetData, "category" | "groups"
 
 type CustomGroupActive = ActiveSpell & { uses?: ValueAndMax };
 
-type SpellsHudContext = {
+type SpellsHudContext = fa.ApplicationRenderContext & {
     spellGroups: SpellGroupData[];
 };
 
