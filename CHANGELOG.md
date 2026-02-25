@@ -1,3 +1,11 @@
+#
+
+- the module received a significant amount of rework internally
+  - this doesn't impact the end user experience, no setting has been reset and all your data is still available
+  - due to the sheer amount of features, it is impossible to test everything so keep an eye open for bugs
+- `Persistent Shortcut`:
+  - fix not being able to reset custom shortcut data to their original values
+
 # 2.43.2
 
 - `Token Tooltip`:
