@@ -217,7 +217,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             hookName: "get{}ContextOptions",
         });
 
-        return (this.#contextMenus = menuItems as any);
+        return (this.#contextMenus = menuItems);
     }
 
     protected _configurate(): void {
