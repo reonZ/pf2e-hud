@@ -1,16 +1,12 @@
+import { AbilityItemPF2e, localize, R, SaveType, signedInteger, z } from "foundry-helpers";
 import { BaseStatisticRollOptions, ExtraAction, getExtraAction, getExtraKeys, SIDEBAR_ICONS, StatisticType } from "hud";
-import {
-    generateStatisticActionSchema,
-    ShortcutRadialOption,
-    ShortcutSource,
-    StatisticActionShortcut,
-    StatisticActionShortcutSchema,
-} from "..";
-import { AbilityItemPF2e, localize, R, SaveType, signedInteger } from "foundry-helpers";
+import { ShortcutData, ShortcutRadialOption, StatisticActionShortcut, zStatisticActionShortcut } from "..";
+
+const zExtraActionShortcut = zStatisticActionShortcut("extraAction", getExtraKeys());
 
 class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityItemPF2e> {
-    static defineSchema(): ExtraActionShortcutSchema {
-        return generateStatisticActionSchema("extraAction", getExtraKeys);
+    static get schema() {
+        return zExtraActionShortcut;
     }
 
     get action(): ExtraAction | undefined {
@@ -86,15 +82,12 @@ class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityIt
     }
 }
 
-type ExtraActionShortcutSchema = StatisticActionShortcutSchema;
-
-type ExtraActionShortcutData = Omit<ShortcutSource<ExtraActionShortcutSchema>, "override"> & {
+interface ExtraActionShortcut extends ShortcutData<typeof zExtraActionShortcut> {
     type: "extraAction";
-    override?: {
-        agile?: boolean;
-        statistic?: StatisticType;
-    };
-};
+}
+
+type ExtraActionShortcutSource = z.input<typeof zExtraActionShortcut>;
+type ExtraActionShortcutData = z.output<typeof zExtraActionShortcut>;
 
 export { ExtraActionShortcut };
-export type { ExtraActionShortcutData };
+export type { ExtraActionShortcutData, ExtraActionShortcutSource };

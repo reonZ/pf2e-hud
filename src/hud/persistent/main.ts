@@ -38,7 +38,7 @@ import {
     waitDialog,
 } from "foundry-helpers";
 import { hud } from "main";
-import { PersistentEffectsPF2eHUD, PersistentShortcutsPF2eHUD, ShortcutData } from ".";
+import { PersistentEffectsPF2eHUD, PersistentShortcutsPF2eHUD, ShortcutSource } from ".";
 import {
     AdvancedStatistic,
     BaseActorPF2eHUD,
@@ -563,17 +563,17 @@ class PersistentPF2eHUD
         }
     }
 
-    async updateShortcuts(...args: [...string[], null | Record<string, ShortcutData[]>]): Promise<void>;
-    async updateShortcuts(...args: [string, number, null | ShortcutData[]]): Promise<void>;
+    async updateShortcuts(...args: [...string[], null | Record<string, ShortcutSource[]>]): Promise<void>;
+    async updateShortcuts(...args: [string, number, null | ShortcutSource[]]): Promise<void>;
     async updateShortcuts(...args: any[]) {
         const worldActor = this.worldActor;
         if (!worldActor) return;
 
-        const value = args.at(-1) as null | ShortcutData[];
+        const shortcuts = args.at(-1) as null | ShortcutSource[];
         const updateKey = ["shortcuts", ...(args.slice(0, -1) as string[])].join(".");
 
         // we don't want to re-render the entire persistent HUD
-        await updateFlag(worldActor, { [updateKey]: value }, { render: false });
+        await updateFlag(worldActor, { [updateKey]: shortcuts }, { render: false });
         this.shortcutsPanel.render({ keepCache: true });
     }
 
@@ -582,7 +582,7 @@ class PersistentPF2eHUD
         return this.updateShortcuts(updateKey, null);
     }
 
-    async overrideShortcuts(shortcuts: Record<string, ShortcutData[]>) {
+    async overrideShortcuts(shortcuts: Record<string, ShortcutSource[]>) {
         return this.updateShortcuts(`==${game.userId}`, shortcuts);
     }
 
@@ -1157,7 +1157,7 @@ class PersistentPF2eHUD
 
         if (!result) return;
 
-        const shortcuts = getFlag<Record<string, ShortcutData[]>>(worldActor, "shortcuts", result.user);
+        const shortcuts = getFlag<Record<string, ShortcutSource[]>>(worldActor, "shortcuts", result.user);
 
         if (!shortcuts) {
             await this.deleteShortcuts(true);

@@ -1,19 +1,15 @@
-import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutSource } from ".";
-import fields = foundry.data.fields;
-import { DocumentUUID, localize, MacroPF2e, ModelPropsFromSchema } from "foundry-helpers";
+import { localize, MacroPF2e, z, zDocumentUUID } from "foundry-helpers";
+import { PersistentShortcut, ShortcutData, zBaseShortcut } from ".";
 
-class MacroShortcut extends PersistentShortcut<MacroShortcutSchema> {
+const zMacroShortcut = zBaseShortcut("macro").extend({
+    macroUUID: zDocumentUUID("Macro"),
+});
+
+class MacroShortcut extends PersistentShortcut<typeof zMacroShortcut> {
     #macro: Maybe<MacroPF2e>;
 
-    static defineSchema(): MacroShortcutSchema {
-        return {
-            ...generateBaseShortcutFields("macro"),
-            macroUUID: new fields.DocumentUUIDField({
-                required: true,
-                nullable: false,
-                type: "Macro",
-            }),
-        };
+    static get schema() {
+        return zMacroShortcut;
     }
 
     async _initShortcut() {
@@ -49,15 +45,12 @@ class MacroShortcut extends PersistentShortcut<MacroShortcutSchema> {
     }
 }
 
-interface MacroShortcut extends ModelPropsFromSchema<MacroShortcutSchema> {}
-
-type MacroShortcutSchema = BaseShortcutSchema & {
-    macroUUID: fields.DocumentUUIDField<DocumentUUID, true, false, false>;
-};
-
-type MacroShortcutData = ShortcutSource<MacroShortcutSchema> & {
+interface MacroShortcut extends ShortcutData<typeof zMacroShortcut> {
     type: "macro";
-};
+}
+
+type MacroShortcutSource = z.input<typeof zMacroShortcut>;
+type MacroShortcutData = z.output<typeof zMacroShortcut>;
 
 export { MacroShortcut };
-export type { MacroShortcutData };
+export type { MacroShortcutData, MacroShortcutSource };

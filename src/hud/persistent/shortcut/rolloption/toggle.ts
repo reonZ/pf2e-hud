@@ -1,29 +1,21 @@
-import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutSource } from "..";
-import fields = foundry.data.fields;
-import { CreaturePF2e, ItemPF2e, localize, ModelPropsFromSchema, RollOptionToggle, Suboption } from "foundry-helpers";
+import { CreaturePF2e, ItemPF2e, localize, RollOptionToggle, Suboption, z } from "foundry-helpers";
+import { PersistentShortcut, ShortcutData, zBaseShortcut } from "..";
 
-function generateToggleShortcutFields(type: string): ToggleShortcutSchema {
-    return {
-        ...generateBaseShortcutFields(type),
-        domain: new fields.StringField({
-            required: true,
-            nullable: false,
-            blank: false,
-        }),
-        option: new fields.StringField({
-            required: true,
-            nullable: false,
-            blank: false,
-        }),
-    };
+function zBaseToggleShortcut(type: string) {
+    return zBaseShortcut(type).extend({
+        domain: z.string().nonempty(),
+        option: z.string().nonempty(),
+    });
 }
+
+const zToggleShortcut = zBaseToggleShortcut("toggle");
 
 class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> {
     #toggle?: RollOptionToggle;
     #selected?: Suboption;
 
-    static defineSchema(): ToggleShortcutSchema {
-        return generateToggleShortcutFields("toggle");
+    static get schema() {
+        return zToggleShortcut;
     }
 
     static async getItem(actor: CreaturePF2e, { domain, option }: ToggleShortcutData): Promise<Maybe<ItemPF2e>> {
@@ -122,23 +114,20 @@ class ToggleShortcut extends PersistentShortcut<ToggleShortcutSchema, ItemPF2e> 
                     },
                 ];
             },
-            (event, value) => {
+            (_event, value) => {
                 this.actor.toggleRollOption(this.domain, this.option, this.itemId, toggle.checked, value);
             },
         );
     }
 }
 
-interface ToggleShortcut extends ModelPropsFromSchema<ToggleShortcutSchema> {}
+interface ToggleShortcut extends ShortcutData<ToggleShortcutSchema> {
+    type: "toggle";
+}
 
-type ToggleShortcutSchema = BaseShortcutSchema & {
-    domain: fields.StringField<string, string, true, false, false>;
-    option: fields.StringField<string, string, true, false, false>;
-};
+type ToggleShortcutSchema = ReturnType<typeof zBaseToggleShortcut>;
+type ToggleShortcutSource = z.input<ToggleShortcutSchema>;
+type ToggleShortcutData = z.output<ToggleShortcutSchema>;
 
-type ToggleShortcutData = ShortcutSource<ToggleShortcutSchema> & {
-    type: "toggle" | "blastCost";
-};
-
-export { generateToggleShortcutFields, ToggleShortcut };
-export type { ToggleShortcutData, ToggleShortcutSchema };
+export { ToggleShortcut, zBaseToggleShortcut };
+export type { ToggleShortcutData, ToggleShortcutSchema, ToggleShortcutSource };

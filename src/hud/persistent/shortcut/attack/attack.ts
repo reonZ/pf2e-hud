@@ -1,23 +1,10 @@
-import {
-    AttackPopout,
-    CharacterPF2e,
-    CreaturePF2e,
-    EffectTrait,
-    ItemPF2e,
-    localize,
-    ModelPropsFromSchema,
-} from "foundry-helpers";
-import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutSource } from "..";
-import { IdField } from "_utils";
+import { AttackPopout, CharacterPF2e, CreaturePF2e, ItemPF2e, localize, z, zDocumentId } from "foundry-helpers";
+import { PersistentShortcut, ShortcutData, zBaseShortcut } from "..";
 
-function generateAttackShortcutFields(type: string): AttackShortcutSchema {
-    return {
-        ...generateBaseShortcutFields(type),
-        itemId: new IdField({
-            required: true,
-            nullable: false,
-        }),
-    };
+function zAttackShortcut(type: string) {
+    return zBaseShortcut(type).extend({
+        itemId: zDocumentId(true),
+    });
 }
 
 abstract class AttackShortcut<
@@ -77,19 +64,13 @@ interface AttackShortcut<
     TSchema extends AttackShortcutSchema,
     TItem extends ItemPF2e,
     TData extends { label: string },
-> extends ModelPropsFromSchema<AttackShortcutSchema> {
+> extends ShortcutData<AttackShortcutSchema> {
     type: "strike" | "blast";
 }
 
-type RollActionMacroParams =
-    | { elementTrait?: EffectTrait }
-    | { itemId?: string; slug?: string; type?: "blast" | "strike" };
+type AttackShortcutSchema = ReturnType<typeof zAttackShortcut>;
+type AttackShortcutSource = z.input<AttackShortcutSchema>;
+type AttackShortcutData = z.output<AttackShortcutSchema>;
 
-type AttackShortcutSchema = BaseShortcutSchema & {
-    itemId: IdField<true, false, false>;
-};
-
-type AttackShortcutData = ShortcutSource<AttackShortcutSchema>;
-
-export { AttackShortcut, generateAttackShortcutFields };
-export type { AttackShortcutData, AttackShortcutSchema, RollActionMacroParams };
+export { AttackShortcut, zAttackShortcut };
+export type { AttackShortcutData, AttackShortcutSchema, AttackShortcutSource };

@@ -1,37 +1,55 @@
 import { getUiScale } from "hud";
 
-import { ShortcutCache, ShortcutSlotId } from "..";
-import fields = foundry.data.fields;
 import {
     createHTMLElement,
     CreaturePF2e,
     DataModelConstructionContext,
-    DataSchema,
     DocumentUUID,
     ImageFilePath,
     ItemPF2e,
     localize,
-    ModelPropsFromSchema,
+    MODULE,
     render,
-    SourceFromSchema,
     ValueAndMaybeMax,
+    z,
+    zFilePath,
 } from "foundry-helpers";
+import { ShortcutCache, ShortcutSlotId } from "..";
+
+const zShortcutCustom = z.object({
+    img: zFilePath(["IMAGE"]).nullish().catch(undefined),
+    name: z.string().nonempty().nullish(),
+});
+
+function zBaseShortcut<T extends string>(type: T) {
+    return z.object({
+        custom: zShortcutCustom.prefault({}),
+        img: zFilePath<ImageFilePath>(["IMAGE"]),
+        name: z.string().nonempty(),
+        type: z.literal(type).default(type),
+    });
+}
 
 abstract class PersistentShortcut<
-    TSchema extends BaseShortcutSchema = BaseShortcutSchema,
+    TSchema extends BaseShortcut = ReturnType<typeof zBaseShortcut>,
     TItem extends ItemPF2e = ItemPF2e,
-> extends foundry.abstract.DataModel<null, TSchema> {
+> {
     #actor: CreaturePF2e;
     #cached: ShortcutCache;
+    #data: z.output<TSchema>;
     #element: HTMLElement | null = null;
     #item: Maybe<TItem>;
     #radial?: HTMLElement;
     #slot: number;
     #tooltip?: HTMLElement;
 
+    static get schema(): ReturnType<typeof zBaseShortcut> {
+        throw MODULE.Error("shortcut schema must be declared");
+    }
+
     static async getItem(
         actor: CreaturePF2e,
-        data: ShortcutSource<BaseShortcutSchema>,
+        data: BaseShortcutSource,
         cached: ShortcutCache,
     ): Promise<Maybe<ItemPF2e>> {
         return null;
@@ -39,18 +57,25 @@ abstract class PersistentShortcut<
 
     constructor(
         actor: CreaturePF2e,
-        data: DeepPartial<SourceFromSchema<TSchema>>,
+        data: z.output<TSchema>,
         item: Maybe<ItemPF2e>,
         slot: number,
         cached: ShortcutCache,
         options?: DataModelConstructionContext<null>,
     ) {
-        super(data as DeepPartial<fields.SourceFromSchema<DataSchema>>, options);
-
         this.#actor = actor;
         this.#cached = cached;
+        this.#data = data;
         this.#slot = slot;
         this.#item = item as Maybe<TItem>;
+
+        for (const property in this.#data) {
+            Object.defineProperty(this, property, {
+                get() {
+                    return this.#data[property];
+                },
+            });
+        }
     }
 
     abstract get icon(): string;
@@ -245,44 +270,29 @@ abstract class PersistentShortcut<
 
         radial.addEventListener("mouseleave", removeRadial);
     }
+
+    updateCustom({ img, name }: Required<ShortcutCustomSource>) {
+        this.#data.custom = {
+            img: img || undefined,
+            name: name || undefined,
+        };
+    }
+
+    encode(): z.input<TSchema> {
+        return (this.constructor as typeof PersistentShortcut).schema.encode(this.#data) as z.input<TSchema>;
+    }
 }
 
-interface PersistentShortcut<
-    TSchema extends BaseShortcutSchema,
-    TItem extends ItemPF2e,
-> extends ModelPropsFromSchema<BaseShortcutSchema> {}
+interface PersistentShortcut extends Readonly<BaseShortcutData> {}
 
-function generateBaseShortcutFields<T extends string>(type: T): BaseShortcutSchema {
-    return {
-        custom: new fields.SchemaField({
-            img: new fields.FilePathField({
-                categories: ["IMAGE"],
-                required: false,
-                nullable: true,
-            }),
-            name: new fields.StringField({
-                required: false,
-                nullable: true,
-            }),
-        }),
-        img: new fields.FilePathField({
-            categories: ["IMAGE"],
-            required: true,
-            nullable: false,
-        }),
-        name: new fields.StringField({
-            required: false,
-            nullable: false,
-        }),
-        type: new fields.StringField({
-            required: true,
-            nullable: false,
-            blank: false,
-            initial: type,
-            choices: [type],
-        }),
-    };
-}
+type ShortcutCustomSource = z.input<typeof zShortcutCustom>;
+
+type BaseShortcut = ReturnType<typeof zBaseShortcut>;
+type BaseShortcutSource = z.input<BaseShortcut>;
+type BaseShortcutData = z.output<BaseShortcut>;
+
+type ShortcutSource<T extends BaseShortcut = BaseShortcut> = z.input<T>;
+type ShortcutData<T extends BaseShortcut = BaseShortcut> = Readonly<Omit<z.output<T>, "custom" | "type">>;
 
 type ShortcutRadialSection = {
     title: string | undefined;
@@ -305,29 +315,15 @@ type ShortcutLabel = {
     class: string;
 };
 
-type ShortcutCustomSchema = {
-    img: fields.FilePathField<ImageFilePath, ImageFilePath, false, true, false>;
-    name: fields.StringField<string, string, false, true, false>;
-};
-
-type BaseShortcutSchema = {
-    custom: fields.SchemaField<ShortcutCustomSchema>;
-    img: fields.FilePathField<ImageFilePath, ImageFilePath, true, false, false>;
-    name: fields.StringField<string, string, false, false, true>;
-    type: fields.StringField<string, string, true, false, true>;
-};
-
 type ShortcutDataset = { itemId: string } | { itemUuid: DocumentUUID };
 
-type ShortcutSource<T extends BaseShortcutSchema> = Omit<SourceFromSchema<T>, "custom">;
-
-export { generateBaseShortcutFields, PersistentShortcut };
+export { PersistentShortcut, zBaseShortcut };
 export type {
-    BaseShortcutSchema,
+    ShortcutSource,
+    ShortcutData,
     ShortcutCost,
     ShortcutDataset,
     ShortcutLabel,
     ShortcutRadialOption,
     ShortcutRadialSection,
-    ShortcutSource,
 };

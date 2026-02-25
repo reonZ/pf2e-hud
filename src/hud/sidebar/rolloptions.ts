@@ -9,7 +9,7 @@ import {
     RollOptionToggle,
     SYSTEM,
 } from "foundry-helpers";
-import { BaseSidebarItem, SidebarName, SidebarPF2eHUD, ToggleShortcutData } from "hud";
+import { BaseSidebarItem, SidebarName, SidebarPF2eHUD, ToggleShortcutSource } from "hud";
 
 const ROLLOPTIONS_PLACEMENT = {
     actions: "actions",
@@ -36,7 +36,7 @@ class ToggleSidebarItem<TItem extends ItemPF2e<ActorPF2e> = ItemPF2e<ActorPF2e>>
         return `[data-item-id="${this.itemId}"][data-domain="${this.domain}"][data-option="${this.option}"]`;
     }
 
-    toShortcut(): ToggleShortcutData {
+    toShortcut(): ToggleShortcutSource {
         return {
             domain: this.domain,
             img: this.img,

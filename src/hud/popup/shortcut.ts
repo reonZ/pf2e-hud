@@ -1,7 +1,7 @@
 import { PersistentShortcut } from "hud";
 
 import { ItemHudPopup } from ".";
-import { ActorPF2e, addListener, htmlQuery, ItemPF2e, localize, waitDialog } from "foundry-helpers";
+import { ActorPF2e, addListener, FilePath, htmlQuery, ItemPF2e, localize, waitDialog } from "foundry-helpers";
 
 class ShortcutPopup extends ItemHudPopup {
     #save: () => void;
@@ -48,10 +48,10 @@ class ShortcutPopup extends ItemHudPopup {
     }
 
     async #editShortcut() {
-        const result = await waitDialog<{ image: string; name: string }>({
+        const result = await waitDialog<{ img: FilePath; name: string }>({
             content: "shortcuts/config",
             data: {
-                image: {
+                img: {
                     placeholder: this.shortcut.usedImage,
                     value: this.shortcut.custom.img,
                 },
@@ -64,7 +64,7 @@ class ShortcutPopup extends ItemHudPopup {
             i18n: "edit-shortcut",
             onRender: (event, dialog) => {
                 addListener(dialog.element, `[data-action="open-browser"]`, (el) => {
-                    const input = htmlQuery<HTMLInputElement>(dialog.element, `[name="image"]`);
+                    const input = htmlQuery<HTMLInputElement>(dialog.element, `[name="img"]`);
                     if (!input) return;
 
                     new foundry.applications.apps.FilePicker.implementation({
@@ -82,13 +82,7 @@ class ShortcutPopup extends ItemHudPopup {
 
         if (!result) return;
 
-        this.shortcut.updateSource({
-            custom: {
-                img: result.image || undefined,
-                name: result.name || undefined,
-            },
-        });
-
+        this.shortcut.updateCustom(result);
         this.#save();
     }
 }

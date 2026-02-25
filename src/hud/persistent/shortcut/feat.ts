@@ -1,16 +1,13 @@
-import { CharacterPF2e, CreaturePF2e, FeatPF2e, ModelPropsFromSchema } from "foundry-helpers";
-import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutSource } from ".";
-import { IdField } from "_utils";
+import { CharacterPF2e, CreaturePF2e, FeatPF2e, z, zDocumentId } from "foundry-helpers";
+import { PersistentShortcut, ShortcutData, zBaseShortcut } from ".";
 
-class FeatShortcut extends PersistentShortcut<FeatShortcutSchema> {
-    static defineSchema(): FeatShortcutSchema {
-        return {
-            ...generateBaseShortcutFields("feat"),
-            itemId: new IdField({
-                required: true,
-                nullable: false,
-            }),
-        };
+const zFeatShortcut = zBaseShortcut("feat").extend({
+    itemId: zDocumentId(true),
+});
+
+class FeatShortcut extends PersistentShortcut<typeof zFeatShortcut> {
+    static get schema() {
+        return zFeatShortcut;
     }
 
     static async getItem(actor: CreaturePF2e, data: FeatShortcutData): Promise<Maybe<FeatPF2e<CharacterPF2e>>> {
@@ -25,20 +22,17 @@ class FeatShortcut extends PersistentShortcut<FeatShortcutSchema> {
         return game.i18n.localize("TYPES.Item.feat");
     }
 
-    use(event: MouseEvent): void {
+    use(): void {
         this.item?.toMessage();
     }
 }
 
-interface FeatShortcut extends ModelPropsFromSchema<FeatShortcutSchema> {}
-
-type FeatShortcutSchema = BaseShortcutSchema & {
-    itemId: IdField<true>;
-};
-
-type FeatShortcutData = ShortcutSource<FeatShortcutSchema> & {
+interface FeatShortcut extends ShortcutData<typeof zFeatShortcut> {
     type: "feat";
-};
+}
+
+type FeatShortcutSource = z.input<typeof zFeatShortcut>;
+type FeatShortcutData = z.output<typeof zFeatShortcut>;
 
 export { FeatShortcut };
-export type { FeatShortcutData };
+export type { FeatShortcutData, FeatShortcutSource };

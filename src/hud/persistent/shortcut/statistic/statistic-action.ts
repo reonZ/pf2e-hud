@@ -1,44 +1,22 @@
-import { BaseStatisticAction, BaseStatisticRollOptions, getMapLabel } from "hud";
-import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutCost, ShortcutDataset } from "..";
-import fields = foundry.data.fields;
 import {
     AbilityItemPF2e,
     CreaturePF2e,
-    DocumentUUID,
     FeatPF2e,
     ImageFilePath,
-    ModelPropsFromSchema,
     R,
-    SourceFromSchema,
+    z,
+    zDocumentUUID,
     ZeroToTwo,
 } from "foundry-helpers";
+import { BaseStatisticAction, BaseStatisticRollOptions, getMapLabel } from "hud";
+import { PersistentShortcut, ShortcutCost, ShortcutData, ShortcutDataset, zBaseShortcut } from "..";
 
-function generateStatisticActionSchema(type: string, keysChoices: () => string[]): StatisticActionShortcutSchema {
-    return {
-        ...generateBaseShortcutFields(type),
-        key: new fields.StringField({
-            required: true,
-            nullable: false,
-            choices: keysChoices,
-        }),
-        override: new fields.SchemaField({
-            agile: new fields.BooleanField({
-                required: false,
-                nullable: false,
-                initial: undefined,
-            }),
-            statistic: new fields.StringField({
-                required: false,
-                nullable: false,
-                initial: undefined,
-            }),
-        }),
-        sourceId: new fields.DocumentUUIDField({
-            required: true,
-            nullable: false,
-            type: "Item",
-        }),
-    };
+function zStatisticActionShortcut(type: string, keysChoices: ReadonlyArray<string>) {
+    return zBaseShortcut(type).extend({
+        key: z.enum(keysChoices),
+        override: z.object({ agile: z.boolean().optional(), statistic: z.string().optional() }).prefault({}),
+        sourceId: zDocumentUUID("Item"),
+    });
 }
 
 abstract class StatisticActionShortcut<
@@ -49,7 +27,7 @@ abstract class StatisticActionShortcut<
 
     static getItem(
         _actor: CreaturePF2e,
-        { sourceId }: SourceFromSchema<StatisticActionShortcutSchema>,
+        { sourceId }: StatisticActionShortcutSource,
     ): Promise<Maybe<FeatPF2e | AbilityItemPF2e>> {
         return fromUuid<FeatPF2e | AbilityItemPF2e>(sourceId);
     }
@@ -120,21 +98,11 @@ function generateMapRadialOptions(agile: boolean): { value: string; label: strin
     }));
 }
 
-interface StatisticActionShortcut<
-    TAction extends BaseStatisticAction,
-    TItem extends FeatPF2e | AbilityItemPF2e,
-> extends ModelPropsFromSchema<StatisticActionShortcutSchema> {}
+interface StatisticActionShortcut<TAction extends BaseStatisticAction, TItem extends FeatPF2e | AbilityItemPF2e>
+    extends PersistentShortcut<StatisticActionShortcutSchema, TItem>, ShortcutData<StatisticActionShortcutSchema> {}
 
-type StatisticActionOverrideSchema = {
-    agile: fields.BooleanField<boolean, boolean, false, false, true>;
-    statistic: fields.StringField<string, string, false, false, false>;
-};
+type StatisticActionShortcutSchema = ReturnType<typeof zStatisticActionShortcut>;
+type StatisticActionShortcutSource = z.input<StatisticActionShortcutSchema>;
 
-type StatisticActionShortcutSchema = BaseShortcutSchema & {
-    key: fields.StringField<string, string, true, false, false>;
-    override: fields.SchemaField<StatisticActionOverrideSchema>;
-    sourceId: fields.DocumentUUIDField<DocumentUUID, true, false, false>;
-};
-
-export { generateStatisticActionSchema, StatisticActionShortcut };
-export type { StatisticActionShortcutSchema };
+export { StatisticActionShortcut, zStatisticActionShortcut };
+export type {};

@@ -1,6 +1,5 @@
 import { getActionFrequency, getActionImg, getActionResource, toggleExploration } from "hud";
 
-import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutCost, ShortcutSource } from ".";
 import {
     AbilityItemPF2e,
     ActionType,
@@ -9,16 +8,21 @@ import {
     ImageFilePath,
     localize,
     MacroPF2e,
-    ModelPropsFromSchema,
     OneToThree,
     SelfEffectReference,
     useAction,
     ValueAndMaybeMax,
+    z,
+    zDocumentId,
 } from "foundry-helpers";
-import { IdField } from "_utils";
+import { PersistentShortcut, ShortcutCost, ShortcutData, zBaseShortcut } from ".";
+
+const zActionShortcut = zBaseShortcut("action").extend({
+    itemId: zDocumentId(true),
+});
 
 class ActionShortcut extends PersistentShortcut<
-    ActionShortcutSchema,
+    typeof zActionShortcut,
     FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>
 > {
     #actionCost?: OneToThree | "reaction" | "free" | null;
@@ -29,14 +33,8 @@ class ActionShortcut extends PersistentShortcut<
     #uses?: ValueAndMaybeMax;
     #isUntrained?: boolean;
 
-    static defineSchema(): ActionShortcutSchema {
-        return {
-            ...generateBaseShortcutFields("action"),
-            itemId: new IdField({
-                required: true,
-                nullable: false,
-            }),
-        };
+    static get schema() {
+        return zActionShortcut;
     }
 
     static async getItem(
@@ -173,15 +171,12 @@ class ActionShortcut extends PersistentShortcut<
     }
 }
 
-interface ActionShortcut extends ModelPropsFromSchema<ActionShortcutSchema> {}
-
-type ActionShortcutSchema = BaseShortcutSchema & {
-    itemId: IdField<true, false, false>;
-};
-
-type ActionShortcutData = ShortcutSource<ActionShortcutSchema> & {
+interface ActionShortcut extends ShortcutData<typeof zActionShortcut> {
     type: "action";
-};
+}
+
+type ActionShortcutSource = z.input<typeof zActionShortcut>;
+type ActionShortcutData = z.output<typeof zActionShortcut>;
 
 export { ActionShortcut };
-export type { ActionShortcutData };
+export type { ActionShortcutData, ActionShortcutSource };

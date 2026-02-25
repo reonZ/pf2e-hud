@@ -1,5 +1,3 @@
-import { getItemSlug, SpellShortcutData } from "hud";
-import { BaseSidebarItem, CustomSpellcastingEntry, SpellCategoryType } from "..";
 import {
     CreaturePF2e,
     EquipAnnotationData,
@@ -10,6 +8,8 @@ import {
     SpellSlotGroupId,
     ValueAndMax,
 } from "foundry-helpers";
+import { getItemSlug, SpellShortcutSource } from "hud";
+import { BaseSidebarItem, CustomSpellcastingEntry, SpellCategoryType } from "..";
 
 class SpellSidebarItem extends BaseSidebarItem<SpellPF2e<CreaturePF2e>, SlotSpellData> {
     #collection?: SpellCollection<CreaturePF2e> | null;
@@ -53,7 +53,7 @@ class SpellSidebarItem extends BaseSidebarItem<SpellPF2e<CreaturePF2e>, SlotSpel
         return this.collection?.setSlotExpendedState(this.groupId, this.slotId, !this.expended);
     }
 
-    toShortcut(): SpellShortcutData {
+    toShortcut(): SpellShortcutSource {
         return {
             category: this.categoryType,
             castRank: this.castRank,

@@ -1,5 +1,5 @@
 import { ActorPF2e, getFlag, ImageFilePath, ItemPF2e, MacroPF2e, MacroUUID, setFlag } from "foundry-helpers";
-import { MacroShortcutData } from "hud";
+import { MacroShortcutSource } from "hud";
 import { BaseSidebarItem } from "..";
 
 class MacroSidebarItem extends BaseSidebarItem<ItemPF2e, ExtraMacroData> {
@@ -45,7 +45,7 @@ class MacroSidebarItem extends BaseSidebarItem<ItemPF2e, ExtraMacroData> {
         this.macro.execute({ actor: this.actor });
     }
 
-    toShortcut(): MacroShortcutData {
+    toShortcut(): MacroShortcutSource {
         return {
             img: this.img,
             macroUUID: this.macro.uuid as MacroUUID,

@@ -1,11 +1,13 @@
-import { ConsumablePF2e, CreaturePF2e, ModelPropsFromSchema, ValueAndMaybeMax } from "foundry-helpers";
-import { generateItemShortcutFields, ItemShortcut, ItemShortcutSchema, ShortcutSource } from "..";
+import { ConsumablePF2e, CreaturePF2e, ValueAndMaybeMax, z } from "foundry-helpers";
+import { ItemShortcut, ShortcutData, zItemShortcut } from "..";
 
-class ConsumableShortcut extends ItemShortcut<ConsumableShortcutSchema, ConsumablePF2e<CreaturePF2e>> {
+const zConsumableShortcut = zItemShortcut("consumable");
+
+class ConsumableShortcut extends ItemShortcut<typeof zConsumableShortcut, ConsumablePF2e<CreaturePF2e>> {
     #uses!: ValueAndMaybeMax;
 
-    static defineSchema(): ConsumableShortcutSchema {
-        return generateItemShortcutFields("consumable");
+    static get schema() {
+        return zConsumableShortcut;
     }
 
     async _initShortcut(): Promise<void> {
@@ -37,15 +39,12 @@ class ConsumableShortcut extends ItemShortcut<ConsumableShortcutSchema, Consumab
     }
 }
 
-interface ConsumableShortcut extends ModelPropsFromSchema<ConsumableShortcutSchema> {
+interface ConsumableShortcut extends ShortcutData<typeof zConsumableShortcut> {
     type: "consumable";
 }
 
-type ConsumableShortcutSchema = ItemShortcutSchema;
-
-type ConsumableShortcutData = ShortcutSource<ConsumableShortcutSchema> & {
-    type: "consumable";
-};
+type ConsumableShortcutSource = z.input<typeof zConsumableShortcut>;
+type ConsumableShortcutData = z.output<typeof zConsumableShortcut>;
 
 export { ConsumableShortcut };
-export type { ConsumableShortcutData };
+export type { ConsumableShortcutData, ConsumableShortcutSource };

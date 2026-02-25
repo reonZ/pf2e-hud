@@ -1,10 +1,12 @@
-import { ELEMENTAL_BLAST_IMG } from "hud";
-import { generateToggleShortcutFields, ToggleShortcut, ToggleShortcutSchema } from "..";
 import { ImageFilePath, localize } from "foundry-helpers";
+import { ELEMENTAL_BLAST_IMG } from "hud";
+import { ToggleShortcut, zBaseToggleShortcut } from "..";
+
+const zBlastCostShortcut = zBaseToggleShortcut("blastCost");
 
 class BlastCostShortcut extends ToggleShortcut {
-    static defineSchema(): ToggleShortcutSchema {
-        return generateToggleShortcutFields("blastCost");
+    static get schema() {
+        return zBlastCostShortcut;
     }
 
     get canAltUse(): boolean {

@@ -1,38 +1,26 @@
-import { BaseShortcutSchema, generateBaseShortcutFields, getItemSlug, PersistentShortcut } from "..";
-import fields = foundry.data.fields;
 import {
     ConsumablePF2e,
     CreaturePF2e,
     EquipmentPF2e,
     ItemType,
-    ModelPropsFromSchema,
-    SourceFromSchema,
     usePhysicalItem,
+    z,
+    zDocumentId,
 } from "foundry-helpers";
-import { IdField } from "_utils";
+import { getItemSlug, PersistentShortcut, ShortcutData, zBaseShortcut } from "..";
 
-function generateItemShortcutFields(type: string): ItemShortcutSchema {
-    return {
-        ...generateBaseShortcutFields(type),
-        itemId: new IdField({
-            required: true,
-            nullable: false,
-        }),
-        slug: new fields.StringField({
-            required: true,
-            nullable: false,
-        }),
-    };
+function zItemShortcut(type: string) {
+    return zBaseShortcut(type).extend({
+        itemId: zDocumentId(true),
+        slug: z.string().nonempty(),
+    });
 }
 
 abstract class ItemShortcut<
     TSchema extends ItemShortcutSchema,
     TItem extends ItemShortcutItem,
 > extends PersistentShortcut<TSchema, TItem> {
-    static async getItem(
-        actor: CreaturePF2e,
-        data: SourceFromSchema<ItemShortcutSchema>,
-    ): Promise<Maybe<ItemShortcutItem>> {
+    static async getItem(actor: CreaturePF2e, data: ItemShortcutSource): Promise<Maybe<ItemShortcutItem>> {
         const item =
             actor.items.get(data.itemId) ??
             actor.itemTypes[data.type as ItemType].find((item) => getItemSlug(item) === data.slug);
@@ -79,16 +67,14 @@ abstract class ItemShortcut<
 interface ItemShortcut<
     TSchema extends ItemShortcutSchema,
     TItem extends ItemShortcutItem,
-> extends ModelPropsFromSchema<ItemShortcutSchema> {
+> extends ShortcutData<ItemShortcutSchema> {
     type: "consumable" | "equipment";
 }
 
 type ItemShortcutItem = EquipmentPF2e<CreaturePF2e> | ConsumablePF2e<CreaturePF2e>;
 
-type ItemShortcutSchema = BaseShortcutSchema & {
-    itemId: IdField<true, false, false>;
-    slug: fields.StringField<string, string, true, false, false>;
-};
+type ItemShortcutSchema = ReturnType<typeof zItemShortcut>;
+type ItemShortcutSource = z.input<ItemShortcutSchema>;
 
-export { generateItemShortcutFields, ItemShortcut };
+export { ItemShortcut, zItemShortcut };
 export type { ItemShortcutSchema };

@@ -1,7 +1,7 @@
-import { canUseStances, FilterValue, getStances, StanceShortcutData, toggleStance } from "hud";
+import { AbilityItemPF2e, CharacterPF2e, CreaturePF2e, FeatPF2e, findItemWithSourceId } from "foundry-helpers";
+import { canUseStances, FilterValue, getStances, StanceShortcutSource, toggleStance } from "hud";
 import { ActionsSidebarPF2eHUD } from ".";
 import { BaseSidebarItem } from "..";
-import { AbilityItemPF2e, CharacterPF2e, CreaturePF2e, FeatPF2e, findItemWithSourceId } from "foundry-helpers";
 
 class ActionsStance extends BaseSidebarItem<FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>, hud.StanceData> {
     get uuid(): string {
@@ -20,7 +20,7 @@ class ActionsStance extends BaseSidebarItem<FeatPF2e<CreaturePF2e> | AbilityItem
         toggleStance(this.actor, this.effectUUID, force);
     }
 
-    toShortcut(): StanceShortcutData {
+    toShortcut(): StanceShortcutSource {
         return {
             effectUUID: this.effectUUID,
             img: this.img,

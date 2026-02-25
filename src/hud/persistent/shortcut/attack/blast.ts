@@ -1,31 +1,30 @@
-import { ElementalBlastsData, getElementalBlastsData } from "hud";
-import { AttackShortcut, AttackShortcutSchema, generateAttackShortcutFields } from ".";
-import { ShortcutCost, ShortcutLabel, ShortcutRadialSection, ShortcutSource } from "..";
-import fields = foundry.data.fields;
 import {
     AbilityItemPF2e,
     applySelfEffect,
     CharacterPF2e,
-    EffectTrait,
     findItemWithSourceId,
     ImageFilePath,
-    ModelPropsFromSchema,
     R,
+    z,
     ZeroToTwo,
 } from "foundry-helpers";
+import { ElementalBlastsData, getElementalBlastsData } from "hud";
+import { AttackShortcut, zAttackShortcut } from ".";
+import { ShortcutCost, ShortcutData, ShortcutLabel, ShortcutRadialSection } from "..";
 
 const CHANNEL_ELEMENTS_UUID = "Compendium.pf2e.actionspf2e.Item.g8QrV39TmZfkbXgE";
 
+function zBlastShortcut() {
+    return zAttackShortcut("blast").extend({
+        elementTrait: z.enum(R.keys(CONFIG.PF2E.effectTraits)),
+    });
+}
+
 class BlastShortcut extends AttackShortcut<BlastShortcutSchema, AbilityItemPF2e<CharacterPF2e>, ElementalBlastsData> {
-    static defineSchema(): BlastShortcutSchema {
-        return {
-            ...generateAttackShortcutFields("blast"),
-            elementTrait: new fields.StringField({
-                required: true,
-                nullable: false,
-                choices: () => CONFIG.PF2E.effectTraits,
-            }),
-        };
+    static #schema?: BlastShortcutSchema;
+
+    static get schema() {
+        return (this.#schema ??= zBlastShortcut());
     }
 
     async _getAttackData(): Promise<Maybe<ElementalBlastsData>> {
@@ -142,18 +141,14 @@ function getGlyph(cost: 1 | 2): string {
     return (_cached.glyph[cost] ??= Handlebars.helpers.actionGlyph(cost));
 }
 
-interface BlastShortcut extends ModelPropsFromSchema<BlastShortcutSchema> {
+interface BlastShortcut extends ShortcutData<BlastShortcutSchema> {
     get actor(): CharacterPF2e;
     type: "blast";
 }
 
-type BlastShortcutSchema = AttackShortcutSchema & {
-    elementTrait: fields.StringField<EffectTrait, EffectTrait, true, false, false>;
-};
-
-type BlastShortcutData = ShortcutSource<BlastShortcutSchema> & {
-    type: "blast";
-};
+type BlastShortcutSchema = ReturnType<typeof zBlastShortcut>;
+type BlastShortcutSource = z.input<BlastShortcutSchema>;
+type BlastShortcutData = z.output<BlastShortcutSchema>;
 
 export { BlastShortcut };
-export type { BlastShortcutData };
+export type { BlastShortcutData, BlastShortcutSource };

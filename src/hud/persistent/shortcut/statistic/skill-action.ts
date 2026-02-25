@@ -1,3 +1,4 @@
+import { AbilityItemPF2e, FeatPF2e, localize, z } from "foundry-helpers";
 import {
     BaseStatisticRollOptions,
     getSkillAction,
@@ -6,32 +7,21 @@ import {
     getStatisticTypes,
     SIDEBAR_ICONS,
     SkillAction,
-    StatisticType,
 } from "hud";
-import {
-    generateStatisticActionSchema,
-    ShortcutSource,
-    StatisticActionShortcut,
-    StatisticActionShortcutSchema,
-} from "..";
-import fields = foundry.data.fields;
-import { AbilityItemPF2e, FeatPF2e, localize, ModelPropsFromSchema } from "foundry-helpers";
+import { ShortcutData, StatisticActionShortcut, zStatisticActionShortcut } from "..";
+
+function zSkillActionShortcut() {
+    return zStatisticActionShortcut("skillAction", getSkillKeys()).extend({
+        statistic: z.enum(getStatisticTypes()),
+        variant: z.string().optional(),
+    });
+}
 
 class SkillActionShortcut extends StatisticActionShortcut<SkillAction, FeatPF2e | AbilityItemPF2e> {
-    static defineSchema(): SkillActionShortcutSchema {
-        return {
-            ...generateStatisticActionSchema("skillAction", getSkillKeys),
-            statistic: new fields.StringField({
-                required: true,
-                nullable: false,
-                choices: () => getStatisticTypes(),
-            }),
-            variant: new fields.StringField({
-                required: false,
-                nullable: false,
-                initial: undefined,
-            }),
-        };
+    static #schema?: SkillActionShortcutSchema;
+
+    static get schema() {
+        return (this.#schema ??= zSkillActionShortcut());
     }
 
     get action(): SkillAction | undefined {
@@ -72,20 +62,13 @@ class SkillActionShortcut extends StatisticActionShortcut<SkillAction, FeatPF2e 
     }
 }
 
-interface SkillActionShortcut extends ModelPropsFromSchema<SkillActionShortcutSchema> {}
-
-type SkillActionShortcutSchema = StatisticActionShortcutSchema & {
-    statistic: fields.StringField<StatisticType, StatisticType, true, false, false>;
-    variant: fields.StringField<string, string, false, false, false>;
-};
-
-type SkillActionShortcutData = Omit<ShortcutSource<SkillActionShortcutSchema>, "override"> & {
+interface SkillActionShortcut extends ShortcutData<SkillActionShortcutSchema> {
     type: "skillAction";
-    override?: {
-        agile?: boolean;
-        statistic?: StatisticType;
-    };
-};
+}
+
+type SkillActionShortcutSchema = ReturnType<typeof zSkillActionShortcut>;
+type SkillActionShortcutSource = z.input<SkillActionShortcutSchema>;
+type SkillActionShortcutData = z.output<SkillActionShortcutSchema>;
 
 export { SkillActionShortcut };
-export type { SkillActionShortcutData };
+export type { SkillActionShortcutData, SkillActionShortcutSource };

@@ -1,9 +1,11 @@
-import { CreaturePF2e, EquipmentPF2e, ModelPropsFromSchema, ValueAndMaybeMax } from "foundry-helpers";
-import { generateItemShortcutFields, ItemShortcut, ItemShortcutSchema, ShortcutSource } from "..";
+import { CreaturePF2e, EquipmentPF2e, ValueAndMaybeMax, z } from "foundry-helpers";
+import { ItemShortcut, ShortcutData, zItemShortcut } from "..";
 
-class EquipmentShortcut extends ItemShortcut<EquipmentShortcutSchema, EquipmentPF2e<CreaturePF2e>> {
-    static defineSchema(): EquipmentShortcutSchema {
-        return generateItemShortcutFields("equipment");
+const zEquipmentShortcut = zItemShortcut("equipment");
+
+class EquipmentShortcut extends ItemShortcut<typeof zEquipmentShortcut, EquipmentPF2e<CreaturePF2e>> {
+    static get schema() {
+        return zEquipmentShortcut;
     }
 
     get canUse(): boolean {
@@ -23,15 +25,12 @@ class EquipmentShortcut extends ItemShortcut<EquipmentShortcutSchema, EquipmentP
     }
 }
 
-interface EquipmentShortcut extends ModelPropsFromSchema<EquipmentShortcutSchema> {
+interface EquipmentShortcut extends ShortcutData<typeof zEquipmentShortcut> {
     type: "equipment";
 }
 
-type EquipmentShortcutSchema = ItemShortcutSchema;
-
-type EquipmentShortcutData = ShortcutSource<EquipmentShortcutSchema> & {
-    type: "equipment";
-};
+type EquipmentShortcutSource = z.input<typeof zEquipmentShortcut>;
+type EquipmentShortcutData = z.output<typeof zEquipmentShortcut>;
 
 export { EquipmentShortcut };
-export type { EquipmentShortcutData };
+export type { EquipmentShortcutData, EquipmentShortcutSource };

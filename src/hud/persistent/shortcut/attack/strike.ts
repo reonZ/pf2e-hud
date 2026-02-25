@@ -6,22 +6,26 @@ import {
     CreaturePF2e,
     ImageFilePath,
     MeleePF2e,
-    ModelPropsFromSchema,
     R,
     ValueAndMaybeMax,
     WeaponAuxiliaryAction,
     WeaponPF2e,
+    z,
     ZeroToTwo,
 } from "foundry-helpers";
 import { getActionCategory, getNpcStrikeImage, getStrikeActions, simulateReload } from "hud";
-import { AttackShortcut, AttackShortcutSchema, generateAttackShortcutFields } from ".";
-import { ShortcutCost, ShortcutLabel, ShortcutRadialOption, ShortcutRadialSection, ShortcutSource } from "..";
-import fields = foundry.data.fields;
+import { AttackShortcut, zAttackShortcut } from ".";
+import { ShortcutCost, ShortcutData, ShortcutLabel, ShortcutRadialOption, ShortcutRadialSection } from "..";
 
 const DRAW_AUXILIARY_ANNOTATION = ["draw", "pick-up", "retrieve"];
 
+const zStrikeShortcut = zAttackShortcut("strike").extend({
+    attachment: z.boolean().default(false),
+    slug: z.string().nonempty(),
+});
+
 class StrikeShortcut extends AttackShortcut<
-    StrikeShortcutSchema,
+    typeof zStrikeShortcut,
     MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>,
     AttackAction | CharacterStrike
 > {
@@ -33,19 +37,8 @@ class StrikeShortcut extends AttackShortcut<
     #strikeItem: Maybe<StrikeItem>;
     #uses!: ValueAndMaybeMax | null;
 
-    static defineSchema(): StrikeShortcutSchema {
-        return {
-            ...generateAttackShortcutFields("strike"),
-            attachment: new fields.BooleanField({
-                required: false,
-                nullable: false,
-                initial: false,
-            }),
-            slug: new fields.StringField({
-                required: true,
-                nullable: false,
-            }),
-        };
+    static get schema() {
+        return zStrikeShortcut;
     }
 
     async _initShortcut(): Promise<void> {
@@ -366,20 +359,14 @@ function isAreaOrAutoFireType(type: Maybe<string>): type is "area-fire" | "auto-
     return R.isIncludedIn(type, ["area-fire", "auto-fire"]);
 }
 
-interface StrikeShortcut extends ModelPropsFromSchema<StrikeShortcutSchema> {
+interface StrikeShortcut extends ShortcutData<typeof zStrikeShortcut> {
     type: "strike";
 }
 
-type StrikeShortcutSchema = AttackShortcutSchema & {
-    attachment: fields.BooleanField<boolean, boolean, false, false, true>;
-    slug: fields.StringField<string, string, true, false, false>;
-};
-
-type StrikeShortcutData = WithPartial<ShortcutSource<StrikeShortcutSchema>, "attachment"> & {
-    type: "strike";
-};
-
 type StrikeItem = MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>;
 
+type StrikeShortcutSource = z.input<typeof zStrikeShortcut>;
+type StrikeShortcutData = z.output<typeof zStrikeShortcut>;
+
 export { StrikeShortcut };
-export type { StrikeShortcutData };
+export type { StrikeShortcutData, StrikeShortcutSource };

@@ -1,93 +1,51 @@
-import { CustomSpellcastingEntry, isAnimistEntry, isFocusCantrip, SPELL_CATEGORIES, SpellCategoryType } from "hud";
-import {
-    BaseShortcutSchema,
-    generateBaseShortcutFields,
-    getItemSlug,
-    PersistentShortcut,
-    ROMAN_RANKS,
-    RomanRank,
-    ShortcutCache,
-    ShortcutCost,
-    ShortcutLabel,
-    ShortcutSource,
-} from "..";
-import fields = foundry.data.fields;
 import {
     BaseSpellcastingEntry,
     CharacterPF2e,
     ConsumablePF2e,
     CreaturePF2e,
     localize,
-    ModelPropsFromSchema,
     OneToTen,
     R,
     SpellCollection,
     SpellPF2e,
     ValueAndMax,
     ValueAndMaybeMax,
-    ZeroToTen,
+    z,
+    zDocumentId,
+    zSpellcastingEntryId,
 } from "foundry-helpers";
-import { IdField } from "_utils";
+import { CustomSpellcastingEntry, isAnimistEntry, isFocusCantrip, SPELL_CATEGORIES, SPELL_CATEGORY_TYPES } from "hud";
+import {
+    getItemSlug,
+    PersistentShortcut,
+    ROMAN_RANKS,
+    RomanRank,
+    ShortcutCache,
+    ShortcutCost,
+    ShortcutData,
+    ShortcutLabel,
+    zBaseShortcut,
+} from "..";
 
-class SpellcastingEntryIdField<
-    TRequired extends boolean = true,
-    TNullable extends boolean = true,
-    THasInitial extends boolean = true,
-> extends fields.DocumentIdField<string, TRequired, TNullable, THasInitial> {
-    protected _validateType(value: string) {
-        const id = value.endsWith("-casting") ? value.slice(0, -8) : value;
-        return super._validateType(id);
-    }
-}
+const zSpellShortcut = zBaseShortcut("spell").extend({
+    castRank: z.number().min(1).max(10).multipleOf(1),
+    category: z.enum(SPELL_CATEGORY_TYPES),
+    entryId: zSpellcastingEntryId(),
+    groupId: z.number().min(0).max(10).multipleOf(1),
+    isAnimist: z.boolean().default(false),
+    itemId: zDocumentId(true),
+    slotId: z.number().min(0).multipleOf(1),
+    slug: z.string().nonempty(),
+});
 
-class SpellShortcut extends PersistentShortcut<SpellShortcutSchema, SpellPF2e<CreaturePF2e>> {
+class SpellShortcut extends PersistentShortcut<typeof zSpellShortcut, SpellPF2e<CreaturePF2e>> {
     #disabled: [boolean, reason: string | undefined] = [false, undefined];
     #entryData?: SpellEntryData | null;
     #group?: SpellcastingEntryGroup;
     #uses?: ValueAndMaybeMax;
 
-    static defineSchema(): SpellShortcutSchema {
-        return {
-            ...generateBaseShortcutFields("spell"),
-            castRank: new fields.NumberField({
-                required: true,
-                nullable: false,
-                min: 1,
-                max: 10,
-            }),
-            category: new fields.StringField({
-                required: true,
-                nullable: false,
-            }),
-            entryId: new SpellcastingEntryIdField({
-                required: true,
-                nullable: false,
-            }),
-            groupId: new fields.NumberField({
-                required: true,
-                nullable: false,
-                min: 0,
-                max: 10,
-            }),
-            isAnimist: new fields.BooleanField({
-                required: false,
-                nullable: false,
-                initial: false,
-            }),
-            itemId: new IdField({
-                required: true,
-                nullable: false,
-            }),
-            slotId: new fields.NumberField({
-                required: true,
-                nullable: false,
-                min: 0,
-            }),
-            slug: new fields.StringField({
-                required: true,
-                nullable: false,
-            }),
-        };
+    static get schema() {
+        return zSpellShortcut;
     }
 
     static async getItem(
@@ -379,7 +337,13 @@ function getAnimistVesselsData(cached: ShortcutCache, actor: CreaturePF2e): dail
     });
 }
 
-interface SpellShortcut extends ModelPropsFromSchema<SpellShortcutSchema> {}
+interface SpellShortcut extends ShortcutData<typeof zSpellShortcut> {
+    get castRank(): OneToTen;
+    type: "spell";
+}
+
+type SpellShortcutSource = z.input<typeof zSpellShortcut>;
+type SpellShortcutData = z.output<typeof zSpellShortcut>;
 
 type SpellEntryData = {
     collection: SpellCollection<CreaturePF2e>;
@@ -397,22 +361,7 @@ type SpellEntryData = {
     uses: ValueAndMax | undefined;
 };
 
-type SpellShortcutSchema = BaseShortcutSchema & {
-    castRank: fields.NumberField<OneToTen, OneToTen, true, false, false>;
-    category: fields.StringField<SpellCategoryType, SpellCategoryType, true, false, false>;
-    entryId: SpellcastingEntryIdField<true, false, false>;
-    groupId: fields.NumberField<ZeroToTen, ZeroToTen, true, false, false>;
-    isAnimist: fields.BooleanField<boolean, boolean, false, false, true>;
-    itemId: IdField<true, false, false>;
-    slotId: fields.NumberField<number, number, true, false, false>;
-    slug: fields.StringField<string, string, true, false, false>;
-};
-
 type SpellcastingEntryGroup = CustomSpellcastingEntry["groups"][number];
 
-type SpellShortcutData = ShortcutSource<SpellShortcutSchema> & {
-    type: "spell";
-};
-
 export { SpellShortcut };
-export type { SpellEntryData, SpellShortcutData };
+export type { SpellEntryData, SpellShortcutData, SpellShortcutSource };

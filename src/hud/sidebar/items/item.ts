@@ -10,7 +10,13 @@ import {
     usePhysicalItem,
 } from "foundry-helpers";
 import { IdentifyItemPopup, ITEM_CARRY_TYPES } from "foundry-helpers/dist";
-import { BaseSidebarItem, ConsumableShortcutData, EquipmentShortcutData, getItemSlug, SidebarItemDragData } from "hud";
+import {
+    BaseSidebarItem,
+    ConsumableShortcutSource,
+    EquipmentShortcutSource,
+    getItemSlug,
+    SidebarItemDragData,
+} from "hud";
 import applications = foundry.applications;
 
 class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, SidebarItem> {
@@ -141,7 +147,7 @@ class ItemsSidebarItem extends BaseSidebarItem<PhysicalItemPF2e<ActorPF2e>, Side
         }
     }
 
-    toShortcut(): ItemShortcutData {
+    toShortcut(): ItemShortcutSource {
         const item = this.item;
 
         return {
@@ -165,7 +171,7 @@ interface ItemsSidebarItem extends Readonly<Omit<SidebarItem, "canBeUsed">> {
     canBeUsed: boolean;
 }
 
-type ItemShortcutData = ConsumableShortcutData | EquipmentShortcutData;
+type ItemShortcutSource = ConsumableShortcutSource | EquipmentShortcutSource;
 
 type SidebarItem = Prettify<
     Omit<

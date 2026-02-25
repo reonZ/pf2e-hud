@@ -1,6 +1,3 @@
-import { BlastShortcutData, FilterValue, ToggleShortcutData } from "hud";
-import { ActionsSidebarPF2eHUD } from ".";
-import { BaseSidebarItem, ToggleSidebarItem } from "..";
 import {
     AbilityItemPF2e,
     CharacterPF2e,
@@ -17,6 +14,9 @@ import {
     Rolled,
     RollOptionToggle,
 } from "foundry-helpers";
+import { BlastShortcutSource, FilterValue, ToggleShortcutSource } from "hud";
+import { ActionsSidebarPF2eHUD } from ".";
+import { BaseSidebarItem, ToggleSidebarItem } from "..";
 
 const ELEMENTAL_BLAST_IMG = "icons/magic/symbols/elements-air-earth-fire-water.webp";
 
@@ -68,7 +68,7 @@ class ActionsSidebarBlastCost extends ToggleSidebarItem<AbilityItemPF2e<Characte
         );
     }
 
-    toShortcut(): ToggleShortcutData {
+    toShortcut(): ToggleShortcutSource {
         return {
             ...super.toShortcut(),
             type: "blastCost",
@@ -129,7 +129,7 @@ class ActionsSidebarBlast extends BaseSidebarItem<AbilityItemPF2e<CharacterPF2e>
         return this.formula[melee ? "melee" : "ranged"][type];
     }
 
-    toShortcut(): BlastShortcutData {
+    toShortcut(): BlastShortcutSource {
         return {
             elementTrait: this.element,
             img: this.img,

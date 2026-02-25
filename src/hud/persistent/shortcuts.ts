@@ -1,45 +1,4 @@
 import {
-    createDraggable,
-    CustomSpellcastingEntry,
-    FoundryDragData,
-    getNpcStrikeImage,
-    ShortcutPopup,
-    SidebarDragData,
-    SpellCategoryType,
-} from "hud";
-import {
-    ActionShortcut,
-    ActionShortcutData,
-    BlastCostShortcut,
-    BlastShortcut,
-    BlastShortcutData,
-    ConsumableShortcut,
-    ConsumableShortcutData,
-    EquipmentShortcut,
-    EquipmentShortcutData,
-    ExtraActionShortcut,
-    ExtraActionShortcutData,
-    FeatShortcut,
-    FeatShortcutData,
-    getItemSlug,
-    MacroShortcut,
-    MacroShortcutData,
-    PersistentPartPF2eHUD,
-    PersistentShortcut,
-    ShortcutDataset,
-    SkillActionShortcut,
-    SkillActionShortcutData,
-    SpellEntryData,
-    SpellShortcut,
-    SpellShortcutData,
-    StanceShortcut,
-    StanceShortcutData,
-    StrikeShortcut,
-    StrikeShortcutData,
-    ToggleShortcut,
-    ToggleShortcutData,
-} from ".";
-import {
     CombatantPF2e,
     ConsumablePF2e,
     createToggleHook,
@@ -60,6 +19,53 @@ import {
     render,
     SpellCollection,
 } from "foundry-helpers";
+import {
+    createDraggable,
+    CustomSpellcastingEntry,
+    FoundryDragData,
+    getNpcStrikeImage,
+    ShortcutPopup,
+    SidebarDragData,
+    SpellCategoryType,
+} from "hud";
+import {
+    ActionShortcut,
+    ActionShortcutData,
+    ActionShortcutSource,
+    BlastCostShortcut,
+    BlastShortcut,
+    BlastShortcutData,
+    ConsumableShortcut,
+    ConsumableShortcutData,
+    ConsumableShortcutSource,
+    EquipmentShortcut,
+    EquipmentShortcutData,
+    ExtraActionShortcut,
+    ExtraActionShortcutData,
+    FeatShortcut,
+    FeatShortcutData,
+    getItemSlug,
+    MacroShortcut,
+    MacroShortcutData,
+    MacroShortcutSource,
+    PersistentPartPF2eHUD,
+    PersistentShortcut,
+    ShortcutDataset,
+    ShortcutSource,
+    SkillActionShortcut,
+    SkillActionShortcutData,
+    SpellEntryData,
+    SpellShortcut,
+    SpellShortcutData,
+    SpellShortcutSource,
+    StanceShortcut,
+    StanceShortcutData,
+    StrikeShortcut,
+    StrikeShortcutData,
+    StrikeShortcutSource,
+    ToggleShortcut,
+    ToggleShortcutData,
+} from ".";
 
 const SHORTCUTS = {
     action: ActionShortcut,
@@ -111,11 +117,11 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         return this.#shortcuts;
     }
 
-    get shortcutsData(): ShortcutData[] {
+    get shortcutsSources(): ShortcutSource[] {
         const worldActor = this.worldActor;
         if (!worldActor) return [];
 
-        return getFlag<ShortcutData[]>(worldActor, "shortcuts", game.userId, String(this.tab)) ?? [];
+        return getFlag<ShortcutSource[]>(worldActor, "shortcuts", game.userId, String(this.tab)) ?? [];
     }
 
     get shortcutBinElement(): HTMLElement | null {
@@ -178,35 +184,32 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     }
 
     async save(): Promise<void> {
-        const worldActor = this.worldActor;
-        if (!worldActor) return;
-
-        const toSave: ShortcutData[] = [];
+        const toSave: ShortcutSource[] = [];
 
         for (const [slot, shortcut] of this.shortcuts.entries()) {
             if (!shortcut) continue;
-            toSave[slot] = shortcut.toObject() as any;
+            toSave[slot] = shortcut.encode();
         }
 
         this.parent.updateShortcuts(game.userId, this.tab, toSave);
     }
 
-    async generateFillShortcuts(): Promise<ShortcutData[]> {
+    async generateFillShortcuts(): Promise<ShortcutSource[]> {
         const actor = this.actor;
         if (!actor?.isOfType("npc")) return [];
 
         let _slot = 0;
 
         const nbSlots = this.nbSlots;
-        const shortcuts: ShortcutData[] = [];
+        const shortcuts: ShortcutSource[] = [];
 
-        const addSlot = (data: ShortcutData): boolean => {
+        const addSlot = (data: ShortcutSource): boolean => {
             shortcuts[_slot++] = data;
             return _slot < nbSlots;
         };
 
         for (const strike of actor.system.actions) {
-            const strikeData: StrikeShortcutData = {
+            const strikeData: StrikeShortcutSource = {
                 img: getNpcStrikeImage(strike),
                 itemId: strike.item.id,
                 name: strike.item._source.name,
@@ -220,20 +223,20 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         for (const action of actor.itemTypes.action) {
             if (!action.actionCost) continue;
 
-            const actionData: ActionShortcutData = {
+            const actionSource: ActionShortcutSource = {
                 img: action.img,
                 itemId: action.id,
                 name: action.name,
                 type: "action",
             };
 
-            if (!addSlot(actionData)) return shortcuts;
+            if (!addSlot(actionSource)) return shortcuts;
         }
 
         for (const item of actor.itemTypes.consumable) {
             if (isCastConsumable(item)) continue;
 
-            const itemData: ConsumableShortcutData = {
+            const itemData: ConsumableShortcutSource = {
                 img: item.img,
                 itemId: item.id,
                 name: item.name,
@@ -277,7 +280,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 
                     const spell = active.spell;
 
-                    const spellData: SpellShortcutData = {
+                    const spellData: SpellShortcutSource = {
                         category,
                         castRank: (active?.castRank ?? spell.rank) as OneToTen,
                         entryId,
@@ -317,21 +320,21 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
     }
 
     protected async _prepareContext(_options: fa.ApplicationRenderOptions): Promise<PersistentShortcutsContext> {
-        let shortcutsData = this.shortcutsData;
+        let shortcutsSources = this.shortcutsSources;
 
         if (
             this.tab === 1 &&
             this.actor?.isOfType("npc") &&
-            shortcutsData.length === 0 &&
+            shortcutsSources.length === 0 &&
             this.parent.settings.autoFill
         ) {
-            shortcutsData = await this.generateFillShortcuts();
+            shortcutsSources = await this.generateFillShortcuts();
         }
 
         const shortcuts: PersistentShortcutsContext["shortcuts"] = [];
 
         for (const slot of R.range(0, this.nbSlots)) {
-            const data = shortcutsData[slot];
+            const data = shortcutsSources[slot];
             const shortcut = data ? await this.#instantiateShortcut(data, slot) : undefined;
 
             if (shortcut) {
@@ -407,15 +410,17 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
                     return localize.warning("shortcuts.error.wrongActor");
                 }
 
-                const macroData = isMacro ? getMacroShortcutData(dragData.uuid) : null;
-                if (isMacro && !macroData) {
+                const macroSource = isMacro ? getMacroShortcutSource(dragData.uuid) : null;
+                if (isMacro && !macroSource) {
                     return localize.warning("shortcuts.error.notScript");
                 }
 
                 if (isMacro || "fromSidebar" in dragData) {
-                    const shortcutData = isMacro ? (macroData as MacroShortcutData) : dragData.fromSidebar;
+                    const source = (isMacro ? macroSource : dragData.fromSidebar) as ShortcutSource;
+                    const ShortcutCls = SHORTCUTS[source.type as keyof typeof SHORTCUTS];
+                    const data = ShortcutCls?.schema.safeParse(source).data;
 
-                    if (!(await this.replace(slot, shortcutData))) {
+                    if (!data || !(await this.replace(slot, data))) {
                         localize.warning("shortcuts.error.wrongType");
                     }
 
@@ -499,16 +504,16 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
         }
     }
 
-    async #instantiateShortcut(data: ShortcutData, slot: number): Promise<PersistentShortcut | undefined> {
+    async #instantiateShortcut(source: ShortcutSource, slot: number): Promise<PersistentShortcut | undefined> {
         const actor = this.actor;
-        const ShortcutCls = SHORTCUTS[data.type as keyof typeof SHORTCUTS];
+        const ShortcutCls = SHORTCUTS[source.type as keyof typeof SHORTCUTS];
         if (!actor || !ShortcutCls) return;
 
         try {
             const cached = this.#shortcutsCache;
+            const data = ShortcutCls.schema.parse(source);
             const item = await ShortcutCls.getItem(actor, data as any, cached);
             const shortcut = new ShortcutCls(actor, data as any, item, slot, cached);
-            if (shortcut.invalid) return;
 
             await shortcut._initShortcut();
             return shortcut;
@@ -561,7 +566,7 @@ function isMacroDragData(data: SidebarDragData | ShortcutDragData | MacroSlotDat
     return "type" in data && data.type === "Macro" && "uuid" in data;
 }
 
-function getMacroShortcutData(uuid: DocumentUUID): MacroShortcutData | undefined {
+function getMacroShortcutSource(uuid: DocumentUUID): MacroShortcutSource | undefined {
     const macro = fromUuidSync<MacroPF2e>(uuid);
     if (!macro) return;
 

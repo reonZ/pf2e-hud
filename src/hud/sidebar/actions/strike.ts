@@ -1,6 +1,3 @@
-import { FilterValue, getNpcStrikeImage, StrikeShortcutData } from "hud";
-import { ActionsSidebarPF2eHUD } from ".";
-import { BaseSidebarItem } from "..";
 import {
     ActorPF2e,
     addListenerAll,
@@ -22,6 +19,9 @@ import {
     WeaponAuxiliaryAction,
     WeaponPF2e,
 } from "foundry-helpers";
+import { FilterValue, getNpcStrikeImage, StrikeShortcutSource } from "hud";
+import { ActionsSidebarPF2eHUD } from ".";
+import { BaseSidebarItem } from "..";
 
 class ActionsSidebarStrike extends BaseSidebarItem<MeleePF2e<ActorPF2e> | WeaponPF2e<ActorPF2e>, AttackAction> {
     #options: ActionsSidebarStrikeOptions;
@@ -106,7 +106,7 @@ class ActionsSidebarStrike extends BaseSidebarItem<MeleePF2e<ActorPF2e> | Weapon
         }
     }
 
-    toShortcut(): StrikeShortcutData {
+    toShortcut(): StrikeShortcutSource {
         return {
             attachment: !!(this.item as WeaponPF2e).isAttachable,
             img: this.img,

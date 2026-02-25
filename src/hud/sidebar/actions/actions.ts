@@ -17,7 +17,7 @@ import {
     useAction,
 } from "foundry-helpers";
 import { getActionIcon } from "foundry-helpers/dist";
-import { ActionShortcutData, FilterValue } from "hud";
+import { ActionShortcutSource, FilterValue } from "hud";
 import { ActionsSidebarPF2eHUD } from ".";
 import { BaseSidebarItem, getExtrasActions, getSkillActionGroups } from "..";
 
@@ -69,7 +69,7 @@ class ActionsSidebarAction extends BaseSidebarItem<FeatPF2e<ActorPF2e> | Ability
         return item?.isOfType("feat", "action") && useAction(event, item);
     }
 
-    toShortcut(): ActionShortcutData {
+    toShortcut(): ActionShortcutSource {
         return {
             img: this.img,
             itemId: this.item.id,

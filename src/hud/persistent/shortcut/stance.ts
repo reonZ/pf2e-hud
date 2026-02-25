@@ -1,42 +1,36 @@
 import { canUseStances, toggleStance } from "hud";
 
-import { BaseShortcutSchema, generateBaseShortcutFields, PersistentShortcut, ShortcutSource } from ".";
-import fields = foundry.data.fields;
 import {
     AbilityItemPF2e,
     CompendiumIndexData,
     CreaturePF2e,
-    DocumentUUID,
     EffectPF2e,
     FeatPF2e,
     findItemWithSourceId,
     ImageFilePath,
+    ItemUUID,
     localize,
-    ModelPropsFromSchema,
+    z,
+    zDocumentId,
+    zDocumentUUID,
 } from "foundry-helpers";
-import { IdField } from "_utils";
+import { PersistentShortcut, ShortcutData, zBaseShortcut } from ".";
+
+const zStanceShortcut = zBaseShortcut("stance").extend({
+    effectUUID: zDocumentUUID<ItemUUID>("Item"),
+    itemId: zDocumentId(true),
+});
 
 class StanceShortcut extends PersistentShortcut<
-    StanceShortcutSchema,
+    typeof zStanceShortcut,
     FeatPF2e<CreaturePF2e> | AbilityItemPF2e<CreaturePF2e>
 > {
     #active: boolean = false;
     #sourceEffect: Maybe<EffectPF2e | CompendiumIndexData>;
     #canUseStances: boolean = false;
 
-    static defineSchema(): StanceShortcutSchema {
-        return {
-            ...generateBaseShortcutFields("stance"),
-            effectUUID: new fields.DocumentUUIDField({
-                required: true,
-                nullable: false,
-                type: "Item",
-            }),
-            itemId: new IdField({
-                required: true,
-                nullable: false,
-            }),
-        };
+    static get schema() {
+        return zStanceShortcut;
     }
 
     static async getItem(
@@ -105,16 +99,12 @@ class StanceShortcut extends PersistentShortcut<
     }
 }
 
-interface StanceShortcut extends ModelPropsFromSchema<StanceShortcutSchema> {}
-
-type StanceShortcutSchema = BaseShortcutSchema & {
-    effectUUID: fields.DocumentUUIDField<DocumentUUID, true, false, false>;
-    itemId: IdField<true, false, false>;
-};
-
-type StanceShortcutData = ShortcutSource<StanceShortcutSchema> & {
+interface StanceShortcut extends ShortcutData<typeof zStanceShortcut> {
     type: "stance";
-};
+}
+
+type StanceShortcutSource = z.input<typeof zStanceShortcut>;
+type StanceShortcutData = z.output<typeof zStanceShortcut>;
 
 export { StanceShortcut };
-export type { StanceShortcutData };
+export type { StanceShortcutData, StanceShortcutSource };
