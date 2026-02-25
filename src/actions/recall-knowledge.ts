@@ -1,7 +1,7 @@
 import { CreaturePF2e, NPCPF2e, R, render, signedInteger, Statistic, ZeroToFour, ZeroToThree } from "foundry-helpers";
 import { DegreeOfSuccess } from "foundry-helpers/dist";
 
-const SKILLS = ["arcana", "crafting", "medicine", "nature", "occultism", "religion", "society"] as const;
+const SKILLS = ["arcana", "computers", "crafting", "medicine", "nature", "occultism", "religion", "society"] as const;
 
 const SUCCESS = {
     0: {
@@ -15,6 +15,8 @@ const SUCCESS = {
         name: "criticalSuccess",
     },
 } as const;
+
+let _existingSkills: string[] | undefined;
 
 async function rollRecallKnowledge(actor: CreaturePF2e) {
     const roll = await new Roll("1d20").evaluate({ allowInteractive: false });
@@ -53,9 +55,12 @@ async function rollRecallKnowledge(actor: CreaturePF2e) {
         );
         templateData.lores = await Promise.all(lores.map((lore) => rollStatistic(lore, dieResult)));
     } else {
-        templateData.skills = await Promise.all(
-            [...SKILLS.map((slug) => actor.skills[slug]), ...lores].map((skill) => rollStatistic(skill, dieResult)),
+        const skills = R.map(
+            (_existingSkills ??= R.filter(SKILLS, (slug) => slug in CONFIG.PF2E.skills)),
+            (slug) => actor.skills[slug],
         );
+
+        templateData.skills = await Promise.all([...skills, ...lores].map((skill) => rollStatistic(skill, dieResult)));
     }
 
     const ChatMessagePF2e = getDocumentClass("ChatMessage");
