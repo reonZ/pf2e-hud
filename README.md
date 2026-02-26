@@ -1,7 +1,8 @@
 # FoundryVTT PF2e HUD
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K6M2V13) or [Stripe](https://buy.stripe.com/cN23dy0hd0gW5nq3cc) directly
 [![Patreon](./images/patreon.webp)](https://patreon.com/IdleAtre?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K6M2V13)
+or [Stripe](https://buy.stripe.com/cN23dy0hd0gW5nq3cc) directly
 
 ![](./images/home-page.webp)
 
