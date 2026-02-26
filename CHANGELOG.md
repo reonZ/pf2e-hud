@@ -1,8 +1,8 @@
-#
+# 2.44.0
 
 - the module received a significant amount of rework internally
   - this doesn't impact the end user experience, no setting has been reset and all your data is still available
-  - due to the sheer amount of features, it is impossible to test everything so keep an eye open for bugs
+  - due to the changes pretty much impacting every aspects of the module, bugs might have slipped in
 - this release requires you to update the `PF2e Toolbelt` module to version `3.28.0` if used in your world
 - `Actions Sidebar`:
   - add icon and tooltip for `area-fire` and `auto-fire` strikes alt usages
