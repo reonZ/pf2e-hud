@@ -5,11 +5,12 @@ import {
     htmlQuery,
     ItemPF2e,
     ItemUUID,
+    itemWithActor,
     RawItemChatData,
     ZeroToTen,
 } from "foundry-helpers";
 import { getSpellRankLabel } from "foundry-helpers/dist";
-import { itemWithActor, sendItemToChat } from "hud";
+import { sendItemToChat } from "hud";
 import { BaseHudPopup } from ".";
 
 class ItemHudPopup extends BaseHudPopup {
@@ -62,7 +63,7 @@ class ItemHudPopup extends BaseHudPopup {
     protected async _prepareContext(_options: fa.ApplicationRenderOptions): Promise<ItemHudContext> {
         const actor = this.actor;
         const dataset = this.#dataset;
-        const item = itemWithActor(this.item, actor);
+        const item = itemWithActor(actor, this.item);
 
         return {
             actor,

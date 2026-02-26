@@ -17,6 +17,7 @@ import {
     ActionsSidebarStrike,
     ActionsStance,
     activateActionsListeners,
+    activateStrikesListeners,
     BlastsContext,
     getSidebarActionsData,
     getSidebarBlastsData,
@@ -45,7 +46,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
         return "actions";
     }
 
-    async _prepareContext(options: fa.ApplicationRenderOptions): Promise<ActionsSidebarContext> {
+    async _prepareContext(_options: fa.ApplicationRenderOptions): Promise<ActionsSidebarContext> {
         const actor = this.actor;
         const isCharacter = actor.isOfType("character");
 
@@ -78,6 +79,7 @@ class ActionsSidebarPF2eHUD extends SidebarPF2eHUD<
     }
 
     protected _activateListeners(html: HTMLElement): void {
+        activateStrikesListeners.call(this, html);
         activateActionsListeners.call(this, html);
     }
 

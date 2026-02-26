@@ -237,7 +237,8 @@
     <div class="name">{{localize section.label}}</div>
 </header>
 {{#each section.actions as |action|}}
-<div class="item action{{#if disabled}} inactive{{/if}}" data-item-id="{{action.id}}"
+<div class="item action{{#if disabled}} inactive{{/if}}"
+    data-item-id="{{action.id}}" {{#if action.virtual}}data-item-uuid="{{action.uuid}}"{{/if}}
     draggable="true" data-filter-value="{{action.filterValue}}">
     {{> (@root.partial 'item-image') action}}
     <div class="name">
@@ -259,8 +260,8 @@
         {{!-- frequency field --}}
         {{else if action.frequency}}
         <input type="number" class="small" data-item-id="{{action.id}}"
-            data-item-property="system.frequency.value" value="{{action.frequency.value}}" min="0"
-            max="{{action.frequency.max}}" data-tooltip="{{action.frequency.label}}">
+            {{#if action.virtual}}data-virtual-action="true"{{else}}data-item-property="system.frequency.value"{{/if}}
+            value="{{action.frequency.value}}" min="0" max="{{action.frequency.max}}" data-tooltip="{{action.frequency.label}}">
         {{/if}}
         {{!-- remove effect --}}
         {{#if action.usage.effect}}

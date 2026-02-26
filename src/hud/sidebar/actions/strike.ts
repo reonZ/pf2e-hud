@@ -272,7 +272,7 @@ function isAlchemicalStrike(strike: AttackAction): strike is WeaponStrike {
     return strike.item.isOfType("weapon") && strike.item.isAlchemical && strike.item.traits.has("bomb");
 }
 
-function activateActionsListeners(this: ActionsSidebarPF2eHUD, html: HTMLElement) {
+function activateStrikesListeners(this: ActionsSidebarPF2eHUD, html: HTMLElement) {
     addListenerAll(html, `[data-action="link-ammo"]`, "change", (el: HTMLSelectElement) => {
         const sidebarItem = this.getSidebarItemFromElement<ActionsSidebarStrike>(el);
         sidebarItem?.linkAmmo(el.value);
@@ -478,7 +478,7 @@ type StrikesContext = {
 
 export {
     ActionsSidebarStrike,
-    activateActionsListeners,
+    activateStrikesListeners,
     getActionCategory,
     getSidebarStrikeData,
     getStrikeActions,

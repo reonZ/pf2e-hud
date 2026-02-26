@@ -1,4 +1,4 @@
-import { ActorPF2e, htmlClosest, ItemPF2e } from "foundry-helpers";
+import { ActorPF2e, htmlClosest, ItemPF2e, itemWithActor } from "foundry-helpers";
 
 function getItemFromElement<T extends ItemPF2e>(actor: ActorPF2e, el: HTMLElement, sync: true): T | null;
 function getItemFromElement<T extends ItemPF2e>(
@@ -33,7 +33,7 @@ function getItemFromElement(actor: ActorPF2e, el: HTMLElement, sync?: boolean) {
 
 async function sendItemToChat(actor: ActorPF2e, event: PointerEvent, el: HTMLElement) {
     const rawItem = await getItemFromElement(actor, el);
-    const item = rawItem ? itemWithActor(rawItem, actor) : null;
+    const item = rawItem ? itemWithActor(actor, rawItem) : null;
     if (!item) return;
 
     if (item.isOfType("spell")) {
@@ -46,10 +46,4 @@ async function sendItemToChat(actor: ActorPF2e, event: PointerEvent, el: HTMLEle
     }
 }
 
-function itemWithActor(item: ItemPF2e, actor: ActorPF2e): ItemPF2e<ActorPF2e> {
-    return (
-        item.parent ? item : new (getDocumentClass("Item"))(item.toObject(), { parent: actor })
-    ) as ItemPF2e<ActorPF2e>;
-}
-
-export { itemWithActor, getItemFromElement, sendItemToChat };
+export { getItemFromElement, sendItemToChat };

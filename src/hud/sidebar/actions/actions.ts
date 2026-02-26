@@ -2,18 +2,23 @@ import {
     AbilityItemPF2e,
     ActionType,
     ActorPF2e,
+    addListenerAll,
+    CharacterPF2e,
     CompendiumIndexData,
     EffectPF2e,
     FeatPF2e,
     findItemWithSourceId,
     getActionGlyph,
+    getItemSourceId,
     ImageFilePath,
     isSupressedFeat,
+    itemWithActor,
     LabeledValueAndMax,
     localize,
     MacroPF2e,
     R,
     TraitToggleViewData,
+    updateActionFrequency,
     useAction,
 } from "foundry-helpers";
 import { getActionIcon } from "foundry-helpers/dist";
@@ -46,6 +51,14 @@ class ActionsSidebarAction extends BaseSidebarItem<FeatPF2e<ActorPF2e> | Ability
         return this.item.actor;
     }
 
+    get uuid(): string {
+        return this.virtual ? getItemSourceId(this.item) : super.uuid;
+    }
+
+    get virtualData(): toolbelt.actionable.VirtualActionData | undefined {
+        return this.virtual ? game.toolbelt?.api.actionable.getVirtualActionsData(this.actor)?.[this.id] : undefined;
+    }
+
     removeEffect() {
         this.usage?.effect?.delete();
     }
@@ -66,7 +79,7 @@ class ActionsSidebarAction extends BaseSidebarItem<FeatPF2e<ActorPF2e> | Ability
 
     use(event: Event) {
         const item = this.item;
-        return item?.isOfType("feat", "action") && useAction(event, item);
+        return item?.isOfType("feat", "action") && useAction(event, item, this.virtualData);
     }
 
     toShortcut(): ActionShortcutSource {
@@ -119,11 +132,7 @@ async function getSidebarActionsData(this: ActionsSidebarPF2eHUD): Promise<Actio
     const getActionMacro = game.toolbelt?.api.actionable.getActionMacro;
     const tactics = isCharacter && game.dailies?.active ? game.dailies?.api.getCommanderTactics(actor) : undefined;
 
-    const abilities = abilityTypes.flatMap(
-        (type): (FeatPF2e<ActorPF2e> | AbilityItemPF2e<ActorPF2e>)[] => actor.itemTypes[type],
-    );
-
-    const abilitiesPromises = abilities.map(async (item) => {
+    const processAction = async (item: AbilityItemPF2e<ActorPF2e> | FeatPF2e<ActorPF2e>, virtual: boolean) => {
         const traits = item.system.traits.value;
         if (traits.includes("downtime")) return;
         if (traits.includes("stance") && item.system.selfEffect?.uuid) return;
@@ -188,13 +197,30 @@ async function getSidebarActionsData(this: ActionsSidebarPF2eHUD): Promise<Actio
             toggles: item.system.traits.toggles?.getSheetData() ?? [],
             untrainedTactic: untrainedTacticBtn?.outerHTML,
             usage: usage || null,
+            virtual,
         };
 
         const sidebarAction = this.addSidebarItem(ActionsSidebarAction, "id", data);
         section.actions.push(sidebarAction);
-    });
+    };
 
-    await Promise.all(abilitiesPromises);
+    await Promise.all(
+        R.flatMap(abilityTypes, (type) => {
+            return actor.itemTypes[type].map((item) => processAction(item, false));
+        }),
+    );
+
+    await Promise.all(
+        R.pipe(
+            (isCharacter && game.toolbelt?.api.actionable.getVirtualActionsData(actor)) || {},
+            R.values(),
+            R.map(async (data) => {
+                const rawItem = await game.toolbelt?.api.actionable.getVirtualAction(data.data);
+                const item = rawItem && itemWithActor<AbilityItemPF2e<CharacterPF2e>>(actor, rawItem);
+                return item && processAction(item, true);
+            }),
+        ),
+    );
 
     return R.pipe(
         sections,
@@ -204,6 +230,13 @@ async function getSidebarActionsData(this: ActionsSidebarPF2eHUD): Promise<Actio
             section.actions = R.sortBy(section.actions, (action) => action.item.name);
         }),
     );
+}
+
+function activateActionsListeners(this: ActionsSidebarPF2eHUD, html: HTMLElement) {
+    addListenerAll(html, `[data-virtual-action="true"]`, "change", async (el: HTMLSelectElement, event) => {
+        const sidebarItem = this.getSidebarItemFromElement<ActionsSidebarAction>(el);
+        return sidebarItem && updateActionFrequency(event, sidebarItem.item, sidebarItem.virtualData);
+    });
 }
 
 function getActionImg(item: FeatPF2e | AbilityItemPF2e, macro: MaybeFalsy<MacroPF2e> | null): ImageFilePath {
@@ -326,10 +359,12 @@ type ActionData = {
     toggles: TraitToggleViewData[];
     untrainedTactic: string | undefined;
     usage: Maybe<ActionUsage>;
+    virtual: boolean;
 };
 
 export {
     ActionsSidebarAction,
+    activateActionsListeners,
     getActionFrequency,
     getActionImg,
     getActionResource,
