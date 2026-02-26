@@ -3,8 +3,22 @@
 - the module received a significant amount of rework internally
   - this doesn't impact the end user experience, no setting has been reset and all your data is still available
   - due to the sheer amount of features, it is impossible to test everything so keep an eye open for bugs
+- this release requires you to update the `PF2e Toolbelt` module to version `3.28.0` if used in your world
+- `Actions Sidebar`:
+  - add icon and tooltip for `area-fire` and `auto-fire` strikes alt usages
+  - add full support for the new `Actionable` virtual actions from the `PF2e Toolbelt` module
+- `Combat Tracker`:
+  - add the name of the user that targets the combatant when hovering over the the colored target dots
 - `Persistent Shortcut`:
   - fix not being able to reset custom shortcut data to their original values
+- `Recall Knowledge`:
+  - add missing `Computers` skill in `sf2e` worlds
+- `Strike Shortcut`:
+  - fix `reload` option showing when the weapon is fully loaded
+- `Take Cover`:
+  - switch to using the effect directly instead of the system's action as the later doesn't currently work in `sf2e`
+- `Token HUD`:
+  - fix small typo in the settings
 
 # 2.43.2
 
