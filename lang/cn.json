@@ -350,7 +350,9 @@
                     "shown": "存放武器已显示",
                     "hidden": "存放武器已隐藏"
                 },
-                "thrown": "投掷{increment}/{max}尺"
+                "thrown": "投掷{increment}/{max}尺",
+                "area-fire": "锥形/线形/爆发{range}尺",
+                "auto-fire": "锥形{range}尺"
             },
             "extras": {
                 "delete": {
