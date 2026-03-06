@@ -112,7 +112,7 @@
         "title": "HUD du jeton",
         "activation": {
           "name": "Mode d'activation",
-          "hint": "Sélectionnez le mode pour activer le HUD du jeton.",
+          "hint": "Sélectionnez le mode pour activer l'affichage du HUD.",
           "choices": {
             "disabled": "Désactivé",
             "first": "Au premier clic",
@@ -422,6 +422,8 @@
     "sidebar": {
       "filter": "Filtre de barre latérale",
       "actions": {
+        "area-fire": "Cône/Ligne/Explosion {range} pieds.",
+        "auto-fire": "Cône {range} pieds.",
         "blasts": "Déflagrations élémentaires",
         "ranged": "Portée {max} pieds.",
         "rangedWithIncrement": "Portée {increment}/{max} pieds.",
