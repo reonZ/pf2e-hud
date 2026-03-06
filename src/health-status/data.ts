@@ -5,7 +5,7 @@ const HEALTH_STATUS_DEFAULT_LABEL = "???";
 
 const zHealthStatusEntry = z.object({
     label: z.string(),
-    marker: z.number().min(1).max(99).multipleOf(1),
+    marker: z.number().min(1).max(99),
 });
 
 const zHealthStatusEntries = z.array(zHealthStatusEntry).catch(() => {
