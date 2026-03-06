@@ -1,7 +1,7 @@
 # 2.44.1
 
 - `Health Status`:
-  - no longer restrict markers to be intergers
+  - no longer restrict markers to be integers
 
 # 2.44.0
 
