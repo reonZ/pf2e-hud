@@ -1,3 +1,8 @@
+# 2.44.1
+
+- `Health Status`:
+  - no longer restrict markers to be intergers
+
 # 2.44.0
 
 - the module received a significant amount of rework internally
