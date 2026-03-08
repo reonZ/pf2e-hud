@@ -422,6 +422,8 @@
     "sidebar": {
       "filter": "Filtr paska bocznego",
       "actions": {
+        "area-fire": "Stożek/Linia/Wybuch {range} stóp",
+        "auto-fire": "Stożek {range} stóp",
         "blasts": "Żywiołowe Podmuchy",
         "ranged": "Dystans {max} stóp",
         "rangedWithIncrement": "Dystans {increment}/{max} stóp",
