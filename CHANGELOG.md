@@ -1,3 +1,8 @@
+# 2.44.2
+
+- `Token HUD`:
+  - fix NPC extras row style in grouped layout
+
 # 2.44.1
 
 - `Health Status`:
