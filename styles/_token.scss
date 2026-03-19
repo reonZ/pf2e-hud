@@ -194,7 +194,8 @@
         }
 
         [data-panel="statistics"],
-        [data-panel="resources"] {
+        [data-panel="resources"],
+        [data-panel="npc-extras"] {
             grid-template-columns: repeat(3, 1fr);
         }
 
