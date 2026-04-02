@@ -140,7 +140,8 @@
     <div class="variants controls">
         {{!-- ammo --}}
         {{#if (and strike.ready strike.ammunition)}}
-        {{#if strike.ammunition.remaining}}
+        {{!-- firearm --}}
+        {{#if (and strike.ammunition.requiresReload strike.ammunition.remaining)}}
         <div class="variant reload" data-action="reload">
             <span>
                 {{localize "PF2E.Actions.Interact.Reload.Title"}}
@@ -150,6 +151,7 @@
             <span>({{strike.ammunition.remaining}})</span>
             {{/if}}
         </div>
+        {{!-- regular ranged --}}
         {{else if (not strike.ammunition.requiresReload)}}
         <div class="variant ammo">
             <select class="linked" data-action="link-ammo">
