@@ -259,9 +259,9 @@ function getNpcStrikeImage({
     if (match) return match;
 
     return isAreaOrAutoFireType(type)
-        ? (MODULE.relativePath("images", `${type}.svg`) as ImageFilePath)
+        ? MODULE.imagePath(type, "svg")
         : item.range
-          ? (MODULE.relativePath("images", "npc-range.svg") as ImageFilePath)
+          ? MODULE.imagePath("npc-range", "svg")
           : item.img;
 }
 
