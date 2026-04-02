@@ -1,3 +1,9 @@
+# 2.44.3
+
+- fix NPC ranged-attack fallback image path
+- `Actions Sidebar`:
+  - fix regular ranged weapons showing the `Reload` auxiliary action instead of the ammunition select field
+
 # 2.44.2
 
 - `Token HUD`:
