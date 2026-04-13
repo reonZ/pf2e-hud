@@ -55,10 +55,18 @@
                 {{!-- if uses --}}
                 {{#if uses}}
                 <div {{#if uses.hasMaxUses}}class="numbers" {{/if}}>
-                    <input class="small" type="number" {{#if isStaff}}
-                        data-action="update-staff-charges" {{else}} data-item-id="{{uses.itemId}}"
-                        data-item-property="{{uses.input}}" {{/if}} value="{{uses.value}}" min="0"
-                        max="{{uses.max}}" placeholder="0">
+                    <input class="small" type="number"
+                        {{#if isStaff}}
+                            data-staff-charges
+                        {{else}}
+                            data-item-id="{{uses.itemId}}"
+                            {{#if uses.ruleIndex includeZero=true}}
+                            data-rule-index="{{uses.ruleIndex}}"
+                            {{else}}
+                            data-item-property="{{uses.property}}"
+                            {{/if}}
+                        {{/if}}
+                        value="{{uses.value}}" min="0" max="{{uses.max}}" placeholder="0">
                     {{#if uses.hasMaxUses}}
                     <span class="slash"> / </span>
                     <input class="small" type="number" value="{{uses.max}}" placeholder="0"
@@ -78,6 +86,11 @@
                     data-tooltip="{{localize annotation.label}} {{actionGlyph annotation.cost}}">
                     <i class="fa-solid fa-hand-back-fist"></i>
                 </a>
+                {{!-- parent of virtual unequipped --}}
+                {{else if unequipped}}
+                <span class="unequipped" data-tooltip="pf2e-toolbelt.actionable.cast.equipped">
+                    <i class="fa-solid fa-shirt"></i>
+                </span>
                 {{!-- equipped --}}
                 {{else}}
                 {{!-- cast spell --}}

@@ -1,6 +1,4 @@
-import { ConsumablePF2e, ItemPF2e, OneToTen } from "foundry-helpers";
-
-const ROMAN_RANKS = ["", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"] as const;
+import { ConsumablePF2e, ItemPF2e, OneToTen, ROMAN_RANKS, RomanRank } from "foundry-helpers";
 
 function getItemSlug(item: ItemPF2e): string {
     if (item.isOfType("consumable") && item.system.spell) {
@@ -23,7 +21,4 @@ function getConsumableRank(item: Maybe<ConsumablePF2e>, roman?: boolean) {
     return rank && roman ? ROMAN_RANKS[rank] : rank;
 }
 
-type RomanRank = (typeof ROMAN_RANKS)[number];
-
-export { getItemSlug, ROMAN_RANKS };
-export type { RomanRank };
+export { getItemSlug };

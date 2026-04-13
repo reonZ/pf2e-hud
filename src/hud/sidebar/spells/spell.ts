@@ -90,8 +90,19 @@ type SlotSpellData = Omit<CustomSpellcastingEntry, "category" | "groups" | "id" 
     signature: { toggled: boolean | undefined } | undefined;
     slotId: number;
     spell: SpellPF2e<CreaturePF2e>;
+    unequipped: boolean;
     untrainedVessel: string | undefined;
-    uses: (ValueAndMax & { input: string; itemId: string; hasMaxUses: boolean }) | undefined;
+    uses:
+        | ({
+              itemId: string;
+              hasMaxUses: boolean;
+              max: number;
+              value: number;
+          } & RequireAtLeastOne<{
+              property: string;
+              ruleIndex: number;
+          }>)
+        | undefined;
 };
 
 export { SpellSidebarItem };

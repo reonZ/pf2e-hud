@@ -1,19 +1,11 @@
 import {
-    createSlider,
-    FilterValue,
-    isAnimistEntry,
-    isFocusCantrip,
-    processSliderEvent,
-    SidebarPF2eHUD,
-    SliderData,
-} from "hud";
-import { SlotSpellData, SPELL_CATEGORIES, SpellCategoryType, SpellSidebarItem } from ".";
-import {
-    getEquipAnnotation,
     ActiveSpell,
+    CharacterPF2e,
     ConsumablePF2e,
     CreaturePF2e,
     dataToDatasetString,
+    getEquipAnnotation,
+    itemIsEquipped,
     localeCompare,
     OneToTen,
     R,
@@ -25,6 +17,16 @@ import {
 } from "foundry-helpers";
 import { spellSlotGroupIdToNumber } from "foundry-helpers/dist";
 import { addListenerAll } from "foundry-helpers/src";
+import {
+    createSlider,
+    FilterValue,
+    isAnimistEntry,
+    isFocusCantrip,
+    processSliderEvent,
+    SidebarPF2eHUD,
+    SliderData,
+} from "hud";
+import { SlotSpellData, SPELL_CATEGORIES, SpellCategoryType, SpellSidebarItem } from ".";
 
 class SpellsSidebarPF2eHUD extends SidebarPF2eHUD<SpellPF2e, SpellSidebarItem> {
     get name(): "spells" {
@@ -68,12 +70,19 @@ class SpellsSidebarPF2eHUD extends SidebarPF2eHUD<SpellPF2e, SpellSidebarItem> {
 
     protected _activateListeners(html: HTMLElement): void {
         const actor = this.actor;
+        if (!actor.isOfType("character")) return;
 
-        if (actor.isOfType("character") && game.dailies?.active) {
-            addListenerAll(html, "[data-action='update-staff-charges']", "change", (el: HTMLInputElement) => {
-                game.dailies?.api.setStaffChargesValue(actor, el.valueAsNumber);
-            });
-        }
+        addListenerAll(html, "[data-staff-charges]", "change", async (el: HTMLInputElement) => {
+            await game.dailies?.api.setStaffChargesValue(actor, el.valueAsNumber);
+        });
+
+        addListenerAll(html, `[data-rule-index]`, "change", async (el: HTMLInputElement) => {
+            const { itemId, ruleIndex } = el.dataset as { itemId: string; ruleIndex: string };
+            const parent = actor.inventory.get(itemId);
+            if (!parent) return;
+
+            await game.toolbelt?.api.actionable.updateVirtualSpellValue(parent, Number(ruleIndex), el.valueAsNumber);
+        });
     }
 
     #onSlider(action: "focus", direction: 1 | -1) {
@@ -119,14 +128,19 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
         const entryData = R.omit(entry, ["category", "groups", "id", "statistic", "uses"]);
         const isCharges = entry.category === "charges";
         const isVessel = entry.id === vesselsData.entry?.id;
-
-        const item = entry.isEphemeral
-            ? actor.items.get<ConsumablePF2e<CreaturePF2e>>(entry.id.split("-")[0])
+        const virtualData = entry.isVirtual
+            ? game.toolbelt?.api.actionable.getVirtualSpellcastingData(actor as CharacterPF2e, entryId)
             : undefined;
+
+        const item = virtualData
+            ? virtualData.item
+            : entry.isEphemeral
+              ? actor.items.get<ConsumablePF2e<CreaturePF2e>>(entry.id.split("-")[0])
+              : undefined;
 
         const [categoryType, consumable] =
             entry.category === "items" && item
-                ? [item.category, item]
+                ? [entry.isVirtual ? "virtual" : item.category, item]
                 : [entry.isFlexible ? "flexible" : entry.isStaff ? "staff" : entry.category, undefined];
 
         const category = SPELL_CATEGORIES[categoryType as SpellCategoryType];
@@ -139,7 +153,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
             ? `${entryLabel} - ${entryDcLabel}<br>${entry.name}`
             : `${entryLabel}<br>${entry.name}`;
 
-        const annotationData = entry.isStaff || consumable ? getEquipAnnotation(item) : undefined;
+        const annotationData = entry.isStaff || (consumable && !virtualData) ? getEquipAnnotation(item) : undefined;
         const annotation = annotationData
             ? {
                   ...annotationData,
@@ -160,12 +174,23 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
             const groupUses = R.isNumber(group.uses?.value) ? (group.uses as ValueAndMax) : undefined;
 
             const getUses = (active: CustomGroupActive): SpellSidebarItem["uses"] | undefined => {
+                if (virtualData) {
+                    if (!virtualData.max) return;
+                    return {
+                        hasMaxUses: true,
+                        itemId: virtualData.parent.parentItem?.id ?? virtualData.parent.id,
+                        max: virtualData.max,
+                        ruleIndex: virtualData.ruleIndex,
+                        value: virtualData.item.uses.value,
+                    };
+                }
+
                 if (isCantrip || entry.isFocusPool || consumable || (entry.isPrepared && !entry.isFlexible)) return;
 
                 const uses = isCharges && !isBroken ? entry.uses : (active.uses ?? groupUses);
                 if (!uses) return;
 
-                const input = entry.isStaff
+                const property = entry.isStaff
                     ? ""
                     : isCharges
                       ? "system.slots.slot1.value"
@@ -176,7 +201,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                 return {
                     ...uses,
                     hasMaxUses: !!uses.max && !entry.isStaff,
-                    input,
+                    property,
                     itemId: entry.isStaff ? "" : entry.isInnate ? active.spell.id : entry.id,
                 };
             };
@@ -215,6 +240,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
                     signature,
                     slotId,
                     spell,
+                    unequipped: virtualData ? !itemIsEquipped(virtualData.parent) : false,
                     untrainedVessel: untrainedVesselBtn?.outerHTML,
                     uses: getUses(active),
                 };
@@ -293,7 +319,8 @@ type SpellGroupData = {
 type CustomSpellcastingEntry = Omit<SpellcastingSheetData, "category" | "groups"> & {
     isAnimist?: boolean;
     category: SpellcastingCategory | "charges";
-    isStaff: boolean;
+    isStaff: boolean | undefined;
+    isVirtual: boolean | undefined;
     uses?: ValueAndMax;
     groups: Array<
         Omit<SpellcastingSlotGroup, "active"> & {

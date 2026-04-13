@@ -6,6 +6,8 @@ import {
     localize,
     OneToTen,
     R,
+    ROMAN_RANKS,
+    RomanRank,
     SpellCollection,
     SpellPF2e,
     ValueAndMax,
@@ -18,8 +20,6 @@ import { CustomSpellcastingEntry, isAnimistEntry, isFocusCantrip, SPELL_CATEGORI
 import {
     getItemSlug,
     PersistentShortcut,
-    ROMAN_RANKS,
-    RomanRank,
     ShortcutCache,
     ShortcutCost,
     ShortcutData,

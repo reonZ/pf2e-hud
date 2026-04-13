@@ -28,6 +28,12 @@
                     }
                 }
 
+                .unequipped {
+                    font-size: 0.93em;
+                    opacity: 0.5;
+                    margin-right: 1px;
+                }
+
                 [data-action="dailies-retrain"] {
                     margin-right: 1px;
                 }
