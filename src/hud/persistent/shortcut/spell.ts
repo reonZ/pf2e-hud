@@ -3,6 +3,7 @@ import {
     CharacterPF2e,
     ConsumablePF2e,
     CreaturePF2e,
+    itemIsEquipped,
     localize,
     OneToTen,
     R,
@@ -144,22 +145,36 @@ class SpellShortcut extends PersistentShortcut<typeof zSpellShortcut, SpellPF2e<
         const groupId = this.groupId || "cantrip";
         const castRank = this.castRank;
         const group = (this.#group = entryData.groups.find((x) => x.id === groupId));
+        const virtualData = entryData.isVirtual
+            ? game.toolbelt?.api.actionable.getVirtualSpellcastingData(actor, entryId)
+            : undefined;
 
         const groupUses = typeof group?.uses?.value === "number" ? (group.uses as ValueAndMax) : undefined;
 
-        const uses =
-            entryData.isFocus && (!isCantrip || isFocusCantrip(spell))
-                ? (actor as CreaturePF2e).system.resources?.focus
-                : isCantrip || entryData.isConsumable || (entryData.isPrepared && !entryData.isFlexible)
-                  ? undefined
-                  : entryData.isCharges && !isBroken
-                    ? entryData.uses
-                    : entryData.isInnate && !spell.atWill
-                      ? spell.system.location.uses
-                      : groupUses;
+        const uses = virtualData
+            ? virtualData.max
+                ? { max: virtualData.max, value: virtualData.item.uses.value }
+                : undefined
+            : entryData.isFocus && (!isCantrip || isFocusCantrip(spell))
+              ? (actor as CreaturePF2e).system.resources?.focus
+              : isCantrip || entryData.isConsumable || (entryData.isPrepared && !entryData.isFlexible)
+                ? undefined
+                : entryData.isCharges && !isBroken
+                  ? entryData.uses
+                  : entryData.isInnate && !spell.atWill
+                    ? spell.system.location.uses
+                    : groupUses;
 
         this.#uses =
             entryData.consumable && entryData.consumable.quantity > 1 ? { value: entryData.consumable.quantity } : uses;
+
+        if (virtualData && !itemIsEquipped(virtualData.parent)) {
+            return returnDisabled(true, "equip");
+        }
+
+        if (virtualData && uses && uses.value <= 0) {
+            return returnDisabled(true, "uses");
+        }
 
         if (isCantrip && (!uses || spell.system.cast.focusPoints <= 0)) {
             return returnDisabled(false, "");
@@ -322,6 +337,7 @@ class SpellShortcut extends PersistentShortcut<typeof zSpellShortcut, SpellPF2e<
             isPrepared: !!entrySheetData.isPrepared,
             isSpontaneous: !!entrySheetData.isSpontaneous,
             isStaff,
+            isVirtual: !!entrySheetData.isVirtual,
             notPrimaryVessel: (spellId: string) => vessels?.entry.id === entryId && !vessels.primary.includes(spellId),
             uses: entrySheetData.uses,
         };
@@ -356,6 +372,7 @@ type SpellEntryData = {
     isPrepared: boolean;
     isSpontaneous: boolean;
     isStaff: boolean;
+    isVirtual: boolean;
     groups: CustomSpellcastingEntry["groups"];
     notPrimaryVessel: (spellId: string) => boolean;
     uses: ValueAndMax | undefined;

@@ -1,6 +1,5 @@
 import {
     ActiveSpell,
-    CharacterPF2e,
     ConsumablePF2e,
     CreaturePF2e,
     dataToDatasetString,
@@ -129,7 +128,7 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
         const isCharges = entry.category === "charges";
         const isVessel = entry.id === vesselsData.entry?.id;
         const virtualData = entry.isVirtual
-            ? game.toolbelt?.api.actionable.getVirtualSpellcastingData(actor as CharacterPF2e, entryId)
+            ? game.toolbelt?.api.actionable.getVirtualSpellcastingData(actor, entryId)
             : undefined;
 
         const item = virtualData
