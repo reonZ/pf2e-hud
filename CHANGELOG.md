@@ -1,3 +1,10 @@
+# 2.45.0
+
+- update to fully support the new `Item Spell Cast` feature from the `PF2e Toolbelt` module
+  - requires you to update toolbelt to version `3.41.0`
+- `Token HUD`:
+  - fix `feats` sidebar icon showing on grouped layouts
+
 # 2.44.3
 
 - fix NPC ranged-attack fallback image path
