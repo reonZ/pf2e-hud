@@ -24,6 +24,7 @@ import {
     ShortcutCache,
     ShortcutCost,
     ShortcutData,
+    ShortcutDataset,
     ShortcutLabel,
     zBaseShortcut,
 } from "..";
@@ -226,6 +227,10 @@ class SpellShortcut extends PersistentShortcut<typeof zSpellShortcut, SpellPF2e<
         }
 
         returnDisabled(this.#uses?.value === 0, "expended");
+    }
+
+    get dataset(): (ShortcutDataset & { virtual?: boolean }) | null {
+        return this.item ? { itemId: this.item.id, virtual: this.#entryData?.isVirtual } : null;
     }
 
     get canUse(): boolean {

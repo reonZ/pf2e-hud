@@ -10,19 +10,23 @@ function getItemFromElement(actor: ActorPF2e, el: HTMLElement, sync?: boolean) {
     const element = htmlClosest(el, "[data-item-id]") ?? htmlClosest(el, "[data-item-uuid]");
     if (!element) return null;
 
-    const { parentId, itemId, itemUuid, itemType, actionIndex, entryId } = element.dataset;
+    const { parentId, itemId, itemUuid, itemType, actionIndex, entryId, virtual } = element.dataset;
 
-    const item = parentId
-        ? actor.inventory.get(parentId, { strict: true }).subitems.get(itemId, { strict: true })
-        : itemUuid
-          ? fromUuid(itemUuid)
-          : entryId
-            ? (actor.spellcasting?.collections.get(entryId, { strict: true }).get(itemId, { strict: true }) ?? null)
-            : itemType === "condition"
-              ? actor.conditions.get(itemId, { strict: true })
-              : actionIndex
-                ? (actor.system.actions?.[Number(actionIndex)].item ?? null)
-                : (actor.items.get(itemId ?? "") ?? null);
+    const item =
+        virtual && itemId
+            ? game.toolbelt?.api.actionable.getVirtualSpellData(actor, itemId)?.item.embeddedSpell
+            : parentId
+              ? actor.inventory.get(parentId, { strict: true }).subitems.get(itemId, { strict: true })
+              : itemUuid
+                ? fromUuid(itemUuid)
+                : entryId
+                  ? (actor.spellcasting?.collections.get(entryId, { strict: true }).get(itemId, { strict: true }) ??
+                    null)
+                  : itemType === "condition"
+                    ? actor.conditions.get(itemId, { strict: true })
+                    : actionIndex
+                      ? (actor.system.actions?.[Number(actionIndex)].item ?? null)
+                      : (actor.items.get(itemId ?? "") ?? null);
 
     if (sync) {
         return item instanceof Item ? item : null;
