@@ -115,7 +115,7 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e | ItemPF2e, Ex
 
         html.addEventListener("drop", async (event) => {
             const { type, uuid } = getDragEventData(event);
-            if (type !== "Macro" || typeof uuid !== "string" || !fromUuidSync(uuid)) return;
+            if (type !== "Macro" || typeof uuid !== "string" || !fromUuidSync(uuid, { strict: false })) return;
 
             const macros = this.macrosFlag.slice();
             if (macros.includes(uuid)) return;

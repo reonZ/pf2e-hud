@@ -49,7 +49,7 @@ class StanceShortcut extends PersistentShortcut<
         this.#canUseStances = this.cached("canUseStances", () => {
             return canUseStances(this.actor);
         });
-        this.#sourceEffect = fromUuidSync<EffectPF2e>(this.effectUUID);
+        this.#sourceEffect = fromUuidSync<EffectPF2e>(this.effectUUID, { strict: false });
     }
 
     get canUseStances(): boolean {

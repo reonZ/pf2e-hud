@@ -567,7 +567,7 @@ function isMacroDragData(data: SidebarDragData | ShortcutDragData | MacroSlotDat
 }
 
 function getMacroShortcutSource(uuid: DocumentUUID): MacroShortcutSource | undefined {
-    const macro = fromUuidSync<MacroPF2e>(uuid);
+    const macro = fromUuidSync<MacroPF2e>(uuid, { strict: false });
     if (!macro) return;
 
     return {

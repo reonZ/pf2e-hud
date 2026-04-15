@@ -248,7 +248,7 @@ function getActionImg(item: FeatPF2e | AbilityItemPF2e, macro: MaybeFalsy<MacroP
     }
 
     const selfEffect = item.system.selfEffect
-        ? fromUuidSync<CompendiumIndexData>(item.system.selfEffect.uuid)
+        ? fromUuidSync<CompendiumIndexData>(item.system.selfEffect.uuid, { strict: false })
         : undefined;
 
     if (selfEffect?.img) {

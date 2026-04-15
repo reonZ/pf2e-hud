@@ -143,7 +143,7 @@ async function toggleFollowTheExpert(actor: ActorPF2e) {
 function getFollowTheExpertData(actor: ActorPF2e): FollowTheLeader {
     if (!_cached.followTheLeader) {
         const uuid = FOLLOW_THE_EXPERT();
-        const item = fromUuidSync<CompendiumIndexData>(uuid) ?? { name: "" };
+        const item = fromUuidSync<CompendiumIndexData>(uuid, { strict: false }) ?? { name: "" };
 
         _cached.followTheLeader = {
             filterValue: new FilterValue(item.name),

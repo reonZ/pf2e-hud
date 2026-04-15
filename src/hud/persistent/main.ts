@@ -318,7 +318,7 @@ class PersistentPF2eHUD
 
     get savedActor(): PersistentHudActor | null {
         const uuid = this.settings.savedActor;
-        const actor = fromUuidSync<PersistentHudActor>(uuid);
+        const actor = fromUuidSync<PersistentHudActor>(uuid, { strict: false });
 
         return actor instanceof Actor && this.isValidActor(actor) ? actor : null;
     }

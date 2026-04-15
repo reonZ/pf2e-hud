@@ -105,14 +105,14 @@ function getStances(actor: CreaturePF2e): StanceData[] | undefined {
             continue;
 
         const effectUUID = replacer?.effect ?? extra?.effect ?? item.system.selfEffect!.uuid;
-        const effect = fromUuidSync<EffectPF2e>(effectUUID);
+        const effect = fromUuidSync<EffectPF2e>(effectUUID, { strict: false });
         if (!effect) continue;
 
         if (replacer?.replace) {
             replaced.add(replacer.replace);
         }
 
-        const label = (replacer && fromUuidSync(replacer.replace)?.name) || item.name;
+        const label = (replacer && fromUuidSync(replacer.replace, { strict: false })?.name) || item.name;
 
         const stanceData: StanceData = {
             effectUUID,
