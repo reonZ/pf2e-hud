@@ -13,7 +13,7 @@ function getItemFromElement(actor: ActorPF2e, el: HTMLElement, sync?: boolean) {
     const { parentId, itemId, itemUuid, itemType, actionIndex, entryId, virtual } = element.dataset;
 
     const item =
-        virtual && itemId
+        virtual === "true" && itemId
             ? game.toolbelt?.api.actionable.getVirtualSpellData(actor, itemId)?.item.embeddedSpell
             : parentId
               ? actor.inventory.get(parentId, { strict: true }).subitems.get(itemId, { strict: true })

@@ -229,13 +229,13 @@ class SpellShortcut extends PersistentShortcut<typeof zSpellShortcut, SpellPF2e<
     }
 
     get dataset(): SpellShortcutDataset | null {
-        if (!this.item || !this.#entryData) return null;
+        if (!this.item) return null;
 
         return {
             castRank: this.castRank,
             entryId: this.entryId,
             itemId: this.item.id,
-            virtual: this.#entryData?.isVirtual,
+            virtual: !!this.#entryData?.isVirtual,
         };
     }
 
