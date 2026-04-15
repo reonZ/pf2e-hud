@@ -65,7 +65,7 @@ function hasSpells(actor: ActorPF2e): boolean {
     if (!actor.isOfType("character") && !actor.isOfType("npc")) return false;
 
     return actor.spellcasting.contents.some((entry) => {
-        return (entry.spells?.size && entry.spells?.size > 0) || entry.isEphemeral;
+        return entry.spells ? entry.spells?.size > 0 : entry.isEphemeral;
     });
 }
 
