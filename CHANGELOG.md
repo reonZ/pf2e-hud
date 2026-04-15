@@ -1,3 +1,9 @@
+# 2.45.1
+
+- fix spellcasting sidebar icon showing even with no spell to display for the actor
+- fix spell shortcut popup not completely being heightened (i.e. dragging effects directly from the popup would not match the expected rank)
+- fix not being able to send-to-chat non virtual spells from the shortcut popup
+
 # 2.45.0
 
 - update to fully support the new `Item Spell Cast` feature from the `PF2e Toolbelt` module
