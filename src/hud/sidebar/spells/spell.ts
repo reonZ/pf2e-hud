@@ -6,7 +6,6 @@ import {
     SpellCollection,
     SpellPF2e,
     SpellSlotGroupId,
-    ValueAndMax,
 } from "foundry-helpers";
 import { getItemSlug, SpellShortcutSource } from "hud";
 import { BaseSidebarItem, CustomSpellcastingEntry, SpellCategoryType } from "..";
