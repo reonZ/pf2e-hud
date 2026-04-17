@@ -246,7 +246,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
                 for (const control of controls) {
                     const index = Number(control.dataset.index);
                     const menu = menus.at(index);
-                    const display = R.isFunction(menu?.condition) ? menu.condition(target) : !!menu;
+                    const display = R.isFunction(menu?.visible) ? menu.visible(target) : !!menu?.visible;
 
                     control.classList.toggle("hidden", !display);
                 }
@@ -720,13 +720,13 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         combat.update({ turn }, { direction } as any);
     }
 
-    #onCombatantAltControl(el: HTMLElement, _event: MouseEvent) {
+    #onCombatantAltControl(el: HTMLElement, event: PointerEvent) {
         const index = Number(el.dataset.index);
         const menu = this.contextMenus.at(index);
         const target = htmlClosest(el, "[data-combatant-id]");
 
         if (target) {
-            menu?.callback(target);
+            menu?.onClick?.(event, target);
         }
     }
 
