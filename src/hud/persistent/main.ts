@@ -563,27 +563,26 @@ class PersistentPF2eHUD
         }
     }
 
-    async updateShortcuts(...args: [...string[], null | Record<string, ShortcutSource[]>]): Promise<void>;
-    async updateShortcuts(...args: [string, number, null | ShortcutSource[]]): Promise<void>;
+    async updateShortcuts(tab: number, value: ShortcutSource[] | ForcedReplacement | ForcedDeletion): Promise<void>;
+    async updateShortcuts(value: ForcedReplacement | ForcedDeletion): Promise<void>;
     async updateShortcuts(...args: any[]) {
         const worldActor = this.worldActor;
         if (!worldActor) return;
 
-        const shortcuts = args.at(-1) as null | ShortcutSource[];
-        const updateKey = ["shortcuts", ...(args.slice(0, -1) as string[])].join(".");
+        const value = args.pop() as ShortcutSource[] | ForcedReplacement | ForcedDeletion;
+        const updateKey = ["shortcuts", game.userId, ...args].join(".");
 
         // we don't want to re-render the entire persistent HUD
-        await updateFlag(worldActor, { [updateKey]: shortcuts }, { render: false });
+        await updateFlag(worldActor, { [updateKey]: value }, { render: false });
         this.shortcutsPanel.render({ keepCache: true });
     }
 
-    async deleteShortcuts(all: boolean) {
-        const updateKey = all ? `-=${game.userId}` : `${game.userId}.-=${this.shortcutsTab.value}`;
-        return this.updateShortcuts(updateKey, null);
+    deleteShortcuts(all: boolean): Promise<void> {
+        return all ? this.updateShortcuts(_del) : this.updateShortcuts(this.shortcutsTab.value, _del);
     }
 
-    async overrideShortcuts(shortcuts: Record<string, ShortcutSource[]>) {
-        return this.updateShortcuts(`==${game.userId}`, shortcuts);
+    overrideShortcuts(shortcuts: Record<string, ShortcutSource[]>): Promise<void> {
+        return this.updateShortcuts(_replace(shortcuts));
     }
 
     protected _configureRenderOptions(options: PersistentRenderOptions): void {

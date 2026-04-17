@@ -191,7 +191,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             toSave[slot] = shortcut.encode();
         }
 
-        this.parent.updateShortcuts(game.userId, this.tab, toSave);
+        this.parent.updateShortcuts(this.tab, toSave);
     }
 
     async generateFillShortcuts(): Promise<ShortcutSource[]> {
