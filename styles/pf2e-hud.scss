@@ -3,7 +3,7 @@
 @import "./avatar-editor";
 @import "./chat";
 @import "./dice";
-// @import "./foundry-sidebar";
+@import "./foundry-sidebar";
 @import "./health-status";
 @import "./persistent/main";
 @import "./popup";
@@ -35,7 +35,8 @@
         --chat-input-height: 65px;
 
         #chat {
-            .chat-form {
+            .chat-form,
+            #chat-message {
                 gap: 4px;
             }
         }

@@ -41,6 +41,10 @@
                     "name": "Auto Expand on Load",
                     "hint": "Force the foundry sidebar to expand on page load."
                 },
+                "noFormat": {
+                    "name": "Hide Format Panel",
+                    "hint": "The format panel will be removed from the chat."
+                },
                 "noRollMode": {
                     "name": "Hide Roll Modes",
                     "hint": "Roll mode buttons will be removed from the chat."

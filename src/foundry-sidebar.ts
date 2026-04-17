@@ -28,6 +28,15 @@ class FoundrySidebarPF2eNotHUD extends FakePF2eHUD<SidebarSettings> {
                     this.#renderChatInputHook.toggle(value);
                 },
             },
+            {
+                key: "noFormat",
+                type: Boolean,
+                default: false,
+                scope: "user",
+                onChange: (value: boolean) => {
+                    document.getElementById("sidebar")?.classList.toggle("pf2e-hud-noFormat", value);
+                },
+            },
         ];
     }
 
@@ -42,6 +51,10 @@ class FoundrySidebarPF2eNotHUD extends FakePF2eHUD<SidebarSettings> {
             requestAnimationFrame(() => {
                 ui.sidebar.toggleExpanded(true);
             });
+        }
+
+        if (this.settings.noFormat) {
+            document.getElementById("sidebar")?.classList.add("pf2e-hud-noFormat");
         }
     }
 
@@ -88,6 +101,7 @@ class FoundrySidebarPF2eNotHUD extends FakePF2eHUD<SidebarSettings> {
 type SidebarSettings = {
     expand: boolean;
     noRollMode: boolean;
+    noFormat: boolean;
 };
 
 export { FoundrySidebarPF2eNotHUD };

@@ -1,4 +1,4 @@
-#sidebar:has(#sidebar-content.expanded) {
+/* #sidebar:has(#sidebar-content.expanded) {
     flex-direction: column;
 
     > nav {
@@ -22,9 +22,7 @@
                 }
 
                 &:not(:first-child) {
-                    margin-left: calc(
-                        ((100% - var(--button-size)) / (var(--nb-button) - 1)) - var(--button-size)
-                    );
+                    margin-left: calc(((100% - var(--button-size)) / (var(--nb-button) - 1)) - var(--button-size));
                 }
 
                 &:has(button[aria-pressed="true"]) {
@@ -38,5 +36,11 @@
         height: auto;
         flex: 1;
         margin-left: 0;
+    }
+} */
+
+#sidebar.pf2e-hud-noFormat {
+    #chat-message .menu-container {
+        display: none;
     }
 }
