@@ -3,8 +3,8 @@
 - this is a foundry `14.360` release
 - update to be compatible with the various v14 changes
 - `Foundry Sidebar`:
-  - add new `Hide Format Panel` which removes the newly added format panel from the chat
-  - updated and slightly improve the `Hide Roll Modes`
+  - add new `Hide Format Panel` setting which removes the newly added format panel from the chat
+  - update and slightly improve the `Hide Roll Modes`
 
 # 2.45.1
 
