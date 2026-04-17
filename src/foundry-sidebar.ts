@@ -53,21 +53,21 @@ class FoundrySidebarPF2eNotHUD extends FakePF2eHUD<SidebarSettings> {
             return (chatControls.style.display = "");
         }
 
-        const parent = chatControls?.parentElement;
+        const popout = ui.sidebar.popouts.chat;
+        const chatTabActive = ui.sidebar.tabGroups.primary === "chat";
+        const sidebarExpanded = ui.sidebar.expanded;
 
-        htmlQuery(chatControls, "#roll-privacy")?.removeAttribute("hidden");
+        htmlQuery(chatControls, "#message-modes")?.removeAttribute("hidden");
+        htmlQuery(chatControls, ".control-buttons")?.toggleAttribute(
+            "hidden",
+            !popout && (!chatTabActive || !sidebarExpanded),
+        );
 
-        if (ui.sidebar.expanded && parent?.id === "chat-notifications") {
-            const chat = htmlQuery(document.getElementById("chat"), ".chat-form");
-            const input = htmlQuery(chat, "#chat-message");
+        popout?.render();
 
-            if (input) {
-                input.before(chatControls);
-            } else {
-                chat?.append(chatControls);
-            }
-
-            htmlQuery(chatControls, ".control-buttons")?.setAttribute("hidden", "");
+        if (chatTabActive && sidebarExpanded) {
+            const input = document.getElementById("chat-message");
+            input?.before(chatControls);
         }
     }
 
@@ -79,14 +79,9 @@ class FoundrySidebarPF2eNotHUD extends FakePF2eHUD<SidebarSettings> {
             return (chatControls.style.display = "none");
         }
 
-        const parent = chatControls?.parentElement;
-
-        htmlQuery(chatControls, "#roll-privacy")?.setAttribute("hidden", "");
-
-        if (parent instanceof HTMLFormElement && parent.classList.contains("chat-form")) {
-            document.getElementById("chat-notifications")?.append(chatControls);
-            htmlQuery(chatControls, ".control-buttons")?.removeAttribute("hidden");
-        }
+        htmlQuery(chatControls, "#message-modes")?.setAttribute("hidden", "");
+        htmlQuery(chatControls, ".control-buttons")?.removeAttribute("hidden");
+        document.getElementById("chat-notifications")?.append(chatControls);
     }
 }
 
