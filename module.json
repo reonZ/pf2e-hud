@@ -8,20 +8,24 @@
             "discord": "idleatre"
         }
     ],
-    "esmodules": ["scripts/main.js"],
+    "esmodules": [
+        "scripts/main.js"
+    ],
     "compatibility": {
         "minimum": "14.360",
         "verified": "14.360",
         "maximum": "14"
     },
-    "version": "2.45.1",
+    "version": "2.46.0",
     "url": "https://github.com/reonZ/pf2e-hud",
     "readme": "https://github.com/reonZ/pf2e-hud/blob/master/README.md",
     "manifest": "https://raw.githubusercontent.com/reonZ/pf2e-hud/master/module.json",
-    "download": "https://github.com/reonZ/pf2e-hud/releases/download/2.45.1/module.zip",
+    "download": "https://github.com/reonZ/pf2e-hud/releases/download/2.46.0/module.zip",
     "changelog": "https://github.com/reonZ/pf2e-hud/blob/master/CHANGELOG.md",
     "bugs": "https://github.com/reonZ/pf2e-hud/issues",
-    "styles": ["styles/pf2e-hud.css"],
+    "styles": [
+        "styles/pf2e-hud.css"
+    ],
     "relationships": {
         "systems": [
             {

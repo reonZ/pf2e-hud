@@ -1,3 +1,11 @@
+# 2.46.0
+
+- this is a foundry `14.360` release
+- update to be compatible with the various v14 changes
+- `Foundry Sidebar`:
+  - add new `Hide Format Panel` which removes the newly added format panel from the chat
+  - updated and slightly improve the `Hide Roll Modes`
+
 # 2.45.1
 
 - fix spellcasting sidebar icon showing even with no spell to display for the actor
