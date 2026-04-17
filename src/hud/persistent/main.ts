@@ -87,7 +87,7 @@ class PersistentPF2eHUD
                 return ui.hotbar.locked;
             },
             tooltip(state: boolean) {
-                return state ? "HOTBAR.UNLOCK" : "HOTBAR.LOCK";
+                return state ? "HOTBAR.ACTIONS.Unlock" : "HOTBAR.ACTIONS.Lock";
             },
         },
         lockown: {
@@ -105,7 +105,7 @@ class PersistentPF2eHUD
                 return game.audio.globalMute;
             },
             tooltip(state: boolean) {
-                return state ? "HOTBAR.UNMUTE" : "HOTBAR.MUTE";
+                return state ? "HOTBAR.ACTIONS.Unmute" : "HOTBAR.ACTIONS.Mute";
             },
         },
     };
@@ -1310,10 +1310,10 @@ class PersistentPF2eHUD
 async function clearHotbar() {
     const proceed = await foundry.applications.api.DialogV2.confirm({
         window: {
-            title: "HOTBAR.CLEAR",
+            title: "HOTBAR.ACTIONS.Clear",
             icon: "fa-solid fa-trash",
         },
-        content: game.i18n.localize("HOTBAR.CLEAR_CONFIRM"),
+        content: game.i18n.localize("HOTBAR.ClearConfirm"),
         modal: true,
     });
 
