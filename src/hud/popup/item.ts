@@ -49,14 +49,20 @@ class ItemHudPopup extends BaseHudPopup {
         return title;
     }
 
-    async _renderFrame(options: fa.ApplicationRenderOptions) {
+    async _renderFrame(options: fa.ApplicationRenderOptions): Promise<HTMLElement> {
         const frame = await super._renderFrame(options);
 
         const chatBtn = `<button type="button" class="header-control" data-action="send-to-chat"
         data-tooltip="PF2E.NPC.SendToChat" aria-label="PF2E.NPC.SendToChat">
         <i class="fa-solid fa-message"></i></button>`;
 
-        this.window.close.insertAdjacentHTML("beforebegin", chatBtn);
+        const title = htmlQuery(frame, ".window-title");
+        if (title) {
+            title.insertAdjacentHTML("afterend", chatBtn);
+        } else {
+            this.window.close.insertAdjacentHTML("beforebegin", chatBtn);
+        }
+
         return frame;
     }
 
