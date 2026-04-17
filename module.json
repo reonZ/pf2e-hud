@@ -8,13 +8,11 @@
             "discord": "idleatre"
         }
     ],
-    "esmodules": [
-        "scripts/main.js"
-    ],
+    "esmodules": ["scripts/main.js"],
     "compatibility": {
-        "minimum": "13.348",
-        "verified": "13.351",
-        "maximum": "13"
+        "minimum": "14.360",
+        "verified": "14.360",
+        "maximum": "14"
     },
     "version": "2.45.1",
     "url": "https://github.com/reonZ/pf2e-hud",
@@ -23,9 +21,7 @@
     "download": "https://github.com/reonZ/pf2e-hud/releases/download/2.45.1/module.zip",
     "changelog": "https://github.com/reonZ/pf2e-hud/blob/master/CHANGELOG.md",
     "bugs": "https://github.com/reonZ/pf2e-hud/issues",
-    "styles": [
-        "styles/pf2e-hud.css"
-    ],
+    "styles": ["styles/pf2e-hud.css"],
     "relationships": {
         "systems": [
             {
