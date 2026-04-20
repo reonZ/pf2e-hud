@@ -3,7 +3,6 @@ import { getUiScale } from "hud";
 import {
     createHTMLElement,
     CreaturePF2e,
-    DataModelConstructionContext,
     DocumentUUID,
     ImageFilePath,
     ItemPF2e,
@@ -61,7 +60,6 @@ abstract class PersistentShortcut<
         item: Maybe<ItemPF2e>,
         slot: number,
         cached: ShortcutCache,
-        options?: DataModelConstructionContext<null>,
     ) {
         this.#actor = actor;
         this.#cached = cached;
@@ -182,7 +180,7 @@ abstract class PersistentShortcut<
 
     async _initShortcut(): Promise<void> {}
 
-    altUse(event: MouseEvent): void {
+    altUse(_event: MouseEvent): void {
         this.item?.sheet.render(true);
     }
 
@@ -319,11 +317,11 @@ type ShortcutDataset = { itemId: string } | { itemUuid: DocumentUUID };
 
 export { PersistentShortcut, zBaseShortcut };
 export type {
-    ShortcutSource,
-    ShortcutData,
     ShortcutCost,
+    ShortcutData,
     ShortcutDataset,
     ShortcutLabel,
     ShortcutRadialOption,
     ShortcutRadialSection,
+    ShortcutSource,
 };
