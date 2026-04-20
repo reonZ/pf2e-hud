@@ -17,7 +17,6 @@ import {
     htmlClosest,
     htmlQuery,
     htmlQueryAll,
-    ImageFilePath,
     KeybindingActionConfig,
     localize,
     R,
@@ -400,8 +399,6 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             canRollNPCs ||= canRoll && !hasPlayerOwner;
         }
 
-        const deathImg = game.settings.get(SYSTEM.id, "deathIcon") as ImageFilePath;
-
         const expand = {
             tooltip: options.collapsed ? "collapsed" : "expanded",
             collapsed: options.collapsed,
@@ -439,7 +436,7 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
             canRoll,
             canRollNPCs,
             contextMenus: this.contextMenus,
-            deathImg: deathImg && deathImg !== "icons/svg/skull.svg" ? deathImg : undefined,
+            deathImg: game.settings.get(SYSTEM.id, "deathIcon"),
             expand,
             hasActive: !!combatant && (isGM || !combatant.hidden),
             hasStarted: combat.started,

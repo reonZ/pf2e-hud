@@ -36,11 +36,7 @@
             <img class="token-img" src="{{combatant.texture.img}}"
                 style="--scaleX: {{combatant.texture.scaleX}}; --scaleY: {{combatant.texture.scaleY}}; --mask: {{combatant.texture.mask}};">
             {{#if combatant.defeated}}
-            {{#if @root.deathImg}}
-            <img class="defeated-img custom" src="{{@root.deathImg}}">
-            {{else}}
-            <img class="defeated-img" src="{{resolvePath 'icons/damage/double.svg'}}">
-            {{/if}}
+            <img class="defeated-img" src="{{@root.deathImg}}">
             {{/if}}
             <div class="alt" {{{@root.i18n.tooltip 'force-turn' }}}>
                 <i class="fa-solid fa-arrow-right-to-bracket"></i>
