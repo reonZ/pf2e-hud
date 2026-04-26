@@ -13,7 +13,7 @@ import {
     BaseSidebarItem,
     BaseStatisticAction,
     BaseStatisticRollOptions,
-    ExtraActionShortcutData,
+    ExtraActionShortcutSource,
     FilterValue,
     RawBaseActionData,
     StatisticType,
@@ -112,7 +112,7 @@ class ExtrasSidebarItem extends BaseSidebarItem<AbilityItemPF2e, ExtractedExtraA
         getExtraAction(this.sourceId)?.roll(actor, event, options);
     }
 
-    toShortcut(): ExtraActionShortcutData {
+    toShortcut(): ExtraActionShortcutSource {
         return {
             img: this.img,
             key: this.key,
@@ -220,5 +220,5 @@ type ExtraActionKey = (typeof RAW_EXTRAS_ACTIONS)[number]["key"];
 
 type ExtractedExtraActionData = Omit<ExtractReadonly<ExtraAction>, "data">;
 
-export { ExtrasSidebarItem, RAW_EXTRAS_ACTIONS, getExtraAction, getExtraKeys, getExtrasActions, prepareExtrasActions };
+export { ExtrasSidebarItem, getExtraAction, getExtraKeys, getExtrasActions, prepareExtrasActions, RAW_EXTRAS_ACTIONS };
 export type { ExtraAction, ExtraActionKey, ExtractedExtraActionData, ExtrasActionData };

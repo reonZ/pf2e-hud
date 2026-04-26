@@ -1,6 +1,9 @@
-import { ActorPF2e, findItemWithSourceId, localize, waitDialog } from "foundry-helpers";
+import { ActorPF2e, findItemWithSourceId, localize, SYSTEM, waitDialog } from "foundry-helpers";
 
-const RESOLVE_UUID = "Compendium.pf2e.feats-srd.Item.jFmdevE4nKevovzo";
+const RESOLVE_UUID = SYSTEM.itemUuid(
+    "Compendium.pf2e.feats-srd.Item.jFmdevE4nKevovzo",
+    "Compendium.pf2e-anachronism.actions.Item.D2PNfIw7U6Ks0VY4",
+);
 
 async function useResolve(actor: Maybe<ActorPF2e>) {
     if (!(actor instanceof Actor) || !actor.isOfType("character")) return;
@@ -30,7 +33,7 @@ async function useResolve(actor: Maybe<ActorPF2e>) {
         classes: ["pf2e-hud-resolve"],
         content: "dialogs/resolve",
         data: {
-            hasSteel: !!findItemWithSourceId(actor, RESOLVE_UUID, "feat"),
+            hasSteel: !!findItemWithSourceId(actor, RESOLVE_UUID(), "feat"),
         },
         i18n: "dialogs.resolve",
     });

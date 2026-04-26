@@ -30,6 +30,7 @@ import {
     render,
     ResourceData,
     selectTokens,
+    SYSTEM,
     toggleHooksAndWrappers,
     TokenDocumentPF2e,
     TokenPF2e,
@@ -61,7 +62,10 @@ import fields = foundry.data.fields;
 const ENABLED_MODES = ["disabled", "left", "middle"] as const;
 const SELECTION_MODES = ["manual", "select", "combat"] as const;
 
-const GM_SCREEN_UUID = "Compendium.pf2e.journals.JournalEntry.S55aqwWIzpQRFhcq";
+const GM_SCREEN_UUID = SYSTEM.uuid(
+    "Compendium.pf2e.journals.JournalEntry.S55aqwWIzpQRFhcq",
+    "Compendium.sf2e.journals.JournalEntry.S55aqwWIzpQRFhcq",
+);
 
 class PersistentPF2eHUD
     extends makeAdvancedHUD(BaseActorPF2eHUD<PersistentSettings, PersistentHudActor>)
@@ -721,7 +725,7 @@ class PersistentPF2eHUD
 
             this.#ownedActors = actors.map(R.prop("id"));
 
-            const gmScreen = await fromUuid(GM_SCREEN_UUID);
+            const gmScreen = await SYSTEM.fromUuid(GM_SCREEN_UUID);
             const journal = await fromUuid(this.settings.journal);
 
             return {
@@ -864,7 +868,7 @@ class PersistentPF2eHUD
                 return;
             }
             case "gm-screen": {
-                const journal = await fromUuid(GM_SCREEN_UUID);
+                const journal = await SYSTEM.fromUuid(GM_SCREEN_UUID);
                 if (isValidJournal(journal)) {
                     const pageId = game.user.isGM ? "" : "a7RGk2IiPaC3bLkf";
                     journal?.sheet.render(true, { pageId } as any);

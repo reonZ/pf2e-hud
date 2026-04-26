@@ -8,32 +8,40 @@ import {
     getFirstTokenThatMatches,
     getItemSourceFromUuid,
     isSupressedFeat,
+    ItemUUID,
     R,
+    SYSTEM,
 } from "foundry-helpers";
+import { createDuplicateMap } from "foundry-helpers/src";
 
-const REPLACERS: Map<DocumentUUID, { replace: DocumentUUID; effect: DocumentUUID }> = new Map([
+const REPLACERS: Map<ItemUUID, { replace: () => ItemUUID; effect: ItemUUID }> = createDuplicateMap([
     [
-        "Compendium.pf2e.feats-srd.Item.nRjyyDulHnP5OewA", // gorilla pound
+        // gorilla pound
+        ["Compendium.pf2e.feats-srd.Item.nRjyyDulHnP5OewA", "Compendium.pf2e-anachronism.feats.Item.nRjyyDulHnP5OewA"],
         {
-            replace: "Compendium.pf2e.feats-srd.Item.DqD7htz8Sd1dh3BT", // gorilla stance
-            effect: "Compendium.pf2e.feat-effects.Item.UZKIKLuwpQu47feK",
+            replace: SYSTEM.itemUuid(
+                "Compendium.pf2e.feats-srd.Item.DqD7htz8Sd1dh3BT",
+                "Compendium.pf2e-anachronism.feats.Item.DqD7htz8Sd1dh3BT",
+            ), // gorilla stance
+            effect: "Compendium.pf2e.feat-effects.Item.UZKIKLuwpQu47feK", // gorilla stance (pound),
         },
     ],
 ]);
 
-const EXTRAS: Map<DocumentUUID, { effect: DocumentUUID }> = new Map([
+const EXTRAS: Map<ItemUUID, { effect: ItemUUID }> = createDuplicateMap([
     [
-        "Compendium.pf2e.feats-srd.Item.xQuNswWB3eg1UM28", // cobra envenom
+        // cobra envenom
+        ["Compendium.pf2e.feats-srd.Item.xQuNswWB3eg1UM28", "Compendium.pf2e-anachronism.feats.Item.xQuNswWB3eg1UM28"],
         { effect: "Compendium.pf2e.feat-effects.Item.2Qpt0CHuOMeL48rN" },
     ],
     [
-        "Compendium.pf2e.feats-srd.Item.R7c4PyTNkZb0yvoT", // dread marshal
-        {
-            effect: "Compendium.pf2e.feat-effects.Item.qX62wJzDYtNxDbFv", // the stance aura
-        },
+        // dread marshal
+        ["Compendium.pf2e.feats-srd.Item.R7c4PyTNkZb0yvoT", "Compendium.pf2e-anachronism.feats.Item.R7c4PyTNkZb0yvoT"],
+        { effect: "Compendium.pf2e.feat-effects.Item.qX62wJzDYtNxDbFv" }, // the stance aura
     ],
     [
-        "Compendium.pf2e.feats-srd.Item.bvOsJNeI0ewvQsFa", // inspiring marshal
+        // inspiring marshal
+        ["Compendium.pf2e.feats-srd.Item.bvOsJNeI0ewvQsFa", "Compendium.pf2e-anachronism.feats.Item.bvOsJNeI0ewvQsFa"],
         {
             effect: "Compendium.pf2e.feat-effects.Item.er5tvDNvpbcnlbHQ", // the stance aura
         },
@@ -108,14 +116,16 @@ function getStances(actor: CreaturePF2e): StanceData[] | undefined {
         const effect = fromUuidSync<EffectPF2e>(effectUUID, { strict: false });
         if (!effect) continue;
 
-        if (replacer?.replace) {
-            replaced.add(replacer.replace);
+        const replace = replacer?.replace();
+
+        if (replace) {
+            replaced.add(replace);
         }
 
-        const label = (replacer && fromUuidSync(replacer.replace, { strict: false })?.name) || item.name;
+        const label = (replace && fromUuidSync(replace, { strict: false })?.name) || item.name;
 
         const stanceData: StanceData = {
-            effectUUID,
+            effectUUID: effectUUID as ItemUUID,
             img: effect.img,
             item,
             label,

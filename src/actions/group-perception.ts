@@ -1,7 +1,7 @@
 import { localize, R, render, SYSTEM, ZeroToFour } from "foundry-helpers";
 import { ControlledToken } from ".";
 
-const SEARCH_UUID = SYSTEM.uuid(
+const SEARCH_UUID = SYSTEM.itemUuid(
     "Compendium.pf2e.actionspf2e.Item.TiNDYUGlMmxzxBYU",
     "Compendium.sf2e.actions.Item.TiNDYUGlMmxzxBYU",
 );

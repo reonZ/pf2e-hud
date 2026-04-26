@@ -5,6 +5,7 @@ import {
     findItemWithSourceId,
     ImageFilePath,
     R,
+    SYSTEM,
     z,
     ZeroToTwo,
 } from "foundry-helpers";
@@ -12,7 +13,10 @@ import { ElementalBlastsData, getElementalBlastsData } from "hud";
 import { AttackShortcut, zAttackShortcut } from ".";
 import { ShortcutCost, ShortcutData, ShortcutLabel, ShortcutRadialSection } from "..";
 
-const CHANNEL_ELEMENTS_UUID = "Compendium.pf2e.actionspf2e.Item.g8QrV39TmZfkbXgE";
+const CHANNEL_ELEMENTS_UUID = SYSTEM.itemUuid(
+    "Compendium.pf2e.actionspf2e.Item.g8QrV39TmZfkbXgE",
+    "Compendium.pf2e-anachronism.actions.Item.g8QrV39TmZfkbXgE",
+);
 
 function zBlastShortcut() {
     return zAttackShortcut("blast").extend({
@@ -76,7 +80,7 @@ class BlastShortcut extends AttackShortcut<BlastShortcutSchema, AbilityItemPF2e<
         if (!attackData) return;
 
         if (!attackData.ready) {
-            const action = findItemWithSourceId(this.actor, CHANNEL_ELEMENTS_UUID, "action");
+            const action = findItemWithSourceId(this.actor, CHANNEL_ELEMENTS_UUID(), "action");
 
             if (action) {
                 await applySelfEffect(action);

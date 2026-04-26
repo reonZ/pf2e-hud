@@ -12,7 +12,7 @@ import {
 } from "foundry-helpers";
 import { eventToRollParams } from "foundry-helpers/dist";
 
-const COVER_UUID = SYSTEM.uuid(
+const COVER_UUID = SYSTEM.itemUuid(
     "Compendium.pf2e.other-effects.Item.I9lfZUiCwMiGogVi",
     "Compendium.sf2e.other-effects.Item.I9lfZUiCwMiGogVi",
 );
