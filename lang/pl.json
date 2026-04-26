@@ -41,6 +41,10 @@
           "name": "Automatyczne rozszerzanie po załadowaniu",
           "hint": "Wymusza rozwijanie paska bocznego Foundry przy ładowaniu strony."
         },
+        "noFormat": {
+          "name": "Ukryj panel formatowania",
+          "hint": "Panel formatowania zostanie usunięty z czatu."
+        },
         "noRollMode": {
           "name": "Ukryj tryb rzutu",
           "hint": "Przyciski trybu rzutu zostaną usunięte z czatu."

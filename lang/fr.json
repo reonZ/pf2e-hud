@@ -41,6 +41,10 @@
           "name": "Extension auto au chargement",
           "hint": "Oblige la barre latérale foundry à s'étendre au chargement de la page."
         },
+        "noFormat": {
+          "name": "Masquer le panneau de formatage",
+          "hint": "Le panneau de formatage sera supprimé de la conversation."
+        },
         "noRollMode": {
           "name": "Cacher les modes de jet de dés",
           "hint": "Les boutons des modes de lancer de dés seront supprimés de la conversation."
