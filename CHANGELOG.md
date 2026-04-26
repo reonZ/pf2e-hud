@@ -1,3 +1,9 @@
+# 2.47.0
+
+- make the necessary changes to fully support the `PF2e Anachronism` module
+- `Actions Sidebar`
+  - remove `Cobra Envenom` from the extra stances handled by the module due to the action having a frequency use (potential confusion)
+
 # 2.46.0
 
 - this is a foundry `14.360` release
