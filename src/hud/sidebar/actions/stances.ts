@@ -17,7 +17,7 @@ class ActionsStance extends BaseSidebarItem<FeatPF2e<CreaturePF2e> | AbilityItem
     }
 
     async toggle(force?: boolean): Promise<void> {
-        toggleStance(this.actor, this.effectUUID, force);
+        toggleStance(this, force);
     }
 
     toShortcut(): StanceShortcutSource {

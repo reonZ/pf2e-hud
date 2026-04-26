@@ -1,9 +1,11 @@
 import {
+    AbilityItemPF2e,
     actorItems,
     ActorPF2e,
     CreaturePF2e,
     DocumentUUID,
     EffectPF2e,
+    FeatPF2e,
     findItemWithSourceId,
     getFirstTokenThatMatches,
     getItemSourceFromUuid,
@@ -30,11 +32,6 @@ const REPLACERS: Map<ItemUUID, { replace: () => ItemUUID; effect: ItemUUID }> = 
 
 const EXTRAS: Map<ItemUUID, { effect: ItemUUID }> = createDuplicateMap([
     [
-        // cobra envenom
-        ["Compendium.pf2e.feats-srd.Item.xQuNswWB3eg1UM28", "Compendium.pf2e-anachronism.feats.Item.xQuNswWB3eg1UM28"],
-        { effect: "Compendium.pf2e.feat-effects.Item.2Qpt0CHuOMeL48rN" },
-    ],
-    [
         // dread marshal
         ["Compendium.pf2e.feats-srd.Item.R7c4PyTNkZb0yvoT", "Compendium.pf2e-anachronism.feats.Item.R7c4PyTNkZb0yvoT"],
         { effect: "Compendium.pf2e.feat-effects.Item.qX62wJzDYtNxDbFv" }, // the stance aura
@@ -48,7 +45,7 @@ const EXTRAS: Map<ItemUUID, { effect: ItemUUID }> = createDuplicateMap([
     ],
 ]);
 
-async function toggleStance(actor: CreaturePF2e, sourceUUID: DocumentUUID, force?: boolean): Promise<void> {
+async function toggleStance({ actor, effectUUID: sourceUUID }: ToggleStanceData, force?: boolean): Promise<void> {
     if (!force && !canUseStances(actor)) return;
 
     const effects = R.pipe(
@@ -139,6 +136,13 @@ function getStances(actor: CreaturePF2e): StanceData[] | undefined {
     return actions.length ? actions : undefined;
 }
 
+type ToggleStanceData = {
+    actor: CreaturePF2e;
+    effectUUID: ItemUUID;
+    item: AbilityItemPF2e<CreaturePF2e> | FeatPF2e<CreaturePF2e>;
+};
+
 type StanceData = hud.StanceData;
 
 export { addStance, canUseStances, getStances, toggleStance };
+export type { ToggleStanceData };

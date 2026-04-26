@@ -1,4 +1,4 @@
-import { canUseStances, toggleStance } from "hud";
+import { canUseStances, toggleStance, ToggleStanceData } from "hud";
 
 import {
     AbilityItemPF2e,
@@ -95,7 +95,7 @@ class StanceShortcut extends PersistentShortcut<
     }
 
     use(event: MouseEvent): void {
-        toggleStance(this.actor, this.effectUUID, event.ctrlKey);
+        this.item && toggleStance(this as ToggleStanceData, event.ctrlKey);
     }
 }
 
