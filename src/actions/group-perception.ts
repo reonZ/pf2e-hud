@@ -9,6 +9,8 @@ const SEARCH_UUID = SYSTEM.itemUuid(
 async function rollGroupPerception() {
     if (!game.user.isGM) return;
 
+    const searchUuid = SEARCH_UUID();
+
     const controlled = R.pipe(
         canvas.tokens.controlled,
         R.filter((token): token is ControlledToken => !!token.actor?.isOfType("creature")),
@@ -22,11 +24,10 @@ async function rollGroupPerception() {
     const data = await Promise.all(
         actors.map(async (actor): Promise<ActorData> => {
             const perception = actor.getStatistic("perception");
-            const uuid = SEARCH_UUID();
 
             const isSearching =
                 actor.isOfType("character") &&
-                actor.system.exploration.find((id) => actor.items.get(id)?.sourceId === uuid);
+                actor.system.exploration.find((id) => actor.items.get(id)?.sourceId === searchUuid);
 
             const roll = await perception.roll({
                 createMessage: false,
