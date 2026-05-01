@@ -12,7 +12,7 @@ abstract class FoundrySidebarPF2eHUD<TSettings extends { enabled: boolean }> ext
         return ui.chat.element;
     }
 
-    get chatMessageElement(): HTMLElement | null {
+    get chatMessageElement(): HTMLInputElement | null {
         return htmlQuery(this.chatElement, "#chat-message");
     }
 
@@ -34,10 +34,10 @@ abstract class FoundrySidebarPF2eHUD<TSettings extends { enabled: boolean }> ext
         return render(this.key, context);
     }
 
-    protected _replaceHTML(result: string, content: HTMLElement, options: fa.ApplicationRenderOptions): void {
+    protected _replaceHTML(result: string, content: HTMLElement, options: FoundrySidebarOptions): void {
         content.innerHTML = result;
         content.dataset.tooltipClass = "pf2e-hud-element";
-        content.dataset.tooltipDirection = "DOWN";
+        content.dataset.tooltipDirection = options.tooltipDirection ?? "DOWN";
 
         this._activateListeners(content);
     }
@@ -53,4 +53,9 @@ abstract class FoundrySidebarPF2eHUD<TSettings extends { enabled: boolean }> ext
     }
 }
 
+type FoundrySidebarOptions = fa.ApplicationRenderOptions & {
+    tooltipDirection?: "DOWN" | "UP";
+};
+
 export { FoundrySidebarPF2eHUD };
+export type { FoundrySidebarOptions };

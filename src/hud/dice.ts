@@ -1,5 +1,5 @@
-import { ActorPF2e, addListenerAll, getDamageRollClass, R, settingPath } from "foundry-helpers";
-import { FoundrySidebarPF2eHUD, HUDSettingsList } from ".";
+import { ActorPF2e, addListenerAll, getDamageRollClass, htmlQuery, R, settingPath } from "foundry-helpers";
+import { FoundrySidebarOptions, FoundrySidebarPF2eHUD, HUDSettingsList } from ".";
 
 const ROLL_REGEX = /^\/(?:r|roll|publicroll|pr|gmroll|gm|blindroll|broll|br|selfroll|sr) (.+)/i;
 const INLINE_REGEX = /\[\[((?:\/r )?[\dd+ -]+)\]\]$/i;
@@ -48,6 +48,10 @@ class DicePF2eHUD extends FoundrySidebarPF2eHUD<DiceSettings> {
         } else {
             this.close();
         }
+    }
+
+    protected _configureRenderOptions(options: FoundrySidebarOptions): void {
+        options.tooltipDirection = "UP";
     }
 
     async _prepareContext(_options: fa.ApplicationRenderOptions): Promise<DiceContext> {
@@ -104,18 +108,22 @@ class DicePF2eHUD extends FoundrySidebarPF2eHUD<DiceSettings> {
 
     #addDieToChat(face: number) {
         const chat = this.chatMessageElement;
-        if (!(chat instanceof HTMLTextAreaElement)) return;
+        const inner = htmlQuery(chat, ".editor-content");
+        if (!chat || !inner) return;
 
-        const str = chat.value.trim();
+        const lastChild = inner.lastElementChild as HTMLElement;
 
-        const updateChat = (str: string) => {
-            chat.value = str;
+        if (!chat.value || !lastChild) {
+            inner.innerText = `/r 1d${face}`;
+            return chat.focus();
+        }
+
+        const updateChat = (value: string) => {
+            lastChild.innerText = value;
             chat.focus();
         };
 
-        if (!str) {
-            return updateChat(`/r 1d${face}`);
-        }
+        const str = lastChild.innerText.trim();
 
         if (ROLL_REGEX.test(str)) {
             const dice = processChatRoll(face, str);
