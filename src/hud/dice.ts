@@ -1,4 +1,4 @@
-import { ActorPF2e, addListenerAll, getDamageRollClass, R, RollMode, settingPath } from "foundry-helpers";
+import { ActorPF2e, addListenerAll, getDamageRollClass, R, settingPath } from "foundry-helpers";
 import { FoundrySidebarPF2eHUD, HUDSettingsList } from ".";
 
 const ROLL_REGEX = /^\/(?:r|roll|publicroll|pr|gmroll|gm|blindroll|broll|br|selfroll|sr) (.+)/i;
@@ -154,10 +154,10 @@ function processChatRoll(face: number, str: string) {
 async function rollDie(face: number, secret: boolean) {
     const RollCls = face === 20 ? Roll : getDamageRollClass();
     const roll = await new RollCls(`1d${face}`).evaluate();
-    const options: { rollMode?: RollMode; create?: boolean } = {};
+    const options: { messageMode?: "blind"; create?: boolean } = {};
 
     if (secret) {
-        options.rollMode = CONST.DICE_ROLL_MODES.BLIND;
+        options.messageMode = "blind";
     }
 
     roll.toMessage(undefined, options);
