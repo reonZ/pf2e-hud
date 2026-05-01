@@ -1,3 +1,10 @@
+# 2.47.1
+
+- convert some deprecated v14 stuff
+- `Dice Panel`:
+  - fix not being able to use the `[Shift + Click]` feature with the new chat field from V14
+  - fix dice tooltips showing below the dice panel instead of above
+
 # 2.47.0
 
 - make the necessary changes to fully support the `PF2e Anachronism` module
