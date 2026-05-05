@@ -724,8 +724,8 @@ class TrackerPF2eHUD extends BasePF2eHUD<TrackerSettings> {
         const menu = this.contextMenus.at(index);
         const target = htmlClosest(el, "[data-combatant-id]");
 
-        if (target) {
-            menu?.onClick?.(event, target);
+        if (target && menu) {
+            menu.onClick?.(event, target);
         }
     }
 

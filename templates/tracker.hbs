@@ -87,8 +87,8 @@
             <div class="controls alt">
                 {{#each @root.contextMenus as |menu|}}
                 <a class="combatant-control-alt" data-action="context-menu-action"
-                    data-index="{{@index}}" data-tooltip="{{menu.name}}">
-                    {{{menu.icon}}}
+                    data-index="{{@index}}" data-tooltip="{{menu.label}}">
+                    <i class="{{menu.icon}}"></i>
                 </a>
                 {{/each}}
             </div>
