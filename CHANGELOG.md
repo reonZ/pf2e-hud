@@ -1,3 +1,12 @@
+# 2.48.0
+
+- add new per-scene feature to hide HUD elements
+  - you can find the settings for it in the `Scene Configs` menu, at the bottom of the `Pathfinder` tab
+- `Combat Tracker`:
+  - fix alt controls being broken due to v14 changes
+  - fix some control tooltips localization that were changed in v14
+  - remove the redundant `Begin Encounter` and `End Encounter` tooltips
+
 # 2.47.1
 
 - convert some deprecated v14 stuff
