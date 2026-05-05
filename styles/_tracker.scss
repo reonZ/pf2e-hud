@@ -6,6 +6,10 @@
     --pf2e-hud-threat-extreme: red;
 }
 
+body.pf2e-hud-hidden-tracker #pf2e-hud-tracker {
+    display: none;
+}
+
 #pf2e-hud-tracker {
     --combatant-height: 3.2em;
 
@@ -174,6 +178,12 @@
 
                         &:not(.active) {
                             color: var(--color-disabled);
+                        }
+                    }
+
+                    .combatant-control {
+                        .visibility {
+                            margin-left: 2px;
                         }
                     }
                 }

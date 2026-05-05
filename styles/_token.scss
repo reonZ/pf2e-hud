@@ -11,6 +11,10 @@
     }
 }
 
+body.pf2e-hud-hidden-token #pf2e-hud-token {
+    display: none;
+}
+
 #pf2e-hud-token {
     --separator: 1px solid #ffffff3b;
 

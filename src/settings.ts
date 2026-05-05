@@ -123,6 +123,6 @@ type GlobalSetting = {
     useModifiers: boolean;
 };
 
-type GlobalSettingKey = keyof GlobalSetting;
+type GlobalSettingKey = Prettify<keyof GlobalSetting>;
 
 export { getGlobalSetting, getHealthStatusData, registerSettings, setGlobalSetting };

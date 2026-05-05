@@ -17,6 +17,7 @@ import {
     TokenPF2e,
 } from "foundry-helpers";
 import { getEntryFromHealthData } from "health-status";
+import { hudIsHidden } from "scene";
 
 const TARGET_ICONS = {
     selected: "fa-solid fa-expand",
@@ -210,8 +211,10 @@ class TooltipPF2eHUD extends BaseTokenPF2eHUD<TooltipSettings, ActorPF2e> {
     }
 
     drawDistance() {
+        if (!canvas.ready || !canvas.scene || hudIsHidden("tooltip")) return;
+
         const thickness = this.settings.draw;
-        if (thickness < 1 || !canvas.ready || !canvas.scene) return;
+        if (thickness < 1) return;
 
         const origin = this.token;
         const target = this.targetToken;

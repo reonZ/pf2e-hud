@@ -19,6 +19,7 @@ import {
     TrackerPF2eHUD,
 } from "hud";
 import { registerKeybinds } from "keybinds";
+import { prepareSceneConfigs } from "scene";
 import { registerSettings } from "settings";
 
 MODULE.register("pf2e-hud");
@@ -52,6 +53,8 @@ Hooks.once("init", () => {
         hud.init(isGM);
     }
 
+    prepareNpcStrikes();
+
     // we preload foundry checkboxes to avoid weirdness with sidebars toggles
     const fakeCheckboxes = R.map([true, false], (checked) => {
         const fakeCheckbox = createHTMLElement("input", {
@@ -66,8 +69,6 @@ Hooks.once("init", () => {
         return fakeCheckbox;
     });
 
-    prepareNpcStrikes();
-
     // we remove the preloaded checkboxes to not pollute the DOM
     setTimeout(() => {
         for (const checkbox of fakeCheckboxes) {
@@ -78,6 +79,8 @@ Hooks.once("init", () => {
 
 Hooks.once("ready", async () => {
     const isGM = game.user.isGM;
+
+    prepareSceneConfigs();
 
     await prepareActionGroups();
     await prepareExtrasActions();

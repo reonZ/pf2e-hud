@@ -1,3 +1,21 @@
+body.pf2e-hud-hidden-persistent {
+    #pf2e-hud-persistent {
+        display: flex;
+        margin-top: -16px;
+
+        > *:not(#hotbar) {
+            display: none;
+        }
+
+        #hotbar {
+            opacity: var(--ui-fade-opacity);
+            margin-top: calc(-1 * var(--hotbar-size));
+            height: var(--hotbar-size);
+            margin-left: calc(var(--columns-portrait) + var(--columns-icon) + 10px);
+        }
+    }
+}
+
 #pf2e-hud-persistent {
     --panel-background: url("../../../ui/denim075.png") repeat;
     --panel-gap: 3px;
@@ -5,6 +23,7 @@
     --column-1fr: 3.8em;
     --column-2fr: calc(var(--column-1fr) * 2);
     --columns-icon: 2.2em;
+    --columns-portrait: 11em;
 
     --row-1fr: 2.05em;
     --row-2fr: calc(var(--row-1fr) * 2);
@@ -34,7 +53,7 @@
 
     grid-template-columns:
         [full-start menu-start] var(--columns-icon)
-        [menu-end portrait-start] 11em
+        [menu-end portrait-start] var(--columns-portrait)
         [portrait-end info-start] var(--columns-icon)
         [info-end statistics-start] var(--column-2fr)
         [statistics-end resources-start] var(--column-1fr)
@@ -264,7 +283,8 @@
         grid-column: portrait;
         grid-row: bottom;
 
-        background: var(--panel-background),
+        background:
+            var(--panel-background),
             repeating-linear-gradient(
                 45deg,
                 transparent,
@@ -301,9 +321,7 @@
 }
 
 #ui-left-column-1:has(> #pf2e-hud-persistent) {
-    width: calc(
-        (var(--control-columns) * var(--control-size)) + ((var(--control-columns) - 1) * 8px) + 12px
-    );
+    width: calc((var(--control-columns) * var(--control-size)) + ((var(--control-columns) - 1) * 8px) + 12px);
 
     #scene-controls {
         overflow: hidden auto;
