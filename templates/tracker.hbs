@@ -7,7 +7,7 @@
     <a class="combat-control" data-action="previousTurn" data-tooltip="COMBAT.TurnPrev">
         <i class="fa-solid fa-arrow-left"></i>
     </a>
-    <a class="combat-control title" data-action="endCombat" data-tooltip="COMBAT.End">
+    <a class="combat-control title" data-action="endCombat">
         {{localize 'COMBAT.End'}}
     </a>
     <a class="combat-control" data-action="nextTurn" data-tooltip="COMBAT.TurnNext">
@@ -17,7 +17,7 @@
         <i class="fa-solid fa-step-forward"></i>
     </a>
     {{else}}
-    <a class="combat-control title" data-action="startCombat" data-tooltip="COMBAT.Begin">
+    <a class="combat-control title" data-action="startCombat">
         {{localize 'COMBAT.Begin'}}
     </a>
     {{/if}}
@@ -51,11 +51,11 @@
                 {{!-- if isGM --}}
                 {{#if @root.isGM}}
                 <a class="combatant-control{{#if combatant.hidden}} active{{/if}}"
-                    data-action="toggleHidden" data-tooltip="COMBAT.ToggleVis">
+                    data-action="toggleHidden" data-tooltip="COMBATANT.ToggleVis">
                     <i class="fa-eye-slash fa-solid fa-fw"></i>
                 </a>
                 <a class="combatant-control{{#if combatant.defeated}} active{{/if}}"
-                    data-action="toggleDefeated" data-tooltip="COMBAT.ToggleDead">
+                    data-action="toggleDefeated" data-tooltip="COMBATANT.ToggleDead">
                     <i class="fa-skull fa-solid fa-fw"></i>
                 </a>
                 {{!-- end if isGM --}}
