@@ -1188,7 +1188,7 @@ class PersistentPF2eHUD
         const worldActor = this.worldActor;
         if (!worldActor) return;
 
-        const avatarData = getAvatarData(worldActor);
+        const avatarData = getAvatarData(worldActor, false);
         if (!avatarData) return;
 
         const newImage = (this.#previousAvatar = htmlQuery(html, ".avatar .image"));

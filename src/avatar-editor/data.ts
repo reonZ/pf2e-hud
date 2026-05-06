@@ -12,9 +12,9 @@ const zAvatar = z.object({
     src: zFilePath<VideoFilePath | ImageFilePath>(["IMAGE", "VIDEO"]),
 });
 
-function getAvatarData(actor: ActorPF2e) {
-    const source = getFlag<AvatarSource>(actor, "avatar") ?? { src: actor.img };
-    return zAvatar.safeParse(source).data;
+function getAvatarData(actor: ActorPF2e, strict = true): AvatarData | undefined {
+    const flag = getFlag<AvatarSource>(actor, "avatar");
+    return flag || strict ? zAvatar.safeParse(flag ?? { src: actor.img }).data : undefined;
 }
 
 type AvatarSource = z.input<typeof zAvatar>;
