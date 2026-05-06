@@ -1,4 +1,4 @@
-import { getFlag, localize, MODULE, R, registerWrapper, SceneConfigPF2e, ScenePF2e } from "foundry-helpers";
+import { getFlag, localize, MODULE, R, registerWrapper, SceneConfigPF2e, ScenePF2e, SYSTEM } from "foundry-helpers";
 import { hud } from "main";
 
 const VISIBLE_OPTIONS = ["persistent", "token", "tooltip", "tracker"] as const;
@@ -59,7 +59,7 @@ async function sceneConfigPF2eRenderHTML(
         label: localize("scene.visible.label"),
     });
 
-    rendered.pf2e?.appendChild(visibleGroup);
+    rendered[SYSTEM.id]?.appendChild(visibleGroup);
 
     return rendered;
 }
