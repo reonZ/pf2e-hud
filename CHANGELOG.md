@@ -1,3 +1,7 @@
+# 2.48.1
+
+- fix per-scene feature to hide HUD elements not showing in the `Scene Configs` menu of worlds running on the `Starfinder` system
+
 # 2.48.0
 
 - add new per-scene feature to hide HUD elements
