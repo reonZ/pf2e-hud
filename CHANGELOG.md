@@ -1,3 +1,8 @@
+# 2.48.2
+
+- `Persistent HUD`:
+  - fix portrait not being contained in its parent element when no custom avatar data exist for this actor
+
 # 2.48.1
 
 - fix per-scene feature to hide HUD elements not showing in the `Scene Configs` menu of worlds running on the `Starfinder` system
