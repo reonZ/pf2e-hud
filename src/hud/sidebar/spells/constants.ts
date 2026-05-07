@@ -38,7 +38,7 @@ const SPELL_CATEGORIES: Record<SpellCategoryType, { icon: string; label: string 
         label: "pf2e-hud.spellcasting.staff",
     },
     virtual: {
-        icon: "fa-sharp-duotone fa-solid fa-masks-theater",
+        icon: "fa-sharp fa-solid fa-masks-theater",
         label: "pf2e-toolbelt.actionable.cast.label",
     },
     wand: {
