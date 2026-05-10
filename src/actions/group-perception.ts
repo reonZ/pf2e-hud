@@ -35,7 +35,7 @@ async function rollGroupPerception() {
             });
 
             return {
-                die: roll?.dice[0].total ?? 1,
+                die: roll?.dice[0]?.total ?? 1,
                 name: actor.name,
                 search: !!isSearching,
                 rank: perception.rank ?? 0,

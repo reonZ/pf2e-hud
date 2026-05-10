@@ -1,4 +1,4 @@
-import { getFirstActiveToken, localize, panToToken, R, render } from "foundry-helpers";
+import { CreaturePF2e, getFirstActiveToken, localize, panToToken, R, render } from "foundry-helpers";
 import { ControlledToken } from ".";
 
 async function randomPick(event?: PointerEvent) {
@@ -25,7 +25,7 @@ async function randomPick(event?: PointerEvent) {
 
     const roll = await new Roll(`1d${actors.length}`).evaluate();
     const pickIndex = roll.total - 1;
-    const pickActor = actors[pickIndex];
+    const pickActor = actors[pickIndex] as CreaturePF2e;
     const pickToken = getFirstActiveToken(pickActor)?.object;
 
     if (pickToken) {
