@@ -1,6 +1,6 @@
 # 2.49.0
 
-- this is a foundry `14.361` version
+- this is a foundry `14.361` release
 - fix virtual spells icon
 - `Combat Tracker`:
   - fix control tooltips localization that were changed in v14.361 (it was changed again)
