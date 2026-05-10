@@ -1,3 +1,12 @@
+# 2.49.0
+
+- this is a foundry `14.361` version
+- fix virtual spells icon
+- `Combat Tracker`:
+  - fix control tooltips localization that were changed in v14.361 (it was changed again)
+- `Persistent Shortcuts`:
+  - fix shortcut tooltip name line height, cutting the bottom part of letters with a "tail"
+
 # 2.48.2
 
 - `Persistent HUD`:
