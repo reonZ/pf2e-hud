@@ -51,11 +51,11 @@
                 {{!-- if isGM --}}
                 {{#if @root.isGM}}
                 <a class="combatant-control{{#if combatant.hidden}} active{{/if}}"
-                    data-action="toggleHidden" data-tooltip="COMBATANT.ToggleVis">
+                    data-action="toggleHidden" data-tooltip="COMBATANT.{{localize (ifThen combatant.hidden 'Show' 'Hide')}}">
                     <i class="fa-eye-slash fa-solid fa-fw"></i>
                 </a>
                 <a class="combatant-control{{#if combatant.defeated}} active{{/if}}"
-                    data-action="toggleDefeated" data-tooltip="COMBATANT.ToggleDead">
+                    data-action="toggleDefeated" data-tooltip="COMBATANT.{{localize (ifThen combatant.defeated 'UnmarkDefeated' 'MarkDefeated')}}">
                     <i class="fa-skull fa-solid fa-fw"></i>
                 </a>
                 {{!-- end if isGM --}}
