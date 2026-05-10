@@ -261,7 +261,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
             if (!entrySheetData.groups.length) continue;
 
             const item = entry.isEphemeral
-                ? actor.items.get<ConsumablePF2e<NPCPF2e>>(entry.id.split("-")[0])
+                ? actor.items.get<ConsumablePF2e<NPCPF2e>>(entry.id.split("-")[0] as string)
                 : undefined;
 
             const category =

@@ -130,7 +130,10 @@
                     font-size: 2em;
                     font-weight: bold;
                     color: var(--color-reversed);
-                    text-shadow: 0 0 3px white, 0 0 3px white, 0 0 3px white;
+                    text-shadow:
+                        0 0 3px white,
+                        0 0 3px white,
+                        0 0 3px white;
                 }
             }
         }
@@ -221,6 +224,7 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
+                line-height: 1.4;
             }
 
             .subtitle {
