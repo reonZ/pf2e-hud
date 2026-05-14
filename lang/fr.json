@@ -351,6 +351,12 @@
       "proficiency": "Maîtrise"
     },
     "rightClick": "[Clic droit]",
+    "scene": {
+      "visible": {
+        "hint": "Sélectionnez les éléments du HUD qui devraient apparaître sur cette scène.",
+        "label": "Éléments visibles du HUD"
+      }
+    },
     "set-journal": {
       "uuid": {
         "label": "IDUU du journal"
