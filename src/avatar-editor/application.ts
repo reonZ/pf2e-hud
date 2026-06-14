@@ -96,7 +96,7 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
             callback: (path: string) => {
                 this.#setImage(path as ImageFilePath | VideoFilePath);
             },
-            allowUpload: false,
+            allowUpload: true,
             type: "imagevideo",
             current: this.#data.src || this.actor.img,
         }).render({ force: true });

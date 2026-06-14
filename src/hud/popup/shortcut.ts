@@ -71,7 +71,7 @@ class ShortcutPopup extends ItemHudPopup {
                         callback: (path) => {
                             input.value = path;
                         },
-                        allowUpload: false,
+                        allowUpload: true,
                         type: "image",
                         current: input?.value || this.shortcut.usedImage,
                     }).render({ force: true });
