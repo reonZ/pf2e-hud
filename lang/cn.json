@@ -20,19 +20,19 @@
                     "always": "始终在肖像上显示UI",
                     "hover": "仅在悬停于肖像上时显示UI"
                 },
-                "editAvatar": "编辑头像",
+                "editAvatar": "编辑肖像",
                 "setActor": {
-                    "set": "设置选中指示物为受控角色",
-                    "unset": "解绑受控角色"
+                    "set": "设置选中指示物为主控角色",
+                    "unset": "解绑主控角色"
                 },
-                "pin": "选取角色加入受控队列",
+                "pin": "选取角色加入主控队列",
                 "lockOwned": {
                     "unlock": "允许选择拥有的角色",
                     "lock": "禁止选择拥有的角色"
                 }
             },
             "error": {
-                "selectOne": "选择一个NPC/角色指示物以设置你的受控角色。"
+                "selectOne": "选择一个NPC/角色指示物以设置你的主控角色。"
             },
             "effects": {
                 "shift": "Shift",
@@ -142,7 +142,7 @@
                 }
             },
             "persistent": {
-                "title": "受控HUD",
+                "title": "主控HUD",
                 "autoFill": {
                     "name": "自动填充NPC",
                     "hint": "若你未做任何手动更改，将自动填充快捷坞栏位。"
@@ -158,7 +158,7 @@
                 },
                 "selection": {
                     "name": "选择模式",
-                    "hint": "选择受控角色的选取模式。",
+                    "hint": "选择主控角色的选取模式。",
                     "choices": {
                         "manual": "手动选择",
                         "combat": "当前回合的参战者",
@@ -171,7 +171,7 @@
                 },
                 "slots": {
                     "name": "额外快捷坞槽位",
-                    "hint": "添加至受控HUD的额外快捷坞槽位数量。"
+                    "hint": "添加至主控HUD的额外快捷坞槽位数量。"
                 }
             },
             "enabled": {
@@ -254,7 +254,7 @@
             "alternates": {
                 "dc": "困难等级",
                 "drag": "拖拽至快捷坞创建选项",
-                "statistic": "统计技能",
+                "statistic": "数据",
                 "title": "动作变体 - {label}",
                 "yes": "使用变体"
             }
@@ -262,8 +262,8 @@
         "keybindings": {
             "persistent": {
                 "setActor": {
-                    "name": "设置受控角色",
-                    "hint": "设置选中指示物角色为受控。"
+                    "name": "设置主控角色",
+                    "hint": "设置选中指示物角色为主控。"
                 }
             },
             "sidebar": {
@@ -285,7 +285,7 @@
             "alliance": "关系：{value}"
         },
         "avatar-editor": {
-            "title": "编辑头像 - {name}",
+            "title": "编辑肖像 - {name}",
             "cancel": "取消",
             "color": {
                 "background": "背景颜色",
@@ -380,7 +380,7 @@
         },
         "sidebars": {
             "actions": "动作",
-            "items": "库存",
+            "items": "物品栏",
             "spells": "施法",
             "skills": "技能",
             "extras": "杂项",
@@ -399,7 +399,7 @@
         "shortcuts": {
             "error": {
                 "wrongType": "你无法创建此类快捷坞选项。",
-                "wrongActor": "你只能为受控角色创建快捷坞选项。",
+                "wrongActor": "你只能为主控角色创建快捷坞选项。",
                 "locked": "快捷坞已被热键锁定",
                 "notScript": "只有脚本宏能够添加为快捷坞选项。",
                 "notHUD": "你需要从HUD中拖拽元素以创建快捷坞选项。",
