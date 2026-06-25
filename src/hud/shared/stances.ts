@@ -7,7 +7,7 @@ import {
     EffectPF2e,
     FeatPF2e,
     findItemWithSourceId,
-    getFirstTokenThatMatches,
+    getFirstActiveToken,
     getItemSourceFromUuid,
     isSupressedFeat,
     ItemUUID,
@@ -90,7 +90,7 @@ async function addStance(actor: CreaturePF2e, sourceUUID: DocumentUUID, createMe
 }
 
 function canUseStances(actor: ActorPF2e): boolean {
-    return !!getFirstTokenThatMatches(actor, (token) => token.inCombat);
+    return !!getFirstActiveToken(actor, { match: (token) => token.inCombat });
 }
 
 function getStances(actor: CreaturePF2e): StanceData[] | undefined {
