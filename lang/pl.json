@@ -351,6 +351,12 @@
       "proficiency": "Biegłość"
     },
     "rightClick": "[Kliknij prawym]",
+    "scene": {
+      "visible": {
+        "hint": "Wybierz elementy interfejsu użytkownika, które mają być widoczne w tej scenie.",
+        "label": "Widoczne elementy HUD"
+      }
+    },
     "set-journal": {
       "uuid": {
         "label": "UUID dziennika"
