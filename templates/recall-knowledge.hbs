@@ -39,10 +39,13 @@
         <span class="name rank {{skill.rank}}" data-tooltip="{{skill.rankLabel}}">
             {{skill.label}}
         </span>
-        <span class="success {{@root.dieSuccess}}">{{skill.total}}</span>
+        <u class="success {{@root.dieSuccess}}" data-tooltip="{{skill.tooltip}}">
+            {{skill.total}}
+        </u>
         {{#each skill.checks as |check|}}
-        <span class="success {{check.success}}"
-            data-tooltip="PF2E.Check.Result.Degree.Check.{{check.name}}">{{{check.icon}}}</span>
+        <span class="success {{check.success}}" data-tooltip="PF2E.Check.Result.Degree.Check.{{check.name}}">
+            {{{check.icon}}}
+        </span>
         {{/each}}
         {{/each}}
     </div>
@@ -103,6 +106,8 @@
     {{/if}}
 </span>
 <span>{{skill.modifier}}</span>
-<span class="success {{dieSuccess}}">{{add @root.dieResult skill.mod}}</span>
+<u class="success {{dieSuccess}}" data-tooltip="{{skill.tooltip}}">
+    {{add @root.dieResult skill.mod}}
+</u>
 {{/each}}
 {{/inline}}

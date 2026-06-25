@@ -1,4 +1,14 @@
-import { CreaturePF2e, NPCPF2e, R, render, signedInteger, Statistic, ZeroToFour, ZeroToThree } from "foundry-helpers";
+import {
+    CreaturePF2e,
+    NPCPF2e,
+    R,
+    render,
+    signedInteger,
+    Statistic,
+    SYSTEM,
+    ZeroToFour,
+    ZeroToThree,
+} from "foundry-helpers";
 import { DegreeOfSuccess } from "foundry-helpers/dist";
 
 const SKILLS = ["arcana", "computers", "crafting", "medicine", "nature", "occultism", "religion", "society"] as const;
@@ -45,15 +55,24 @@ async function rollRecallKnowledge(actor: CreaturePF2e) {
         const skillsDCs = R.times(4, (i) => standard.progression[i]);
         const loresDCs = lore.map(({ progression }) => R.times(6, (i) => progression[i]));
 
+        const marks = R.map(
+            (target.token && actor.synthetics.tokenMarks.get(target.token.uuid)) || [],
+            (mark) => `target:mark:${mark}`,
+        );
+
         templateData.skillsDCs = skillsDCs;
         templateData.loresDCs = loresDCs;
         templateData.skills = await Promise.all(
             skills.map((slug) => {
                 const skill = actor.skills[slug];
-                return rollStatistic(skill, dieResult, skillsDCs);
+                return rollStatistic(skill, dieResult, { dcs: skillsDCs, marks });
             }),
         );
-        templateData.lores = await Promise.all(lores.map((lore) => rollStatistic(lore, dieResult)));
+        templateData.lores = await Promise.all(
+            lores.map((lore) => {
+                return rollStatistic(lore, dieResult, { marks });
+            }),
+        );
     } else {
         const skills = R.map(
             (_existingSkills ??= R.filter(SKILLS, (slug) => slug in CONFIG.PF2E.skills)),
@@ -75,69 +94,87 @@ async function rollRecallKnowledge(actor: CreaturePF2e) {
     });
 }
 
-async function rollStatistic(statistic: Statistic, dieResult: number, dcs?: number[]): Promise<RolledStatisticData> {
+async function rollStatistic(
+    statistic: Statistic,
+    dieResult: number,
+    { dcs, marks = [] }: { dcs?: number[]; marks?: string[] } = {},
+): Promise<RolledStatisticData> {
     const { rank, label } = statistic;
 
-    const roll = await statistic.roll({
-        createMessage: false,
-        skipDialog: true,
-        extraRollOptions: [
-            "action:recall-knowledge",
-            "skill-check",
-            `skill:rank:${rank}`,
-            `action:recall-knowledge:${statistic.slug}`,
-        ],
+    const extraRollOptions = [
+        "action:recall-knowledge",
+        "skill-check",
+        `skill:rank:${rank}`,
+        `action:recall-knowledge:${statistic.slug}`,
+        ...marks,
+    ];
+
+    return new Promise((resolve) => {
+        statistic.roll({
+            callback: (roll, _, message) => {
+                const mod = roll?.options.totalModifier ?? 0;
+
+                const fakeRoll = {
+                    dieValue: dieResult,
+                    modifier: mod,
+                };
+
+                console.log(message.flags[SYSTEM.id]);
+
+                const modifiers = R.map(message.flags[SYSTEM.id].modifiers ?? [], ({ label, modifier }) => {
+                    return `${label} ${signedInteger(modifier)}`;
+                });
+
+                resolve({
+                    checks: dcs?.map((dc) => {
+                        if (!dc) return "-";
+                        const success = new DegreeOfSuccess(fakeRoll, dc).value;
+                        return {
+                            ...SUCCESS[success],
+                            success,
+                        };
+                    }),
+                    label,
+                    mod,
+                    modifier: signedInteger(mod),
+                    rank: rank ?? 0,
+                    rankLabel: game.i18n.localize(`PF2E.ProficiencyLevel${rank ?? 0}`),
+                    tooltip: modifiers.join("<br>"),
+                    total: dieResult + mod,
+                });
+            },
+            createMessage: false,
+            skipDialog: true,
+            extraRollOptions,
+        });
     });
-
-    const mod = roll?.options.totalModifier ?? 0;
-
-    const fakeRoll = {
-        dieValue: dieResult,
-        modifier: mod,
-    };
-
-    return {
-        mod,
-        rank: rank ?? 0,
-        label,
-        total: dieResult + mod,
-        modifier: signedInteger(mod),
-        rankLabel: game.i18n.localize(`PF2E.ProficiencyLevel${rank ?? 0}`),
-        checks: dcs?.map((dc) => {
-            if (!dc) return "-";
-            const success = new DegreeOfSuccess(fakeRoll, dc).value;
-            return {
-                ...SUCCESS[success],
-                success,
-            };
-        }),
-    };
 }
 
 type RecallKnowledgeTemplateData = {
-    dieSuccess: string;
     dieResult: number;
-    target: NPCPF2e | undefined;
-    skillsDCs?: number[];
+    dieSuccess: string;
+    lores?: RolledStatisticData[];
     loresDCs?: number[][];
     skills: RolledStatisticData[];
-    lores?: RolledStatisticData[];
+    skillsDCs?: number[];
+    target: NPCPF2e | undefined;
 };
 
 type RolledStatisticData = {
-    mod: number;
-    rank: ZeroToFour;
-    label: string;
-    total: number;
-    modifier: string;
-    rankLabel: string;
     checks: Maybe<(string | RolledStatisticChecksData)[]>;
+    label: string;
+    mod: number;
+    modifier: string;
+    rank: ZeroToFour;
+    rankLabel: string;
+    tooltip: string;
+    total: number;
 };
 
 type RolledStatisticChecksData = {
-    success: ZeroToThree;
     icon: string;
     name: string;
+    success: ZeroToThree;
 };
 
 export { rollRecallKnowledge };
