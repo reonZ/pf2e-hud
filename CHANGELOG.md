@@ -1,3 +1,11 @@
+# 2.50.0
+
+- `Items Sidebar`:
+  - fix `held` number position and color
+- `Recall Knowledge` extra action:
+  - each roll now includes the `target:mark:xxx` roll options
+  - you can now hover over roll total results to see all the modifiers that were applied for each of them
+
 # 2.49.0
 
 - this is a foundry `14.361` release
