@@ -144,8 +144,9 @@ async function rollStatistic(
                 });
             },
             createMessage: false,
-            skipDialog: true,
             extraRollOptions,
+            messageMode: "blind",
+            skipDialog: true,
         });
     });
 }

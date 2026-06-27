@@ -31,6 +31,7 @@ async function rollGroupPerception() {
 
             const roll = await perception.roll({
                 createMessage: false,
+                messageMode: "blind",
                 skipDialog: true,
             });
 
