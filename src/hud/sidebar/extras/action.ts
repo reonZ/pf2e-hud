@@ -156,7 +156,21 @@ class ExtraAction extends BaseStatisticAction<ExtrasActionData, AbilityItemPF2e>
         }
 
         if (this.key === "recall-knowledge") {
-            return actor.isOfType("creature") && rollRecallKnowledge(actor);
+            if (options.alternates || event.button === 2) {
+                const alternates = await this.getAlternates(actor, game.i18n.localize("PF2E.RecallKnowledge.Label"), {
+                    event,
+                    statistic: this.key,
+                });
+
+                if (alternates) {
+                    options.statistic = alternates.data.statistic;
+                } else {
+                    return;
+                }
+            }
+
+            const statistic = options.statistic ? actor.getStatistic(options.statistic) : null;
+            return rollRecallKnowledge(actor, statistic);
         }
 
         const rollOptions = {

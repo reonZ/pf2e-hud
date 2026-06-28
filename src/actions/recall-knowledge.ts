@@ -1,5 +1,5 @@
 import {
-    CreaturePF2e,
+    ActorPF2e,
     NPCPF2e,
     R,
     render,
@@ -28,7 +28,9 @@ const SUCCESS = {
 
 let _existingSkills: string[] | undefined;
 
-async function rollRecallKnowledge(actor: CreaturePF2e) {
+async function rollRecallKnowledge(actor: ActorPF2e, alternate?: Statistic | null) {
+    if (!actor.isOfType("creature")) return;
+
     const roll = await new Roll("1d20").evaluate({ allowInteractive: false });
     const dieResult = roll.dice[0].total ?? 0;
     const dieSuccess = dieResult === 1 ? "0" : dieResult === 20 ? "3" : "";
@@ -62,17 +64,27 @@ async function rollRecallKnowledge(actor: CreaturePF2e) {
 
         templateData.skillsDCs = skillsDCs;
         templateData.loresDCs = loresDCs;
-        templateData.skills = await Promise.all(
-            skills.map((slug) => {
-                const skill = actor.skills[slug];
-                return rollStatistic(skill, dieResult, { dcs: skillsDCs, marks });
-            }),
-        );
+
+        if (alternate) {
+            templateData.alternate = alternate.label;
+            templateData.skills = [await rollStatistic(alternate, dieResult, { dcs: skillsDCs, marks })];
+        } else {
+            templateData.skills = await Promise.all(
+                skills.map((slug) => {
+                    const skill = actor.skills[slug];
+                    return rollStatistic(skill, dieResult, { dcs: skillsDCs, marks });
+                }),
+            );
+        }
+
         templateData.lores = await Promise.all(
             lores.map((lore) => {
                 return rollStatistic(lore, dieResult, { marks });
             }),
         );
+    } else if (alternate) {
+        templateData.alternate = alternate?.label;
+        templateData.skills = await Promise.all([alternate, ...lores].map((skill) => rollStatistic(skill, dieResult)));
     } else {
         const skills = R.map(
             (_existingSkills ??= R.filter(SKILLS, (slug) => slug in CONFIG.PF2E.skills)),
@@ -99,13 +111,13 @@ async function rollStatistic(
     dieResult: number,
     { dcs, marks = [] }: { dcs?: number[]; marks?: string[] } = {},
 ): Promise<RolledStatisticData> {
-    const { rank, label } = statistic;
+    const { label, rank, slug } = statistic;
 
     const extraRollOptions = [
         "action:recall-knowledge",
         "skill-check",
         `skill:rank:${rank}`,
-        `action:recall-knowledge:${statistic.slug}`,
+        `action:recall-knowledge:${slug}`,
         ...marks,
     ];
 
@@ -118,8 +130,6 @@ async function rollStatistic(
                     dieValue: dieResult,
                     modifier: mod,
                 };
-
-                console.log(message.flags[SYSTEM.id]);
 
                 const modifiers = R.map(message.flags[SYSTEM.id].modifiers ?? [], ({ label, modifier }) => {
                     return `${label} ${signedInteger(modifier)}`;
@@ -152,6 +162,7 @@ async function rollStatistic(
 }
 
 type RecallKnowledgeTemplateData = {
+    alternate?: string;
     dieResult: number;
     dieSuccess: string;
     lores?: RolledStatisticData[];

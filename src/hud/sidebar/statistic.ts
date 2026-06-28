@@ -194,63 +194,7 @@ abstract class BaseStatisticAction<
             }
 
             const label = (!isMapVariant && variant?.label) || this.label;
-            const alternates = await waitDialog<{
-                data: Omit<typeof usedOptions, "event">;
-                event: MouseEvent;
-            }>({
-                classes: ["skills"],
-                content: "dialogs/action-alternates",
-                i18n: "dialogs.alternates",
-                data: {
-                    ...usedOptions,
-                    label,
-                    maps: R.times(3, (i) => ({ value: i, label: i })),
-                    statistics: usedOptions.statistic ? getStatistics(actor) : undefined,
-                },
-                onRender: (_event, dialog) => {
-                    const statistic = this.statistic;
-                    const html = dialog.element;
-                    const img = createHTMLElement("img", {
-                        classes: ["drag-img"],
-                        dataset: { tooltip: localize("dialogs.alternates.drag") },
-                    });
-
-                    img.draggable = true;
-                    img.src = this.img;
-
-                    img.addEventListener("dragstart", (event) => {
-                        const dragData = {
-                            img: this.img,
-                            key: this.key,
-                            name: this.label,
-                            sourceId: this.sourceId,
-                            statistic,
-                            type: statistic ? "skillAction" : "extraAction",
-                            variant: statistic && !isMapVariant ? variant?.slug : undefined,
-                            override: {},
-                        };
-
-                        addToObjectIfNonNullish(dragData.override, {
-                            agile: htmlQuery<HTMLInputElement>(html, `[name="agile"]`)?.checked,
-                            statistic: htmlQuery<HTMLSelectElement>(html, `[name="statistic"]`)?.value,
-                        });
-
-                        createDraggable(event, this.img, actor, this.item, {
-                            fromSidebar: dragData,
-                        });
-                    });
-
-                    htmlQuery(html, ".form-footer")?.append(img);
-                },
-                yes: {
-                    callback: async (event, _el, dialog) => {
-                        return {
-                            data: createFormData(dialog.element),
-                            event,
-                        };
-                    },
-                },
-            });
+            const alternates = await this.getAlternates(actor, label, usedOptions, variant?.slug);
 
             if (!alternates) return;
 
@@ -293,6 +237,71 @@ abstract class BaseStatisticAction<
             });
             action(rollOptions);
         }
+    }
+
+    getAlternates(
+        actor: ActorPF2e,
+        label: string,
+        usedOptions: BaseStatisticRollOptions & { event: Event },
+        variant?: string,
+    ) {
+        return waitDialog<{
+            data: Omit<typeof usedOptions, "event">;
+            event: MouseEvent;
+        }>({
+            classes: ["skills"],
+            content: "dialogs/action-alternates",
+            i18n: "dialogs.alternates",
+            data: {
+                ...usedOptions,
+                label,
+                maps: R.times(3, (i) => ({ value: i, label: i })),
+                statistics: usedOptions.statistic ? getStatistics(actor) : undefined,
+            },
+            onRender: (_event, dialog) => {
+                const statistic = this.statistic;
+                const html = dialog.element;
+                const img = createHTMLElement("img", {
+                    classes: ["drag-img"],
+                    dataset: { tooltip: localize("dialogs.alternates.drag") },
+                });
+
+                img.draggable = true;
+                img.src = this.img;
+
+                img.addEventListener("dragstart", (event) => {
+                    const dragData = {
+                        img: this.img,
+                        key: this.key,
+                        name: this.label,
+                        sourceId: this.sourceId,
+                        statistic,
+                        type: statistic ? "skillAction" : "extraAction",
+                        variant: statistic && R.isNullish(usedOptions.map) ? variant : undefined,
+                        override: {},
+                    };
+
+                    addToObjectIfNonNullish(dragData.override, {
+                        agile: htmlQuery<HTMLInputElement>(html, `[name="agile"]`)?.checked,
+                        statistic: htmlQuery<HTMLSelectElement>(html, `[name="statistic"]`)?.value,
+                    });
+
+                    createDraggable(event, this.img, actor, this.item, {
+                        fromSidebar: dragData,
+                    });
+                });
+
+                htmlQuery(html, ".form-footer")?.append(img);
+            },
+            yes: {
+                callback: async (event, _el, dialog) => {
+                    return {
+                        data: createFormData(dialog.element),
+                        event,
+                    };
+                },
+            },
+        });
     }
 }
 

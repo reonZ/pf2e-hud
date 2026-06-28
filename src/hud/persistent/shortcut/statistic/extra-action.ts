@@ -22,7 +22,10 @@ class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityIt
     }
 
     get subtitle(): string {
-        return localize("shortcuts.tooltip.subtitle", this.type);
+        return (
+            (this.override.statistic && this.actor.getStatistic(this.override.statistic)?.label) ||
+            localize("shortcuts.tooltip.subtitle", this.type)
+        );
     }
 
     get altUseLabel(): string {
