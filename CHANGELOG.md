@@ -1,3 +1,11 @@
+# 2.51.0
+
+- you can now `[Right Click]` on the `Recall Knowledge` extra action to use an alternate statistic
+  - the selected alternate will replace any regular recall knowledge statistic
+  - lores are kept in both the targeted and untargeted versions
+  - you can create a shortcut of an alternate version
+- fix `Recall Knowledge` and `Group Perception Checks` actions asking for manual dice results
+
 # 2.50.0
 
 - `Items Sidebar`:
