@@ -77,14 +77,16 @@ async function rollRecallKnowledge(actor: ActorPF2e, alternate?: Statistic | nul
             );
         }
 
-        templateData.lores = await Promise.all(
-            lores.map((lore) => {
-                return rollStatistic(lore, dieResult, { marks });
-            }),
-        );
+        templateData.lores = await Promise.all(lores.map((lore) => rollStatistic(lore, dieResult, { marks })));
     } else if (alternate) {
         templateData.alternate = alternate?.label;
-        templateData.skills = await Promise.all([alternate, ...lores].map((skill) => rollStatistic(skill, dieResult)));
+        templateData.skills = await Promise.all(
+            R.pipe(
+                [alternate, ...lores],
+                R.unique(),
+                R.map((skill) => rollStatistic(skill, dieResult)),
+            ),
+        );
     } else {
         const skills = R.map(
             (_existingSkills ??= R.filter(SKILLS, (slug) => slug in CONFIG.PF2E.skills)),
