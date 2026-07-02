@@ -1,3 +1,8 @@
+# 2.51.1
+
+- `Recall Knowledge` extra action:
+  - no longer duplicate lores for untargeted recall knowledge when using an alternate lore statistic
+
 # 2.51.0
 
 - you can now `[Right Click]` on the `Recall Knowledge` extra action to use an alternate statistic
