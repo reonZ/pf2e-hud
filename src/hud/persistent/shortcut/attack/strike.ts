@@ -48,12 +48,15 @@ class StrikeShortcut extends AttackShortcut<
         this.#actorIsNPC = this.actor.isOfType("npc");
         this.#strikeItem = this.#getItem();
 
-        const ammo = (this.#ammo = this.item && "ammo" in this.item ? this.item.ammo : null);
+        const item = this.item;
+        const ammo = (this.#ammo = item && "ammo" in item ? item.ammo : null);
 
         this.#uses =
-            (ammo?.isOfType("ammo") && ammo.uses.max > 1 && ammo.uses) || (ammo ? { value: ammo.quantity } : null);
+            (ammo?.isOfType("ammo") && ammo.uses.max > 1 && ammo.uses) ||
+            (ammo && { value: ammo.quantity }) ||
+            (isBombOrGrenade(item) && item.quantity > 1 ? { value: item.quantity } : null);
 
-        this.#isEquipped = !!this.item && (!("isEquipped" in this.item) || this.item.isEquipped);
+        this.#isEquipped = !!item && (!("isEquipped" in item) || item.isEquipped);
 
         this.#drawAuxiliaries =
             this.attackData && "auxiliaryActions" in this.attackData && !this.#isEquipped
@@ -364,6 +367,16 @@ function getStrikeLabel() {
 
         return `${label} ${glyph} `;
     })());
+}
+
+function isBombOrGrenade(
+    item: Maybe<MeleePF2e<CreaturePF2e> | WeaponPF2e<CreaturePF2e>>,
+): item is WeaponPF2e<CreaturePF2e> {
+    if (!item) return false;
+    if (item.baseType === "grenade") return true;
+
+    const traits = item.traits;
+    return traits.has("alchemical") && traits.has("bomb");
 }
 
 function isAreaOrAutoFireType(data: Maybe<AttackAction | CharacterAttack>): data is AttackAction | CharacterAttack {
