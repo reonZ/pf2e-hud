@@ -17,7 +17,7 @@ import { getActionCategory, getNpcStrikeImage, getStrikeActions, simulateReload 
 import { AttackShortcut, zAttackShortcut } from ".";
 import { ShortcutCost, ShortcutData, ShortcutLabel, ShortcutRadialOption, ShortcutRadialSection } from "..";
 
-const DRAW_AUXILIARY_ANNOTATION = ["draw", "pick-up", "retrieve"];
+const DRAW_AUXILIARY_ANNOTATION = ["draw", "grip", "pick-up", "retrieve"] as const;
 
 const zStrikeShortcut = zAttackShortcut("strike").extend({
     attachment: z.boolean().default(false),
@@ -57,7 +57,7 @@ class StrikeShortcut extends AttackShortcut<
         this.#drawAuxiliaries =
             this.attackData && "auxiliaryActions" in this.attackData && !this.#isEquipped
                 ? this.attackData.auxiliaryActions.filter(({ annotation }) => {
-                      return annotation && DRAW_AUXILIARY_ANNOTATION.includes(annotation);
+                      return annotation && R.isIncludedIn(annotation, DRAW_AUXILIARY_ANNOTATION);
                   })
                 : [];
     }
