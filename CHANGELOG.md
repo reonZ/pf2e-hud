@@ -1,3 +1,13 @@
+# 2.52.0
+
+- `Strike Shortcut`:
+  - now display the DC of area-fire weapons in the slot
+  - now display the quantity of alchemical bombs and grenades (if more than `1`)
+  - fix `thrown` weapons with a `reload 0` not being usable without first being `drawn`
+  - fix slot and tooltip not showing the action cost
+  - fix being able to strike when holding the weapon in the wrong grip
+  - fix area-fire weapons not showing their strike variants
+
 # 2.51.1
 
 - `Recall Knowledge` extra action:
