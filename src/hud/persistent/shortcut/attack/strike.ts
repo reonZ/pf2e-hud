@@ -212,8 +212,12 @@ class StrikeShortcut extends AttackShortcut<
                   : undefined;
     }
 
+    get isReady(): boolean {
+        return !!this.attackData?.ready;
+    }
+
     get mustBeDrawn(): boolean {
-        return this.#drawAuxiliaries.length > 0 && !this.isEquipped;
+        return !this.isReady && this.#drawAuxiliaries.length > 0 && !this.isEquipped;
     }
 
     get isMainAreaType(): boolean {
