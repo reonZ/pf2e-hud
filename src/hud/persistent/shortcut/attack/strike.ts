@@ -109,11 +109,16 @@ class StrikeShortcut extends AttackShortcut<
     }
 
     get cost(): ShortcutCost | null {
-        if (!this.attackData) return null;
+        if (!this.attackData) {
+            return null;
+        }
 
-        return {
-            value: this.isEquipped ? this.attackData.glyph : (this.#drawAuxiliaries.at(0)?.actions ?? 1),
-        };
+        if (this.isEquipped) {
+            const glyph = this.attackData.glyph.toLowerCase();
+            return { value: glyph === "a" ? 1 : this.attackData.glyph };
+        }
+
+        return { value: this.#drawAuxiliaries.at(0)?.actions ?? 1 };
     }
 
     get label(): ShortcutLabel | null {

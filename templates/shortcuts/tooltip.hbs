@@ -15,7 +15,7 @@
         {{!-- action cost --}}
         {{#with cost as |cost|}}
         <div class="cost glyph">
-            <span class="pf2-icon">{{cost.value}}</span>
+            {{{actionGlyph cost.value}}}
         </div>
         {{/with}}
         {{subtitle}}
