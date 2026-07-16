@@ -16,11 +16,11 @@
         "verified": "14.365",
         "maximum": "14"
     },
-    "version": "2.52.1",
+    "version": "2.52.2",
     "url": "https://github.com/reonZ/pf2e-hud",
     "readme": "https://github.com/reonZ/pf2e-hud/blob/master/README.md",
     "manifest": "https://raw.githubusercontent.com/reonZ/pf2e-hud/master/module.json",
-    "download": "https://github.com/reonZ/pf2e-hud/releases/download/2.52.1/module.zip",
+    "download": "https://github.com/reonZ/pf2e-hud/releases/download/2.52.2/module.zip",
     "changelog": "https://github.com/reonZ/pf2e-hud/blob/master/CHANGELOG.md",
     "bugs": "https://github.com/reonZ/pf2e-hud/issues",
     "styles": [
@@ -86,7 +86,7 @@
         },
         {
             "lang": "ja",
-            "name": "Japanese",
+            "name": "日本語",
             "path": "lang/ja.json"
         }
     ]

@@ -1,3 +1,7 @@
+# 2.52.2
+
+- add Japanese localization (thanks to [counterpost](https://github.com/counterpost))
+
 # 2.52.1
 
 - `Spell Shortcut`:
