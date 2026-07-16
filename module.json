@@ -83,6 +83,11 @@
             "lang": "pt-BR",
             "name": "Português Brasileiro",
             "path": "lang/pt-BR.json"
+        },
+        {
+            "lang": "ja",
+            "name": "Japanese",
+            "path": "lang/ja.json"
         }
     ]
 }
