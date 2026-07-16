@@ -1,0 +1,512 @@
+{
+  "pf2e-hud": {
+    "keybindings": {
+      "persistent": {
+        "setActor": {
+          "name": "常時使用アクターを設定",
+          "hint": "選択したトークンのアクターを常時使用アクターとして設定する。"
+        }
+      },
+      "sidebar": {
+        "filter": {
+          "name": "サイドバーフィルターを使用する",
+          "hint": "現在のサイドバーの内容を絞り込めるようにする。"
+        }
+      },
+      "tracker": {
+        "alternate": {
+          "name": "代替コントロール",
+          "hint": "戦闘トラッカーのコントロールを切り替えて、追加のオプションを表示する。"
+        }
+      }
+    },
+    "settings": {
+      "menus": {
+        "healthStatusMenu": {
+          "name": "HPステータス",
+          "label": "HPのステータスを設定する",
+          "hint": "HUDに表示するHPのステータスの区分をセットアップする。"
+        }
+      },
+      "enabled": {
+        "name": "有効",
+        "hint": "このクライアントでこのHUD要素を有効にする。"
+      },
+      "dice": {
+        "title": "ダイス・パネル"
+      },
+      "foundrySidebar": {
+        "title": "Foundryのサイドバー",
+        "expand": {
+          "name": "ロード時に自動展開",
+          "hint": "ページ読み込み時にFoundryのサイドバーを強制的に展開する。"
+        },
+        "noFormat": {
+          "name": "書式設定パネルを非表示にする",
+          "hint": "フォーマット・パネルがチャットから削除される。"
+        },
+        "noRollMode": {
+          "name": "ロール・モードを非表示にする",
+          "hint": "ロール・モード・ボタンがチャットから削除される。"
+        }
+      },
+      "global": {
+        "alwaysFilter": {
+          "name": "サイドバーフィルターを常に表示する",
+          "hint": "キーバインドを使用しなくても、サイドバーのフィルター入力が常に表示されるようになる。"
+        },
+        "highestSpeed": {
+          "name": "最も高い移動速度を表示する",
+          "hint": "移動速度が手動で選択されていない場合、陸上移動速度が0でなくても、常に最も高い移動速度がデフォルトで表示される。"
+        },
+        "useModifiers": {
+          "name": "修正値を使用する",
+          "hint": "さまざまなHUD要素で、難易度の値の代わりに修正値を表示する。"
+        }
+      },
+      "advanced": {
+        "alliance": {
+          "name": "アライアンスボタン",
+          "hint": "HUDにアライアンス／態度ボタンを表示する。"
+        }
+      },
+      "persistent": {
+        "title": "常時使用HUD",
+        "autoFill": {
+          "name": "NPCショートカットの自動設定",
+          "hint": "手動で変更していない場合、ショートカット・スロットを自動設定する。"
+        },
+        "display": {
+          "name": "表示位置",
+          "hint": "UI内のどこにHUDを表示するか。",
+          "choices": {
+            "disabled": "無効",
+            "left": "左側",
+            "middle": "中央"
+          }
+        },
+        "selection": {
+          "name": "選択モード",
+          "hint": "常時使用アクターの選択モード。",
+          "choices": {
+            "manual": "手動選択",
+            "select": "トークン選択時",
+            "combat": "現在の戦闘員"
+          }
+        },
+        "shiftEffect": {
+          "name": "エフェクト操作にShiftキーを使用",
+          "hint": "有効な場合、HUDのエフェクト・アイコンを扱うには「Shift」キーを押し続ける必要がある。"
+        },
+        "slots": {
+          "name": "追加のショートカット・スロット",
+          "hint": "HUDに追加する予備のショートカット・スロットの数。"
+        }
+      },
+      "sidebar": {
+        "title": "サイドバー"
+      },
+      "time": {
+        "title": "タイム・トラッカー",
+        "enabled": {
+          "hint": "このクライアントでこのHUD要素を有効にする。ただし、システムのワールドクロック設定「プレイヤーのアクセス」が無効な場合、この設定も無効になる。"
+        }
+      },
+      "token": {
+        "title": "トークンHUD",
+        "activation": {
+          "name": "表示タイミング",
+          "hint": "トークンHUDを表示するタイミングを選択する。",
+          "choices": {
+            "disabled": "無効",
+            "first": "選択時",
+            "second": "再クリック時"
+          }
+        },
+        "mode": {
+          "name": "表示モード",
+          "hint": "トークンHUDの表示モードを選択する。",
+          "choices": {
+            "exploded": "展開",
+            "left": "グループ化(左)",
+            "right": "グループ化(右)"
+          }
+        }
+      },
+      "tooltip": {
+        "title": "トークン・ツールチップ",
+        "delay": {
+          "name": "ツールチップの遅延時間",
+          "hint": "ツールチップが画面に表示されるまでの遅延時間（ミリ秒）。"
+        },
+        "distance": {
+          "name": "表示距離",
+          "hint": "ホバー中のトークンと、自動判定された基準トークンとの距離を表示する。シーンに独自の距離単位が設定されている場合は、その単位を使用する。",
+          "choices": {
+            "never": "表示しない",
+            "idiot": "フィート表記",
+            "smart": "メートル表記",
+            "weird": "マス目表記"
+          }
+        },
+        "draw": {
+          "name": "距離表示ラインの線の太さ",
+          "hint": "ホバー中のトークンと距離計測対象の間に、指定した太さの線を描画する。"
+        },
+        "status": {
+          "name": "HPステータスを表示する",
+          "hint": "ワールドでHPステータスが有効な場合、ツールチップにも表示する。"
+        }
+      },
+      "tracker": {
+        "title": "戦闘トラッカー",
+        "partyAsObserved": {
+          "name": "パーティーメンバーを観察可能として扱う",
+          "hint": "HPの詳細を表示するため、パーティーに所属するアクターを各プレイヤーが観察可能なものとして扱う。"
+        },
+        "started": {
+          "name": "戦闘開始後のみ",
+          "hint": "戦闘が開始され、参戦者がいる場合にのみ、プレイヤーへトラッカーを表示する。"
+        },
+        "textureScaling": {
+          "name": "テクスチャのスケーリング",
+          "hint": "トークンのテクスチャ倍率に応じて、戦闘員の画像を反転・拡大縮小する。"
+        }
+      }
+    },
+    "actions": {
+      "drive": {
+        "drive1": "操縦<span class=\"action-glyph\">1</span>",
+        "drive2": "操縦<span class=\"action-glyph\">2</span>",
+        "drive3": "操縦<span class=\"action-glyph\">3</span>"
+      }
+    },
+    "actor-hud": {
+      "alliance": "アライアンス：{value}",
+      "temp": "一時的ヒットポイント",
+      "resolve": "決意ポイントを使用する"
+    },
+    "avatar-editor": {
+      "title": "アバターの編集 - {name}",
+      "cancel": "キャンセル",
+      "color": {
+        "background": "背景色",
+        "enabled": "背景色を有効にする"
+      },
+      "contain": "全体表示",
+      "reset": "リセット",
+      "save": "保存",
+      "src": {
+        "actor": "アクターの画像を使用する",
+        "token": "トークンの画像を使用する",
+        "none": "有効な画像ソースが見つからなかった",
+        "video": "この機能では動画はサポートされていません"
+      }
+    },
+    "dialogs": {
+      "alternates": {
+        "dc": "ディフィカルティー・クラス",
+        "drag": "ドラッグしてショートカットを作成",
+        "statistic": "使用する判定項目",
+        "title": "アクションの派生 - {label}",
+        "yes": "派生を使用する"
+      },
+      "resolve": {
+        "title": "決意ポイントを使用する",
+        "full": "{name}のスタミナは最大のため、休息する必要はない。",
+        "breather": {
+          "label": "小休憩",
+          "hint": "10分間休息し、決意ポイントを1点消費してスタミナをすべて回復する。"
+        },
+        "steel": {
+          "hint": "アクションを1回使用し、決意ポイントを1点消費してスタミナを半分回復する。"
+        },
+        "yes": "決意ポイントを使用する"
+      }
+    },
+    "edit-shortcut": {
+      "image": "画像パス",
+      "name": "ショートカット名",
+      "yes": "保存"
+    },
+    "group-perception": {
+      "title": "グループ《知覚》判定",
+      "search": "能動的に探索中"
+    },
+    "health-status": {
+      "title": "HPステータス",
+      "enabled": "有効",
+      "add": "マーカーを追加",
+      "delete": "マーカーを削除",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "import": {
+        "title": "HPステータスのインポート",
+        "yes": "インポート",
+        "no": "キャンセル",
+        "error": "入力されたデータは無効です。"
+      },
+      "export": {
+        "title": "HPステータスのエクスポート",
+        "confirm": "HPステータスをクリップボードにコピーしました。"
+      },
+      "default": "死亡, 瀕死, 重傷, 負傷, 軽傷, 無傷"
+    },
+    "leftClick": "[左クリック]",
+    "no-selection": "有効なクリーチャーを少なくとも1体選択する必要がある。",
+    "persistent": {
+      "effects": {
+        "shift": "Shift",
+        "toggle": "効果の切り替え"
+      },
+      "error": {
+        "selectOne": "常時使用アクターとして設定するNPCまたはキャラクターのトークンを1つ選択する。"
+      },
+      "menu": {
+        "clean": {
+          "always": "ポートレート上に常にUIを表示する",
+          "hover": "ポートレートにホバーしたときのみUIを表示する"
+        },
+        "editAvatar": "アバターを編集",
+        "lockOwned": {
+          "lock": "所有しているアクターの選択を禁止する",
+          "unlock": "所有しているアクターの選択を許可する"
+        },
+        "pin": "アクターをピン留め",
+        "setActor": {
+          "set": "選択したトークンを常時使用アクターとして設定",
+          "unset": "常時使用アクターの設定を解除"
+        }
+      },
+      "ownedActor": {
+        "drag": {
+          "exist": "このシーンにはすでにこのアクターのトークンが存在している。"
+        },
+        "unpin": "アクターのピン留めを解除"
+      },
+      "pan": {
+        "none": "このアクターの有効なトークンは現在のシーンにありません。"
+      },
+      "patch": {
+        "browser": "コンペンディウム・ブラウザを開く",
+        "check-prompt": "判定プロンプトを生成",
+        "gm-screen": "GMスクリーンを開く",
+        "group-perception": "グループ《知覚》をロール",
+        "identify-menu": "鑑定メニューを開く",
+        "player-screen": "プレイヤースクリーンを開く",
+        "random-pick": "ランダムな対象を選ぶ",
+        "select-all": "プレイヤートークンを選択",
+        "set-journal": "ジャーナル・エントリーを選択",
+        "travel-sheet": "移動所要時間を計算"
+      },
+      "shortcuts": {
+        "clear": {
+          "title": "ショートカットをクリア",
+          "all": "すべてのショートカット・セット",
+          "hint": "以下のショートカットを削除しますか？",
+          "set": "現在のセットのみ",
+          "yes": "削除"
+        },
+        "copy": {
+          "title": "ユーザーのショートカットをコピー",
+          "hint": "ショートカットのコピー元となるユーザーを選択する。",
+          "label": "所有ユーザー",
+          "none": "このアクターには他に所有者がいない。",
+          "yes": "コピー"
+        },
+        "fill": {
+          "title": "ショートカットの自動設定",
+          "content": "ショートカットを自動設定しますか？",
+          "yes": "自動設定"
+        },
+      "tab": "ショートカットのセットを変更"
+      }
+    },
+    "pin-token": {
+      "notify": "お気に入りとしてピン留めするトークンを選択する。"
+    },
+    "popup": {
+      "shortcut": {
+        "config": "ショートカットをカスタマイズ"
+      }
+    },
+    "random-pick": {
+      "title": "どちらにしようかな"
+    },
+    "recall-knowledge": {
+      "result": "結果",
+      "modifier": "修正値",
+      "target": "対象",
+      "first": "1回目",
+      "second": "2回目",
+      "third": "3回目",
+      "fourth": "4回目",
+      "fifth": "5回目",
+      "sixth": "6回目",
+      "dc": "DC",
+      "unspecific": "一般的な《専門知識》",
+      "specific": "特定分野の《専門知識》",
+      "skill": "スキル",
+      "lore": "《専門知識》スキル",
+      "proficiency": "習熟度"
+    },
+    "rightClick": "[右クリック]",
+    "scene": {
+      "visible": {
+        "hint": "このシーンで表示するHUD要素を選択する。",
+        "label": "表示するHUD要素"
+      }
+    },
+    "set-journal": {
+      "uuid": {
+        "label": "ジャーナルUUID"
+      },
+      "world": {
+        "label": "ワールド・ジャーナル"
+      },
+      "yes": "ジャーナルを設定"
+    },
+    "shortcuts": {
+      "blast": {
+        "cost": {
+          "label": "エレメンタル・ブラストのコスト"
+        }
+      },
+      "error": {
+        "locked": "ショートカットはホットバーと連動してロックされている",
+        "notHUD": "ショートカットを作成するには、HUD自体から要素をドラッグする必要がある。",
+        "notScript": "ショートカットにはスクリプト・マクロのみ追加できる。",
+        "wrongActor": "同じ常時使用アクターからのみショートカットを作成できる。",
+        "wrongData": "入力されたデータは無効です。",
+        "wrongType": "そのタイプのショートカットは作成できない。"
+      },
+      "tooltip": {
+        "active": "アクティブ",
+        "altUse": {
+          "blast": "ブラスト・ウィンドウ",
+          "skillAction": "派生メニュー",
+          "strike": "ストライク・ウィンドウ",
+          "toggle": "サブオプションの選択"
+        },
+        "click": {
+          "control": "[Ctrl＋右クリック]",
+          "middle": "[ホイールクリック] ショートカットを削除",
+          "popup": "ショートカット・ポップアップ"
+        },
+        "disabled": "無効",
+        "enabled": "有効",
+        "inactive": "非アクティブ",
+        "subtitle": {
+          "blast": "エレメンタル・ブラスト",
+          "extraAction": "追加のアクション",
+          "macro": "自己実行マクロ",
+          "spell": "スペルキャスティング",
+          "skillAction": "スキルのアクション",
+          "strike": "ストライク・アタック",
+          "toggle": "判定オプション"
+        },
+        "reason": {
+          "available": "現在利用不可",
+          "broken": "参照切れの呪文",
+          "charges": "使用回数なし",
+          "combat": "戦闘中ではない",
+          "dropped": "アイテムを携帯していない",
+          "equip": "装備していない",
+          "expended": "消費済みの呪文",
+          "focus": "フォーカスプールが空",
+          "hands": "空いている手がない",
+          "macro": "一致するマクロなし",
+          "match": "一致するアイテムなし",
+          "prepared": "呪文が準備されていない",
+          "quantity": "数量がゼロ",
+          "rank": "その階位では発動できない",
+          "tactic": "準備された戦術ではない",
+          "uses": "使用回数が残っていない",
+          "vessel": "主要な器ではない"
+        }
+      },
+      "use": {
+        "toggle": "この切り替えは常に有効"
+      }
+    },
+    "sidebar": {
+      "filter": "サイドバーフィルター",
+      "actions": {
+        "area-fire": "円錐／直線／爆発{range}フィート",
+        "auto-fire": "円錐{range}フィート",
+        "blasts": "エレメンタル・ブラスト",
+        "ranged": "射程{max}フィート",
+        "rangedWithIncrement": "射程{increment}／{max}フィート",
+        "reach": "リーチ{reach}フィート",
+        "reset": "使用回数をリセット",
+        "shields": {
+          "shown": "盾を表示中",
+          "hidden": "盾を非表示中"
+        },
+        "stances": "構え",
+        "stowedWeapons": {
+          "shown": "収納されたアイテムを表示中",
+          "hidden": "収納されたアイテムを非表示中"
+        },
+        "thrown": "投擲{increment}／{max}フィート"
+      },
+      "extras": {
+        "delete": {
+          "title": "マクロを削除",
+          "content": "このマクロを削除しますか？"
+        },
+        "edit": "マクロを編集",
+        "noMacro": "ここにマクロをドロップ",
+        "use": "マクロを実行"
+      },
+      "removeEffect": "効果を削除",
+      "skills": {
+        "alternate": "[右クリック] 派生メニュー",
+        "hideUntrained": "未訓練を隠す",
+        "proficient": "習熟"
+      },
+      "spells": {
+        "broken": "参照切れの呪文",
+        "cast": "呪文を発動"
+      }
+    },
+    "sidebars": {
+      "actions": "アクション",
+      "extras": "その他",
+      "feats": "特技",
+      "items": "所持品",
+      "skills": "スキル",
+      "spells": "スペルキャスティング"
+    },
+    "spellcasting": {
+      "charges": "チャージ",
+      "staff": "スタッフ"
+    },
+    "tooltip": {
+      "distance": {
+        "feet": "フィート",
+        "meter": "m",
+        "square": "マス"
+      }
+    },
+    "tracker": {
+      "award": "XPを付与：{xp}",
+      "collapsed": "折りたたまれている。クリックして展開",
+      "delay": "ターンを〈待機する〉",
+      "expanded": "展開されている。クリックして折りたたむ",
+      "fake": {
+        "nothing": "エンカウント未開始",
+        "secret": "何かが秘密裏に進行中"
+      },
+      "force-turn": "この参戦者のターンに変更",
+      "join": "〈待機する〉を終了してターンに復帰",
+      "unknown": "不明"
+    },
+    "use-resolve": {
+      "full": "{name}のスタミナは最大のため、休息する必要はない。",
+      "breather": {
+        "used": "{name}の現在のSPは{ratio}。決意ポイントを1点消費して10分間の小休憩を取り、スタミナをすべて回復した。"
+      }
+    }
+  }
+}
