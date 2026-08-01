@@ -7,6 +7,7 @@ import {
     MODULE,
     render,
     setFlag,
+    unsetFlag,
     VideoFilePath,
 } from "foundry-helpers";
 import { AvatarData, getAvatarData, zAvatar } from ".";
@@ -71,23 +72,25 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
         const actor = this.actor;
         const action = target.dataset.action as EventAction;
 
-        if (action === "cancel") {
-            this.close();
-        } else if (action === "contain") {
-            delete this.#data.position;
-            this.#updateImage();
-        } else if (action === "open-browser") {
-            this.#openBrowser();
-        } else if (action === "reset") {
-            this.#resetData();
-        } else if (action === "save") {
-            const encoded = zAvatar.encode(this.#data);
-            setFlag(this.actor, "avatar", encoded);
-            this.close();
-        } else if (action === "use-actor-image") {
-            this.#setImage(actor.img);
-        } else if (action === "use-token-image") {
-            this.#setImage(actor.prototypeToken.texture.src);
+        switch (action) {
+            case "clear":
+                unsetFlag(this.actor, "avatar");
+                return this.close();
+            case "contain":
+                delete this.#data.position;
+                return this.#updateImage();
+            case "open-browser":
+                return this.#openBrowser();
+            case "reset":
+                return this.#resetData();
+            case "save":
+                const encoded = zAvatar.encode(this.#data);
+                setFlag(this.actor, "avatar", encoded);
+                return this.close();
+            case "use-actor-image":
+                return this.#setImage(actor.img);
+            case "use-token-image":
+                return this.#setImage(actor.prototypeToken.texture.src);
         }
     }
 
@@ -174,6 +177,10 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
     }
 
     #activateListeners(html: HTMLElement) {
+        addListener(html, "form", "submit", (_el, event) => {
+            return event.preventDefault();
+        });
+
         addListener(html, ".image", "wheel", (_el, event) => {
             const delta = event.deltaY >= 0 ? -1 : 1;
             this.#data.scale = this.#data.scale + delta * 0.05;
@@ -327,7 +334,7 @@ function calculateContainedPosition(img: HTMLImageElement | HTMLVideoElement): n
     return scale;
 }
 
-type EventAction = "cancel" | "contain" | "open-browser" | "reset" | "save" | "use-actor-image" | "use-token-image";
+type EventAction = "clear" | "contain" | "open-browser" | "reset" | "save" | "use-actor-image" | "use-token-image";
 
 type AvatarEditorContext = fa.ApplicationRenderContext & {
     noBrowser: boolean;

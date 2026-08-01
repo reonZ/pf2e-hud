@@ -1,17 +1,15 @@
-<form data-tooltip-direction="UP">
+<form data-tooltip-direction="UP" data-tooltip-class="pf2e">
     <div class="form-group">
         <label>{{localize 'DOCUMENT.FIELDS.img.label'}}</label>
         <div class="form-fields">
-            <input type="text" name="src" placeholder="" disabled>
-            <button type="button" data-tooltip="FILES.BrowseTooltip" data-action="open-browser"
-                {{disabled noBrowser}}>
+            <input type="text" name="src" placeholder="" readonly>
+            <button type="button" data-tooltip="FILES.BrowseTooltip" data-action="open-browser" {{disabled noBrowser}}>
                 <i class="fa-solid fa-file-import fa-fw"></i>
             </button>
-            <button type="button" {{{@root.i18n.tooltip 'src.actor' }}}
-                data-action="use-actor-image">
+            <button type="button" data-action="use-actor-image" {{{@root.i18n.tooltip 'src.actor'}}}>
                 <i class="fa-solid fa-image-portrait"></i>
             </button>
-            <button type="button" {{disabled noTokenImage}} {{{@root.i18n.tooltip 'src.token' }}}
+            <button type="button" {{disabled noTokenImage}} {{{@root.i18n.tooltip 'src.token'}}}
                 data-action="use-token-image">
                 <i class="fa-solid fa-circle-user"></i>
             </button>
@@ -22,13 +20,13 @@
             <i class="fa-solid fa-floppy-disk"></i>
             {{@root.i18n 'save'}}
         </button>
-        <button type="button" data-action="cancel">
-            <i class="fa-solid fa-xmark"></i>
-            {{@root.i18n 'cancel'}}
+        <button type="button" data-action="clear" {{{@root.i18n.tooltip 'clear.tooltip'}}}>
+            <i class="fa-regular fa-image-slash"></i>
+            {{@root.i18n 'clear.label'}}
         </button>
         <div class="color">
-            <input type="checkbox" name="colorEnabled" {{{@root.i18n.tooltip 'color.enabled' }}}>
-            <input type="color" name="colorBackground" {{{@root.i18n.tooltip 'color.background' }}}>
+            <input type="checkbox" name="colorEnabled" {{{@root.i18n.tooltip 'color.enabled'}}}>
+            <input type="color" name="colorBackground" {{{@root.i18n.tooltip 'color.background'}}}>
         </div>
         <button type="button" data-action="reset">
             <i class="fa-solid fa-rotate-left"></i>

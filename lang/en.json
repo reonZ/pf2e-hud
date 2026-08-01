@@ -189,6 +189,10 @@
         "avatar-editor": {
             "title": "Edit Avatar - {name}",
             "cancel": "Cancel",
+            "clear": {
+                "label": "Clear",
+                "tooltip": "Revert the actor to using the sheet avatar"
+            },
             "color": {
                 "background": "Background Color",
                 "enabled": "Enable Background Color"
