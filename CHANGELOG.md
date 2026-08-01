@@ -1,3 +1,9 @@
+# 2.53.0
+
+- `Avatar Editor`:
+  - now allow manual input of image/video path to be used
+  - add new `Clear` button (replaces the `Cancel` button) which reverts the actor to using the sheet avatar
+
 # 2.52.2
 
 - add Japanese localization (thanks to [counterpost](https://github.com/counterpost))
