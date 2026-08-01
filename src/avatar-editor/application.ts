@@ -15,6 +15,7 @@ import { AvatarData, getAvatarData, zAvatar } from ".";
 class AvatarEditor extends foundry.applications.api.ApplicationV2 {
     #actor: CreaturePF2e;
     #data!: AvatarData;
+    #fileValidator: foundry.data.fields.FilePathField;
     #img?: HTMLImageElement | HTMLVideoElement;
     #inputElement: HTMLInputElement | null = null;
     #viewport: HTMLElement | null = null;
@@ -30,7 +31,9 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
 
     constructor(actor: CreaturePF2e, options: DeepPartial<fa.ApplicationConfiguration> = {}) {
         super(options);
+
         this.#actor = actor;
+        this.#fileValidator = new foundry.data.fields.FilePathField({ categories: ["IMAGE", "VIDEO"] });
     }
 
     get title(): string {
@@ -178,7 +181,16 @@ class AvatarEditor extends foundry.applications.api.ApplicationV2 {
 
     #activateListeners(html: HTMLElement) {
         addListener(html, "form", "submit", (_el, event) => {
-            return event.preventDefault();
+            event.preventDefault();
+        });
+
+        addListener(html, "input", "change", (el, event) => {
+            event.preventDefault();
+
+            const value = el.value.trim();
+            const invalid = this.#fileValidator.validate(value);
+
+            this.#setImage(invalid ? this.actor.img : (value as ImageFilePath | VideoFilePath));
         });
 
         addListener(html, ".image", "wheel", (_el, event) => {
