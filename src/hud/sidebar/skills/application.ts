@@ -1,3 +1,17 @@
+import {
+    AbilityItemPF2e,
+    ActorPF2e,
+    CompendiumIndexData,
+    FeatPF2e,
+    findItemWithSourceId,
+    getItemSourceFromUuid,
+    hasAnyItemWithSourceId,
+    ItemUUID,
+    localize,
+    R,
+    signedInteger,
+    StatisticRollParameters,
+} from "foundry-helpers";
 import { FilterValue } from "hud";
 import { getGlobalSetting, setGlobalSetting } from "settings";
 import {
@@ -14,20 +28,6 @@ import {
     UNTRAINED_IMPROVISATION,
 } from ".";
 import { SidebarPF2eHUD, StatisticType } from "..";
-import {
-    AbilityItemPF2e,
-    ActorPF2e,
-    CompendiumIndexData,
-    CompendiumItemUUID,
-    FeatPF2e,
-    findItemWithSourceId,
-    getItemSourceFromUuid,
-    hasAnyItemWithSourceId,
-    localize,
-    R,
-    signedInteger,
-    StatisticRollParameters,
-} from "foundry-helpers";
 
 const _cached: {
     followTheLeader?: Omit<FollowTheLeader, "active">;
@@ -61,7 +61,7 @@ class SkillsSidebarPF2eHUD extends SidebarPF2eHUD<FeatPF2e | AbilityItemPF2e, Sk
                 !isCharacter ||
                 untrainedImprovisation ||
                 statistic?.proficient ||
-                (group.slug === "medicine" && !!findItemWithSourceId(actor, CHIRURGEON, "feat"));
+                (group.slug === "medicine" && !!findItemWithSourceId(actor, CHIRURGEON(), "feat"));
 
             const proficiency = isCharacter
                 ? { rank, label: game.i18n.localize(`PF2E.ProficiencyLevel${rank}`) }
@@ -172,7 +172,7 @@ type FollowTheLeader = {
     active: boolean;
     label: string;
     filterValue: FilterValue;
-    sourceId: CompendiumItemUUID;
+    sourceId: ItemUUID;
 };
 
 type PreparedSkillAction = ExtractedSkillActionData & {
