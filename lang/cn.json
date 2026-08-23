@@ -82,8 +82,8 @@
                 "player-screen": "打开玩家帷幕"
             }
         },
-        "rightClick": "[右键点击]",
-        "leftClick": "[左键点击]",
+        "rightClick": "[右键单击]",
+        "leftClick": "[左键单击]",
         "settings": {
             "menus": {
                 "healthStatusMenu": {
@@ -291,7 +291,7 @@
                 "background": "背景颜色",
                 "enabled": "启用背景颜色"
             },
-            "contain": "填充头像框",
+            "contain": "填充肖像框",
             "reset": "重置",
             "save": "保存",
             "src": {
@@ -299,6 +299,10 @@
                 "token": "使用指示物画像",
                 "none": "未找到有效的图像来源",
                 "video": "该功能尚不支持视频格式"
+            },
+            "clear": {
+                "tooltip": "恢复为使用角色卡肖像",
+                "label": "清除肖像"
             }
         },
         "health-status": {
@@ -369,7 +373,7 @@
             },
             "removeEffect": "移除效果",
             "skills": {
-                "alternate": "[右键点击]菜单变体",
+                "alternate": "[右键单击]菜单变体",
                 "hideUntrained": "隐藏未受训",
                 "proficient": "熟练度"
             },
@@ -407,7 +411,7 @@
             },
             "tooltip": {
                 "click": {
-                    "control": "[Ctrl+右键点击]",
+                    "control": "[Ctrl+右键单击]",
                     "middle": "[鼠标中键] 移除快捷坞选项",
                     "popup": "快捷坞弹窗"
                 },
