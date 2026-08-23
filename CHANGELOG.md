@@ -1,3 +1,7 @@
+# 2.53.1
+
+- fix issue with chirurgeon uuid to override medicine skill actions proficiencies
+
 # 2.53.0
 
 - `Avatar Editor`:
