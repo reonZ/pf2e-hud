@@ -189,6 +189,10 @@
     "avatar-editor": {
       "title": "Éditer l'Avatar - {name}",
       "cancel": "Effacer",
+      "clear": {
+        "label": "Effacer",
+        "tooltip": "Rétablir l'avatar de la feuille pour l'acteur"
+      },
       "color": {
         "background": "Couleur d'arrière plan'",
         "enabled": "Activer la couleur d'arrière plan"
