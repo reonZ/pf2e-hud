@@ -1,3 +1,9 @@
+# 2.54.0
+
+- add an identifier flag to the module's special actions `Pick Random Target`, `Recoll Knowledge`, `Roll Group Perception` and `Use Resolve Point`
+- `Persistent HUD`:
+  - add new `NPC Token Avatar` which uses the token prototype texture instead of the actor image when no avatar is set for a NPC
+
 # 2.53.1
 
 - fix issue with chirurgeon uuid to override medicine skill actions proficiencies
