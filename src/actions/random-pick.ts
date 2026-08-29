@@ -1,4 +1,4 @@
-import { CreaturePF2e, getFirstActiveToken, localize, panToToken, R, render } from "foundry-helpers";
+import { CreaturePF2e, getFirstActiveToken, localize, MODULE, panToToken, R, render } from "foundry-helpers";
 import { ControlledToken } from ".";
 
 async function randomPick(event?: PointerEvent) {
@@ -45,6 +45,7 @@ async function randomPick(event?: PointerEvent) {
     const ChatMessagePF2e = getDocumentClass("ChatMessage");
 
     ChatMessagePF2e.create({
+        flags: { [MODULE.id]: { action: "random-pick" } },
         flavor: localize("random-pick.title"),
         content: await render("random-pick", data),
         whisper: event?.ctrlKey ? (ChatMessage.getWhisperRecipients("GM") as any) : [],

@@ -1,5 +1,6 @@
 import {
     ActorPF2e,
+    MODULE,
     NPCPF2e,
     R,
     render,
@@ -100,6 +101,7 @@ async function rollRecallKnowledge(actor: ActorPF2e, alternate?: Statistic | nul
     const isSecret = !game.pf2e.settings.metagame.secretChecks;
 
     ChatMessagePF2e.create({
+        flags: { [MODULE.id]: { action: "recall-knowledge" } },
         flavor: await render("recall-knowledge", templateData),
         speaker: ChatMessage.getSpeaker({ actor }),
         whisper: isSecret ? (ChatMessage.getWhisperRecipients("GM") as any) : undefined,
