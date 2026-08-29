@@ -1,6 +1,6 @@
 # 2.54.0
 
-- add an identifier flag to the module's special actions `Pick Random Target`, `Recall Knowledge`, `Roll Group Perception` and `Use Resolve Point`
+- add an identifier flag to the module's special action messages `Pick Random Target`, `Recall Knowledge`, `Roll Group Perception` and `Use Resolve Point`
 - `Persistent HUD`:
   - add new `NPC Token Avatar` which uses the token prototype texture instead of the actor image when no avatar is set for a NPC
 
