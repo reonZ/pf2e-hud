@@ -234,6 +234,15 @@ class PersistentPF2eHUD
                 },
             },
             {
+                key: "tokenAvatar",
+                type: Boolean,
+                default: false,
+                scope: "user",
+                onChange: () => {
+                    this.render();
+                },
+            },
+            {
                 key: "shiftEffect",
                 type: Boolean,
                 default: true,
@@ -640,8 +649,11 @@ class PersistentPF2eHUD
 
         if (context.hasActor) {
             const worldActor = this.worldActor!;
-            const avatarData = getAvatarData(worldActor);
-            const src = avatarData?.src ?? worldActor.img;
+            const avatarData = getAvatarData(worldActor, false);
+            const src =
+                avatarData?.src ||
+                (worldActor.type === "npc" && this.settings.tokenAvatar && worldActor.prototypeToken.texture.src) ||
+                worldActor.img;
             const isVideo = foundry.helpers.media.VideoHelper.hasVideoExtension(src);
 
             const avatar: PersistentContext["avatar"] = {
@@ -1444,6 +1456,7 @@ type PersistentSettings = {
     shiftEffect: boolean;
     showEffects: boolean;
     slots: number;
+    tokenAvatar: boolean;
 };
 
 type MenuToggleKey = keyof typeof PersistentPF2eHUD.MENU_TOGGLES;

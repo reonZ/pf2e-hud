@@ -101,6 +101,10 @@
                 "slots": {
                     "name": "Extra Shortcut Slots",
                     "hint": "Number of extra shortcut slots to add to the HUD."
+                },
+                "tokenAvatar": {
+                    "name": "NPC Token Avatar",
+                    "hint": "When no avatar has been set, should NPCs use the token prototype texture instead of the actor image."
                 }
             },
             "sidebar": {
