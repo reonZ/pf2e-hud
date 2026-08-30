@@ -101,6 +101,10 @@
         "slots": {
           "name": "Emplacements des raccourcis supplémentaires",
           "hint": "Nombre d'emplacements des raccourcis supplémentaire a ajouter au HUD."
+        },
+        "tokenAvatar": {
+          "name": "Avatar du jeton de PNJ",
+          "hint": "Lorsqu'aucun avatar n'a été défini, les PNJ doivent-ils utiliser la texture prototype du jeton au lieu de l'image de l'acteur ?"
         }
       },
       "sidebar": {
