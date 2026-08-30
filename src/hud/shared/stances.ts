@@ -45,7 +45,7 @@ const EXTRAS: Map<ItemUUID, { effect: ItemUUID }> = createDuplicateMap([
     ],
 ]);
 
-async function toggleStance({ actor, effectUUID: sourceUUID }: ToggleStanceData, force?: boolean): Promise<void> {
+async function toggleStance({ actor, effectUUID: sourceUUID, item }: ToggleStanceData, force?: boolean): Promise<void> {
     if (!force && !canUseStances(actor)) return;
 
     const effects = R.pipe(
@@ -70,23 +70,20 @@ async function toggleStance({ actor, effectUUID: sourceUUID }: ToggleStanceData,
 
     if (!effect) {
         await addStance(actor, sourceUUID);
+        item.toMessage(null, { actualUse: true });
     } else if (!effects.length) {
         await actor.deleteEmbeddedDocuments("Item", [effect[1]]);
     }
 }
 
-async function addStance(actor: CreaturePF2e, sourceUUID: DocumentUUID, createMessage?: boolean) {
+async function addStance(actor: CreaturePF2e, sourceUUID: DocumentUUID) {
     const source = await getItemSourceFromUuid(sourceUUID, "effect");
     if (!source) return;
 
     foundry.utils.setProperty(source, "flags.core.sourceId", sourceUUID);
     foundry.utils.setProperty(source, "_stats.compendiumSource", sourceUUID);
 
-    const [item] = await actor.createEmbeddedDocuments("Item", [source]);
-
-    if (item && createMessage) {
-        item.toMessage();
-    }
+    await actor.createEmbeddedDocuments("Item", [source]);
 }
 
 function canUseStances(actor: ActorPF2e): boolean {
