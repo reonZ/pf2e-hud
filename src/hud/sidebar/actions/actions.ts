@@ -60,7 +60,7 @@ class ActionsSidebarAction extends BaseSidebarItem<FeatPF2e<ActorPF2e> | Ability
     }
 
     removeEffect() {
-        this.usage?.effect?.delete();
+        this.usage.effect?.delete();
     }
 
     toggleExporation() {
@@ -166,10 +166,9 @@ async function getSidebarActionsData(this: ActionsSidebarPF2eHUD): Promise<Actio
         const resource = crafting ? getActionResource(item) : undefined;
         const frequency = !isExploration && !resource ? getActionFrequency(item) : undefined;
         const macro = !isExploration && actionableEnabled && (await getActionMacro?.(item));
-        const usable = !!(frequency || selfEffect || crafting || macro);
         const effect = selfEffect && findItemWithSourceId(actor, selfEffect.uuid, "effect");
 
-        const usage: MaybeFalsy<ActionUsage> = usable && {
+        const usage: ActionUsage = {
             disabled: item.crafting ? resource?.value === 0 : frequency?.value === 0,
             effect,
             label: effect
@@ -196,7 +195,7 @@ async function getSidebarActionsData(this: ActionsSidebarPF2eHUD): Promise<Actio
             resource,
             toggles: item.system.traits.toggles?.getSheetData() ?? [],
             untrainedTactic: untrainedTacticBtn?.outerHTML,
-            usage: usage || null,
+            usage,
             virtual,
         };
 
@@ -358,7 +357,7 @@ type ActionData = {
     resource: Maybe<LabeledValueAndMax & { slug: string }>;
     toggles: TraitToggleViewData[];
     untrainedTactic: string | undefined;
-    usage: Maybe<ActionUsage>;
+    usage: ActionUsage;
     virtual: boolean;
 };
 
