@@ -1,3 +1,11 @@
+# 2.55.0
+
+- make all the necessary changes to support the newly added roll-option when a spell is actually cast
+- make all the necessary changes to support the new `All Actionable` feature for the `PF2e Toolbelt` module (coming with version `3.56.0`)
+- `Actions Sidebar`:
+  - add `Use` button to all actions
+- fix toggling a stance not sending any message to chat
+
 # 2.54.0
 
 - add an identifier flag to the module's special action messages `Pick Random Target`, `Recall Knowledge`, `Roll Group Perception` and `Use Resolve Point`
