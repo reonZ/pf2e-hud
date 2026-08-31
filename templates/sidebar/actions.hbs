@@ -3,7 +3,6 @@
 <header data-filter-value="{{stances.filterValue}}">
     <div class="name">{{@root.i18n 'stances'}}</div>
 </header>
-{{/if}}
 {{#each stances.actions as |stance|}}
 <div class="item action" data-item-id="{{stance.id}}" draggable="true"
     data-effect-uuid="{{stance.uuid}}" data-filter-value="{{stance.filterValue}}">
@@ -19,6 +18,8 @@
     </div>
 </div>
 {{/each}}
+{{!-- end stances --}}
+{{/if}}
 {{!-- blasts --}}
 {{#if blasts}}
 <header class="blasts" data-filter-value="{{blasts.filterValue}}">
@@ -31,7 +32,6 @@
         <img src="{{blasts.cost.img}}" class="drag-img">
     </a>
 </header>
-{{/if}}
 {{#each blasts.actions as |blast|}}
 <div class="item attack ready" data-filter-value="{{blast.filterValue}}"
     data-item-id="{{blast.blastId}}" draggable="true">
@@ -56,6 +56,8 @@
     {{/if}}
 </div>
 {{/each}}
+{{!-- end blasts --}}
+{{/if}}
 {{!-- strikes --}}
 {{#if strikes}}
 <header class="strikes" data-filter-value="{{strikes.filterValue}}">
@@ -77,7 +79,6 @@
     </div>
     {{/if}}
 </header>
-{{/if}}
 {{#each strikes.actions as |strike|}}
 <div class="item attack{{#if strike.ready}} ready{{/if}}" data-item-id="{{strike.id}}"
     data-index="{{strike.index}}" data-filter-value="{{strike.filterValue}}" draggable="true">
@@ -185,6 +186,8 @@
     {{/if}}
 </div>
 {{/each}}
+{{!-- end strikes --}}
+{{/if}}
 {{!-- hero actions --}}
 {{#if heroActions}}
 <header class="hero-actions" data-filter-value="{{heroActions.filterValue}}">
@@ -232,6 +235,7 @@
     </div>
 </div>
 {{/each}}
+{{!-- end hero actions --}}
 {{/if}}
 {{!-- actions --}}
 {{#each sections as |section|}}
@@ -253,36 +257,38 @@
             data-action="toggle-trait" data-trait="{{toggle.trait}}"><i
                 class="fa-solid fa-fw fa-{{toggle.icon}}"></i></a>
         {{/each}}
-        {{!-- if usages --}}
-        {{#if action.usage}}
-        {{!-- resource field --}}
-        {{#if action.resource}}
-        <input type="number" class="small" value="{{action.resource.value}}"
-            data-tooltip="{{action.resource.label}}" disabled>
-        {{!-- frequency field --}}
-        {{else if action.frequency}}
-        <input type="number" class="small" data-item-id="{{action.id}}"
-            {{#if action.virtual}}data-virtual-action="true"{{else}}data-item-property="system.frequency.value"{{/if}}
-            value="{{action.frequency.value}}" min="0" max="{{action.frequency.max}}" data-tooltip="{{action.frequency.label}}">
-        {{/if}}
-        {{!-- remove effect --}}
-        {{#if action.usage.effect}}
-        <a data-action="remove-effect" data-tooltip="{{action.usage.label}}">
-            <i class="fa-solid fa-xmark"></i>
-        </a>
-        {{!-- use btn --}}
-        {{else if (not action.untrainedTactic)}}
-        <a data-action="use-action" {{#if action.usage.disabled}} class="disabled" {{/if}}
-            data-tooltip="{{action.usage.label}}">
-            <i class="fa-solid fa-play"></i>
-        </a>
-        {{/if}}
-        {{!-- no usages but exploration --}}
-        {{else if action.exploration}}
-        <a data-action="toggle-exploration">
-            <i class="fa-solid fa-toggle-{{ifThen action.exploration.active 'large-on' 'off'}}"></i>
-        </a>
-        {{!-- end if usages --}}
+        {{!-- if exploration --}}
+        {{#if action.exploration}}
+            <a data-action="toggle-exploration">
+                <i class="fa-solid fa-toggle-{{ifThen action.exploration.active 'large-on' 'off'}}"></i>
+            </a>
+        {{!-- else usage --}}
+        {{else}}
+            {{!-- resource field --}}
+            {{#if action.resource}}
+            <input type="number" class="small" value="{{action.resource.value}}"
+                data-tooltip="{{action.resource.label}}" disabled>
+            {{!-- frequency field --}}
+            {{else if action.frequency}}
+            <input type="number" class="small" data-item-id="{{action.id}}"
+                {{#if action.virtual}}data-virtual-action="true"{{else}}data-item-property="system.frequency.value"{{/if}}
+                value="{{action.frequency.value}}" min="0" max="{{action.frequency.max}}" data-tooltip="{{action.frequency.label}}">
+            {{!-- end resource/frequency --}}
+            {{/if}}
+            {{!-- remove effect --}}
+            {{#if action.usage.effect}}
+            <a data-action="remove-effect" data-tooltip="{{action.usage.label}}">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
+            {{!-- use btn --}}
+            {{else if (not action.untrainedTactic)}}
+            <a data-action="use-action" {{#if action.usage.disabled}} class="disabled" {{/if}}
+                data-tooltip="{{action.usage.label}}">
+                <i class="fa-solid fa-play"></i>
+            </a>
+            {{!-- end remove/use --}}
+            {{/if}}
+        {{!-- end usage/exploration --}}
         {{/if}}
         {{!-- untrained commander tactic --}}
         {{#if untrainedTactic}}

@@ -176,10 +176,6 @@ async function getSidebarActionsData(this: ActionsSidebarPF2eHUD): Promise<Actio
                 : `${useLabel} <span class="action-glyph">${getActionGlyph(actionCost)}</span>`,
         };
 
-        const exploration = isExploration && {
-            active: explorations.includes(itemId),
-        };
-
         const untrainedTacticBtn =
             tactics?.length && game.dailies?.api.isTacticAbility(item) && !tactics.includes(itemId)
                 ? game.dailies?.api.createRetrainBtn(actor, itemId, "tactic")
@@ -187,7 +183,7 @@ async function getSidebarActionsData(this: ActionsSidebarPF2eHUD): Promise<Actio
 
         const data: ActionData = {
             disabled: !!untrainedTacticBtn,
-            exploration,
+            exploration: isExploration && { active: explorations.includes(itemId) },
             frequency,
             id: itemId,
             img: getActionImg(item, macro),
