@@ -1,3 +1,8 @@
+# 2.55.1
+
+- `Actions Sidebar`:
+  - fix exploration actions having the `Use` button instead of the expected toggle
+
 # 2.55.0
 
 - make all the necessary changes to support the newly added roll-option when a spell is actually cast
