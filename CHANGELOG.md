@@ -1,3 +1,8 @@
+# 2.55.2
+
+- `Extras Sidebar`:
+  - fix `Grab An Edge` not having `Acrobatics` as a choice
+
 # 2.55.1
 
 - `Actions Sidebar`:
