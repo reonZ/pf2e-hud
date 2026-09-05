@@ -48,7 +48,7 @@ const RAW_EXTRAS_ACTIONS = [
         key: "grab-an-edge",
         actionCost: "reaction",
         sourceId: "Compendium.pf2e.actionspf2e.Item.3yoajuKjwHZ9ApUY",
-        choices: ["reflex", "athletics"],
+        choices: ["reflex", "acrobatics", "athletics"],
     },
     {
         key: "escape",
