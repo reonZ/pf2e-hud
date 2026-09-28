@@ -2,11 +2,15 @@ import { AbilityItemPF2e, localize, R, SaveType, signedInteger, z } from "foundr
 import { BaseStatisticRollOptions, ExtraAction, getExtraAction, getExtraKeys, SIDEBAR_ICONS, StatisticType } from "hud";
 import { ShortcutData, ShortcutRadialOption, StatisticActionShortcut, zStatisticActionShortcut } from "..";
 
-const zExtraActionShortcut = zStatisticActionShortcut("extraAction", getExtraKeys());
+function zExtraActionShortcut() {
+    return zStatisticActionShortcut("extraAction", getExtraKeys());
+}
 
 class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityItemPF2e> {
+    static #schema?: ExtraActionShortcutSchema;
+
     static get schema() {
-        return zExtraActionShortcut;
+        return (this.#schema ??= zExtraActionShortcut());
     }
 
     get action(): ExtraAction | undefined {
@@ -85,12 +89,13 @@ class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityIt
     }
 }
 
-interface ExtraActionShortcut extends ShortcutData<typeof zExtraActionShortcut> {
+interface ExtraActionShortcut extends ShortcutData<ExtraActionShortcutSchema> {
     type: "extraAction";
 }
 
-type ExtraActionShortcutSource = z.input<typeof zExtraActionShortcut>;
-type ExtraActionShortcutData = z.output<typeof zExtraActionShortcut>;
+type ExtraActionShortcutSchema = ReturnType<typeof zExtraActionShortcut>;
+type ExtraActionShortcutSource = z.input<ExtraActionShortcutSchema>;
+type ExtraActionShortcutData = z.output<ExtraActionShortcutSchema>;
 
 export { ExtraActionShortcut };
 export type { ExtraActionShortcutData, ExtraActionShortcutSource };
