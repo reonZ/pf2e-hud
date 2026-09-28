@@ -31,6 +31,7 @@ const RAW_EXTRAS_ACTIONS = [
                 sf2e: "@UUID[Compendium.sf2e.other-effects.Item.AHMUpMbaVkZ5A1KX]{Effect: Aid}",
             },
         ],
+        statistic: "perception",
         sourceId: "Compendium.pf2e.actionspf2e.Item.HCl3pzVefiv9ZKQW",
     },
     {
@@ -70,6 +71,10 @@ const RAW_EXTRAS_ACTIONS = [
 const EXTRAS_KEYS = RAW_EXTRAS_ACTIONS.map(({ key }) => key);
 
 class ExtrasSidebarItem extends BaseSidebarItem<AbilityItemPF2e, ExtractedExtraActionData> {
+    get action(): ExtraAction | undefined {
+        return getExtraAction(this.sourceId);
+    }
+
     async roll(actor: ActorPF2e, event: MouseEvent, options: BaseStatisticRollOptions) {
         if (!options.statistic && this.hasChoices) {
             const result = await new Promise<StatisticType | SaveType | null>((resolve) => {
@@ -109,7 +114,7 @@ class ExtrasSidebarItem extends BaseSidebarItem<AbilityItemPF2e, ExtractedExtraA
             options.statistic = result;
         }
 
-        getExtraAction(this.sourceId)?.roll(actor, event, options);
+        this.action?.roll(actor, event, options);
     }
 
     toShortcut(): ExtraActionShortcutSource {
@@ -118,6 +123,7 @@ class ExtrasSidebarItem extends BaseSidebarItem<AbilityItemPF2e, ExtractedExtraA
             key: this.key,
             name: this.label,
             sourceId: this.sourceId,
+            statistic: this.statistic,
             type: "extraAction",
         };
     }
@@ -178,8 +184,7 @@ class ExtraAction extends BaseStatisticAction<ExtrasActionData, AbilityItemPF2e>
         };
 
         if (this.key === "aid") {
-            rollOptions.statistic = "perception";
-            rollOptions.alternates = true;
+            rollOptions.alternates ??= R.isNullish(options.statistic) || R.isNullish(options.dc);
         }
 
         super.roll(actor, event, rollOptions);
@@ -234,5 +239,5 @@ type ExtraActionKey = (typeof RAW_EXTRAS_ACTIONS)[number]["key"];
 
 type ExtractedExtraActionData = Omit<ExtractReadonly<ExtraAction>, "data">;
 
-export { ExtrasSidebarItem, getExtraAction, getExtraKeys, getExtrasActions, prepareExtrasActions, RAW_EXTRAS_ACTIONS };
-export type { ExtraAction, ExtraActionKey, ExtractedExtraActionData, ExtrasActionData };
+export { ExtraAction, ExtrasSidebarItem, getExtraAction, getExtraKeys, getExtrasActions, prepareExtrasActions };
+export type { ExtraActionKey, ExtractedExtraActionData, ExtrasActionData };

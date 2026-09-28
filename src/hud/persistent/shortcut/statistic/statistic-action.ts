@@ -11,10 +11,16 @@ import {
 import { BaseStatisticAction, BaseStatisticRollOptions, getMapLabel } from "hud";
 import { PersistentShortcut, ShortcutCost, ShortcutData, ShortcutDataset, zBaseShortcut } from "..";
 
+const zStatisticOverride = z.object({
+    agile: z.boolean().optional(),
+    dc: z.number().optional(),
+    statistic: z.string().optional(),
+});
+
 function zStatisticActionShortcut(type: string, keysChoices: ReadonlyArray<string>) {
     return zBaseShortcut(type).extend({
         key: z.enum(keysChoices),
-        override: z.object({ agile: z.boolean().optional(), statistic: z.string().optional() }).prefault({}),
+        override: zStatisticOverride.prefault({}),
         sourceId: zDocumentUUID("Item"),
     });
 }

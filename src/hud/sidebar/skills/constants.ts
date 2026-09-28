@@ -527,7 +527,6 @@ type SkillActionData = RawBaseActionData & {
     label?: string;
     requireTrained?: boolean;
     rollOptions?: string[];
-    statistic?: StatisticType;
 };
 
 type RawStatisticActionGroup = {

@@ -1,10 +1,21 @@
 import { AbilityItemPF2e, ActorPF2e, FeatPF2e } from "foundry-helpers";
 import { SkillActionShortcutSource } from "hud";
-import { BaseSidebarItem, BaseStatisticRollOptions, ExtractedSkillActionData, getSkillAction, MapVariant } from "..";
+import {
+    BaseSidebarItem,
+    BaseStatisticRollOptions,
+    ExtractedSkillActionData,
+    getSkillAction,
+    MapVariant,
+    SkillAction,
+} from "..";
 
 class SkillsSidebarItem extends BaseSidebarItem<FeatPF2e | AbilityItemPF2e, ExtractedSkillActionData> {
+    get action(): SkillAction | undefined {
+        return getSkillAction(this.statistic, this.key);
+    }
+
     async roll(actor: ActorPF2e, event: MouseEvent, options: BaseStatisticRollOptions) {
-        getSkillAction(this.statistic, this.key)?.roll(actor, event, options);
+        this.action?.roll(actor, event, options);
     }
 
     toShortcut(event?: DragEvent): SkillActionShortcutSource {

@@ -26,7 +26,7 @@ import {
     ZeroToTwo,
 } from "foundry-helpers";
 import { getActionIcon } from "foundry-helpers/dist";
-import { createDraggable, ExtrasActionData, FilterValue, SkillActionData, SkillVariants } from "hud";
+import { createDraggable, ExtraAction, ExtrasActionData, FilterValue, SkillActionData, SkillVariants } from "hud";
 
 const ACTION_IMAGES: PartialRecord<string, () => ImageFilePath> = R.mapValues(
     {
@@ -276,13 +276,14 @@ abstract class BaseStatisticAction<
                         name: this.label,
                         sourceId: this.sourceId,
                         statistic,
-                        type: statistic ? "skillAction" : "extraAction",
+                        type: this instanceof ExtraAction ? "extraAction" : "skillAction",
                         variant: statistic && R.isNullish(usedOptions.map) ? variant : undefined,
                         override: {},
                     };
 
                     addToObjectIfNonNullish(dragData.override, {
                         agile: htmlQuery<HTMLInputElement>(html, `[name="agile"]`)?.checked,
+                        dc: htmlQuery<HTMLInputElement>(html, `[name="dc"]`)?.valueAsNumber,
                         statistic: htmlQuery<HTMLSelectElement>(html, `[name="statistic"]`)?.value,
                     });
 
@@ -367,6 +368,7 @@ type RawBaseActionData = {
     notes?: (SingleCheckActionRollNoteData & { sf2e: string })[];
     /** item used for description and send-to-chat */
     sourceId: CompendiumItemUUID;
+    statistic?: StatisticType;
     // object refers to map, array refers to actual variants
     variants?: (string | ActionVariant)[] | ActionMapVariant;
 };

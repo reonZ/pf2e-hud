@@ -1,9 +1,19 @@
 import { AbilityItemPF2e, localize, R, SaveType, signedInteger, z } from "foundry-helpers";
-import { BaseStatisticRollOptions, ExtraAction, getExtraAction, getExtraKeys, SIDEBAR_ICONS, StatisticType } from "hud";
+import {
+    BaseStatisticRollOptions,
+    ExtraAction,
+    getExtraAction,
+    getExtraKeys,
+    getStatisticTypes,
+    SIDEBAR_ICONS,
+    StatisticType,
+} from "hud";
 import { ShortcutData, ShortcutRadialOption, StatisticActionShortcut, zStatisticActionShortcut } from "..";
 
 function zExtraActionShortcut() {
-    return zStatisticActionShortcut("extraAction", getExtraKeys());
+    return zStatisticActionShortcut("extraAction", getExtraKeys()).extend({
+        statistic: z.enum(getStatisticTypes()).optional(),
+    });
 }
 
 class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityItemPF2e> {
@@ -26,10 +36,18 @@ class ExtraActionShortcut extends StatisticActionShortcut<ExtraAction, AbilityIt
     }
 
     get subtitle(): string {
-        return (
-            (this.override.statistic && this.actor.getStatistic(this.override.statistic)?.label) ||
-            localize("shortcuts.tooltip.subtitle", this.type)
-        );
+        const statistic = this.override.statistic && this.actor.getStatistic(this.override.statistic)?.label;
+
+        if (!statistic) {
+            return super.subtitle;
+        }
+
+        if (this.override.dc) {
+            const dc = game.i18n.format("PF2E.InlineAction.Check.DC", this.override);
+            return `${statistic} (${dc})`;
+        }
+
+        return statistic;
     }
 
     get altUseLabel(): string {
