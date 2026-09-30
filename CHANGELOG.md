@@ -4,7 +4,7 @@
   - you can now create an alternate shortcut version of the `Aid` action
     - both the `statistic` and the `dc` will be saved
     - only newly created `Aid` shortcuts will fully use the alternate data
-- `Persistent Sidebar`:
+- `Persistent HUD`:
   - the `Alliance` button now opens a dialog for you to select the alliance instead of being a `slider`
 
 # 2.55.2
