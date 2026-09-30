@@ -4,11 +4,6 @@
         align-items: stretch;
 
         button {
-            &:focus {
-                outline: none;
-                box-shadow: none;
-            }
-
             &:hover {
                 background: var(--button-background-color);
                 color: var(--button-text-color);
