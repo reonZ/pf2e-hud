@@ -1,0 +1,27 @@
+.pf2e-hud-modify-alliance {
+    .standard-form .form-footer {
+        flex-direction: column;
+        align-items: stretch;
+
+        button {
+            &:focus {
+                outline: none;
+                box-shadow: none;
+            }
+
+            &:hover {
+                background: var(--button-background-color);
+                color: var(--button-text-color);
+                border-color: var(--button-border-color);
+                outline: 1px solid var(--button-focus-outline-color);
+                box-shadow: 0 0 4px var(--button-focus-outline-color);
+            }
+
+            &.selected {
+                background: var(--button-hover-background-color);
+                color: var(--button-hover-text-color);
+                border-color: var(--button-hover-border-color);
+            }
+        }
+    }
+}

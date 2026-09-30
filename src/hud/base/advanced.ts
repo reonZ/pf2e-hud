@@ -39,7 +39,7 @@ import { BaseActorPF2eHUD } from ".";
 
 const ALLIANCE_TYPES = ["party", "neutral", "opposition"] as const;
 
-const ALLIANCE: Record<AllianceType, AllianceData> = {
+const ALLIANCES: Record<AllianceType, AllianceData> = {
     neutral: {
         icon: "fa-solid fa-face-meh",
         label: "PF2E.Actor.Creature.Alliance.Neutral",
@@ -169,36 +169,42 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             this.#activateListeners(content);
         }
 
-        protected _onClickAction(this: ThisAdvancedHUD, event: PointerEvent, target: HTMLElement): void {
+        protected _onClickAction(this: ThisAdvancedHUD, event: PointerEvent, target: HTMLElement) {
             const actor = this.actor;
             const action = target.dataset.action as EventAction;
 
             if (action === "slider") {
                 processSliderEvent(event, target, this.#onSlider.bind(this));
-            } else if (action === "update-alliance") {
-                this.#updateAlliance(event);
+                return;
             }
 
             if (event.button !== 0) return;
 
-            if (action === "change-speed") {
-                this.#changeSpeed(target);
-            } else if (action === "raise-shield") {
-                game.pf2e.actions.raiseAShield({ actors: [actor], event });
-            } else if (action === "recovery-check") {
-                if (actor?.isOfType("character")) {
-                    actor.rollRecovery(event);
+            switch (action) {
+                case "change-speed": {
+                    return this.#changeSpeed(target);
                 }
-            } else if (action === "roll-statistic") {
-                this.#rollStatistic(event, target);
-            } else if (action === "show-notes") {
-                if (actor?.isOfType("npc")) {
-                    new NpcNotesHudPopup(actor).render(true);
+                case "raise-shield": {
+                    return game.pf2e.actions.raiseAShield({ actors: [actor], event });
                 }
-            } else if (action === "take-cover") {
-                this.#takeCover(event);
-            } else if (action === "use-resolve") {
-                useResolve(actor);
+                case "recovery-check": {
+                    return actor?.isOfType("character") && actor.rollRecovery(event);
+                }
+                case "roll-statistic": {
+                    return this.#rollStatistic(event, target);
+                }
+                case "show-notes": {
+                    return actor?.isOfType("npc") && new NpcNotesHudPopup(actor).render(true);
+                }
+                case "take-cover": {
+                    return this.#takeCover();
+                }
+                case "use-resolve": {
+                    return useResolve(actor);
+                }
+                case "update-alliance": {
+                    return actor?.isOfType("character", "npc") && this.#updateAlliance(actor, target);
+                }
             }
         }
 
@@ -248,7 +254,7 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             this.actor?.getStatistic(statistic)?.roll(rollOptions);
         }
 
-        async #takeCover(this: ThisAdvancedHUD, event: PointerEvent) {
+        async #takeCover(this: ThisAdvancedHUD) {
             const actor = this.actor;
             if (!actor?.isOfType("creature")) return;
 
@@ -282,16 +288,43 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
             setFlag(actor, "speed", newSpeed);
         }
 
-        #updateAlliance(this: ThisAdvancedHUD, event: PointerEvent) {
-            const actor = this.actor;
-            if (!actor?.isOfType("character", "npc") || ![0, 2].includes(event.button)) return;
-
+        #updateAlliance(this: ThisAdvancedHUD, actor: CharacterPF2e | NPCPF2e, target: HTMLElement) {
             const currentAlliance = getAlliance(actor);
-            const newAlliance = getListLoopValue(event, ALLIANCE_TYPES, currentAlliance);
-            if (newAlliance === currentAlliance) return;
 
-            actor.update({
-                "system.details.alliance": newAlliance === "neutral" ? null : newAlliance,
+            foundry.applications.api.DialogV2.wait({
+                classes: ["pf2e-hud-modify-alliance"],
+                content: "",
+                buttons: ALLIANCE_TYPES.map((type) => {
+                    const alliance = ALLIANCES[type];
+                    const label = game.i18n.localize(alliance.label);
+                    const selected = type === currentAlliance;
+
+                    return {
+                        action: type,
+                        callback: () => {
+                            actor.update({
+                                "system.details.alliance": type === "neutral" ? null : type,
+                            });
+                        },
+                        class: selected ? "selected" : "",
+                        label,
+                        icon: alliance.icon,
+                        default: selected,
+                    };
+                }),
+                render: (_event: Event, dialog: foundry.applications.api.DialogV2) => {
+                    requestAnimationFrame(() => {
+                        const element = dialog.element;
+
+                        dialog.setPosition({
+                            left: target.offsetLeft + target.offsetWidth / 2 - element.offsetWidth / 2,
+                            top: target.offsetTop - element.offsetHeight - 60,
+                        });
+                    });
+                },
+                window: {
+                    title: localize("dialogs.alliance.title", actor),
+                },
             });
         }
 
@@ -321,21 +354,6 @@ function makeAdvancedHUD<TBase extends AbstractConstructorOf<any>>(
     }
 
     return AdvancedPF2eHUD;
-}
-
-function getListLoopValue<T>(event: PointerEvent, list: ReadonlyArray<T>, current: T): T {
-    if (![0, 2].includes(event.button)) {
-        return current;
-    }
-
-    if (event.shiftKey) {
-        return list.at(event.button === 0 ? list.length - 1 : 0) as T;
-    }
-
-    const direction = event.button === 0 ? 1 : -1;
-    const currentIndex = list.indexOf(current);
-
-    return list.at((currentIndex + direction) % list.length) as T;
 }
 
 function getInfoSections(actor: ActorPF2e) {
@@ -454,7 +472,7 @@ function getAlliance(actor: CharacterPF2e | NPCPF2e): AllianceType {
 
 function getAllianceData(actor: CharacterPF2e | NPCPF2e): AllianceData {
     const alliance = getAlliance(actor);
-    const data = ALLIANCE[alliance] as AllianceData;
+    const data = ALLIANCES[alliance] as AllianceData;
     data.tooltip ??= localize("actor-hud.alliance", { value: game.i18n.localize(data.label) });
 
     return data;

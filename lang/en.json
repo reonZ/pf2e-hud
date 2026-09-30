@@ -212,6 +212,9 @@
             }
         },
         "dialogs": {
+            "alliance": {
+                "title": "Modifiy Alliance - {name}"
+            },
             "alternates": {
                 "dc": "Difficulty Class",
                 "drag": "Drag to create a shortcut",
