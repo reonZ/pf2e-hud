@@ -172,6 +172,10 @@
                 "slots": {
                     "name": "额外快捷坞槽位",
                     "hint": "添加至主控HUD的额外快捷坞槽位数量。"
+                },
+                "tokenAvatar": {
+                    "name": "NPC指示物肖像",
+                    "hint": "未设置肖像时，NPC肖像默认使用其原型指示物纹理而非角色图像。"
                 }
             },
             "enabled": {
@@ -194,8 +198,8 @@
             },
             "advanced": {
                 "alliance": {
-                    "name": "关系按键",
-                    "hint": "在HUD上显示关系/部署按键。"
+                    "name": "立场按键",
+                    "hint": "在HUD上显示立场/部署按键。"
                 }
             },
             "dice": {
@@ -257,6 +261,9 @@
                 "statistic": "数据",
                 "title": "动作变体 - {label}",
                 "yes": "使用变体"
+            },
+            "alliance": {
+                "title": "修改立场 - {name}"
             }
         },
         "keybindings": {
@@ -282,7 +289,7 @@
         "actor-hud": {
             "temp": "临时生命值",
             "resolve": "使用决心点数",
-            "alliance": "关系：{value}"
+            "alliance": "立场：{value}"
         },
         "avatar-editor": {
             "title": "编辑肖像 - {name}",
