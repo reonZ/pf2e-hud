@@ -213,7 +213,7 @@
         },
         "dialogs": {
             "alliance": {
-                "title": "Modifiy Alliance - {name}"
+                "title": "Modify Alliance - {name}"
             },
             "alternates": {
                 "dc": "Difficulty Class",
