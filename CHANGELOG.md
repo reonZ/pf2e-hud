@@ -1,3 +1,7 @@
+# 2.56.1
+
+- localization stuff
+
 # 2.56.0
 
 - `Extras Sidebar`:
