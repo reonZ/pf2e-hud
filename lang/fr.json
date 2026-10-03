@@ -212,6 +212,9 @@
       }
     },
     "dialogs": {
+      "alliance": {
+        "title": "Modifiy Alliance - {name}"
+      },
       "alternates": {
         "dc": "Degré de Difficulté",
         "drag": "Glisser pour créer un raccourci",
