@@ -13,7 +13,7 @@
     ],
     "compatibility": {
         "minimum": "14.361",
-        "verified": "14.368",
+        "verified": "14.369",
         "maximum": "14"
     },
     "version": "2.56.1",
@@ -55,14 +55,19 @@
     },
     "languages": [
         {
+            "lang": "cn",
+            "name": "简体中文",
+            "path": "lang/cn.json"
+        },
+        {
             "lang": "en",
             "name": "English",
             "path": "lang/en.json"
         },
         {
-            "lang": "pl",
-            "name": "Polish",
-            "path": "lang/pl.json"
+            "lang": "es",
+            "name": "Español",
+            "path": "lang/es.json"
         },
         {
             "lang": "fr",
@@ -70,14 +75,9 @@
             "path": "lang/fr.json"
         },
         {
-            "lang": "cn",
-            "name": "简体中文",
-            "path": "lang/cn.json"
-        },
-        {
-            "lang": "es",
-            "name": "Español",
-            "path": "lang/es.json"
+            "lang": "pl",
+            "name": "Polish",
+            "path": "lang/pl.json"
         },
         {
             "lang": "pt-BR",
