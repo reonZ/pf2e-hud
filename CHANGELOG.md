@@ -1,3 +1,8 @@
+# 2.56.2
+
+- localization stuff
+- fix exposed module localize path (from `game.hud.localize`)
+
 # 2.56.1
 
 - localization stuff
