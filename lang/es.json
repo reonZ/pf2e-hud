@@ -41,6 +41,10 @@
           "name": "Autoexpandir al cargar",
           "hint": "Forzar a Foundry a expandir la barra lateral al cargar la página."
         },
+        "noFormat": {
+          "name": "Ocultar panel de formato",
+          "hint": "El panel de formato se eliminará del chat."
+        },
         "noRollMode": {
           "name": "Ocultar modos de tirada",
           "hint": "Los botones del modo tirada se eliminarán del chat."
@@ -97,6 +101,10 @@
         "slots": {
           "name": "Ranuras de acceso directo adicionales",
           "hint": "Número de ranuras de acceso directo adicionales para agregar al HUD."
+        },
+        "tokenAvatar": {
+          "name": "Avatar de ficha de NPC",
+          "hint": "Cuando no se ha configurado ningún avatar, ¿deberían los PNJ usar la textura del prototipo del token en lugar de la imagen del actor?"
         }
       },
       "sidebar": {
@@ -112,7 +120,7 @@
         "title": "HUD de token",
         "activation": {
           "name": "Modo de activación",
-          "hint": "Seleccione el modo para activar el token HUD.",
+          "hint": "Seleccione el modo para activar el HUD del token.",
           "choices": {
             "disabled": "Desactivado",
             "first": "En el primer clic",
@@ -185,6 +193,10 @@
     "avatar-editor": {
       "title": "Editar avatar - {name}",
       "cancel": "Cancelar",
+      "clear": {
+        "label": "Limpiar",
+        "tooltip": "Revertir el actor para que utilice el avatar de la hoja"
+      },
       "color": {
         "background": "Color de fondo",
         "enabled": "Activar color de fondo"
@@ -200,6 +212,9 @@
       }
     },
     "dialogs": {
+      "alliance": {
+        "title": "Modificar Alianza - {nombre}"
+      },
       "alternates": {
         "dc": "Clase de dificultad",
         "drag": "Arrastra para crear un atajo",
@@ -347,6 +362,12 @@
       "proficiency": "Competencia"
     },
     "rightClick": "[Clic derecho]",
+    "scene": {
+      "visible": {
+        "hint": "Seleccione qué elementos de la interfaz de usuario (HUD) deben ser visibles en esta escena.",
+        "label": "Elementos visibles del HUD"
+      }
+    },
     "set-journal": {
       "uuid": {
         "label": "UUID del diario"
@@ -422,6 +443,8 @@
     "sidebar": {
       "filter": "Filtro de barra lateral",
       "actions": {
+        "area-fire": "Cono/Línea/Ráfaga {rango} pies.",
+        "auto-fire": "Cono {rango} pies.",
         "blasts": "Explosiones elementales",
         "ranged": "Rango {máx} pies.",
         "rangedWithIncrement": "Rango {increment}/{max} pies",
