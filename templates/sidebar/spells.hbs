@@ -58,6 +58,9 @@
                     <input class="small" type="number"
                         {{#if isStaff}}
                             data-staff-charges
+                            {{#if isServer}}
+                            data-server
+                            {{/if}}
                         {{else}}
                             data-item-id="{{uses.itemId}}"
                             {{#if uses.ruleIndex includeZero=true}}

@@ -524,7 +524,7 @@ class PersistentShortcutsPF2eHUD extends PersistentPartPF2eHUD {
 }
 
 function createShortcutCache(): ShortcutCache {
-    const cached: ShortcutCacheData = {};
+    const cached = {} as ShortcutCacheData;
 
     function getShortcutCache(
         ...args: Readonly<[...path: string[], defaultValue: () => Promise<unknown>]>

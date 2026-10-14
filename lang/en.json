@@ -491,6 +491,7 @@
         },
         "spellcasting": {
             "charges": "Charges",
+            "server": "Spell Server",
             "staff": "Staff"
         },
         "tooltip": {

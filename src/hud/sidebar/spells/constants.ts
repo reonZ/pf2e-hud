@@ -33,6 +33,10 @@ const SPELL_CATEGORIES: Record<SpellCategoryType, { icon: string; label: string 
         icon: "fa-solid fa-bolt-lightning",
         label: "PF2E.PreparationTypeSpontaneous",
     },
+    server: {
+        icon: "fa-solid fa-server",
+        label: "pf2e-hud.spellcasting.server",
+    },
     staff: {
         icon: "fa-solid fa-staff",
         label: "pf2e-hud.spellcasting.staff",
@@ -54,6 +58,7 @@ type SpellCategoryType =
     | "charges"
     | "flexible"
     | "scroll"
+    | "server"
     | "staff"
     | "virtual"
     | "wand";

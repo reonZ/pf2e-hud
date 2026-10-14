@@ -191,10 +191,11 @@ class SpellShortcut extends PersistentShortcut<typeof zSpellShortcut, SpellPF2e<
         }
 
         if (entryData.isStaff) {
+            const key = entryData.isServer ? "spellServers" : "staves";
             const canCast = this.cached(
                 "canCastStaffRank",
                 this.castRank,
-                () => !!game.dailies?.api.staves.canCastRank(this.actor as CharacterPF2e, this.castRank),
+                () => !!game.dailies?.api[key].canCastRank(this.actor as CharacterPF2e, this.castRank),
             );
 
             return returnDisabled(!canCast, "charges");
@@ -328,8 +329,6 @@ class SpellShortcut extends PersistentShortcut<typeof zSpellShortcut, SpellPF2e<
 
         const vessels = getAnimistVesselsData(this.cached, actor);
         const isConsumable = entrySheetData.category === "items";
-        const isFlexible = !!entrySheetData.isFlexible;
-        const isStaff = !!entrySheetData.isStaff;
 
         const consumable =
             isConsumable && this.category === "scroll"
@@ -342,12 +341,13 @@ class SpellShortcut extends PersistentShortcut<typeof zSpellShortcut, SpellPF2e<
             groups: entrySheetData.groups,
             isCharges: entrySheetData.category === "charges",
             isConsumable,
-            isFlexible,
+            isFlexible: !!entrySheetData.isFlexible,
             isFocus: !!entrySheetData.isFocusPool,
             isInnate: !!entrySheetData.isInnate,
             isPrepared: !!entrySheetData.isPrepared,
             isSpontaneous: !!entrySheetData.isSpontaneous,
-            isStaff,
+            isServer: !!entrySheetData.isServer,
+            isStaff: !!entrySheetData.isStaff,
             isVirtual: !!entrySheetData.isVirtual,
             notPrimaryVessel: (spellId: string) => vessels?.entry.id === entryId && !vessels.primary.includes(spellId),
             uses: entrySheetData.uses,
@@ -388,6 +388,7 @@ type SpellEntryData = {
     isInnate: boolean;
     isPrepared: boolean;
     isSpontaneous: boolean;
+    isServer: boolean;
     isStaff: boolean;
     isVirtual: boolean;
     groups: CustomSpellcastingEntry["groups"];

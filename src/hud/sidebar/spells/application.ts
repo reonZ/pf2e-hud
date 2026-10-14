@@ -72,7 +72,8 @@ class SpellsSidebarPF2eHUD extends SidebarPF2eHUD<SpellPF2e, SpellSidebarItem> {
         if (!actor.isOfType("character")) return;
 
         addListenerAll(html, "[data-staff-charges]", "change", async (el: HTMLInputElement) => {
-            await game.dailies?.api.staves.setChargesValue(actor, el.valueAsNumber);
+            const key = R.isString(el.dataset.server) ? "spellServers" : "staves";
+            await game.dailies?.api[key].setChargesValue(actor, el.valueAsNumber);
         });
 
         addListenerAll(html, `[data-rule-index]`, "change", async (el: HTMLInputElement) => {
@@ -139,7 +140,16 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
         const [categoryType, consumable] =
             entry.category === "items" && item
                 ? [entry.isVirtual ? "virtual" : item.category, item]
-                : [entry.isFlexible ? "flexible" : entry.isStaff ? "staff" : entry.category, undefined];
+                : [
+                      entry.isFlexible
+                          ? "flexible"
+                          : entry.isServer
+                            ? "server"
+                            : entry.isStaff
+                              ? "staff"
+                              : entry.category,
+                      undefined,
+                  ];
 
         const category = SPELL_CATEGORIES[categoryType as SpellCategoryType];
         if (!category) continue;
@@ -312,8 +322,9 @@ type SpellGroupData = {
 type CustomSpellcastingEntry = Omit<SpellcastingSheetData, "category" | "groups"> & {
     isAnimist?: boolean;
     category: SpellcastingCategory | "charges";
-    isStaff: boolean | undefined;
-    isVirtual: boolean | undefined;
+    isServer?: boolean;
+    isStaff?: boolean;
+    isVirtual?: boolean;
     uses?: ValueAndMax;
     groups: Array<
         Omit<SpellcastingSlotGroup, "active"> & {
