@@ -1,3 +1,8 @@
+# 2.57.0
+
+- this release requires you to update the `PF2e Dailies` module to version `4.23.0` if you use it in your world
+- add support for `Spell Server` spellcasting entries added by the `PF2e Dailies` module
+
 # 2.56.2
 
 - localization stuff
