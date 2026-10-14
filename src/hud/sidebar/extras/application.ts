@@ -43,7 +43,7 @@ class ExtrasSidebarPF2eHUD extends SidebarPF2eHUD<AbilityItemPF2e | ItemPF2e, Ex
         });
 
         const dailies = isCharacter &&
-            game.dailies?.active && {
+            game.dailies && {
                 canPrep: game.dailies.api.canPrepareDailies(actor),
                 tooltip: game.dailies.api.getDailiesSummary(actor),
             };

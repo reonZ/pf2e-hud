@@ -130,7 +130,7 @@ async function getSidebarActionsData(this: ActionsSidebarPF2eHUD): Promise<Actio
     const useLabel = (_cached.useLabel ??= game.i18n.localize("PF2E.Action.Use"));
     const removeEffect = (_cached.removeEffect ??= localize("sidebar.removeEffect"));
     const getActionMacro = game.toolbelt?.api.actionable.getActionMacro;
-    const tactics = isCharacter && game.dailies?.active ? game.dailies?.api.getCommanderTactics(actor) : undefined;
+    const tactics = (isCharacter && game.dailies?.api.commander.getTactics(actor)) || undefined;
 
     const processAction = async (item: AbilityItemPF2e<ActorPF2e> | FeatPF2e<ActorPF2e>, virtual: boolean) => {
         const traits = item.system.traits.value;
@@ -177,7 +177,7 @@ async function getSidebarActionsData(this: ActionsSidebarPF2eHUD): Promise<Actio
         };
 
         const untrainedTacticBtn =
-            tactics?.length && game.dailies?.api.isTacticAbility(item) && !tactics.includes(itemId)
+            tactics?.length && game.dailies?.api.commander.isTacticAbility(item) && !tactics.includes(itemId)
                 ? game.dailies?.api.createRetrainBtn(actor, itemId, "tactic")
                 : undefined;
 

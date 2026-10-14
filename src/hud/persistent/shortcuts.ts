@@ -598,17 +598,17 @@ type ShortcutCache = { get values(): ShortcutCacheData } & {
 };
 
 type ShortcutCacheData = {
-    animistCollection?: SpellCollection<CreaturePF2e> | null;
-    animistVesselsData?: dailies.AnimistVesselsData | null;
-    canCastStaffRank?: Partial<Record<OneToTen, boolean>>;
-    canUseStances?: boolean | null;
-    commanderTactics?: string[] | null;
-    explorations?: string[];
-    getActionMacro?: toolbelt.Api["actionable"]["getActionMacro"] | null;
-    hasItemWithSourceId?: Record<DocumentUUID, boolean>;
-    isTacticAbility?: dailies.Api["isTacticAbility"] | null;
-    shortcutSpellData?: Record<string, SpellEntryData | null>;
-    spellcastingEntry?: Record<string, CustomSpellcastingEntry | null>;
+    animistCollection: SpellCollection<CreaturePF2e> | null;
+    animistVesselsData: dailies.AnimistVesselsData | null;
+    canCastStaffRank: Partial<Record<OneToTen, boolean>>;
+    canUseStances: boolean | null;
+    commanderTactics: string[] | null;
+    explorations: string[];
+    getActionMacro: toolbelt.Api["actionable"]["getActionMacro"] | null;
+    hasItemWithSourceId: Record<DocumentUUID, boolean>;
+    isTacticAbility: dailies.Api["commander"]["isTacticAbility"] | null;
+    shortcutSpellData: Record<string, SpellEntryData | null>;
+    spellcastingEntry: Record<string, CustomSpellcastingEntry | null>;
 };
 
 type MacroSlotData = {

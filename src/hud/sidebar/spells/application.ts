@@ -72,7 +72,7 @@ class SpellsSidebarPF2eHUD extends SidebarPF2eHUD<SpellPF2e, SpellSidebarItem> {
         if (!actor.isOfType("character")) return;
 
         addListenerAll(html, "[data-staff-charges]", "change", async (el: HTMLInputElement) => {
-            await game.dailies?.api.setStaffChargesValue(actor, el.valueAsNumber);
+            await game.dailies?.api.staves.setChargesValue(actor, el.valueAsNumber);
         });
 
         addListenerAll(html, `[data-rule-index]`, "change", async (el: HTMLInputElement) => {
@@ -111,11 +111,10 @@ async function getSpellcastingData(this: SpellsSidebarPF2eHUD): Promise<SpellsHu
     });
 
     const spellGroups: SpellGroupData[] = [];
-    const dailiesActive = !!game.dailies?.active;
-    const canUseCharges = dailiesActive;
+    const canUseCharges = !!game.dailies;
     const focusPool = createSlider("focus", actor.system.resources?.focus ?? { value: 0, max: 0 });
 
-    const vesselsData = (dailiesActive && game.dailies?.api.getAnimistVesselsData(actor)) || {
+    const vesselsData = game.dailies?.api.animist.getVesselsData(actor) || {
         entry: undefined,
         primary: [] as string[],
     };
@@ -301,12 +300,7 @@ interface SpellsSidebarPF2eHUD {
 }
 
 type EventAction =
-    | "cast-spell"
-    | "dailies-retrain"
-    | "draw-item"
-    | "slider"
-    | "toggle-signature"
-    | "toggle-slot-expended";
+    "cast-spell" | "dailies-retrain" | "draw-item" | "slider" | "toggle-signature" | "toggle-slot-expended";
 
 type SpellGroupData = {
     label: string;

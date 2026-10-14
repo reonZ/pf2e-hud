@@ -59,13 +59,13 @@ class ActionShortcut extends PersistentShortcut<
         const isTacticAbility =
             isCharacter &&
             this.cached("isTacticAbility", () => {
-                return game.dailies?.active ? game.dailies?.api.isTacticAbility : null;
+                return game.dailies?.api.commander.isTacticAbility ?? null;
             })?.(item);
 
         const includedInTactics =
             isTacticAbility &&
             this.cached("commanderTactics", () => {
-                return game.dailies?.active ? game.dailies?.api.getCommanderTactics(this.actor) : null;
+                return game.dailies?.api.commander.getTactics(this.actor) ?? null;
             })?.includes(item.id);
 
         const crafting = item.crafting;

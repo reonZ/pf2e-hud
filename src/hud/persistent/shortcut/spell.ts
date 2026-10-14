@@ -135,7 +135,7 @@ class SpellShortcut extends PersistentShortcut<typeof zSpellShortcut, SpellPF2e<
         }
 
         const isCantrip = spell.isCantrip;
-        const isBroken = !isCantrip && entryData.isCharges && !game.dailies?.active;
+        const isBroken = !isCantrip && entryData.isCharges && !game.dailies;
 
         if (isBroken) {
             return returnDisabled(true, "broken");
@@ -194,7 +194,7 @@ class SpellShortcut extends PersistentShortcut<typeof zSpellShortcut, SpellPF2e<
             const canCast = this.cached(
                 "canCastStaffRank",
                 this.castRank,
-                () => !!game.dailies?.api.canCastRank(this.actor as CharacterPF2e, this.castRank),
+                () => !!game.dailies?.api.staves.canCastRank(this.actor as CharacterPF2e, this.castRank),
             );
 
             return returnDisabled(!canCast, "charges");
@@ -359,8 +359,7 @@ class SpellShortcut extends PersistentShortcut<typeof zSpellShortcut, SpellPF2e<
 
 function getAnimistVesselsData(cached: ShortcutCache, actor: CreaturePF2e): dailies.AnimistVesselsData | null {
     return cached("animistVesselsData", () => {
-        if (!actor.isOfType("character") || !game.dailies?.active) return null;
-        return game.dailies.api.getAnimistVesselsData(actor) ?? null;
+        return (actor.isOfType("character") && game.dailies?.api.animist.getVesselsData(actor)) || null;
     });
 }
 
