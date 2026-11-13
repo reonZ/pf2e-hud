@@ -72,10 +72,10 @@ body.pf2e-hud-hidden-tracker #pf2e-hud-tracker {
 
         .combatant,
         .fake {
+            flex: 0 0 var(--combatant-height);
             display: flex;
             align-items: center;
             gap: 0.2em;
-            height: var(--combatant-height);
             padding-inline: 3px;
             margin: 0;
         }
