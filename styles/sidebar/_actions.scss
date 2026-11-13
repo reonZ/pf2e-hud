@@ -211,6 +211,23 @@
             &.trait {
                 background: var(--variant-background-hover);
             }
+
+            &.toggle {
+                span {
+                    width: 3ch;
+
+                    i {
+                        &.barrels,
+                        &.blast {
+                            width: fit-content;
+                        }
+
+                        &.blast {
+                            left: var(--_fa-family);
+                        }
+                    }
+                }
+            }
         }
 
         &.attack {
