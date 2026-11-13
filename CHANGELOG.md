@@ -1,3 +1,11 @@
+# 2.57.1
+
+- `Actions Sidebar`:
+  - fix not being able to uncheck toggle variant actions
+  - fix double-barrel variant button style
+- `Combat Tracker`:
+  - fix combatant rows height shrinking when the tracker contains a lot of them
+
 # 2.57.0
 
 - this release requires you to update the `PF2e Dailies` module to version `4.23.0` if you use it in your world
