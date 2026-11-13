@@ -373,9 +373,8 @@
 {{#if (and item.dealsDamage (or doubleBarrel versatileOptions.length))}}
 <div class="variants versatiles">
     {{#if doubleBarrel}}
-    <div class="variant double-barrel physical{{#if doubleBarrel.selected}} selected{{/if}}"
-        {{#unless doubleBarrel.selected}} data-action="toggle-weapon-trait"
-        data-trait="double-barrel" {{/unless}} data-tooltip="{{localize 'PF2E.TraitDoubleBarrel'}}">
+    <div class="variant toggle double-barrel physical{{#if doubleBarrel.selected}} selected{{/if}}"
+        data-action="toggle-weapon-trait" data-trait="double-barrel" data-tooltip="{{localize 'PF2E.TraitDoubleBarrel'}}">
         <span class="fa-stack fa-fw">
             <i class="fa-solid barrels fa-pause fa-rotate-90 fa-stack-1x icon"></i>
             <i class="fa-solid blast fa-explosion fa-rotate-90 fa-stack-1x icon"></i>
@@ -383,9 +382,9 @@
     </div>
     {{/if}}
     {{#each versatileOptions as |option|}}
-    <div class="variant{{#if option.selected}} selected{{/if}}" {{#unless option.selected}}
+    <div class="variant toggle{{#if option.selected}} selected{{/if}}"
         data-value="{{option.value}}" data-action="toggle-weapon-trait" data-trait="versatile"
-        {{/unless}} {{#if ../isAltUsage}} data-alt-usage="{{../altIndex}}" {{/if}}
+        {{#if ../isAltUsage}} data-alt-usage="{{../altIndex}}" {{/if}}
         data-tooltip="{{localize option.label}}">
         <i class="fa-solid fa-{{option.glyph}} fa-fw icon"></i>
     </div>

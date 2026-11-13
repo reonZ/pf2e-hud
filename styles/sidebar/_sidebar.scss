@@ -206,9 +206,7 @@
 
                 span {
                     margin-top: 1px;
-                    max-width: calc(
-                        var(--max-column-width) - var(--input-checkbox-width) - var(--row-gap)
-                    );
+                    max-width: calc(var(--max-column-width) - var(--input-checkbox-width) - var(--row-gap));
                     overflow: hidden;
                     text-overflow: ellipsis;
                 }
@@ -318,8 +316,14 @@
                 &.flagged,
                 &.temporary {
                     color: var(--temporary-color);
-                    text-shadow: 0.05em 0 black, 0 0.05em black, -0.05em 0 black, 0 -0.05em black,
-                        -0.05em -0.05em black, -0.05em 0.05em black, 0.05em -0.05em black,
+                    text-shadow:
+                        0.05em 0 black,
+                        0 0.05em black,
+                        -0.05em 0 black,
+                        0 -0.05em black,
+                        -0.05em -0.05em black,
+                        -0.05em 0.05em black,
+                        0.05em -0.05em black,
                         0.05em 0.05em black;
                 }
 
@@ -452,17 +456,20 @@
             &[data-action] {
                 cursor: pointer;
 
-                &:hover {
+                &:not(.toggle):hover {
                     background: var(--variant-background-hover);
                     color: var(--variant-color-hover);
                 }
             }
 
             &.selected {
-                cursor: revert;
                 background: var(--variant-background-selected);
                 color: var(--variant-color-selected);
                 box-shadow: var(--variant-box-shadow-selected);
+
+                &:not(.toggle) {
+                    cursor: revert;
+                }
             }
         }
     }
